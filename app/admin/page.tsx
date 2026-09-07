@@ -1,0 +1,33 @@
+import { prisma } from "@/lib/prisma";
+
+export default async function AdminOverviewPage() {
+  const [destinations, stories, events, users, subscribers] = await Promise.all([
+    prisma.destination.count(),
+    prisma.story.count(),
+    prisma.event.count(),
+    prisma.user.count(),
+    prisma.newsletterSubscriber.count(),
+  ]);
+
+  const stats = [
+    { label: "Destinations", value: destinations },
+    { label: "Stories", value: stories },
+    { label: "Events", value: events },
+    { label: "Passport members", value: users },
+    { label: "Newsletter subscribers", value: subscribers },
+  ];
+
+  return (
+    <div>
+      <h1 className="font-display text-3xl text-stone">Overview</h1>
+      <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        {stats.map((s) => (
+          <div key={s.label} className="rounded-sm border border-stone/10 p-5">
+            <p className="font-display text-3xl text-stone">{s.value}</p>
+            <p className="mt-1 font-body text-sm text-stone/60">{s.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

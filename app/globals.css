@@ -34,3 +34,17 @@ body {
   outline: 2px solid #A6431E;
   outline-offset: 3px;
 }
+
+.input {
+  border: 1px solid rgba(27, 24, 21, 0.2);
+  background-color: transparent;
+  border-radius: 2px;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-manrope), sans-serif;
+  font-size: 0.875rem;
+}
+
+.input:focus-visible {
+  outline: 2px solid #A6431E;
+  outline-offset: 2px;
+}
