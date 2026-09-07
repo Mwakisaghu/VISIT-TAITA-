@@ -1,66 +1,130 @@
-# Visit Taita — Phase 1 MVP Scaffold
+# Visit Taita — Phase 1 + Phase 2
 
 **More than a place.**
 
-This is a Phase 1 scaffold for Visit Taita, built from the master product
-brief: a Next.js (App Router) site with a cinematic homepage, a Discover
-section (six categories: Wild, Culture, Adventure, Food, Sport, People),
-an editorial Stories section, and an Events listing (Taita Cup / Taita
-Week / Taita Sound). It follows the brief's own phasing — Passport,
-membership, marketplace and bookings are intentionally out of scope for
-this phase (see **Roadmap** below).
+A Next.js (App Router) build of Visit Taita. Phase 1 covers the public
+site (homepage, Discover, Stories, Events). Phase 2 adds a real database,
+authentication, the Taita Passport (badges/points), and an admin CMS for
+managing Destinations, Stories and Events.
 
 ## Stack
 
 - **Next.js 14** (App Router) + **React 18** + **TypeScript**
-- **Tailwind CSS** with a custom Visit Taita design-token palette
-- **Fraunces** (editorial serif, headlines) + **Manrope** (body/UI), loaded via `next/font/google`
-- No database yet — content lives in `lib/data.ts` as typed, clearly-marked sample data (see **Content** below)
+- **Tailwind CSS** with the Visit Taita design-token palette (see below)
+- **PostgreSQL** + **Prisma** for data
+- **NextAuth** (credentials/email+password, JWT sessions) for auth
+- **Fraunces** + **Manrope** via `next/font/google`
 
 ## Getting started
 
+1. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+2. **Set up the database.** Copy `.env.example` to `.env` and point
+   `DATABASE_URL` at a PostgreSQL database (local, Docker, or a hosted
+   instance like Neon/Supabase/Railway). Generate `NEXTAUTH_SECRET` with
+   `openssl rand -base64 32`.
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Run migrations and seed sample data**
+
+   ```bash
+   npx prisma migrate dev --name init
+   npm run db:seed
+   ```
+
+   The seed script creates:
+   - 6 sample destinations, 3 sample stories, 3 sample events (all marked `isDemo: true`, same content as Phase 1)
+   - 8 Passport badges
+   - A demo admin account: `admin@visittaita.example` / `ChangeMe123!` — **change this password before deploying anywhere shared.**
+
+4. **Run the dev server**
+
+   ```bash
+   npm run dev
+   ```
+
+   Open http://localhost:3000. First run needs internet access to fetch
+   the Google Fonts (Fraunces, Manrope).
+
 ```bash
-npm install
-npm run dev
+npm run build       # production build
+npm run start       # serve the production build
+npx prisma studio   # browse/edit the database visually
 ```
 
-Open http://localhost:3000. Requires internet access on first build/dev
-run so Next.js can fetch the Google Fonts (Fraunces, Manrope) — if you're
-building somewhere offline, temporarily swap `next/font/google` in
-`app/layout.tsx` for a system font stack.
+## What's new in Phase 2
 
-```bash
-npm run build   # production build
-npm run start   # serve the production build
-```
+### Database (`prisma/schema.prisma`)
+Users (with roles), Destinations, Stories, Events, Badges, UserBadges,
+Visits, and Newsletter subscribers — all with audit timestamps. All
+public pages (homepage, Discover, Stories, Events, sitemap) now read
+live from Postgres via Prisma instead of the static file Phase 1 used.
 
-## Project structure
+### Authentication
+Email/password auth via NextAuth (`lib/auth.ts`), JWT sessions carrying
+`id` and `role`. `/register` creates a `MEMBER` account and signs the
+user in; `/login` signs an existing user in. The nav bar shows
+Sign in/out, a Passport link for any signed-in user, and an Admin link
+for admin-level roles.
 
-```
-app/
-  layout.tsx            Root layout — fonts, global metadata, nav/footer
-  page.tsx               Homepage
-  discover/page.tsx       Discover index (6 categories)
-  discover/[category]/    Category pages (wild, culture, adventure, food, sport, people)
-  stories/page.tsx        Stories index
-  stories/[slug]/         Story article template
-  events/page.tsx         Events listing
-  sitemap.ts, robots.ts   SEO
-  not-found.tsx           Branded 404
-components/               Nav, Footer, Hero, cards, section heading, newsletter
-lib/data.ts               Sample destinations, stories and events (typed)
-```
+Roles (`prisma/schema.prisma`, brief section 28): `SUPER_ADMIN`,
+`ADMIN`, `EDITOR`, `CONTENT_MANAGER`, `PARTNER`, `SELLER`,
+`EVENT_MANAGER`, `CREATOR`, `MEMBER`, `VISITOR`. Only the first four
+can reach `/admin` (enforced in `middleware.ts`); everything else is
+scaffolded in the schema for Phase 3 (partners, sellers, event
+managers, creators) but has no dedicated UI yet.
 
-## Content — read before publishing anything
+### Taita Passport (`/passport`)
+Signed-in users can mark destinations as visited. `lib/actions/passport.ts`
+awards badges automatically:
+- **Taita Explorer** — first visit of any kind
+- **Taita Wild / Culture / Trails / Taste / Sport** — first visit in that category
+- **Taita Insider** — visited destinations in 3+ categories
+- **Taita Legend** — visited every published destination
 
-Everything in `lib/data.ts` is placeholder content for layout and design
-review. Place names (Ngangao Forest, Lake Chala, Wundanyi, Sagalla Hill,
-Taita Hills Wildlife Sanctuary) are real, public geography — but
-descriptions, reading times, event dates and locations are **not
-verified** and are marked `isDemo: true`. Every page that renders sample
-content shows a small "Sample content for preview" note. Replace
-`lib/data.ts` with real, verified content (or wire it up to a CMS/database
-— see Roadmap) before this goes live.
+Points are 10 per visit, recalculated whenever a visit is toggled.
+
+### Admin CMS (`/admin`)
+Protected by `middleware.ts` (admin-level roles only). Overview page
+with content counts, plus full create/edit/delete for Destinations,
+Stories and Events via Server Actions (`lib/actions/admin.ts`) with
+`zod` validation. New content is marked `isDemo: false` automatically,
+so real content added through the CMS is distinguishable from the
+seeded sample data.
+
+### Newsletter
+The homepage signup form now posts to `/api/newsletter` and persists
+subscribers for real (`NewsletterSubscriber` model), instead of the
+Phase 1 placeholder that only prevented the default submit.
+
+## A note on this build environment
+
+This project was built and code-reviewed in a sandbox without network
+access to `binaries.prisma.sh`, so `npx prisma generate` couldn't
+download the query engine here — meaning the Phase 2 code could not be
+fully `next build`-verified end-to-end the way the Phase 1 scaffold
+was. The code follows standard, well-documented Prisma/NextAuth/Next.js
+App Router patterns throughout (schema relations, compound unique keys
+matching `@@unique` field order, server actions, `getServerSession`),
+and was reviewed carefully, but **run `npx prisma generate && npm run
+build` yourself after `npm install`** as a first step to catch anything
+sandbox verification could have missed.
+
+## Content
+
+Everything seeded is placeholder for layout/design review. Content
+added through the admin CMS is real by default (`isDemo: false`); only
+the seeded rows carry the "sample content" notice on public pages.
+Place names in the seed (Ngangao Forest, Lake Chala, Wundanyi, Sagalla
+Hill, Taita Hills Wildlife Sanctuary) are real, public geography —
+descriptions, reading times and event dates are not verified.
 
 ## Design tokens
 
@@ -73,29 +137,20 @@ content shows a small "Sample content for preview" note. Replace
 | Ochre | `#C99A3E` | Tertiary accent — hover states, badges |
 
 Fraunces carries headline personality (editorial, warm serif); Manrope
-handles body copy and UI so the display type stays the memorable
-element rather than competing with itself.
+handles body copy and UI.
 
-## Roadmap (per the master brief's own phasing)
+## Roadmap
 
-**Phase 1 (this scaffold):** homepage, destinations, stories, events,
-newsletter capture, SEO basics (sitemap/robots/OG/Twitter metadata),
-static sample content.
-
-**Phase 2:** Taita Passport (auth + badges + points), Taita Insider
-membership, Taita Made marketplace, experience/accommodation bookings,
-partner application workflow + partner dashboards, a real CMS/database
-(PostgreSQL + Prisma) behind `lib/data.ts`, admin dashboard with
-analytics.
-
-**Phase 3:** Taita Cup sports portal (fixtures/standings/tickets), Taita
-Week festival platform, sponsorship management, mobile app, loyalty
-integrations, payment integrations (M-Pesa + cards).
+**Phase 3 (not started):** Taita Cup sports portal (fixtures/standings/
+tickets), Taita Week festival platform, Taita Made marketplace,
+experience/accommodation bookings, partner application workflow +
+partner dashboards, sponsorship management, payment integrations
+(M-Pesa + cards), interactive map, mobile app.
 
 ## Not yet implemented
 
-- Newsletter form currently only prevents default submit — no email
-  provider wired up yet.
-- No CMS/admin, no database, no auth. Content is static/typed data.
-- No interactive map (Section 7 of the brief) yet — that's a
-  Phase 2/3 item once destination data is verified and structured.
+- No image upload — image fields are URLs (paste an image link).
+- No password reset / email verification flow.
+- No rich-text editor for story bodies — plain textarea.
+- No OAuth providers configured (Google/etc.) — credentials only for now, but NextAuth makes adding one straightforward.
+- No rate limiting on auth/newsletter endpoints yet.
