@@ -2,14 +2,20 @@ import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import EventStrip from "@/components/EventStrip";
 import DemoNotice from "@/components/DemoNotice";
-import { events } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Events",
   description: "Taita Cup, Taita Week and Taita Sound — what's on in Taita Taveta.",
 };
 
-export default function EventsPage() {
+export default async function EventsPage() {
+  const events = await prisma.event.findMany({
+    where: { status: "PUBLISHED" },
+    orderBy: { eventDate: "asc" },
+  });
+  const hasDemo = events.some((e) => e.isDemo);
+
   return (
     <div className="px-6 py-20">
       <div className="mx-auto max-w-3xl">
@@ -18,15 +24,21 @@ export default function EventsPage() {
           description="Taita Cup, Taita Week and Taita Sound, in one place."
         />
 
-        <div className="mt-10">
-          {events.map((event) => (
-            <EventStrip key={event.slug} event={event} />
-          ))}
-        </div>
+        {events.length > 0 ? (
+          <div className="mt-10">
+            {events.map((event) => (
+              <EventStrip key={event.slug} event={event} />
+            ))}
+          </div>
+        ) : (
+          <p className="mt-10 font-body text-stone/60">No events published yet.</p>
+        )}
 
-        <div className="mt-8">
-          <DemoNotice>sample fixtures — dates to be confirmed with organisers.</DemoNotice>
-        </div>
+        {hasDemo && (
+          <div className="mt-8">
+            <DemoNotice>sample fixtures — dates to be confirmed with organisers.</DemoNotice>
+          </div>
+        )}
       </div>
     </div>
   );

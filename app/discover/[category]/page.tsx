@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import SectionHeading from "@/components/SectionHeading";
 import DestinationCard from "@/components/DestinationCard";
 import DemoNotice from "@/components/DemoNotice";
-import { destinations, discoverCategories, type DiscoverCategory } from "@/lib/data";
+import { discoverCategories } from "@/lib/data";
+import { slugToCategory } from "@/lib/format";
+import { prisma } from "@/lib/prisma";
 
 export function generateStaticParams() {
   return discoverCategories.map((c) => ({ category: c.key }));
@@ -22,7 +24,7 @@ export function generateMetadata({
   };
 }
 
-export default function DiscoverCategoryPage({
+export default async function DiscoverCategoryPage({
   params,
 }: {
   params: { category: string };
@@ -30,9 +32,12 @@ export default function DiscoverCategoryPage({
   const cat = discoverCategories.find((c) => c.key === params.category);
   if (!cat) notFound();
 
-  const items = destinations.filter(
-    (d) => d.category === (params.category as DiscoverCategory)
-  );
+  const items = await prisma.destination.findMany({
+    where: { category: slugToCategory(params.category) as any, status: "PUBLISHED" },
+    orderBy: [{ featured: "desc" }, { name: "asc" }],
+  });
+
+  const hasDemo = items.some((d) => d.isDemo);
 
   return (
     <div className="px-6 py-20">
@@ -54,9 +59,11 @@ export default function DiscoverCategoryPage({
           </p>
         )}
 
-        <div className="mt-10">
-          <DemoNotice>place names are real, descriptions are placeholder.</DemoNotice>
-        </div>
+        {hasDemo && (
+          <div className="mt-10">
+            <DemoNotice>place names are real, descriptions are placeholder.</DemoNotice>
+          </div>
+        )}
       </div>
     </div>
   );

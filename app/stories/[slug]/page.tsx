@@ -2,18 +2,20 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import DemoNotice from "@/components/DemoNotice";
 import StoryCard from "@/components/StoryCard";
-import { stories } from "@/lib/data";
+import { categoryLabel } from "@/lib/format";
+import { prisma } from "@/lib/prisma";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const stories = await prisma.story.findMany({ select: { slug: true } });
   return stories.map((s) => ({ slug: s.slug }));
 }
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
-}): Metadata {
-  const story = stories.find((s) => s.slug === params.slug);
+}): Promise<Metadata> {
+  const story = await prisma.story.findUnique({ where: { slug: params.slug } });
   if (!story) return {};
   return {
     title: story.title,
@@ -22,16 +24,20 @@ export function generateMetadata({
   };
 }
 
-export default function StoryPage({ params }: { params: { slug: string } }) {
-  const story = stories.find((s) => s.slug === params.slug);
-  if (!story) notFound();
+export default async function StoryPage({ params }: { params: { slug: string } }) {
+  const story = await prisma.story.findUnique({ where: { slug: params.slug } });
+  if (!story || story.status !== "PUBLISHED") notFound();
 
-  const related = stories.filter((s) => s.slug !== story.slug).slice(0, 2);
+  const related = await prisma.story.findMany({
+    where: { status: "PUBLISHED", slug: { not: story.slug } },
+    take: 2,
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <article className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
-        <p className="font-body text-xs text-rust">{story.category}</p>
+        <p className="font-body text-xs text-rust">{categoryLabel(story.category)}</p>
         <h1 className="mt-3 font-display text-4xl text-stone sm:text-5xl">
           {story.title}
         </h1>
@@ -43,15 +49,21 @@ export default function StoryPage({ params }: { params: { slug: string } }) {
 
         <div className="mt-8 max-w-prose font-body text-lg leading-relaxed text-stone/85">
           <p>{story.excerpt}</p>
-          <p className="mt-6 text-stone/60">
-            Full story text will be added once the reporting for this piece is
-            complete. This placeholder holds the layout — hero image, byline,
-            reading time and related stories — so the editorial template can
-            be reviewed ahead of real content.
-          </p>
+          {story.body ? (
+            <p className="mt-6 whitespace-pre-line">{story.body}</p>
+          ) : (
+            <p className="mt-6 text-stone/60">
+              Full story text will be added once the reporting for this piece
+              is complete. This placeholder holds the layout — hero image,
+              byline, reading time and related stories — so the editorial
+              template can be reviewed ahead of real content.
+            </p>
+          )}
         </div>
 
-        <DemoNotice>placeholder article body, not a published story.</DemoNotice>
+        {story.isDemo && (
+          <DemoNotice>placeholder article body, not a published story.</DemoNotice>
+        )}
 
         {related.length > 0 && (
           <div className="mt-16 border-t border-stone/10 pt-10">

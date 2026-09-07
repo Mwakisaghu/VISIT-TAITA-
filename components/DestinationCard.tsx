@@ -1,10 +1,11 @@
 import Link from "next/link";
-import type { Destination } from "@/lib/data";
+import type { Destination } from "@prisma/client";
+import { categoryToSlug } from "@/lib/format";
 
 export default function DestinationCard({ destination }: { destination: Destination }) {
   return (
     <Link
-      href={`/discover/${destination.category}#${destination.slug}`}
+      href={`/discover/${categoryToSlug(destination.category)}#${destination.slug}`}
       className="focus-ring group block"
     >
       <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-stone/10">

@@ -1,9 +1,15 @@
 import type { MetadataRoute } from "next";
-import { destinations, stories, discoverCategories } from "@/lib/data";
+import { discoverCategories } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 
 const base = "https://visittaita.example";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const stories = await prisma.story.findMany({
+    where: { status: "PUBLISHED" },
+    select: { slug: true, updatedAt: true },
+  });
+
   const staticRoutes = ["", "/discover", "/stories", "/events"].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
@@ -16,7 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const storyRoutes = stories.map((s) => ({
     url: `${base}/stories/${s.slug}`,
-    lastModified: new Date(),
+    lastModified: s.updatedAt,
   }));
 
   return [...staticRoutes, ...categoryRoutes, ...storyRoutes];

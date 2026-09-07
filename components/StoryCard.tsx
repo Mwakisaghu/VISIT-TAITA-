@@ -1,5 +1,6 @@
 import Link from "next/link";
-import type { Story } from "@/lib/data";
+import type { Story } from "@prisma/client";
+import { categoryLabel } from "@/lib/format";
 
 export default function StoryCard({ story, size = "regular" }: { story: Story; size?: "regular" | "large" }) {
   return (
@@ -15,7 +16,7 @@ export default function StoryCard({ story, size = "regular" }: { story: Story; s
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
-      <p className="mt-4 font-body text-xs text-rust">{story.category}</p>
+      <p className="mt-4 font-body text-xs text-rust">{categoryLabel(story.category)}</p>
       <p className={`font-display text-stone ${size === "large" ? "text-3xl" : "text-xl"}`}>
         {story.title}
       </p>

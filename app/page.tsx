@@ -1,14 +1,29 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
 import SectionHeading from "@/components/SectionHeading";
-import DestinationCard from "@/components/DestinationCard";
 import StoryCard from "@/components/StoryCard";
 import EventStrip from "@/components/EventStrip";
 import Newsletter from "@/components/Newsletter";
 import DemoNotice from "@/components/DemoNotice";
-import { destinations, discoverCategories, stories, events } from "@/lib/data";
+import { discoverCategories } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [stories, events] = await Promise.all([
+    prisma.story.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+      take: 3,
+    }),
+    prisma.event.findMany({
+      where: { status: "PUBLISHED", eventDate: { gte: new Date() } },
+      orderBy: { eventDate: "asc" },
+      take: 3,
+    }),
+  ]);
+
+  const hasDemoStories = stories.some((s) => s.isDemo);
+
   return (
     <>
       <Hero />
@@ -38,52 +53,58 @@ export default function HomePage() {
       </section>
 
       {/* TAITA STORIES */}
-      <section className="bg-parchment-dim/40 px-6 py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex items-end justify-between gap-6">
-            <SectionHeading
-              title="Taita Stories"
-              description="The people, culture and places behind the postcard."
-            />
-            <Link
-              href="/stories"
-              className="focus-ring hidden shrink-0 rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust sm:inline-block"
-            >
-              All stories
-            </Link>
-          </div>
+      {stories.length > 0 && (
+        <section className="bg-parchment-dim/40 px-6 py-20">
+          <div className="mx-auto max-w-6xl">
+            <div className="flex items-end justify-between gap-6">
+              <SectionHeading
+                title="Taita Stories"
+                description="The people, culture and places behind the postcard."
+              />
+              <Link
+                href="/stories"
+                className="focus-ring hidden shrink-0 rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust sm:inline-block"
+              >
+                All stories
+              </Link>
+            </div>
 
-          <div className="mt-10 grid gap-10 md:grid-cols-3">
-            <div className="md:col-span-2">
-              <StoryCard story={stories[0]} size="large" />
+            <div className="mt-10 grid gap-10 md:grid-cols-3">
+              <div className="md:col-span-2">
+                <StoryCard story={stories[0]} size="large" />
+              </div>
+              <div className="flex flex-col gap-10">
+                {stories.slice(1).map((story) => (
+                  <StoryCard key={story.slug} story={story} />
+                ))}
+              </div>
             </div>
-            <div className="flex flex-col gap-10">
-              {stories.slice(1).map((story) => (
-                <StoryCard key={story.slug} story={story} />
-              ))}
-            </div>
+            {hasDemoStories && (
+              <DemoNotice>replace with verified stories before launch.</DemoNotice>
+            )}
           </div>
-          <DemoNotice>replace with verified stories before launch.</DemoNotice>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* THIS WEEK IN TAITA */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-3xl">
-          <SectionHeading title="This week in Taita" />
-          <div className="mt-8">
-            {events.map((event) => (
-              <EventStrip key={event.slug} event={event} />
-            ))}
+      {events.length > 0 && (
+        <section className="px-6 py-20">
+          <div className="mx-auto max-w-3xl">
+            <SectionHeading title="This week in Taita" />
+            <div className="mt-8">
+              {events.map((event) => (
+                <EventStrip key={event.slug} event={event} />
+              ))}
+            </div>
+            <Link
+              href="/events"
+              className="focus-ring mt-6 inline-block font-body text-sm text-rust hover:text-rust-deep"
+            >
+              See everything on
+            </Link>
           </div>
-          <Link
-            href="/events"
-            className="focus-ring mt-6 inline-block font-body text-sm text-rust hover:text-rust-deep"
-          >
-            See everything on
-          </Link>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* TAITA CUP teaser */}
       <section className="bg-canopy px-6 py-20 text-parchment">
@@ -105,8 +126,14 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl">
           <SectionHeading
             title="The Taita Passport"
-            description="Track what you've done, collect badges, and earn your way to Taita Legend status. Coming soon."
+            description="Track what you've done, collect badges, and earn your way to Taita Legend status."
           />
+          <Link
+            href="/register"
+            className="focus-ring mt-6 inline-block rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment hover:bg-rust-deep"
+          >
+            Start your Passport
+          </Link>
         </div>
       </section>
 

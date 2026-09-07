@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import SectionHeading from "@/components/SectionHeading";
-import { destinations, discoverCategories } from "@/lib/data";
+import { discoverCategories } from "@/lib/data";
+import { slugToCategory } from "@/lib/format";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Discover Taita",
@@ -9,7 +11,14 @@ export const metadata: Metadata = {
     "Wild, culture, adventure, food, sport and people — six ways into Taita Taveta, Kenya.",
 };
 
-export default function DiscoverIndexPage() {
+export default async function DiscoverIndexPage() {
+  const counts = await prisma.destination.groupBy({
+    by: ["category"],
+    where: { status: "PUBLISHED" },
+    _count: true,
+  });
+  const countByCategory = new Map(counts.map((c) => [c.category, c._count]));
+
   return (
     <div className="px-6 py-20">
       <div className="mx-auto max-w-6xl">
@@ -20,7 +29,7 @@ export default function DiscoverIndexPage() {
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {discoverCategories.map((cat) => {
-            const count = destinations.filter((d) => d.category === cat.key).length;
+            const count = countByCategory.get(slugToCategory(cat.key) as any) ?? 0;
             return (
               <Link
                 key={cat.key}
