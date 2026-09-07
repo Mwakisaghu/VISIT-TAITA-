@@ -1,0 +1,193 @@
+// Visit Taita — Phase 2 data model
+// Run `npx prisma migrate dev` after setting DATABASE_URL, then `npm run db:seed`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Auth / users
+// ---------------------------------------------------------------------------
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  CONTENT_MANAGER
+  PARTNER
+  SELLER
+  EVENT_MANAGER
+  CREATOR
+  MEMBER
+  VISITOR
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(VISITOR)
+  points       Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  visits      Visit[]
+  badges      UserBadge[]
+  storiesWritten     Story[]       @relation("StoryAuthor")
+  destinationsAdded  Destination[] @relation("DestinationCreatedBy")
+
+  @@index([role])
+}
+
+// ---------------------------------------------------------------------------
+// Content — Discover / destinations
+// ---------------------------------------------------------------------------
+
+enum DiscoverCategory {
+  WILD
+  CULTURE
+  ADVENTURE
+  FOOD
+  SPORT
+  PEOPLE
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model Destination {
+  id        String           @id @default(cuid())
+  slug      String           @unique
+  name      String
+  category  DiscoverCategory
+  region    String
+  blurb     String
+  image     String
+  status    ContentStatus    @default(DRAFT)
+  featured  Boolean          @default(false)
+  isDemo    Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  createdById String?
+  createdBy   User?   @relation("DestinationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  visits Visit[]
+
+  @@index([category, status])
+}
+
+// ---------------------------------------------------------------------------
+// Content — Stories (editorial)
+// ---------------------------------------------------------------------------
+
+enum StoryCategory {
+  PEOPLE
+  PLACES
+  CULTURE
+  SPORT
+  ADVENTURE
+}
+
+model Story {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  category    StoryCategory
+  excerpt     String
+  body        String        @default("")
+  readingTime String
+  image       String
+  status      ContentStatus @default(DRAFT)
+  featured    Boolean       @default(false)
+  isDemo      Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  authorId String?
+  author   User?   @relation("StoryAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([category, status])
+}
+
+// ---------------------------------------------------------------------------
+// Events
+// ---------------------------------------------------------------------------
+
+enum EventProgram {
+  TAITA_CUP
+  TAITA_WEEK
+  TAITA_SOUND
+}
+
+model Event {
+  id        String        @id @default(cuid())
+  slug      String        @unique
+  name      String
+  program   EventProgram
+  eventDate DateTime
+  location  String
+  blurb     String
+  status    ContentStatus @default(DRAFT)
+  isDemo    Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([program, eventDate])
+}
+
+// ---------------------------------------------------------------------------
+// Taita Passport — badges, points, visits
+// ---------------------------------------------------------------------------
+
+model Badge {
+  id          String @id @default(cuid())
+  key         String @unique // e.g. TAITA_WILD, TAITA_EXPLORER
+  label       String
+  description String
+  icon        String @default("🧭")
+
+  users UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge Badge @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+model Visit {
+  id            String   @id @default(cuid())
+  userId        String
+  destinationId String
+  visitedAt     DateTime @default(now())
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, destinationId])
+}
+
+// ---------------------------------------------------------------------------
+// Newsletter
+// ---------------------------------------------------------------------------
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
