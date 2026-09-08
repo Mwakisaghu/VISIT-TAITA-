@@ -1,11 +1,13 @@
-# Visit Taita — Phase 1 + Phase 2
+# Visit Taita — Phase 1 + 2 + 3
 
 **More than a place.**
 
 A Next.js (App Router) build of Visit Taita. Phase 1 covers the public
 site (homepage, Discover, Stories, Events). Phase 2 adds a real database,
 authentication, the Taita Passport (badges/points), and an admin CMS for
-managing Destinations, Stories and Events.
+managing Destinations, Stories and Events. Phase 3 adds the Taita Cup
+sports portal — teams, players, venues, fixtures, results and a
+computed standings table.
 
 ## Stack
 
@@ -42,6 +44,7 @@ managing Destinations, Stories and Events.
    The seed script creates:
    - 6 sample destinations, 3 sample stories, 3 sample events (all marked `isDemo: true`, same content as Phase 1)
    - 8 Passport badges
+   - 2 venues, 4 fictional Taita Cup clubs with rosters, and 8 fixtures (4 played, 4 upcoming) — see the Phase 3 section below
    - A demo admin account: `admin@visittaita.example` / `ChangeMe123!` — **change this password before deploying anywhere shared.**
 
 4. **Run the dev server**
@@ -104,6 +107,43 @@ The homepage signup form now posts to `/api/newsletter` and persists
 subscribers for real (`NewsletterSubscriber` model), instead of the
 Phase 1 placeholder that only prevented the default submit.
 
+## What's new in Phase 3 — Taita Cup
+
+A self-contained sports portal for the Taita Cup football tournament.
+
+### Public pages
+- **`/events/taita-cup`** — standings table, upcoming fixtures, recent
+  results, and a teams sidebar, under the "Come for the football. Stay
+  for Taita." banner
+- **`/events/taita-cup/teams/[slug]`** — a team's roster and full fixture list
+
+Both the homepage and `/events` link through to this section.
+
+### Standings
+`lib/cup.ts` computes the table on the fly from `FINISHED` fixtures
+(3 points for a win, 1 for a draw, sorted by points → goal difference →
+goals for) — there's no separate "standings" table in the database,
+so results are always consistent with the fixtures that produced them.
+
+### Admin CMS (`/admin/cup/...`)
+Full create/edit/delete for:
+- **Teams** — name, town, crest (emoji)
+- **Players** — name, position, squad number, assigned to a team
+- **Venues** — name, location, capacity, image
+- **Fixtures** — home/away team, venue, kickoff, round, status
+  (`SCHEDULED` / `LIVE` / `FINISHED` / `POSTPONED` / `CANCELLED`), and
+  scores once finished
+
+Server actions live in `lib/actions/cup.ts`, same pattern as
+`lib/actions/admin.ts` from Phase 2 (admin-only, `zod`-validated,
+`isDemo: false` on anything created through the CMS).
+
+### Data model additions
+`SportVenue`, `SportTeam`, `SportPlayer`, `SportFixture` — see
+`prisma/schema.prisma`. Fixtures require both a team pairing and a
+venue; deleting a venue that has fixtures is blocked (`onDelete:
+Restrict`) rather than silently orphaning results.
+
 ## A note on this build environment
 
 This project was built and code-reviewed in a sandbox without network
@@ -141,11 +181,11 @@ handles body copy and UI.
 
 ## Roadmap
 
-**Phase 3 (not started):** Taita Cup sports portal (fixtures/standings/
-tickets), Taita Week festival platform, Taita Made marketplace,
+**Not started:** Taita Week festival platform, Taita Made marketplace,
 experience/accommodation bookings, partner application workflow +
 partner dashboards, sponsorship management, payment integrations
-(M-Pesa + cards), interactive map, mobile app.
+(M-Pesa + cards), interactive map, mobile app, match reports/photos/video,
+ticketing and hospitality packages for Taita Cup.
 
 ## Not yet implemented
 
@@ -154,3 +194,4 @@ partner dashboards, sponsorship management, payment integrations
 - No rich-text editor for story bodies — plain textarea.
 - No OAuth providers configured (Google/etc.) — credentials only for now, but NextAuth makes adding one straightforward.
 - No rate limiting on auth/newsletter endpoints yet.
+- Taita Cup: no ticketing, no match reports, no live score updates (status/scores are set manually in the admin), no multi-season/tournament history — the schema assumes a single ongoing competition.
