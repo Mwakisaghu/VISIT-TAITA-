@@ -1,12 +1,14 @@
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminOverviewPage() {
-  const [destinations, stories, events, users, subscribers] = await Promise.all([
+  const [destinations, stories, events, users, subscribers, teams, fixtures] = await Promise.all([
     prisma.destination.count(),
     prisma.story.count(),
     prisma.event.count(),
     prisma.user.count(),
     prisma.newsletterSubscriber.count(),
+    prisma.sportTeam.count(),
+    prisma.sportFixture.count(),
   ]);
 
   const stats = [
@@ -15,6 +17,8 @@ export default async function AdminOverviewPage() {
     { label: "Events", value: events },
     { label: "Passport members", value: users },
     { label: "Newsletter subscribers", value: subscribers },
+    { label: "Cup teams", value: teams },
+    { label: "Cup fixtures", value: fixtures },
   ];
 
   return (

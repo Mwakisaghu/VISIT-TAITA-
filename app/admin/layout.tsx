@@ -5,6 +5,10 @@ const nav = [
   { href: "/admin/destinations", label: "Destinations" },
   { href: "/admin/stories", label: "Stories" },
   { href: "/admin/events", label: "Events" },
+  { href: "/admin/cup/teams", label: "Cup: Teams" },
+  { href: "/admin/cup/players", label: "Cup: Players" },
+  { href: "/admin/cup/fixtures", label: "Cup: Fixtures" },
+  { href: "/admin/cup/venues", label: "Cup: Venues" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
