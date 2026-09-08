@@ -5,12 +5,15 @@ import { prisma } from "@/lib/prisma";
 const base = "https://visittaita.example";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const stories = await prisma.story.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true, updatedAt: true },
-  });
+  const [stories, teams] = await Promise.all([
+    prisma.story.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    }),
+    prisma.sportTeam.findMany({ select: { slug: true, updatedAt: true } }),
+  ]);
 
-  const staticRoutes = ["", "/discover", "/stories", "/events"].map((path) => ({
+  const staticRoutes = ["", "/discover", "/stories", "/events", "/events/taita-cup"].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),
   }));
@@ -25,5 +28,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: s.updatedAt,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...storyRoutes];
+  const teamRoutes = teams.map((t) => ({
+    url: `${base}/events/taita-cup/teams/${t.slug}`,
+    lastModified: t.updatedAt,
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...storyRoutes, ...teamRoutes];
 }

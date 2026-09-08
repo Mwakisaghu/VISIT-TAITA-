@@ -118,6 +118,12 @@ export default async function HomePage() {
             Taita Cup brings teams, travel packages and match-day festivities
             to the hills every season.
           </p>
+          <Link
+            href="/events/taita-cup"
+            className="focus-ring mt-6 inline-block rounded-full border border-parchment/40 px-6 py-3 font-body text-sm text-parchment hover:border-ochre hover:text-ochre"
+          >
+            Standings & fixtures
+          </Link>
         </div>
       </section>
 
