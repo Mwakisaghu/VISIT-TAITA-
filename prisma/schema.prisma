@@ -1,4 +1,4 @@
-// Visit Taita — Phase 2 data model
+// Visit Taita — data model (Phase 2: users/auth, content, Passport. Phase 3: Taita Cup sports portal)
 // Run `npx prisma migrate dev` after setting DATABASE_URL, then `npm run db:seed`.
 
 generator client {
@@ -190,4 +190,87 @@ model NewsletterSubscriber {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Taita Cup — sports portal (teams, fixtures, standings)
+// ---------------------------------------------------------------------------
+
+enum FixtureStatus {
+  SCHEDULED
+  LIVE
+  FINISHED
+  POSTPONED
+  CANCELLED
+}
+
+model SportVenue {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  location  String
+  capacity  Int?
+  image     String
+  isDemo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  fixtures SportFixture[]
+
+  @@index([slug])
+}
+
+model SportTeam {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  town      String
+  crest     String
+  isDemo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  players      SportPlayer[]
+  homeFixtures SportFixture[] @relation("HomeTeam")
+  awayFixtures SportFixture[] @relation("AwayTeam")
+
+  @@index([slug])
+}
+
+model SportPlayer {
+  id        String   @id @default(cuid())
+  name      String
+  position  String
+  number    Int?
+  photo     String?
+  isDemo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teamId String
+  team   SportTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+}
+
+model SportFixture {
+  id        String        @id @default(cuid())
+  kickoff   DateTime
+  status    FixtureStatus @default(SCHEDULED)
+  homeScore Int?
+  awayScore Int?
+  round     String?
+  isDemo    Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  homeTeamId String
+  awayTeamId String
+  venueId    String
+
+  homeTeam SportTeam  @relation("HomeTeam", fields: [homeTeamId], references: [id], onDelete: Cascade)
+  awayTeam SportTeam  @relation("AwayTeam", fields: [awayTeamId], references: [id], onDelete: Cascade)
+  venue    SportVenue @relation(fields: [venueId], references: [id], onDelete: Restrict)
+
+  @@index([status, kickoff])
 }

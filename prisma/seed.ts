@@ -139,7 +139,98 @@ const badges = [
   { key: "TAITA_LEGEND", label: "Taita Legend", description: "Visited every published destination.", icon: "👑" },
 ];
 
+// ---------------------------------------------------------------------------
+// Taita Cup — fictional demo clubs, tied to real Taita Taveta towns.
+// Club names, rosters, venues and results are all invented for layout
+// purposes — replace before this represents a real tournament.
+// ---------------------------------------------------------------------------
+
+const venues = [
+  {
+    slug: "wundanyi-grounds",
+    name: "Wundanyi Grounds",
+    location: "Wundanyi",
+    capacity: 3000,
+    image: "https://images.unsplash.com/photo-1459865264687-595d652de67e?q=80&w=1200",
+  },
+  {
+    slug: "voi-stadium",
+    name: "Voi Stadium",
+    location: "Voi",
+    capacity: 5000,
+    image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=1200",
+  },
+  {
+    slug: "mwatate-community-ground",
+    name: "Mwatate Community Ground",
+    location: "Mwatate",
+    capacity: 2000,
+    image: "https://images.unsplash.com/photo-1518604666860-9ed391f76460?q=80&w=1200",
+  },
+  {
+    slug: "taveta-grounds",
+    name: "Taveta Grounds",
+    location: "Taveta",
+    capacity: 2500,
+    image: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?q=80&w=1200",
+  },
+];
+
+const teams = [
+  { slug: "wundanyi-hill-stars", name: "Wundanyi Hill Stars", town: "Wundanyi", crest: "⛰️" },
+  { slug: "voi-rangers", name: "Voi Rangers", town: "Voi", crest: "🦁" },
+  { slug: "mwatate-united", name: "Mwatate United", town: "Mwatate", crest: "🌾" },
+  { slug: "taveta-border-fc", name: "Taveta Border FC", town: "Taveta", crest: "🐘" },
+];
+
+const playersByTeam: Record<string, { name: string; position: string; number: number }[]> = {
+  "wundanyi-hill-stars": [
+    { name: "Brian Mwakio", position: "Goalkeeper", number: 1 },
+    { name: "Kevin Mwanjala", position: "Defender", number: 4 },
+    { name: "Dennis Mwakisha", position: "Midfielder", number: 8 },
+    { name: "Felix Mghoi", position: "Forward", number: 9 },
+  ],
+  "voi-rangers": [
+    { name: "Peter Kazungu", position: "Goalkeeper", number: 1 },
+    { name: "Josephat Mwakio", position: "Defender", number: 5 },
+    { name: "Alex Ngowa", position: "Midfielder", number: 10 },
+    { name: "Samuel Mwadime", position: "Forward", number: 11 },
+  ],
+  "mwatate-united": [
+    { name: "Elijah Mwanyumba", position: "Goalkeeper", number: 1 },
+    { name: "Victor Mwaguni", position: "Defender", number: 3 },
+    { name: "Collins Mwalongo", position: "Midfielder", number: 6 },
+    { name: "Brian Mwadime", position: "Forward", number: 7 },
+  ],
+  "taveta-border-fc": [
+    { name: "Moses Kilonzo", position: "Goalkeeper", number: 1 },
+    { name: "Daniel Mwang'ombe", position: "Defender", number: 2 },
+    { name: "Justus Mwakuwona", position: "Midfielder", number: 8 },
+    { name: "Erick Mwadali", position: "Forward", number: 9 },
+  ],
+};
+
+// [home, away, venue, daysFromNow, result]. Negative days = already played.
+const fixtures: {
+  home: string;
+  away: string;
+  venue: string;
+  days: number;
+  result?: [number, number];
+  round: string;
+}[] = [
+  { home: "wundanyi-hill-stars", away: "voi-rangers", venue: "wundanyi-grounds", days: -21, result: [2, 1], round: "Matchday 1" },
+  { home: "mwatate-united", away: "taveta-border-fc", venue: "mwatate-community-ground", days: -21, result: [1, 1], round: "Matchday 1" },
+  { home: "voi-rangers", away: "mwatate-united", venue: "voi-stadium", days: -7, result: [3, 0], round: "Matchday 2" },
+  { home: "taveta-border-fc", away: "wundanyi-hill-stars", venue: "taveta-grounds", days: -7, result: [0, 2], round: "Matchday 2" },
+  { home: "wundanyi-hill-stars", away: "mwatate-united", venue: "wundanyi-grounds", days: 7, round: "Matchday 3" },
+  { home: "taveta-border-fc", away: "voi-rangers", venue: "taveta-grounds", days: 7, round: "Matchday 3" },
+  { home: "voi-rangers", away: "wundanyi-hill-stars", venue: "voi-stadium", days: 21, round: "Matchday 4" },
+  { home: "mwatate-united", away: "taveta-border-fc", venue: "mwatate-community-ground", days: 21, round: "Matchday 4" },
+];
+
 async function main() {
+
   // Demo admin account — change this password immediately in any shared environment.
   const adminPasswordHash = await bcrypt.hash("ChangeMe123!", 10);
   const admin = await prisma.user.upsert({
@@ -185,11 +276,74 @@ async function main() {
     });
   }
 
+  // --- Taita Cup ---
+  for (const v of venues) {
+    await prisma.sportVenue.upsert({
+      where: { slug: v.slug },
+      update: v,
+      create: { ...v, isDemo: true },
+    });
+  }
+
+  const teamIdBySlug = new Map<string, string>();
+  for (const t of teams) {
+    const record = await prisma.sportTeam.upsert({
+      where: { slug: t.slug },
+      update: t,
+      create: { ...t, isDemo: true },
+    });
+    teamIdBySlug.set(t.slug, record.id);
+  }
+
+  for (const [teamSlug, roster] of Object.entries(playersByTeam)) {
+    const teamId = teamIdBySlug.get(teamSlug);
+    if (!teamId) continue;
+    const existing = await prisma.sportPlayer.findMany({ where: { teamId } });
+    if (existing.length > 0) continue; // avoid duplicating players on re-seed
+    for (const p of roster) {
+      await prisma.sportPlayer.create({ data: { ...p, teamId, isDemo: true } });
+    }
+  }
+
+  const venueIdBySlug = new Map(
+    (await prisma.sportVenue.findMany()).map((v) => [v.slug, v.id])
+  );
+
+  for (const f of fixtures) {
+    const homeTeamId = teamIdBySlug.get(f.home);
+    const awayTeamId = teamIdBySlug.get(f.away);
+    const venueId = venueIdBySlug.get(f.venue);
+    if (!homeTeamId || !awayTeamId || !venueId) continue;
+
+    const kickoff = new Date();
+    kickoff.setDate(kickoff.getDate() + f.days);
+
+    const existing = await prisma.sportFixture.findFirst({
+      where: { homeTeamId, awayTeamId, round: f.round },
+    });
+    if (existing) continue; // avoid duplicating fixtures on re-seed
+
+    await prisma.sportFixture.create({
+      data: {
+        homeTeamId,
+        awayTeamId,
+        venueId,
+        kickoff,
+        round: f.round,
+        status: f.result ? "FINISHED" : "SCHEDULED",
+        homeScore: f.result?.[0] ?? null,
+        awayScore: f.result?.[1] ?? null,
+        isDemo: true,
+      },
+    });
+  }
+
   console.log("Seed complete:");
   console.log(`  ${destinations.length} destinations`);
   console.log(`  ${stories.length} stories`);
   console.log(`  ${events.length} events`);
   console.log(`  ${badges.length} badges`);
+  console.log(`  ${venues.length} venues, ${teams.length} teams, ${fixtures.length} fixtures (Taita Cup)`);
   console.log(`  admin login: admin@visittaita.example / ChangeMe123!`);
 }
 
