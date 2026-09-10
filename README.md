@@ -6,8 +6,8 @@ A Next.js (App Router) build of Visit Taita. Phase 1 covers the public
 site (homepage, Discover, Stories, Events). Phase 2 adds a real database,
 authentication, the Taita Passport (badges/points), and an admin CMS for
 managing Destinations, Stories and Events. Phase 3 adds the Taita Cup
-sports portal — teams, players, venues, fixtures, results and a
-computed standings table.
+sports portal (teams, fixtures, standings) and the Taita Made
+marketplace (products, cart, checkout, orders).
 
 ## Stack
 
@@ -45,6 +45,7 @@ computed standings table.
    - 6 sample destinations, 3 sample stories, 3 sample events (all marked `isDemo: true`, same content as Phase 1)
    - 8 Passport badges
    - 2 venues, 4 fictional Taita Cup clubs with rosters, and 8 fixtures (4 played, 4 upcoming) — see the Phase 3 section below
+   - 6 sample Taita Made products across categories, all in stock
    - A demo admin account: `admin@visittaita.example` / `ChangeMe123!` — **change this password before deploying anywhere shared.**
 
 4. **Run the dev server**
@@ -144,6 +145,51 @@ Server actions live in `lib/actions/cup.ts`, same pattern as
 venue; deleting a venue that has fixtures is blocked (`onDelete:
 Restrict`) rather than silently orphaning results.
 
+## What's new in Phase 3 — Taita Made
+
+A working marketplace: browse, cart, checkout, and an admin side to
+manage products and orders. No payment gateway yet — orders are placed
+and then confirmed by phone (see Not yet implemented below).
+
+### Public pages
+- **`/shop`** — category filters + product grid
+- **`/shop/[category]`** — one category (clothing, art, crafts, food, home, books, photography, collectibles)
+- **`/shop/product/[slug]`** — product detail, add to cart or buy now
+- **`/shop/cart`** — cart contents, quantity adjust/remove, subtotal
+- **`/shop/checkout`** — fulfillment method (shipping/local pickup), phone, address; requires sign-in
+- **`/shop/orders/[id]`** — order confirmation, visible to the buyer or an admin
+
+The homepage and nav both link through to the shop; the nav shows a
+live cart item count.
+
+### Cart
+Client-side only (`components/marketplace/CartProvider.tsx`), a React
+Context persisted to `localStorage` under the key `taita-made-cart`.
+Nothing is written to the database until checkout — so the cart
+survives a page refresh but isn't shared across devices.
+
+### Checkout and orders
+`lib/actions/marketplace.ts`'s `placeOrder` action re-validates prices
+and stock server-side (never trusts the client-sent cart blindly),
+creates the `Order` + `OrderItem` rows and decrements inventory in a
+single Prisma transaction, then redirects to the confirmation page.
+Expected failures (out of stock, missing address, unavailable product)
+return `{ error }` instead of throwing, so the checkout form can show
+the message inline rather than crashing.
+
+### Admin CMS (`/admin/shop/...`)
+- **Products** — full create/edit/delete, with price (whole KES),
+  SKU, inventory, category, shipping/pickup toggles, featured flag
+- **Orders** — list with buyer contact info, itemized contents, and
+  an inline status dropdown (`PENDING` → `CONFIRMED` → `FULFILLED`,
+  or `CANCELLED`) that updates immediately without a page reload
+
+### Data model additions
+`Product`, `Order`, `OrderItem` — see `prisma/schema.prisma`. Prices
+are stored as whole KES integers (no decimals) to avoid float
+rounding; `OrderItem.unitPrice` snapshots the price at purchase time
+so later price changes don't rewrite order history.
+
 ## A note on this build environment
 
 This project was built and code-reviewed in a sandbox without network
@@ -181,11 +227,11 @@ handles body copy and UI.
 
 ## Roadmap
 
-**Not started:** Taita Week festival platform, Taita Made marketplace,
-experience/accommodation bookings, partner application workflow +
-partner dashboards, sponsorship management, payment integrations
-(M-Pesa + cards), interactive map, mobile app, match reports/photos/video,
-ticketing and hospitality packages for Taita Cup.
+**Not started:** Taita Week festival platform, experience/accommodation
+bookings, partner application workflow + partner dashboards,
+sponsorship management, payment integrations (M-Pesa + cards),
+interactive map, mobile app, match reports/photos/video, ticketing and
+hospitality packages for Taita Cup.
 
 ## Not yet implemented
 
@@ -195,3 +241,4 @@ ticketing and hospitality packages for Taita Cup.
 - No OAuth providers configured (Google/etc.) — credentials only for now, but NextAuth makes adding one straightforward.
 - No rate limiting on auth/newsletter endpoints yet.
 - Taita Cup: no ticketing, no match reports, no live score updates (status/scores are set manually in the admin), no multi-season/tournament history — the schema assumes a single ongoing competition.
+- Taita Made: no payment gateway — orders are placed unpaid and confirmed by phone; no seller-facing dashboard (only admins manage products/orders, even though the schema supports a `sellerId` per product and a `SELLER` role); no shipping cost calculation; no buyer-facing order history page (only the single order confirmation link).
