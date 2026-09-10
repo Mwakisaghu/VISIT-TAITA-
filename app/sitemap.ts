@@ -1,25 +1,36 @@
 import type { MetadataRoute } from "next";
-import { discoverCategories } from "@/lib/data";
+import { discoverCategories, shopCategories } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 
 const base = "https://visittaita.example";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [stories, teams] = await Promise.all([
+  const [stories, teams, products] = await Promise.all([
     prisma.story.findMany({
       where: { status: "PUBLISHED" },
       select: { slug: true, updatedAt: true },
     }),
     prisma.sportTeam.findMany({ select: { slug: true, updatedAt: true } }),
+    prisma.product.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    }),
   ]);
 
-  const staticRoutes = ["", "/discover", "/stories", "/events", "/events/taita-cup"].map((path) => ({
-    url: `${base}${path}`,
-    lastModified: new Date(),
-  }));
+  const staticRoutes = ["", "/discover", "/stories", "/events", "/events/taita-cup", "/shop"].map(
+    (path) => ({
+      url: `${base}${path}`,
+      lastModified: new Date(),
+    })
+  );
 
   const categoryRoutes = discoverCategories.map((c) => ({
     url: `${base}/discover/${c.key}`,
+    lastModified: new Date(),
+  }));
+
+  const shopCategoryRoutes = shopCategories.map((c) => ({
+    url: `${base}/shop/${c.key}`,
     lastModified: new Date(),
   }));
 
@@ -33,5 +44,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: t.updatedAt,
   }));
 
-  return [...staticRoutes, ...categoryRoutes, ...storyRoutes, ...teamRoutes];
+  const productRoutes = products.map((p) => ({
+    url: `${base}/shop/product/${p.slug}`,
+    lastModified: p.updatedAt,
+  }));
+
+  return [
+    ...staticRoutes,
+    ...categoryRoutes,
+    ...shopCategoryRoutes,
+    ...storyRoutes,
+    ...teamRoutes,
+    ...productRoutes,
+  ];
 }

@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { useCart } from "@/components/marketplace/CartProvider";
 
 const links = [
   { href: "/discover", label: "Discover" },
   { href: "/stories", label: "Stories" },
   { href: "/events", label: "Events" },
+  { href: "/shop", label: "Shop" },
 ];
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
@@ -15,6 +17,7 @@ const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
+  const { count } = useCart();
   const isAdmin = !!session && ADMIN_ROLES.includes(session.user.role);
 
   return (
@@ -47,6 +50,13 @@ export default function Nav() {
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
+          <Link
+            href="/shop/cart"
+            className="focus-ring rounded-sm transition-colors hover:text-ochre"
+            aria-label="Cart"
+          >
+            Cart{count > 0 ? ` (${count})` : ""}
+          </Link>
           {status === "authenticated" ? (
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -64,17 +74,22 @@ export default function Nav() {
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="focus-ring rounded-sm p-2 md:hidden"
-          aria-expanded={open}
-          aria-label="Toggle menu"
-        >
-          <span className="block h-0.5 w-6 bg-parchment" />
-          <span className="mt-1.5 block h-0.5 w-6 bg-parchment" />
-          <span className="mt-1.5 block h-0.5 w-4 bg-parchment" />
-        </button>
+        <div className="flex items-center gap-3 md:hidden">
+          <Link href="/shop/cart" className="focus-ring font-body text-sm" aria-label="Cart">
+            Cart{count > 0 ? ` (${count})` : ""}
+          </Link>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="focus-ring rounded-sm p-2"
+            aria-expanded={open}
+            aria-label="Toggle menu"
+          >
+            <span className="block h-0.5 w-6 bg-parchment" />
+            <span className="mt-1.5 block h-0.5 w-6 bg-parchment" />
+            <span className="mt-1.5 block h-0.5 w-4 bg-parchment" />
+          </button>
+        </div>
       </div>
 
       {open && (

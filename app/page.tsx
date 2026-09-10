@@ -5,11 +5,12 @@ import StoryCard from "@/components/StoryCard";
 import EventStrip from "@/components/EventStrip";
 import Newsletter from "@/components/Newsletter";
 import DemoNotice from "@/components/DemoNotice";
+import ProductCard from "@/components/marketplace/ProductCard";
 import { discoverCategories } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 
 export default async function HomePage() {
-  const [stories, events] = await Promise.all([
+  const [stories, events, products] = await Promise.all([
     prisma.story.findMany({
       where: { status: "PUBLISHED" },
       orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
@@ -19,6 +20,11 @@ export default async function HomePage() {
       where: { status: "PUBLISHED", eventDate: { gte: new Date() } },
       orderBy: { eventDate: "asc" },
       take: 3,
+    }),
+    prisma.product.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+      take: 4,
     }),
   ]);
 
@@ -126,6 +132,31 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* TAITA MADE */}
+      {products.length > 0 && (
+        <section className="px-6 py-20">
+          <div className="mx-auto max-w-6xl">
+            <div className="flex items-end justify-between gap-6">
+              <SectionHeading
+                title="Taita Made"
+                description="Clothing, art, crafts and food, made by people who call Taita home."
+              />
+              <Link
+                href="/shop"
+                className="focus-ring hidden shrink-0 rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust sm:inline-block"
+              >
+                Visit the shop
+              </Link>
+            </div>
+            <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
+              {products.map((p) => (
+                <ProductCard key={p.slug} product={p} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* PASSPORT teaser */}
       <section id="passport" className="px-6 py-20">
