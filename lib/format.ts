@@ -13,6 +13,13 @@ const CATEGORY_LABELS: Record<string, string> = {
   FOOD: "Food",
   SPORT: "Sport",
   PEOPLE: "People",
+  CLOTHING: "Clothing",
+  ART: "Art",
+  CRAFTS: "Crafts",
+  HOME: "Home",
+  BOOKS: "Books",
+  PHOTOGRAPHY: "Photography",
+  COLLECTIBLES: "Collectibles",
 };
 
 export function categoryLabel(category: string) {
@@ -35,4 +42,28 @@ export function formatEventDate(date: Date) {
     day: "numeric",
     month: "short",
   });
+}
+
+export function formatPrice(amountKes: number) {
+  return `KES ${amountKes.toLocaleString("en-KE")}`;
+}
+
+const ORDER_STATUS_LABELS: Record<string, string> = {
+  PENDING: "Pending",
+  CONFIRMED: "Confirmed",
+  FULFILLED: "Fulfilled",
+  CANCELLED: "Cancelled",
+};
+
+export function orderStatusLabel(status: string) {
+  return ORDER_STATUS_LABELS[status] ?? status;
+}
+
+const FULFILLMENT_LABELS: Record<string, string> = {
+  SHIPPING: "Shipping",
+  LOCAL_PICKUP: "Local pickup",
+};
+
+export function fulfillmentLabel(method: string) {
+  return FULFILLMENT_LABELS[method] ?? method;
 }
