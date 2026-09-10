@@ -229,6 +229,75 @@ const fixtures: {
   { home: "mwatate-united", away: "taveta-border-fc", venue: "mwatate-community-ground", days: 21, round: "Matchday 4" },
 ];
 
+const products = [
+  {
+    slug: "hand-carved-taita-walking-stick",
+    name: "Hand-Carved Walking Stick",
+    description: "A hill-wood walking stick carved by artisans in Wundanyi, each one slightly different.",
+    price: 1800,
+    image: "https://images.unsplash.com/photo-1622560480605-d83c853bc935?q=80&w=1200",
+    category: "CRAFTS" as const,
+    sku: "TM-CRAFT-001",
+    inventory: 12,
+    featured: true,
+  },
+  {
+    slug: "dawida-honey-500g",
+    name: "Dawida Wild Honey (500g)",
+    description: "Raw honey harvested from hives kept along the Ngangao forest edge.",
+    price: 900,
+    image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?q=80&w=1200",
+    category: "FOOD" as const,
+    sku: "TM-FOOD-001",
+    inventory: 30,
+    featured: true,
+  },
+  {
+    slug: "taita-hills-print",
+    name: "Taita Hills Fine Art Print",
+    description: "A signed A3 print of the hills at first light, shot on the Sagalla trail.",
+    price: 3500,
+    image: "https://images.unsplash.com/photo-1500534623283-312aade485b7?q=80&w=1200",
+    category: "PHOTOGRAPHY" as const,
+    sku: "TM-PHOTO-001",
+    inventory: 8,
+    featured: false,
+  },
+  {
+    slug: "wundanyi-woven-basket",
+    name: "Wundanyi Woven Basket",
+    description: "A market basket hand-woven from sisal, in the pattern Taita mothers have used for generations.",
+    price: 1200,
+    image: "https://images.unsplash.com/photo-1595341888016-a392ef81b7de?q=80&w=1200",
+    category: "HOME" as const,
+    sku: "TM-HOME-001",
+    inventory: 20,
+    featured: false,
+  },
+  {
+    slug: "taita-cup-supporters-scarf",
+    name: "Taita Cup Supporters Scarf",
+    description: "Wear your colours. A knit scarf in Taita Cup green and gold.",
+    price: 1500,
+    image: "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?q=80&w=1200",
+    category: "CLOTHING" as const,
+    sku: "TM-CLOTH-001",
+    inventory: 40,
+    featured: true,
+  },
+  {
+    slug: "taita-folktales-book",
+    name: "Taita Folktales — Collected Stories",
+    description: "A small-press collection of Taita oral stories, gathered and translated by local elders.",
+    price: 1100,
+    image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?q=80&w=1200",
+    category: "BOOKS" as const,
+    sku: "TM-BOOK-001",
+    inventory: 15,
+    featured: false,
+  },
+];
+
 async function main() {
 
   // Demo admin account — change this password immediately in any shared environment.
@@ -338,12 +407,21 @@ async function main() {
     });
   }
 
+  for (const p of products) {
+    await prisma.product.upsert({
+      where: { slug: p.slug },
+      update: { ...p, status: "PUBLISHED", sellerId: admin.id },
+      create: { ...p, status: "PUBLISHED", isDemo: true, sellerId: admin.id },
+    });
+  }
+
   console.log("Seed complete:");
   console.log(`  ${destinations.length} destinations`);
   console.log(`  ${stories.length} stories`);
   console.log(`  ${events.length} events`);
   console.log(`  ${badges.length} badges`);
   console.log(`  ${venues.length} venues, ${teams.length} teams, ${fixtures.length} fixtures (Taita Cup)`);
+  console.log(`  ${products.length} products (Taita Made)`);
   console.log(`  admin login: admin@visittaita.example / ChangeMe123!`);
 }
 

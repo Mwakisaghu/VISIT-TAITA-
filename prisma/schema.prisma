@@ -41,6 +41,8 @@ model User {
   badges      UserBadge[]
   storiesWritten     Story[]       @relation("StoryAuthor")
   destinationsAdded  Destination[] @relation("DestinationCreatedBy")
+  productsSold       Product[]     @relation("ProductsSold")
+  ordersPlaced       Order[]       @relation("OrdersPlaced")
 
   @@index([role])
 }
@@ -273,4 +275,91 @@ model SportFixture {
   venue    SportVenue @relation(fields: [venueId], references: [id], onDelete: Restrict)
 
   @@index([status, kickoff])
+}
+
+// ---------------------------------------------------------------------------
+// Taita Made — marketplace (products, orders)
+// ---------------------------------------------------------------------------
+
+enum ProductCategory {
+  CLOTHING
+  ART
+  CRAFTS
+  FOOD
+  HOME
+  BOOKS
+  PHOTOGRAPHY
+  COLLECTIBLES
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  FULFILLED
+  CANCELLED
+}
+
+enum FulfillmentMethod {
+  SHIPPING
+  LOCAL_PICKUP
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  name        String
+  description String
+  price       Int // whole KES, no decimals
+  image       String
+  category    ProductCategory
+  sku         String          @unique
+  inventory   Int             @default(0)
+  offersShipping   Boolean    @default(true)
+  offersPickup     Boolean    @default(true)
+  status      ContentStatus   @default(DRAFT)
+  featured    Boolean         @default(false)
+  isDemo      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  sellerId String?
+  seller   User?   @relation("ProductsSold", fields: [sellerId], references: [id], onDelete: SetNull)
+
+  orderItems OrderItem[]
+
+  @@index([category, status])
+}
+
+model Order {
+  id          String            @id @default(cuid())
+  orderNumber String            @unique
+  status      OrderStatus       @default(PENDING)
+  fulfillment FulfillmentMethod
+  address     String?
+  phone       String
+  totalAmount Int
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  buyerId String
+  buyer   User   @relation("OrdersPlaced", fields: [buyerId], references: [id], onDelete: Cascade)
+
+  items OrderItem[]
+
+  @@index([buyerId])
+  @@index([status])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  quantity  Int
+  unitPrice Int // snapshot of Product.price at order time
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
 }
