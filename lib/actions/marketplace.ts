@@ -91,6 +91,14 @@ export async function deleteProduct(id: string) {
   revalidatePath("/shop");
 }
 
+/** One-click approve for a partner-submitted draft — no need to open the full edit form. */
+export async function publishProduct(id: string) {
+  await requireAdmin();
+  await prisma.product.update({ where: { id }, data: { status: "PUBLISHED" } });
+  revalidatePath("/admin/shop/products");
+  revalidatePath("/shop");
+}
+
 // ---------------------------------------------------------------------------
 // Admin: orders
 // ---------------------------------------------------------------------------

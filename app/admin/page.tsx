@@ -1,19 +1,31 @@
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminOverviewPage() {
-  const [destinations, stories, events, users, subscribers, teams, fixtures, products, orders, pendingApplications] =
-    await Promise.all([
-      prisma.destination.count(),
-      prisma.story.count(),
-      prisma.event.count(),
-      prisma.user.count(),
-      prisma.newsletterSubscriber.count(),
-      prisma.sportTeam.count(),
-      prisma.sportFixture.count(),
-      prisma.product.count(),
-      prisma.order.count(),
-      prisma.partnerApplication.count({ where: { status: "PENDING" } }),
-    ]);
+  const [
+    destinations,
+    stories,
+    events,
+    users,
+    subscribers,
+    teams,
+    fixtures,
+    products,
+    orders,
+    pendingApplications,
+    pendingProducts,
+  ] = await Promise.all([
+    prisma.destination.count(),
+    prisma.story.count(),
+    prisma.event.count(),
+    prisma.user.count(),
+    prisma.newsletterSubscriber.count(),
+    prisma.sportTeam.count(),
+    prisma.sportFixture.count(),
+    prisma.product.count(),
+    prisma.order.count(),
+    prisma.partnerApplication.count({ where: { status: "PENDING" } }),
+    prisma.product.count({ where: { status: "DRAFT", seller: { role: "SELLER" } } }),
+  ]);
 
   const stats = [
     { label: "Destinations", value: destinations },
@@ -26,6 +38,7 @@ export default async function AdminOverviewPage() {
     { label: "Shop products", value: products },
     { label: "Shop orders", value: orders },
     { label: "Pending partner applications", value: pendingApplications },
+    { label: "Pending listing reviews", value: pendingProducts },
   ];
 
   return (
