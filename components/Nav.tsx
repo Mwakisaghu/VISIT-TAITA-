@@ -7,6 +7,7 @@ import { useCart } from "@/components/marketplace/CartProvider";
 
 const links = [
   { href: "/discover", label: "Discover" },
+  { href: "/map", label: "Map" },
   { href: "/stories", label: "Stories" },
   { href: "/events", label: "Events" },
   { href: "/shop", label: "Shop" },

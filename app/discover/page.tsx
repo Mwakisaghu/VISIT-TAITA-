@@ -22,10 +22,18 @@ export default async function DiscoverIndexPage() {
   return (
     <div className="px-6 py-20">
       <div className="mx-auto max-w-6xl">
-        <SectionHeading
-          title="Discover Taita"
-          description="Every place here belongs to one of six worlds. Pick a way in."
-        />
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <SectionHeading
+            title="Discover Taita"
+            description="Every place here belongs to one of six worlds. Pick a way in."
+          />
+          <Link
+            href="/map"
+            className="focus-ring rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust"
+          >
+            View on map
+          </Link>
+        </div>
 
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {discoverCategories.map((cat) => {
