@@ -76,9 +76,14 @@ live from Postgres via Prisma instead of the static file Phase 1 used.
 ### Authentication
 Email/password auth via NextAuth (`lib/auth.ts`), JWT sessions carrying
 `id` and `role`. `/register` creates a `MEMBER` account and signs the
-user in; `/login` signs an existing user in. The nav bar shows
-Sign in/out, a Passport link for any signed-in user, and an Admin link
-for admin-level roles.
+user in; `/login` signs an existing user in. There's a single sign-in
+flow for everyone (admins, sellers, and ordinary visitors all use the
+same `/login` form and the same session) — after signing in, `/login`
+checks the session role and sends the person somewhere useful:
+admin-level roles land on `/admin`, `SELLER` lands on `/partner`,
+everyone else lands on `/passport`. The nav bar similarly shows
+Sign in/out, a Passport link for any signed-in user, a Partner link for
+`SELLER`, and an Admin link for admin-level roles.
 
 Roles (`prisma/schema.prisma`, brief section 28): `SUPER_ADMIN`,
 `ADMIN`, `EDITOR`, `CONTENT_MANAGER`, `PARTNER`, `SELLER`,
@@ -229,8 +234,15 @@ listings:
   (`lib/actions/seller.ts`) — ownership is checked both in the page
   (so a seller can't even open another seller's edit form) and in the
   server action itself
-- New listings always save as `DRAFT` — an admin reviews and publishes
-  them from `/admin/shop/products`, same as any other product
+- New listings always save as `DRAFT` — an admin reviews and approves
+  them from `/admin/shop/products`, which shows a dedicated "Pending
+  partner review" section (drafts submitted by a `SELLER`-role user,
+  separated from ordinary admin-managed drafts) with a one-click
+  **Publish** button (`publishProduct` in `lib/actions/marketplace.ts`)
+  — no need to open the full edit form just to approve something.
+  Once published, a listing appears in `/shop/[category]` under
+  whichever category the partner chose. The admin overview page also
+  shows a live "Pending listing reviews" count.
 
 ### Data model additions
 `PartnerApplication` — see `prisma/schema.prisma`. `partnerType` covers
