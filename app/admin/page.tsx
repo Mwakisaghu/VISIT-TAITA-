@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminOverviewPage() {
-  const [destinations, stories, events, users, subscribers, teams, fixtures, products, orders] =
+  const [destinations, stories, events, users, subscribers, teams, fixtures, products, orders, pendingApplications] =
     await Promise.all([
       prisma.destination.count(),
       prisma.story.count(),
@@ -12,6 +12,7 @@ export default async function AdminOverviewPage() {
       prisma.sportFixture.count(),
       prisma.product.count(),
       prisma.order.count(),
+      prisma.partnerApplication.count({ where: { status: "PENDING" } }),
     ]);
 
   const stats = [
@@ -24,6 +25,7 @@ export default async function AdminOverviewPage() {
     { label: "Cup fixtures", value: fixtures },
     { label: "Shop products", value: products },
     { label: "Shop orders", value: orders },
+    { label: "Pending partner applications", value: pendingApplications },
   ];
 
   return (
