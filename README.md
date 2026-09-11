@@ -199,7 +199,10 @@ A public application workflow for businesses that want to work with
 Visit Taita, plus a self-service dashboard for approved sellers.
 
 ### Public pages
-- **`/partners`** — what partnering looks like, the partner types on offer
+- **`/partners`** — what partnering looks like, the partner types on
+  offer, and a directory of approved partners (business name, type,
+  their own description, website link — no contact details shown
+  publicly)
 - **`/partners/apply`** — the application form, plus a "check your
   application status" lookup by email on the same page (no login
   needed — applicants aren't necessarily registered users yet)

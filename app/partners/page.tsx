@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import SectionHeading from "@/components/SectionHeading";
+import PartnerCard from "@/components/partners/PartnerCard";
 import { partnerTypeLabel } from "@/lib/format";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "Partner with Visit Taita",
@@ -19,7 +21,12 @@ const partnerTypes = [
   "SPONSOR",
 ];
 
-export default function PartnersPage() {
+export default async function PartnersPage() {
+  const approvedPartners = await prisma.partnerApplication.findMany({
+    where: { status: "APPROVED" },
+    orderBy: { businessName: "asc" },
+  });
+
   return (
     <div className="px-6 py-20">
       <div className="mx-auto max-w-3xl">
@@ -61,6 +68,26 @@ export default function PartnersPage() {
           using the same page.
         </p>
       </div>
+
+      {approvedPartners.length > 0 && (
+        <div className="mx-auto mt-20 max-w-6xl">
+          <SectionHeading
+            title="Our partners"
+            description="The businesses already part of Visit Taita."
+          />
+          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {approvedPartners.map((p) => (
+              <PartnerCard
+                key={p.id}
+                businessName={p.businessName}
+                partnerType={p.partnerType}
+                message={p.message}
+                website={p.website}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
