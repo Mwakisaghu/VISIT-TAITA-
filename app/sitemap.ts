@@ -17,12 +17,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   ]);
 
-  const staticRoutes = ["", "/discover", "/stories", "/events", "/events/taita-cup", "/shop"].map(
-    (path) => ({
-      url: `${base}${path}`,
-      lastModified: new Date(),
-    })
-  );
+  const staticRoutes = [
+    "",
+    "/discover",
+    "/stories",
+    "/events",
+    "/events/taita-cup",
+    "/shop",
+    "/partners",
+    "/partners/apply",
+  ].map((path) => ({
+    url: `${base}${path}`,
+    lastModified: new Date(),
+  }));
 
   const categoryRoutes = discoverCategories.map((c) => ({
     url: `${base}/discover/${c.key}`,

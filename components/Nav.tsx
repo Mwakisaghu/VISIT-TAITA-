@@ -19,6 +19,7 @@ export default function Nav() {
   const { data: session, status } = useSession();
   const { count } = useCart();
   const isAdmin = !!session && ADMIN_ROLES.includes(session.user.role);
+  const isSeller = !!session && session.user.role === "SELLER";
 
   return (
     <header className="sticky top-0 z-50 bg-stone/95 backdrop-blur text-parchment">
@@ -40,6 +41,11 @@ export default function Nav() {
           {session && (
             <Link href="/passport" className="focus-ring rounded-sm transition-colors hover:text-ochre">
               Passport
+            </Link>
+          )}
+          {isSeller && (
+            <Link href="/partner" className="focus-ring rounded-sm transition-colors hover:text-ochre">
+              Partner
             </Link>
           )}
           {isAdmin && (
@@ -107,6 +113,11 @@ export default function Nav() {
           {session && (
             <Link href="/passport" onClick={() => setOpen(false)} className="focus-ring rounded-sm py-3">
               Passport
+            </Link>
+          )}
+          {isSeller && (
+            <Link href="/partner" onClick={() => setOpen(false)} className="focus-ring rounded-sm py-3">
+              Partner
             </Link>
           )}
           {isAdmin && (

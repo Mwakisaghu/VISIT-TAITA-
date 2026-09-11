@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const worlds = [
   "Taita Stories",
   "Taita Sport",
@@ -33,7 +35,11 @@ export default function Footer() {
           <div>
             <p className="font-body text-sm text-ochre">Get in touch</p>
             <ul className="mt-3 space-y-2 font-body text-sm">
-              <li>Partners &amp; sponsors</li>
+              <li>
+                <Link href="/partners" className="focus-ring hover:text-ochre">
+                  Partners &amp; sponsors
+                </Link>
+              </li>
               <li>Advertise with us</li>
               <li>Contact the team</li>
             </ul>
