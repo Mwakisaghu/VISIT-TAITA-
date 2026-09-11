@@ -74,6 +74,8 @@ model Destination {
   region    String
   blurb     String
   image     String
+  latitude  Float?
+  longitude Float?
   status    ContentStatus    @default(DRAFT)
   featured  Boolean          @default(false)
   isDemo    Boolean          @default(true)

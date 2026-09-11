@@ -14,6 +14,8 @@ const destinations = [
     blurb:
       "One of the last indigenous cloud forests of the Taita Hills, thick with mist, birdsong and species found nowhere else on Earth.",
     image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200",
+    latitude: -3.383,
+    longitude: 38.35,
     featured: true,
   },
   {
@@ -24,6 +26,8 @@ const destinations = [
     blurb:
       "A crater lake shared with Tanzania, its still turquoise water ringed by steep volcanic walls and quiet enough to hear your own footsteps.",
     image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1200",
+    latitude: -3.317,
+    longitude: 37.7,
     featured: false,
   },
   {
@@ -34,6 +38,8 @@ const destinations = [
     blurb:
       "The hill town at the heart of Taita life — markets, mist and a view over the plains that stretches all the way to Tsavo.",
     image: "https://images.unsplash.com/photo-1466442929976-97f336a657be?q=80&w=1200",
+    latitude: -3.398,
+    longitude: 38.36,
     featured: false,
   },
   {
@@ -44,6 +50,8 @@ const destinations = [
     blurb:
       "A steep trail rewarding early risers with a sunrise over Tsavo's red earth and, on a clear day, a glimpse of Kilimanjaro.",
     image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1200",
+    latitude: -3.45,
+    longitude: 38.55,
     featured: true,
   },
   {
@@ -54,6 +62,8 @@ const destinations = [
     blurb:
       "A private conservancy bordering Tsavo where elephant, buffalo and rare Hirola roam under the shadow of the hills.",
     image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=1200",
+    latitude: -3.43,
+    longitude: 38.5,
     featured: false,
   },
   {
@@ -64,6 +74,8 @@ const destinations = [
     blurb:
       "Home kitchens serving mukimo, matumbo and hill-grown bananas the way they've been cooked in Taita for generations.",
     image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200",
+    latitude: -3.396,
+    longitude: 38.362,
     featured: false,
   },
 ];
