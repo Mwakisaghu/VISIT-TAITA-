@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
+
+const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,7 +31,17 @@ export default function LoginPage() {
       setError("That email and password don't match an account.");
       return;
     }
-    router.push("/passport");
+
+    const session = await getSession();
+    const role = session?.user?.role;
+
+    if (role && ADMIN_ROLES.includes(role)) {
+      router.push("/admin");
+    } else if (role === "SELLER") {
+      router.push("/partner");
+    } else {
+      router.push("/passport");
+    }
     router.refresh();
   }
 
@@ -37,7 +49,7 @@ export default function LoginPage() {
     <div className="mx-auto flex max-w-sm flex-col px-6 py-24">
       <h1 className="font-display text-3xl text-stone">Sign in</h1>
       <p className="mt-2 font-body text-sm text-stone/60">
-        Access your Taita Passport.
+        Sign in to your Visit Taita account.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
