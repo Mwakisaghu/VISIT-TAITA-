@@ -298,6 +298,42 @@ const products = [
   },
 ];
 
+const partnerApplications = [
+  {
+    businessName: "Dawida Hill Lodge",
+    contactName: "Grace Mwakio",
+    email: "grace@dawidahilllodge.example",
+    phone: "+254712345001",
+    website: "https://dawidahilllodge.example",
+    partnerType: "ACCOMMODATION" as const,
+    message:
+      "We run a 12-room lodge overlooking Wundanyi and would like to be listed as an accommodation partner for visitors exploring the hills.",
+    status: "PENDING" as const,
+  },
+  {
+    businessName: "Taita Trail Guides",
+    contactName: "Peter Mwangeka",
+    email: "peter@taitatrailguides.example",
+    phone: "+254712345002",
+    website: "",
+    partnerType: "EXPERIENCE" as const,
+    message:
+      "Licensed hiking guides for Sagalla, Ngangao and the Dawida ridge trails. Would like to offer bookable guided hikes through the platform.",
+    status: "APPROVED" as const,
+  },
+  {
+    businessName: "Mama Chao's Kitchen",
+    contactName: "Alice Wanjala",
+    email: "alice@mamachaoskitchen.example",
+    phone: "+254712345003",
+    website: "",
+    partnerType: "FOOD" as const,
+    message:
+      "Home-style Taita cooking in Wundanyi town — mukimo, matumbo and hill-grown vegetables. Interested in being featured under Taita Taste.",
+    status: "PENDING" as const,
+  },
+];
+
 async function main() {
 
   // Demo admin account — change this password immediately in any shared environment.
@@ -415,6 +451,13 @@ async function main() {
     });
   }
 
+  const existingApplicationCount = await prisma.partnerApplication.count();
+  if (existingApplicationCount === 0) {
+    await prisma.partnerApplication.createMany({
+      data: partnerApplications.map((a) => ({ ...a, website: a.website || null })),
+    });
+  }
+
   console.log("Seed complete:");
   console.log(`  ${destinations.length} destinations`);
   console.log(`  ${stories.length} stories`);
@@ -422,6 +465,7 @@ async function main() {
   console.log(`  ${badges.length} badges`);
   console.log(`  ${venues.length} venues, ${teams.length} teams, ${fixtures.length} fixtures (Taita Cup)`);
   console.log(`  ${products.length} products (Taita Made)`);
+  console.log(`  ${partnerApplications.length} sample partner applications`);
   console.log(`  admin login: admin@visittaita.example / ChangeMe123!`);
 }
 

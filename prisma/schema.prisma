@@ -43,6 +43,7 @@ model User {
   destinationsAdded  Destination[] @relation("DestinationCreatedBy")
   productsSold       Product[]     @relation("ProductsSold")
   ordersPlaced       Order[]       @relation("OrdersPlaced")
+  applicationsReviewed PartnerApplication[] @relation("ApplicationsReviewed")
 
   @@index([role])
 }
@@ -362,4 +363,47 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@index([orderId])
+}
+
+// ---------------------------------------------------------------------------
+// Partner portal — applications
+// ---------------------------------------------------------------------------
+
+enum PartnerType {
+  ACCOMMODATION
+  EXPERIENCE
+  FOOD
+  TRANSPORT
+  CREATOR
+  SELLER
+  EVENT
+  SPONSOR
+}
+
+enum PartnerApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model PartnerApplication {
+  id          String                    @id @default(cuid())
+  businessName String
+  contactName String
+  email       String
+  phone       String
+  website     String?
+  partnerType PartnerType
+  message     String
+  status      PartnerApplicationStatus  @default(PENDING)
+  adminNotes  String?
+  createdAt   DateTime                  @default(now())
+  updatedAt   DateTime                  @updatedAt
+  reviewedAt  DateTime?
+
+  reviewedById String?
+  reviewedBy   User?   @relation("ApplicationsReviewed", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([email])
 }
