@@ -33,18 +33,24 @@ const destinationSchema = z.object({
   region: z.string().min(2),
   blurb: z.string().min(10),
   image: z.string().url(),
+  latitude: z.coerce.number().min(-90).max(90).optional(),
+  longitude: z.coerce.number().min(-180).max(180).optional(),
   status: z.enum(["DRAFT", "PUBLISHED"]),
   featured: z.coerce.boolean(),
 });
 
 export async function saveDestination(id: string | null, formData: FormData) {
   const user = await requireAdmin();
+  const rawLat = formData.get("latitude");
+  const rawLng = formData.get("longitude");
   const parsed = destinationSchema.parse({
     name: formData.get("name"),
     category: formData.get("category"),
     region: formData.get("region"),
     blurb: formData.get("blurb"),
     image: formData.get("image"),
+    latitude: rawLat ? rawLat : undefined,
+    longitude: rawLng ? rawLng : undefined,
     status: formData.get("status"),
     featured: formData.get("featured") === "on",
   });

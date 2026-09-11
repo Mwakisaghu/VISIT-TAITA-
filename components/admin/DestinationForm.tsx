@@ -46,6 +46,29 @@ export default function DestinationForm({ destination }: { destination?: Destina
         />
       </Field>
 
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Latitude (optional — for the map)">
+          <input
+            name="latitude"
+            type="number"
+            step="any"
+            defaultValue={destination?.latitude ?? undefined}
+            className="input"
+            placeholder="-3.40"
+          />
+        </Field>
+        <Field label="Longitude (optional — for the map)">
+          <input
+            name="longitude"
+            type="number"
+            step="any"
+            defaultValue={destination?.longitude ?? undefined}
+            className="input"
+            placeholder="38.35"
+          />
+        </Field>
+      </div>
+
       <Field label="Status">
         <select name="status" defaultValue={destination?.status ?? "DRAFT"} className="input">
           <option value="DRAFT">Draft</option>
