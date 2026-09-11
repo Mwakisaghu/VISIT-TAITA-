@@ -6,8 +6,9 @@ A Next.js (App Router) build of Visit Taita. Phase 1 covers the public
 site (homepage, Discover, Stories, Events). Phase 2 adds a real database,
 authentication, the Taita Passport (badges/points), and an admin CMS for
 managing Destinations, Stories and Events. Phase 3 adds the Taita Cup
-sports portal (teams, fixtures, standings) and the Taita Made
-marketplace (products, cart, checkout, orders).
+sports portal (teams, fixtures, standings), the Taita Made marketplace
+(products, cart, checkout, orders), and a partner application workflow
+with a self-service seller dashboard.
 
 ## Stack
 
@@ -46,6 +47,7 @@ marketplace (products, cart, checkout, orders).
    - 8 Passport badges
    - 2 venues, 4 fictional Taita Cup clubs with rosters, and 8 fixtures (4 played, 4 upcoming) — see the Phase 3 section below
    - 6 sample Taita Made products across categories, all in stock
+   - 3 sample partner applications (one pre-approved) — see the Partner Portal section below
    - A demo admin account: `admin@visittaita.example` / `ChangeMe123!` — **change this password before deploying anywhere shared.**
 
 4. **Run the dev server**
@@ -81,9 +83,10 @@ for admin-level roles.
 Roles (`prisma/schema.prisma`, brief section 28): `SUPER_ADMIN`,
 `ADMIN`, `EDITOR`, `CONTENT_MANAGER`, `PARTNER`, `SELLER`,
 `EVENT_MANAGER`, `CREATOR`, `MEMBER`, `VISITOR`. Only the first four
-can reach `/admin` (enforced in `middleware.ts`); everything else is
-scaffolded in the schema for Phase 3 (partners, sellers, event
-managers, creators) but has no dedicated UI yet.
+can reach `/admin` (enforced in `middleware.ts`). `SELLER` gets its own
+`/partner` dashboard (see the Partner Portal section below); `PARTNER`,
+`EVENT_MANAGER` and `CREATOR` remain scaffolded in the schema with no
+dedicated UI yet.
 
 ### Taita Passport (`/passport`)
 Signed-in users can mark destinations as visited. `lib/actions/passport.ts`
@@ -190,6 +193,49 @@ are stored as whole KES integers (no decimals) to avoid float
 rounding; `OrderItem.unitPrice` snapshots the price at purchase time
 so later price changes don't rewrite order history.
 
+## What's new in Phase 3 — Partner Portal
+
+A public application workflow for businesses that want to work with
+Visit Taita, plus a self-service dashboard for approved sellers.
+
+### Public pages
+- **`/partners`** — what partnering looks like, the partner types on offer
+- **`/partners/apply`** — the application form, plus a "check your
+  application status" lookup by email on the same page (no login
+  needed — applicants aren't necessarily registered users yet)
+
+### Admin review (`/admin/partners`)
+- List of applications with status badges, newest first
+- Detail page per application with the full message, status buttons
+  (`PENDING` / `APPROVED` / `REJECTED`, applied instantly via a small
+  client component — no page reload), and admin-only notes
+- **Grant seller access** — for `SELLER`-type applications only. Looks
+  up a Visit Taita account by the applicant's email and promotes it to
+  the `SELLER` role. This does not create an account or send an invite
+  — the applicant has to have registered first (see Not yet
+  implemented). Never downgrades an existing admin-level account.
+
+### Partner dashboard (`/partner`)
+Gated by role in `app/partner/layout.tsx` (signed-in `SELLER` or
+admin-level roles only — everyone else sees a friendly "apply to
+partner" prompt instead of a login wall). Sellers get a scoped view of
+the same Taita Made product tools from Phase 3, but locked to their own
+listings:
+- Dashboard summary — total / live / awaiting-review listing counts
+- Full create/edit/delete for their own products
+  (`lib/actions/seller.ts`) — ownership is checked both in the page
+  (so a seller can't even open another seller's edit form) and in the
+  server action itself
+- New listings always save as `DRAFT` — an admin reviews and publishes
+  them from `/admin/shop/products`, same as any other product
+
+### Data model additions
+`PartnerApplication` — see `prisma/schema.prisma`. `partnerType` covers
+the eight categories from the original brief (accommodation, experience,
+food, transport, creator, marketplace seller, event, sponsor); only
+`SELLER` has a working "grant access" path today, since that's the only
+partner type with a dashboard built so far.
+
 ## A note on this build environment
 
 This project was built and code-reviewed in a sandbox without network
@@ -228,10 +274,9 @@ handles body copy and UI.
 ## Roadmap
 
 **Not started:** Taita Week festival platform, experience/accommodation
-bookings, partner application workflow + partner dashboards,
-sponsorship management, payment integrations (M-Pesa + cards),
-interactive map, mobile app, match reports/photos/video, ticketing and
-hospitality packages for Taita Cup.
+bookings, sponsorship management, payment integrations (M-Pesa +
+cards), interactive map, mobile app, match reports/photos/video,
+ticketing and hospitality packages for Taita Cup.
 
 ## Not yet implemented
 
@@ -239,6 +284,7 @@ hospitality packages for Taita Cup.
 - No password reset / email verification flow.
 - No rich-text editor for story bodies — plain textarea.
 - No OAuth providers configured (Google/etc.) — credentials only for now, but NextAuth makes adding one straightforward.
-- No rate limiting on auth/newsletter endpoints yet.
+- No rate limiting on auth/newsletter/partner-application endpoints yet.
 - Taita Cup: no ticketing, no match reports, no live score updates (status/scores are set manually in the admin), no multi-season/tournament history — the schema assumes a single ongoing competition.
-- Taita Made: no payment gateway — orders are placed unpaid and confirmed by phone; no seller-facing dashboard (only admins manage products/orders, even though the schema supports a `sellerId` per product and a `SELLER` role); no shipping cost calculation; no buyer-facing order history page (only the single order confirmation link).
+- Taita Made: no payment gateway — orders are placed unpaid and confirmed by phone; no shipping cost calculation; no buyer-facing order history page (only the single order confirmation link).
+- Partner portal: no email notifications (applicants don't get an email when approved/rejected — they have to check `/partners/apply` themselves); no invite flow (an applicant must already have a Visit Taita account before "grant seller access" can promote them); only the `SELLER` partner type has a working dashboard — `ACCOMMODATION`, `EXPERIENCE`, `FOOD`, `TRANSPORT`, `CREATOR`, `EVENT` and `SPONSOR` applications can be reviewed and approved, but there's no dedicated tooling for them yet, since Visit Taita doesn't have accommodation/experience/event listing features built at all (those are still on the roadmap).
