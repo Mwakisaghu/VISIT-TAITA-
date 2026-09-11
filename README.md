@@ -48,6 +48,7 @@ with a self-service seller dashboard.
    - 2 venues, 4 fictional Taita Cup clubs with rosters, and 8 fixtures (4 played, 4 upcoming) — see the Phase 3 section below
    - 6 sample Taita Made products across categories, all in stock
    - 3 sample partner applications (one pre-approved) — see the Partner Portal section below
+   - All 6 sample destinations get approximate real-world coordinates, so `/map` isn't empty on first run
    - A demo admin account: `admin@visittaita.example` / `ChangeMe123!` — **change this password before deploying anywhere shared.**
 
 4. **Run the dev server**
@@ -251,6 +252,38 @@ food, transport, creator, marketplace seller, event, sponsor); only
 `SELLER` has a working "grant access" path today, since that's the only
 partner type with a dashboard built so far.
 
+## What's new in Phase 3 — Interactive Map
+
+**`/map`** — every published destination with coordinates, plotted on
+an OpenStreetMap-tiled Leaflet map, filterable by the same six Discover
+categories (toggle buttons above the map). Tap a pin for a photo,
+category, name, region, and a link through to its Discover page.
+
+No API key needed — this uses Leaflet + OpenStreetMap tiles rather than
+Mapbox or Google Maps, both of which require a billing-linked API key.
+Fine for this scale; if traffic grows, OSM's tile usage policy expects
+either self-hosted tiles or a paid tile provider (see
+[operations.osmfoundation.org/policies/tiles](https://operations.osmfoundation.org/policies/tiles/)).
+
+### Implementation note
+Leaflet touches `window`/`document` at import time, so it can't run
+server-side. `app/map/page.tsx` stays a Server Component (it's the one
+fetching destinations from Postgres) and renders
+`components/map/MapLoader.tsx` — a tiny Client Component whose only job
+is the `next/dynamic(..., { ssr: false })` import of
+`components/map/DestinationMap.tsx`. Next.js's App Router doesn't allow
+`ssr: false` inside a Server Component directly, so this split is
+required, not just tidiness.
+
+### Data model additions
+Optional `latitude`/`longitude` (`Float?`) on `Destination` — see
+`prisma/schema.prisma`. Only destinations with both set show up on the
+map; everything else still works exactly as before. Admins set these
+from the destination edit form in `/admin/destinations`. The seeded
+sample destinations have approximate real-world coordinates for their
+real place names, same caveat as their descriptions: illustrative, not
+verified.
+
 ## A note on this build environment
 
 This project was built and code-reviewed in a sandbox without network
@@ -290,8 +323,8 @@ handles body copy and UI.
 
 **Not started:** Taita Week festival platform, experience/accommodation
 bookings, sponsorship management, payment integrations (M-Pesa +
-cards), interactive map, mobile app, match reports/photos/video,
-ticketing and hospitality packages for Taita Cup.
+cards), mobile app, match reports/photos/video, ticketing and
+hospitality packages for Taita Cup.
 
 ## Not yet implemented
 
@@ -303,3 +336,4 @@ ticketing and hospitality packages for Taita Cup.
 - Taita Cup: no ticketing, no match reports, no live score updates (status/scores are set manually in the admin), no multi-season/tournament history — the schema assumes a single ongoing competition.
 - Taita Made: no payment gateway — orders are placed unpaid and confirmed by phone; no shipping cost calculation; no buyer-facing order history page (only the single order confirmation link).
 - Partner portal: no email notifications (applicants don't get an email when approved/rejected — they have to check `/partners/apply` themselves); no invite flow (an applicant must already have a Visit Taita account before "grant seller access" can promote them); only the `SELLER` partner type has a working dashboard — `ACCOMMODATION`, `EXPERIENCE`, `FOOD`, `TRANSPORT`, `CREATOR`, `EVENT` and `SPONSOR` applications can be reviewed and approved, but there's no dedicated tooling for them yet, since Visit Taita doesn't have accommodation/experience/event listing features built at all (those are still on the roadmap).
+- Map: only Destinations are mapped — Taita Cup venues, Taita Made sellers, and partner businesses don't have pins yet, even though some of those models could reasonably get coordinates later; no clustering (fine at today's scale, would matter once destinations number in the hundreds); no route/directions.
