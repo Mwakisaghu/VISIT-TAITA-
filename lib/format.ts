@@ -67,3 +67,28 @@ const FULFILLMENT_LABELS: Record<string, string> = {
 export function fulfillmentLabel(method: string) {
   return FULFILLMENT_LABELS[method] ?? method;
 }
+
+const PARTNER_TYPE_LABELS: Record<string, string> = {
+  ACCOMMODATION: "Accommodation",
+  EXPERIENCE: "Experience provider",
+  FOOD: "Food partner",
+  TRANSPORT: "Transport",
+  CREATOR: "Creator",
+  SELLER: "Marketplace seller",
+  EVENT: "Event partner",
+  SPONSOR: "Sponsor",
+};
+
+export function partnerTypeLabel(type: string) {
+  return PARTNER_TYPE_LABELS[type] ?? type;
+}
+
+const APPLICATION_STATUS_LABELS: Record<string, string> = {
+  PENDING: "Pending",
+  APPROVED: "Approved",
+  REJECTED: "Not approved",
+};
+
+export function applicationStatusLabel(status: string) {
+  return APPLICATION_STATUS_LABELS[status] ?? status;
+}
