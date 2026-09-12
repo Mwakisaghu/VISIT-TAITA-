@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   getOrderPaymentStatus,
   initiateMpesaPayment,
-  createStripeCheckoutSession,
+  createPesapalOrder,
 } from "@/lib/actions/payments";
 
 export default function PaymentStatusPoller({
@@ -61,7 +61,7 @@ export default function PaymentStatusPoller({
         }
         router.refresh();
       } else {
-        const result = await createStripeCheckoutSession(orderId);
+        const result = await createPesapalOrder(orderId);
         setRetrying(false);
         if (result?.error || !result?.url) {
           setRetryError(result?.error ?? "Could not start card payment.");

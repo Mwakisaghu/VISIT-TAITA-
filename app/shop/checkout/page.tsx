@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/components/marketplace/CartProvider";
 import { placeOrder } from "@/lib/actions/marketplace";
-import { initiateMpesaPayment, createStripeCheckoutSession } from "@/lib/actions/payments";
+import { initiateMpesaPayment, createPesapalOrder } from "@/lib/actions/payments";
 import { formatPrice } from "@/lib/format";
 
 export default function CheckoutPage() {
@@ -88,16 +88,16 @@ export default function CheckoutPage() {
       return;
     }
 
-    // CARD
-    const stripeResult = await createStripeCheckoutSession(orderId);
+    // CARD (via Pesapal)
+    const pesapalResult = await createPesapalOrder(orderId);
     setLoading(false);
-    if (stripeResult?.error || !stripeResult?.url) {
+    if (pesapalResult?.error || !pesapalResult?.url) {
       clear();
       router.push(`/shop/orders/${orderId}`);
       return;
     }
     clear();
-    window.location.href = stripeResult.url;
+    window.location.href = pesapalResult.url;
   }
 
   return (

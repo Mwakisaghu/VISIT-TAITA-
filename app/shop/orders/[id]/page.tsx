@@ -3,12 +3,26 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { syncPesapalOrderStatus } from "@/lib/actions/payments";
 import PaymentStatusPoller from "@/components/marketplace/PaymentStatusPoller";
 import { formatPrice, fulfillmentLabel, orderStatusLabel } from "@/lib/format";
 
-export default async function OrderConfirmationPage({ params }: { params: { id: string } }) {
+export default async function OrderConfirmationPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { OrderTrackingId?: string };
+}) {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
+
+  // Pesapal redirects the buyer's browser back here after checkout, with
+  // OrderTrackingId in the URL — but the redirect itself carries no status,
+  // so sync with Pesapal directly rather than waiting on the IPN alone.
+  if (searchParams.OrderTrackingId) {
+    await syncPesapalOrderStatus(searchParams.OrderTrackingId);
+  }
 
   const order = await prisma.order.findUnique({
     where: { id: params.id },
