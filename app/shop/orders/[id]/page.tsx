@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import PaymentStatusPoller from "@/components/marketplace/PaymentStatusPoller";
 import { formatPrice, fulfillmentLabel, orderStatusLabel } from "@/lib/format";
 
 export default async function OrderConfirmationPage({ params }: { params: { id: string } }) {
@@ -23,10 +24,20 @@ export default async function OrderConfirmationPage({ params }: { params: { id: 
     <div className="px-6 py-16">
       <div className="mx-auto max-w-lg">
         <p className="font-body text-sm text-rust">Order {order.orderNumber}</p>
-        <h1 className="mt-1 font-display text-3xl text-stone">Thank you.</h1>
+        <h1 className="mt-1 font-display text-3xl text-stone">
+          {order.paymentStatus === "PAID" ? "Thank you." : "Almost there."}
+        </h1>
         <p className="mt-2 font-body text-stone/70">
           Status: {orderStatusLabel(order.status)} · {fulfillmentLabel(order.fulfillment)}
         </p>
+
+        <div className="mt-4">
+          <PaymentStatusPoller
+            orderId={order.id}
+            status={order.paymentStatus}
+            paymentMethod={order.paymentMethod}
+          />
+        </div>
 
         <div className="mt-8 divide-y divide-stone/10 rounded-sm border border-stone/10 p-4">
           {order.items.map((item) => (

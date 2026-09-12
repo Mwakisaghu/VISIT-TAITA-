@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/components/marketplace/CartProvider";
 import { placeOrder } from "@/lib/actions/marketplace";
+import { initiateMpesaPayment, createStripeCheckoutSession } from "@/lib/actions/payments";
 import { formatPrice } from "@/lib/format";
 
 export default function CheckoutPage() {
@@ -14,6 +15,7 @@ export default function CheckoutPage() {
   const router = useRouter();
 
   const [fulfillment, setFulfillment] = useState<"SHIPPING" | "LOCAL_PICKUP">("LOCAL_PICKUP");
+  const [paymentMethod, setPaymentMethod] = useState<"MPESA" | "CARD">("MPESA");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [error, setError] = useState("");
@@ -54,6 +56,7 @@ export default function CheckoutPage() {
 
     const formData = new FormData();
     formData.set("fulfillment", fulfillment);
+    formData.set("paymentMethod", paymentMethod);
     formData.set("phone", phone);
     formData.set("address", address);
     formData.set(
@@ -61,17 +64,40 @@ export default function CheckoutPage() {
       JSON.stringify(items.map((i) => ({ productId: i.productId, quantity: i.quantity })))
     );
 
-    const result = await placeOrder(formData);
-
-    // A successful order calls redirect() inside the action, which throws a
-    // special Next.js redirect signal — execution only reaches here on error.
-    if (result?.error) {
-      setError(result.error);
+    const orderResult = await placeOrder(formData);
+    if (orderResult?.error || !orderResult?.orderId) {
+      setError(orderResult?.error ?? "Something went wrong placing your order.");
       setLoading(false);
       return;
     }
 
+    const orderId = orderResult.orderId;
+
+    if (paymentMethod === "MPESA") {
+      const mpesaResult = await initiateMpesaPayment(orderId);
+      setLoading(false);
+      if (mpesaResult?.error) {
+        // The order exists but payment couldn't be started — send them to
+        // the order page anyway, where they can retry.
+        clear();
+        router.push(`/shop/orders/${orderId}`);
+        return;
+      }
+      clear();
+      router.push(`/shop/orders/${orderId}`);
+      return;
+    }
+
+    // CARD
+    const stripeResult = await createStripeCheckoutSession(orderId);
+    setLoading(false);
+    if (stripeResult?.error || !stripeResult?.url) {
+      clear();
+      router.push(`/shop/orders/${orderId}`);
+      return;
+    }
     clear();
+    window.location.href = stripeResult.url;
   }
 
   return (
@@ -117,8 +143,32 @@ export default function CheckoutPage() {
             </label>
           </fieldset>
 
+          <fieldset className="flex flex-col gap-2">
+            <legend className="font-body text-sm text-stone/70">Payment</legend>
+            <label className="flex items-center gap-2 font-body text-sm">
+              <input
+                type="radio"
+                name="paymentMethod"
+                checked={paymentMethod === "MPESA"}
+                onChange={() => setPaymentMethod("MPESA")}
+              />
+              M-Pesa (STK push to your phone)
+            </label>
+            <label className="flex items-center gap-2 font-body text-sm">
+              <input
+                type="radio"
+                name="paymentMethod"
+                checked={paymentMethod === "CARD"}
+                onChange={() => setPaymentMethod("CARD")}
+              />
+              Card
+            </label>
+          </fieldset>
+
           <label className="flex flex-col gap-1">
-            <span className="font-body text-sm text-stone/70">Phone number</span>
+            <span className="font-body text-sm text-stone/70">
+              Phone number{paymentMethod === "MPESA" ? " (for the M-Pesa prompt)" : ""}
+            </span>
             <input
               type="tel"
               required
@@ -149,11 +199,17 @@ export default function CheckoutPage() {
             disabled={loading}
             className="focus-ring mt-2 rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment transition-colors hover:bg-rust-deep disabled:opacity-60"
           >
-            {loading ? "Placing order…" : `Place order — ${formatPrice(subtotal)}`}
+            {loading
+              ? paymentMethod === "MPESA"
+                ? "Sending M-Pesa prompt…"
+                : "Redirecting to card payment…"
+              : `Pay ${formatPrice(subtotal)}`}
           </button>
 
           <p className="text-center font-body text-xs text-stone/50">
-            No payment is collected online yet — orders are confirmed by phone.
+            {paymentMethod === "MPESA"
+              ? "You'll get an M-Pesa prompt on your phone to complete payment."
+              : "You'll be redirected to a secure card payment page."}
           </p>
         </form>
       </div>

@@ -124,6 +124,7 @@ const cartItemSchema = z.object({
 
 const checkoutSchema = z.object({
   fulfillment: z.enum(["SHIPPING", "LOCAL_PICKUP"]),
+  paymentMethod: z.enum(["MPESA", "CARD"]),
   phone: z.string().min(7),
   address: z.string().optional(),
   cart: z.array(cartItemSchema).min(1),
@@ -144,6 +145,7 @@ export async function placeOrder(formData: FormData) {
 
   const parseResult = checkoutSchema.safeParse({
     fulfillment: formData.get("fulfillment"),
+    paymentMethod: formData.get("paymentMethod"),
     phone: formData.get("phone"),
     address: formData.get("address") || undefined,
     cart,
@@ -190,6 +192,7 @@ export async function placeOrder(formData: FormData) {
         orderNumber,
         buyerId: session.user.id,
         fulfillment: parsed.fulfillment,
+        paymentMethod: parsed.paymentMethod,
         phone: parsed.phone,
         address: parsed.address,
         totalAmount,
@@ -209,5 +212,5 @@ export async function placeOrder(formData: FormData) {
 
   revalidatePath("/shop");
   revalidatePath("/admin/shop/orders");
-  redirect(`/shop/orders/${order.id}`);
+  return { orderId: order.id };
 }
