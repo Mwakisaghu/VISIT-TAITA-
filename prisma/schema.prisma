@@ -333,6 +333,19 @@ model Product {
   @@index([category, status])
 }
 
+enum PaymentMethod {
+  NONE
+  MPESA
+  CARD
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+  FAILED
+}
+
 model Order {
   id          String            @id @default(cuid())
   orderNumber String            @unique
@@ -344,6 +357,17 @@ model Order {
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
 
+  paymentMethod PaymentMethod @default(NONE)
+  paymentStatus PaymentStatus @default(UNPAID)
+  paidAt        DateTime?
+
+  mpesaCheckoutRequestId String?
+  mpesaMerchantRequestId String?
+  mpesaReceiptNumber     String?
+
+  stripeSessionId       String?
+  stripePaymentIntentId String?
+
   buyerId String
   buyer   User   @relation("OrdersPlaced", fields: [buyerId], references: [id], onDelete: Cascade)
 
@@ -351,6 +375,7 @@ model Order {
 
   @@index([buyerId])
   @@index([status])
+  @@index([paymentStatus])
 }
 
 model OrderItem {
