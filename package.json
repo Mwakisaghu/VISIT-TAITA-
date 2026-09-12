@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:seed": "tsx prisma/seed.ts"
+    "db:seed": "tsx prisma/seed.ts",
+    "pesapal:register-ipn": "tsx scripts/register-pesapal-ipn.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -21,7 +22,6 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-leaflet": "^4.2.1",
-    "stripe": "^22.6.2",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -31,6 +31,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
+    "dotenv": "^17.4.2",
     "postcss": "^8.4.39",
     "prisma": "^5.18.0",
     "tailwindcss": "^3.4.4",
