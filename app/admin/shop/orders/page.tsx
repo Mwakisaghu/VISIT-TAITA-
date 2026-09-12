@@ -25,6 +25,20 @@ export default async function AdminOrdersPage() {
                   {fulfillmentLabel(order.fulfillment)}
                   {order.address ? ` · ${order.address}` : ""}
                 </p>
+                <p className="mt-1 font-body text-xs">
+                  <span
+                    className={
+                      order.paymentStatus === "PAID"
+                        ? "text-canopy"
+                        : order.paymentStatus === "FAILED"
+                          ? "text-rust"
+                          : "text-stone/50"
+                    }
+                  >
+                    {order.paymentMethod === "NONE" ? "No payment method" : order.paymentMethod} ·{" "}
+                    {order.paymentStatus}
+                  </span>
+                </p>
               </div>
 
               <div className="flex items-center gap-3">
