@@ -7,8 +7,8 @@ site (homepage, Discover, Stories, Events). Phase 2 adds a real database,
 authentication, the Taita Passport (badges/points), and an admin CMS for
 managing Destinations, Stories and Events. Phase 3 adds the Taita Cup
 sports portal (teams, fixtures, standings), the Taita Made marketplace
-(products, cart, checkout, orders), and a partner application workflow
-with a self-service seller dashboard.
+with real M-Pesa and card payments, a partner application workflow with
+a self-service seller dashboard, and an interactive map.
 
 ## Stack
 
@@ -16,6 +16,8 @@ with a self-service seller dashboard.
 - **Tailwind CSS** with the Visit Taita design-token palette (see below)
 - **PostgreSQL** + **Prisma** for data
 - **NextAuth** (credentials/email+password, JWT sessions) for auth
+- **Leaflet** + OpenStreetMap for the interactive map
+- **M-Pesa (Daraja API)** and **Stripe** for payments
 - **Fraunces** + **Manrope** via `next/font/google`
 
 ## Getting started
@@ -156,17 +158,19 @@ Restrict`) rather than silently orphaning results.
 
 ## What's new in Phase 3 — Taita Made
 
-A working marketplace: browse, cart, checkout, and an admin side to
-manage products and orders. No payment gateway yet — orders are placed
-and then confirmed by phone (see Not yet implemented below).
+A working marketplace: browse, cart, checkout with real payments
+(M-Pesa or card), and an admin side to manage products and orders.
 
 ### Public pages
 - **`/shop`** — category filters + product grid
 - **`/shop/[category]`** — one category (clothing, art, crafts, food, home, books, photography, collectibles)
 - **`/shop/product/[slug]`** — product detail, add to cart or buy now
 - **`/shop/cart`** — cart contents, quantity adjust/remove, subtotal
-- **`/shop/checkout`** — fulfillment method (shipping/local pickup), phone, address; requires sign-in
-- **`/shop/orders/[id]`** — order confirmation, visible to the buyer or an admin
+- **`/shop/checkout`** — fulfillment method (shipping/local pickup),
+  payment method (M-Pesa or card), phone, address; requires sign-in
+- **`/shop/orders/[id]`** — order confirmation with live payment
+  status (polls while pending, offers a retry if payment failed),
+  visible to the buyer or an admin
 
 The homepage and nav both link through to the shop; the nav shows a
 live cart item count.
@@ -181,23 +185,91 @@ survives a page refresh but isn't shared across devices.
 `lib/actions/marketplace.ts`'s `placeOrder` action re-validates prices
 and stock server-side (never trusts the client-sent cart blindly),
 creates the `Order` + `OrderItem` rows and decrements inventory in a
-single Prisma transaction, then redirects to the confirmation page.
-Expected failures (out of stock, missing address, unavailable product)
-return `{ error }` instead of throwing, so the checkout form can show
-the message inline rather than crashing.
+single Prisma transaction. It no longer redirects on success — it
+returns the new order's id, and the checkout page then hands off to
+whichever payment method the buyer picked (see the Payments section
+below). Expected failures (out of stock, missing address, unavailable
+product) return `{ error }` instead of throwing, so the checkout form
+can show the message inline rather than crashing.
 
 ### Admin CMS (`/admin/shop/...`)
 - **Products** — full create/edit/delete, with price (whole KES),
   SKU, inventory, category, shipping/pickup toggles, featured flag
-- **Orders** — list with buyer contact info, itemized contents, and
-  an inline status dropdown (`PENDING` → `CONFIRMED` → `FULFILLED`,
-  or `CANCELLED`) that updates immediately without a page reload
+- **Orders** — list with buyer contact info, itemized contents,
+  payment method + status, and an inline order-status dropdown
+  (`PENDING` → `CONFIRMED` → `FULFILLED`, or `CANCELLED`) that updates
+  immediately without a page reload
 
 ### Data model additions
 `Product`, `Order`, `OrderItem` — see `prisma/schema.prisma`. Prices
 are stored as whole KES integers (no decimals) to avoid float
 rounding; `OrderItem.unitPrice` snapshots the price at purchase time
 so later price changes don't rewrite order history.
+
+## What's new in Phase 3 — Payments (M-Pesa & Cards)
+
+Real payment collection for Taita Made checkout — M-Pesa via
+Safaricom's Daraja API (STK push / "Lipa Na M-Pesa Online"), and cards
+via Stripe Checkout.
+
+### How it works
+1. Checkout creates the order first (`paymentStatus: UNPAID`), then
+   immediately starts a payment attempt for whichever method the buyer
+   chose.
+2. **M-Pesa**: `lib/actions/payments.ts`'s `initiateMpesaPayment` calls
+   `lib/mpesa.ts`, which authenticates with Daraja and triggers an STK
+   push to the buyer's phone. The order becomes `PENDING`. Safaricom
+   calls `POST /api/payments/mpesa/callback` with the final result —
+   that route marks the order `PAID` (saving the M-Pesa receipt
+   number) or `FAILED` (and restocks inventory).
+3. **Cards**: `createStripeCheckoutSession` creates a Stripe Checkout
+   Session and returns its URL; the buyer is redirected there. Stripe
+   calls `POST /api/payments/stripe/webhook` on completion or
+   expiry — same `PAID`/`FAILED` + restock handling, verified against
+   `STRIPE_WEBHOOK_SECRET` so the webhook can't be spoofed.
+4. The order confirmation page (`/shop/orders/[id]`) shows a
+   `PaymentStatusPoller` that checks payment status every few seconds
+   while `PENDING`, and offers a **Retry payment** button if `FAILED`
+   (which re-triggers the same STK push or creates a fresh Stripe
+   session, depending on the method originally chosen).
+
+Both webhook handlers are **idempotent** — they only act the first
+time an order transitions out of `PENDING`, since both Safaricom and
+Stripe can and do redeliver the same callback/event more than once.
+
+### Setup
+See `.env.example` for the full list. You'll need:
+- **`NEXT_PUBLIC_APP_URL`** — a real, internet-reachable HTTPS URL.
+  Neither Safaricom nor Stripe can call back to `localhost`; for local
+  development, run a tunnel (ngrok or similar) and point this at the
+  tunnel's HTTPS URL.
+- **M-Pesa**: a [Safaricom Developer](https://developer.safaricom.co.ke)
+  account, an app under Daraja for the "Lipa Na M-Pesa Online" (STK
+  push) product, and the sandbox shortcode/passkey it gives you.
+  `MPESA_CALLBACK_URL` should be `${NEXT_PUBLIC_APP_URL}/api/payments/mpesa/callback`.
+- **Stripe**: a Stripe account, its secret key, and a webhook endpoint
+  (Dashboard → Developers → Webhooks) pointed at
+  `${NEXT_PUBLIC_APP_URL}/api/payments/stripe/webhook`, listening for
+  `checkout.session.completed` and `checkout.session.expired`. Stripe
+  gives you the webhook's signing secret when you create it.
+
+**Kenya + Stripe caveat, worth knowing:** Stripe does not currently
+support Kenya as an account/payout country. A Kenya-domiciled business
+can't open a native Stripe account directly — you'd need an entity in
+a country Stripe does support, or a payments partner that provides
+one. This integration works correctly against any Stripe account, but
+if Visit Taita is operated purely from Kenya, a Kenya-focused
+processor (Flutterwave, Paystack — both support KES and, notably,
+M-Pesa too) may be more realistic for cards in practice than Stripe.
+Built against Stripe here because that's what was asked for; flagging
+this so it doesn't come as a surprise later.
+
+### Data model additions
+On `Order`: `paymentMethod` (`NONE` / `MPESA` / `CARD`),
+`paymentStatus` (`UNPAID` / `PENDING` / `PAID` / `FAILED`), `paidAt`,
+plus provider-specific fields (`mpesaCheckoutRequestId`,
+`mpesaMerchantRequestId`, `mpesaReceiptNumber`, `stripeSessionId`,
+`stripePaymentIntentId`).
 
 ## What's new in Phase 3 — Partner Portal
 
@@ -322,9 +394,8 @@ handles body copy and UI.
 ## Roadmap
 
 **Not started:** Taita Week festival platform, experience/accommodation
-bookings, sponsorship management, payment integrations (M-Pesa +
-cards), mobile app, match reports/photos/video, ticketing and
-hospitality packages for Taita Cup.
+bookings, sponsorship management, mobile app, match reports/photos/video,
+ticketing and hospitality packages for Taita Cup.
 
 ## Not yet implemented
 
@@ -334,6 +405,7 @@ hospitality packages for Taita Cup.
 - No OAuth providers configured (Google/etc.) — credentials only for now, but NextAuth makes adding one straightforward.
 - No rate limiting on auth/newsletter/partner-application endpoints yet.
 - Taita Cup: no ticketing, no match reports, no live score updates (status/scores are set manually in the admin), no multi-season/tournament history — the schema assumes a single ongoing competition.
-- Taita Made: no payment gateway — orders are placed unpaid and confirmed by phone; no shipping cost calculation; no buyer-facing order history page (only the single order confirmation link).
+- Taita Made: no shipping cost calculation; no buyer-facing order history page (only the single order confirmation link); inventory is decremented at order creation rather than on confirmed payment, so an abandoned/failed payment restocks correctly (handled) but a customer can in principle tie up stock for the minute or two a payment is pending.
 - Partner portal: no email notifications (applicants don't get an email when approved/rejected — they have to check `/partners/apply` themselves); no invite flow (an applicant must already have a Visit Taita account before "grant seller access" can promote them); only the `SELLER` partner type has a working dashboard — `ACCOMMODATION`, `EXPERIENCE`, `FOOD`, `TRANSPORT`, `CREATOR`, `EVENT` and `SPONSOR` applications can be reviewed and approved, but there's no dedicated tooling for them yet, since Visit Taita doesn't have accommodation/experience/event listing features built at all (those are still on the roadmap).
 - Map: only Destinations are mapped — Taita Cup venues, Taita Made sellers, and partner businesses don't have pins yet, even though some of those models could reasonably get coordinates later; no clustering (fine at today's scale, would matter once destinations number in the hundreds); no route/directions.
+- Payments: no refunds (would need a separate admin-triggered flow calling Safaricom's reversal API or Stripe's refund API — neither is built); no partial payments or M-Pesa Till/Buy Goods flow (only Paybill-style STK push); Stripe Checkout Sessions expire after 24 hours with no explicit reminder to the buyer.
