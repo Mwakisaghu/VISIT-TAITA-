@@ -365,8 +365,9 @@ model Order {
   mpesaMerchantRequestId String?
   mpesaReceiptNumber     String?
 
-  stripeSessionId       String?
-  stripePaymentIntentId String?
+  pesapalOrderTrackingId String?
+  pesapalMerchantReference String?
+  pesapalConfirmationCode  String?
 
   buyerId String
   buyer   User   @relation("OrdersPlaced", fields: [buyerId], references: [id], onDelete: Cascade)

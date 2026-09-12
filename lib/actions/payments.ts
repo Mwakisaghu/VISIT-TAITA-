@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { initiateStkPush } from "@/lib/mpesa";
-import { getStripeClient } from "@/lib/stripe";
+import { submitOrderRequest, getTransactionStatus } from "@/lib/pesapal";
 
 async function getOwnedOrder(orderId: string) {
   const session = await getServerSession(authOptions);
@@ -13,7 +13,7 @@ async function getOwnedOrder(orderId: string) {
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { items: { include: { product: true } } },
+    include: { items: { include: { product: true } }, buyer: true },
   });
   if (!order) return { error: "Order not found." } as const;
   if (order.buyerId !== session.user.id) return { error: "Order not found." } as const;
@@ -59,7 +59,8 @@ export async function initiateMpesaPayment(orderId: string) {
   }
 }
 
-export async function createStripeCheckoutSession(orderId: string) {
+/** Starts a Pesapal-hosted checkout (cards, plus M-Pesa/Airtel Money on Pesapal's own page). */
+export async function createPesapalOrder(orderId: string) {
   const result = await getOwnedOrder(orderId);
   if ("error" in result) return { error: result.error };
   const { order } = result;
@@ -73,23 +74,21 @@ export async function createStripeCheckoutSession(orderId: string) {
     return { error: "Payments are not fully configured (missing NEXT_PUBLIC_APP_URL)." };
   }
 
+  const [firstName, ...rest] = order.buyer.name.split(" ");
+
   try {
-    const stripe = getStripeClient();
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      payment_method_types: ["card"],
-      currency: "kes",
-      line_items: order.items.map((item) => ({
-        price_data: {
-          currency: "kes",
-          product_data: { name: item.product.name },
-          unit_amount: item.unitPrice * 100,
-        },
-        quantity: item.quantity,
-      })),
-      client_reference_id: order.id,
-      success_url: `${appUrl}/shop/orders/${order.id}?stripe=success`,
-      cancel_url: `${appUrl}/shop/orders/${order.id}?stripe=cancel`,
+    const submitted = await submitOrderRequest({
+      // Pesapal requires a unique merchant reference per attempt, not per
+      // order — a retried payment reuses the order id, so we suffix with a
+      // timestamp to keep each attempt distinct.
+      merchantReference: `${order.orderNumber}-${Date.now()}`,
+      amount: order.totalAmount,
+      description: `Visit Taita order ${order.orderNumber}`,
+      callbackUrl: `${appUrl}/shop/orders/${order.id}`,
+      email: order.buyer.email,
+      phone: order.phone,
+      firstName,
+      lastName: rest.join(" ") || firstName,
     });
 
     await prisma.order.update({
@@ -97,14 +96,52 @@ export async function createStripeCheckoutSession(orderId: string) {
       data: {
         paymentMethod: "CARD",
         paymentStatus: "PENDING",
-        stripeSessionId: session.id,
+        pesapalOrderTrackingId: submitted.order_tracking_id,
+        pesapalMerchantReference: submitted.merchant_reference,
       },
     });
 
-    return { url: session.url! };
+    return { url: submitted.redirect_url };
   } catch (err) {
     return { error: err instanceof Error ? err.message : "Could not start card checkout." };
   }
+}
+
+/**
+ * Fetches the latest status from Pesapal for an order's current tracking id
+ * and updates our record. Idempotent — only acts while still PENDING. Used
+ * by both the IPN webhook and the order confirmation page (Pesapal's
+ * callback redirect doesn't carry the status itself, so the page checks too
+ * rather than waiting on the IPN alone).
+ */
+export async function syncPesapalOrderStatus(orderTrackingId: string) {
+  const order = await prisma.order.findFirst({ where: { pesapalOrderTrackingId: orderTrackingId } });
+  if (!order) return;
+  if (order.paymentStatus !== "PENDING") return;
+
+  const result = await getTransactionStatus(orderTrackingId);
+
+  if (result.payment_status_description === "COMPLETED") {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: "PAID",
+        paidAt: new Date(),
+        pesapalConfirmationCode: result.confirmation_code,
+        status: order.status === "PENDING" ? "CONFIRMED" : order.status,
+      },
+    });
+    revalidatePath(`/shop/orders/${order.id}`);
+  } else if (
+    result.payment_status_description === "FAILED" ||
+    result.payment_status_description === "INVALID" ||
+    result.payment_status_description === "REVERSED"
+  ) {
+    await prisma.order.update({ where: { id: order.id }, data: { paymentStatus: "FAILED" } });
+    await restockOrderItems(order.id);
+    revalidatePath(`/shop/orders/${order.id}`);
+  }
+  // Any other status (e.g. still awaiting the customer) — leave as PENDING.
 }
 
 /** Lightweight status check for the confirmation page's polling. */
