@@ -92,7 +92,16 @@ export async function syncMpesaOrderStatus(orderId: string) {
       },
     });
     revalidatePath(`/shop/orders/${order.id}`);
-  } else if (result.ResultCode) {
+    return;
+  }
+
+  // Safaricom sometimes answers a still-unresolved query with a non-zero
+  // ResultCode whose description just says it's still processing — that is
+  // NOT a terminal failure, it means "ask again later." Only treat this as
+  // FAILED once the wording actually indicates a real, final outcome.
+  const desc = (result.ResultDesc || "").toLowerCase();
+  const stillPending = desc.includes("processing") || desc.includes("pending") || !result.ResultCode;
+  if (result.ResultCode && !stillPending) {
     await prisma.order.update({
       where: { id: order.id },
       data: { paymentStatus: "FAILED", paymentFailureReason: result.ResultDesc },
