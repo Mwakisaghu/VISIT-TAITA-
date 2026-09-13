@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { initiateStkPush } from "@/lib/mpesa";
+import { initiateStkPush, queryStkPushStatus } from "@/lib/mpesa";
 import { submitOrderRequest, getTransactionStatus, type PesapalTransactionStatus } from "@/lib/pesapal";
 
 async function getOwnedOrder(orderId: string) {
@@ -59,6 +59,46 @@ export async function initiateMpesaPayment(orderId: string) {
       data: { paymentStatus: "FAILED", paymentFailureReason: reason },
     });
     return { error: reason };
+  }
+}
+
+/**
+ * Fallback for when Safaricom's callback never arrives (documented by
+ * Safaricom as a real possibility, not just a sandbox quirk). Queries the
+ * STK push directly via CheckoutRequestID. Idempotent — only acts while
+ * still PENDING. A thrown error from the query itself means Safaricom
+ * doesn't have a final answer yet, so it's treated as "still pending"
+ * rather than a failure.
+ */
+export async function syncMpesaOrderStatus(orderId: string) {
+  const order = await prisma.order.findUnique({ where: { id: orderId } });
+  if (!order || order.paymentStatus !== "PENDING" || !order.mpesaCheckoutRequestId) return;
+
+  let result;
+  try {
+    result = await queryStkPushStatus(order.mpesaCheckoutRequestId);
+  } catch {
+    return; // Not resolved yet as far as Safaricom is concerned — try again later.
+  }
+
+  if (result.ResultCode === "0") {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: "PAID",
+        paidAt: new Date(),
+        paymentFailureReason: null,
+        status: order.status === "PENDING" ? "CONFIRMED" : order.status,
+      },
+    });
+    revalidatePath(`/shop/orders/${order.id}`);
+  } else if (result.ResultCode) {
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { paymentStatus: "FAILED", paymentFailureReason: result.ResultDesc },
+    });
+    await restockOrderItems(order.id);
+    revalidatePath(`/shop/orders/${order.id}`);
   }
 }
 
@@ -161,10 +201,29 @@ export async function syncPesapalOrderStatus(orderTrackingId: string) {
 }
 
 /** Lightweight status check for the confirmation page's polling. */
+/**
+ * Status check used by the confirmation page's polling. While an order is
+ * still PENDING, this actively re-checks with the provider first (M-Pesa
+ * query API, or Pesapal's transaction status) rather than only reading
+ * whatever the last webhook happened to write — so a missed callback
+ * doesn't leave the buyer stuck watching "Waiting..." forever.
+ */
 export async function getOrderPaymentStatus(orderId: string) {
   const result = await getOwnedOrder(orderId);
   if ("error" in result) return { error: result.error };
-  return { status: result.order.paymentStatus };
+  const { order } = result;
+
+  if (order.paymentStatus === "PENDING") {
+    if (order.paymentMethod === "MPESA" && order.mpesaCheckoutRequestId) {
+      await syncMpesaOrderStatus(orderId);
+    } else if (order.paymentMethod === "CARD" && order.pesapalOrderTrackingId) {
+      await syncPesapalOrderStatus(order.pesapalOrderTrackingId);
+    }
+    const fresh = await prisma.order.findUnique({ where: { id: orderId } });
+    return { status: fresh?.paymentStatus ?? order.paymentStatus };
+  }
+
+  return { status: order.paymentStatus };
 }
 
 /** Puts inventory back when a payment fails/expires after stock was already decremented at checkout. */

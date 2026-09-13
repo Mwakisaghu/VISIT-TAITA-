@@ -147,3 +147,55 @@ export function extractCallbackMetadata(items: StkCallbackMetadataItem[] = []) {
     phoneNumber: find("PhoneNumber") as number | undefined,
   };
 }
+
+export type StkQueryResult = {
+  ResponseCode: string;
+  ResponseDescription: string;
+  MerchantRequestID: string;
+  CheckoutRequestID: string;
+  ResultCode: string;
+  ResultDesc: string;
+};
+
+/**
+ * Safaricom's own guidance: the callback is not guaranteed to arrive (server
+ * load on either end, a dropped connection, etc). This queries the status of
+ * a specific STK push directly, as a fallback so an order doesn't stay stuck
+ * PENDING forever if the callback never shows up.
+ *
+ * While the transaction is still genuinely unresolved, Safaricom responds
+ * with an error (commonly errorCode 500.001.1001, "being processed") rather
+ * than a clean result — callers should treat a thrown error here as "still
+ * pending," not as a failure.
+ */
+export async function queryStkPushStatus(checkoutRequestId: string): Promise<StkQueryResult> {
+  const shortcode = process.env.MPESA_SHORTCODE;
+  const passkey = process.env.MPESA_PASSKEY;
+  if (!shortcode || !passkey) {
+    throw new Error("M-Pesa is not fully configured (missing shortcode/passkey).");
+  }
+
+  const token = await getAccessToken();
+  const ts = timestamp();
+  const password = Buffer.from(`${shortcode}${passkey}${ts}`).toString("base64");
+
+  const res = await fetch(`${BASE_URL}/mpesa/stkpushquery/v1/query`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      BusinessShortCode: shortcode,
+      Password: password,
+      Timestamp: ts,
+      CheckoutRequestID: checkoutRequestId,
+    }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.errorMessage || data.ResultDesc || "M-Pesa status query failed.");
+  }
+  return data as StkQueryResult;
+}
