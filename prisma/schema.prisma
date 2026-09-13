@@ -359,6 +359,7 @@ model Order {
 
   paymentMethod PaymentMethod @default(NONE)
   paymentStatus PaymentStatus @default(UNPAID)
+  paymentFailureReason String?
   paidAt        DateTime?
 
   mpesaCheckoutRequestId String?

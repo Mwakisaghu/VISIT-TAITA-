@@ -12,10 +12,12 @@ export default function PaymentStatusPoller({
   orderId,
   status,
   paymentMethod,
+  failureReason,
 }: {
   orderId: string;
   status: string;
   paymentMethod: string;
+  failureReason?: string | null;
 }) {
   const router = useRouter();
   const [retrying, setRetrying] = useState(false);
@@ -74,6 +76,9 @@ export default function PaymentStatusPoller({
     return (
       <div>
         <p className="font-body text-sm text-rust">Payment didn&apos;t go through.</p>
+        {failureReason && (
+          <p className="mt-1 font-body text-xs text-rust/80">{failureReason}</p>
+        )}
         <button
           type="button"
           onClick={handleRetry}

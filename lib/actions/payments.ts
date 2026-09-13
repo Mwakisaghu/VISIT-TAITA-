@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { initiateStkPush } from "@/lib/mpesa";
-import { submitOrderRequest, getTransactionStatus } from "@/lib/pesapal";
+import { submitOrderRequest, getTransactionStatus, type PesapalTransactionStatus } from "@/lib/pesapal";
 
 async function getOwnedOrder(orderId: string) {
   const session = await getServerSession(authOptions);
@@ -43,6 +43,7 @@ export async function initiateMpesaPayment(orderId: string) {
       data: {
         paymentMethod: "MPESA",
         paymentStatus: "PENDING",
+        paymentFailureReason: null,
         mpesaCheckoutRequestId: stk.CheckoutRequestID,
         mpesaMerchantRequestId: stk.MerchantRequestID,
       },
@@ -51,11 +52,13 @@ export async function initiateMpesaPayment(orderId: string) {
     revalidatePath(`/shop/orders/${order.id}`);
     return { success: true as const };
   } catch (err) {
+    const reason = err instanceof Error ? err.message : "M-Pesa request failed.";
+    console.error(`[mpesa] initiateStkPush failed for order ${order.orderNumber}:`, reason);
     await prisma.order.update({
       where: { id: order.id },
-      data: { paymentStatus: "FAILED" },
+      data: { paymentStatus: "FAILED", paymentFailureReason: reason },
     });
-    return { error: err instanceof Error ? err.message : "M-Pesa request failed." };
+    return { error: reason };
   }
 }
 
@@ -119,7 +122,13 @@ export async function syncPesapalOrderStatus(orderTrackingId: string) {
   if (!order) return;
   if (order.paymentStatus !== "PENDING") return;
 
-  const result = await getTransactionStatus(orderTrackingId);
+  let result: PesapalTransactionStatus;
+  try {
+    result = await getTransactionStatus(orderTrackingId);
+  } catch (err) {
+    console.error(`[pesapal] getTransactionStatus failed for order ${order.orderNumber}:`, err);
+    return;
+  }
 
   if (result.payment_status_description === "COMPLETED") {
     await prisma.order.update({
@@ -127,6 +136,7 @@ export async function syncPesapalOrderStatus(orderTrackingId: string) {
       data: {
         paymentStatus: "PAID",
         paidAt: new Date(),
+        paymentFailureReason: null,
         pesapalConfirmationCode: result.confirmation_code,
         status: order.status === "PENDING" ? "CONFIRMED" : order.status,
       },
@@ -137,7 +147,13 @@ export async function syncPesapalOrderStatus(orderTrackingId: string) {
     result.payment_status_description === "INVALID" ||
     result.payment_status_description === "REVERSED"
   ) {
-    await prisma.order.update({ where: { id: order.id }, data: { paymentStatus: "FAILED" } });
+    await prisma.order.update({
+      where: { id: order.id },
+      data: {
+        paymentStatus: "FAILED",
+        paymentFailureReason: `Pesapal: ${result.payment_status_description}`,
+      },
+    });
     await restockOrderItems(order.id);
     revalidatePath(`/shop/orders/${order.id}`);
   }

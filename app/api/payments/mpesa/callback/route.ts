@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       data: {
         paymentStatus: "PAID",
         paidAt: new Date(),
+        paymentFailureReason: null,
         mpesaReceiptNumber: meta.receiptNumber,
         status: order.status === "PENDING" ? "CONFIRMED" : order.status,
       },
@@ -42,7 +43,7 @@ export async function POST(request: Request) {
   } else {
     await prisma.order.update({
       where: { id: order.id },
-      data: { paymentStatus: "FAILED" },
+      data: { paymentStatus: "FAILED", paymentFailureReason: callback.ResultDesc },
     });
     await restockOrderItems(order.id);
   }

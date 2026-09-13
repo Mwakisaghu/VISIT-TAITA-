@@ -50,6 +50,7 @@ export default async function OrderConfirmationPage({
             orderId={order.id}
             status={order.paymentStatus}
             paymentMethod={order.paymentMethod}
+            failureReason={order.paymentFailureReason}
           />
         </div>
 

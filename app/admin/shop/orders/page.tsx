@@ -37,6 +37,7 @@ export default async function AdminOrdersPage() {
                   >
                     {order.paymentMethod === "NONE" ? "No payment method" : order.paymentMethod} ·{" "}
                     {order.paymentStatus}
+                    {order.paymentFailureReason ? ` — ${order.paymentFailureReason}` : ""}
                   </span>
                 </p>
               </div>
