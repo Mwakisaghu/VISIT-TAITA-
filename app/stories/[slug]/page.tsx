@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import DemoNotice from "@/components/DemoNotice";
 import StoryCard from "@/components/StoryCard";
 import { categoryLabel } from "@/lib/format";
@@ -24,6 +25,8 @@ export async function generateMetadata({
   };
 }
 
+export const revalidate = 60;
+
 export default async function StoryPage({ params }: { params: { slug: string } }) {
   const story = await prisma.story.findUnique({ where: { slug: params.slug } });
   if (!story || story.status !== "PUBLISHED") notFound();
@@ -44,7 +47,15 @@ export default async function StoryPage({ params }: { params: { slug: string } }
         <p className="mt-4 font-body text-sm text-stone/60">{story.readingTime}</p>
 
         <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-sm">
-          <img src={story.image} alt={story.title} className="h-full w-full object-cover" />
+          <Image
+            src={story.image}
+            alt={story.title}
+            fill
+            unoptimized
+            priority
+            sizes="(min-width: 768px) 768px, 100vw"
+            className="object-cover"
+          />
         </div>
 
         <div className="mt-8 max-w-prose font-body text-lg leading-relaxed text-stone/85">

@@ -89,6 +89,13 @@ export default function DestinationMap({ destinations }: { destinations: MapDest
             <Marker key={d.id} position={[d.latitude, d.longitude]} icon={markerIcon}>
               <Popup>
                 <div className="w-48">
+                  {/* Plain <img>, deliberately not next/image: this renders
+                      inside a Leaflet-managed popup container outside
+                      normal document flow, whose size Leaflet computes
+                      itself — next/image's fill layout needs a sized
+                      parent it can trust, which isn't a safe assumption
+                      here. It's a small thumbnail; the tradeoff isn't
+                      worth the risk of breaking popup layout. */}
                   <img src={d.image} alt={d.name} className="h-24 w-full rounded-sm object-cover" />
                   <p className="mt-2 text-xs text-rust">{categoryLabel(d.category)}</p>
                   <p className="font-semibold">{d.name}</p>

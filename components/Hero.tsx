@@ -1,12 +1,16 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Hero() {
   return (
     <section className="relative flex h-[92vh] min-h-[560px] items-end overflow-hidden bg-stone">
-      <img
+      <Image
         src="https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=2000"
         alt="Sunrise over the Taita Hills, seen from a ridge trail"
-        className="absolute inset-0 h-full w-full object-cover opacity-70"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover opacity-70"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-stone via-stone/20 to-transparent" />
 

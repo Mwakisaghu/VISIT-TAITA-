@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   description: "Teams, fixtures, results and standings for the Taita Cup.",
 };
 
+export const revalidate = 60;
+
 export default async function TaitaCupPage() {
   const [standings, upcoming, results, teams] = await Promise.all([
     getStandings(),

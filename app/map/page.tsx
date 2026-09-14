@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "An interactive map of Taita Taveta — wildlife, culture, adventure, food, sport and people.",
 };
 
+export const revalidate = 120;
+
 export default async function MapPage() {
   const destinations = await prisma.destination.findMany({
     where: {

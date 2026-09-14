@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useCart } from "@/components/marketplace/CartProvider";
 import { formatPrice } from "@/lib/format";
@@ -31,8 +32,8 @@ export default function CartPage() {
         <div className="mt-8 divide-y divide-stone/10">
           {items.map((item) => (
             <div key={item.productId} className="flex items-center gap-4 py-5">
-              <div className="h-20 w-20 shrink-0 overflow-hidden rounded-sm bg-stone/10">
-                <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+              <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-sm bg-stone/10">
+                <Image src={item.image} alt={item.name} fill unoptimized sizes="80px" className="object-cover" />
               </div>
               <div className="flex-1">
                 <Link href={`/shop/product/${item.slug}`} className="focus-ring font-display text-lg text-stone">

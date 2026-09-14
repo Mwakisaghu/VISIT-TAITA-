@@ -20,6 +20,8 @@ export async function generateMetadata({
   return { title: team.name };
 }
 
+export const revalidate = 60;
+
 export default async function TeamPage({ params }: { params: { slug: string } }) {
   const team = await prisma.sportTeam.findUnique({
     where: { slug: params.slug },

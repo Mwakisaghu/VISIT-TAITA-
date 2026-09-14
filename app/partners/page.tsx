@@ -21,6 +21,8 @@ const partnerTypes = [
   "SPONSOR",
 ];
 
+export const revalidate = 120;
+
 export default async function PartnersPage() {
   const approvedPartners = await prisma.partnerApplication.findMany({
     where: { status: "APPROVED" },
