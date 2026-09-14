@@ -10,6 +10,8 @@ export const metadata: Metadata = {
   description: "Taita Cup, Taita Week and Taita Sound — what's on in Taita Taveta.",
 };
 
+export const revalidate = 60;
+
 export default async function EventsPage() {
   const events = await prisma.event.findMany({
     where: { status: "PUBLISHED" },

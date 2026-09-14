@@ -1,0 +1,68 @@
+language: "en-US"
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  sequence_diagrams: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+
+  path_filters:
+    - "!**/package-lock.json"
+    - "!**/*.lock"
+    - "!**/dev.db"
+
+  path_instructions:
+    - path: "app/api/payments/**"
+      instructions: >
+        These are payment webhook/callback handlers (M-Pesa Daraja, Pesapal
+        IPN). Check specifically for: idempotency (an order transition out
+        of PENDING must only be actioned once, since providers redeliver
+        callbacks); that amounts are never trusted from the incoming
+        payload and are instead recomputed or matched against the stored
+        Order; that a failed/reversed payment restocks inventory; and that
+        the handler always returns the response shape the provider expects,
+        even on internal error, so the provider doesn't retry indefinitely.
+
+    - path: "lib/actions/**"
+      instructions: >
+        These are Next.js Server Actions. Every action that reads or
+        mutates data scoped to a specific user (orders, seller listings,
+        partner applications) must verify the session and check ownership
+        or role before proceeding — flag any action missing this. Flag
+        Zod schemas that don't cover every field read from the incoming
+        FormData. Flag any function that returns a raw internal error
+        object/union instead of a clean `{ error: string }` shape, since
+        that has caused real type leakage bugs in this codebase before.
+
+    - path: "prisma/schema.prisma"
+      instructions: >
+        Flag any field/model rename or removal that would require a
+        destructive migration against existing data. Flag new required
+        (non-optional, no default) fields added to a model that already
+        has rows in production, since that migration would fail. Prefer
+        optional fields or defaults for additive changes.
+
+    - path: "components/**/*.tsx"
+      instructions: >
+        Flag any Client Component ("use client") that imports a
+        browser-only library (touches window/document at module scope,
+        e.g. Leaflet) without being loaded via next/dynamic with
+        ssr:false from a Server Component boundary — this project had a
+        real bug from exactly this pattern.
+
+    - path: "**/*.tsx"
+      instructions: >
+        Flag any raw <img> tag that could reasonably use next/image
+        instead, and any data-fetching Server Component with no caching
+        or revalidation strategy for content that doesn't need to be
+        fully dynamic on every request.
+
+chat:
+  auto_reply: true

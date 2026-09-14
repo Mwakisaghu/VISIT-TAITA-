@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Product } from "@prisma/client";
 import { categoryLabel, formatPrice } from "@/lib/format";
 
@@ -8,10 +9,13 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/shop/product/${product.slug}`} className="focus-ring group block">
       <div className="relative aspect-square overflow-hidden rounded-sm bg-stone/10">
-        <img
+        <Image
           src={product.image}
           alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+          fill
+          unoptimized
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         {outOfStock && (
           <span className="absolute left-3 top-3 rounded-full bg-stone px-3 py-1 font-body text-xs text-parchment">

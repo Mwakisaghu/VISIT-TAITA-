@@ -9,6 +9,10 @@ import ProductCard from "@/components/marketplace/ProductCard";
 import { discoverCategories } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 
+// Public, non-personalized content — safe to cache and revalidate rather
+// than hitting Postgres on every single request.
+export const revalidate = 60;
+
 export default async function HomePage() {
   const [stories, events, products] = await Promise.all([
     prisma.story.findMany({

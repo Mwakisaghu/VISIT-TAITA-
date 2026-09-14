@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: "People, places, culture, sport and adventure from Taita Taveta.",
 };
 
+export const revalidate = 60;
+
 export default async function StoriesPage() {
   const stories = await prisma.story.findMany({
     where: { status: "PUBLISHED" },

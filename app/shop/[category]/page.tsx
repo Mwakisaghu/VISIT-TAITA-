@@ -16,6 +16,8 @@ export function generateMetadata({ params }: { params: { category: string } }): 
   return { title: cat.label };
 }
 
+export const revalidate = 30;
+
 export default async function ShopCategoryPage({
   params,
 }: {

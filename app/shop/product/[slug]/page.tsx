@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import DemoNotice from "@/components/DemoNotice";
 import AddToCartButton from "@/components/marketplace/AddToCartButton";
 import { categoryLabel, formatPrice } from "@/lib/format";
@@ -24,6 +25,8 @@ export async function generateMetadata({
   };
 }
 
+export const revalidate = 30;
+
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await prisma.product.findUnique({ where: { slug: params.slug } });
   if (!product || product.status !== "PUBLISHED") notFound();
@@ -31,8 +34,16 @@ export default async function ProductPage({ params }: { params: { slug: string }
   return (
     <div className="px-6 py-16">
       <div className="mx-auto grid max-w-4xl gap-10 md:grid-cols-2">
-        <div className="aspect-square overflow-hidden rounded-sm bg-stone/10">
-          <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+        <div className="relative aspect-square overflow-hidden rounded-sm bg-stone/10">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            unoptimized
+            priority
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="object-cover"
+          />
         </div>
 
         <div>

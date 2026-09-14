@@ -11,6 +11,12 @@ export const metadata: Metadata = {
   description: "Clothing, art, crafts, food and more, made in Taita Taveta.",
 };
 
+// Shorter window than other content pages — inventory counts shown here
+// can go stale faster. Actual stock is always re-checked server-side at
+// checkout regardless, so this only affects how fresh the displayed
+// number looks, not order correctness.
+export const revalidate = 30;
+
 export default async function ShopPage() {
   const products = await prisma.product.findMany({
     where: { status: "PUBLISHED" },

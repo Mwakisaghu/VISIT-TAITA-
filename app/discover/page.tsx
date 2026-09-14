@@ -11,6 +11,8 @@ export const metadata: Metadata = {
     "Wild, culture, adventure, food, sport and people — six ways into Taita Taveta, Kenya.",
 };
 
+export const revalidate = 60;
+
 export default async function DiscoverIndexPage() {
   const counts = await prisma.destination.groupBy({
     by: ["category"],
