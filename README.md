@@ -371,6 +371,76 @@ sample destinations have approximate real-world coordinates for their
 real place names, same caveat as their descriptions: illustrative, not
 verified.
 
+## Performance
+
+A deliberate pass over the existing pages, not a new feature.
+
+### Images
+Every `<img>` tag became `next/image`, with one exception (see below).
+The Hero image uses `priority` (it's the largest above-the-fold
+element — Next.js otherwise lazy-loads images, which would hurt LCP
+for exactly the image that matters most for it) and stays fully
+optimized (WebP/AVIF conversion, responsive `srcset`) since it comes
+from `images.unsplash.com`, already allowlisted in `next.config.js`.
+
+Every other image — destinations, stories, products — uses
+`unoptimized`. This is deliberate, not an oversight: those images come
+from arbitrary URLs admins paste into a form (`z.string().url()`, no
+domain restriction), and Next's built-in optimizer requires a fixed,
+allowlisted source domain to work at all — pointing `next/image` at an
+unlisted domain throws at runtime. `unoptimized` still gets automatic
+`sizes`-based responsive rendering, native lazy-loading, and explicit
+dimensions that prevent layout shift; it just skips the resize/format
+conversion step, which matters less here anyway since the seeded
+Unsplash URLs already request a specific size via their own `?w=`
+query param. If Visit Taita later moves to a real upload pipeline
+(S3/Cloudinary/etc. — see "no image upload" below) instead of
+free-form URLs, switching these back to fully optimized is a one-line
+change per component.
+
+**One deliberate non-conversion**: the small thumbnail inside the map
+popup (`components/map/DestinationMap.tsx`) stays a plain `<img>`,
+with a comment explaining why — it renders inside a Leaflet-managed
+popup container whose size Leaflet computes itself, not a context
+where `next/image`'s `fill` layout has a trustworthy sized parent to
+work with. Not worth the risk of breaking map popups for a small
+thumbnail.
+
+### Caching (ISR)
+`export const revalidate = <seconds>` was added to every public,
+non-personalized page (homepage, Discover, Stories, Events, Taita Cup,
+the Map, the Partners directory) — these don't call `getServerSession`
+or read cookies, so Next.js can safely cache the rendered page and
+serve it instantly to the next visitor instead of hitting Postgres on
+every request, refreshing in the background every 60-120 seconds.
+Pages that read the session (`/passport`, `/partner/*`, `/admin/*`,
+order confirmation) are correctly excluded — Next.js forces those
+fully dynamic regardless, since a cookie-dependent response can't be
+safely shared across different signed-in users.
+
+Shop pages (`/shop`, `/shop/[category]`, product detail) use a
+shorter 30-second window rather than 60-120, since displayed inventory
+counts matter more there — though this only affects how fresh the
+*displayed* number looks. Actual stock is always re-validated
+server-side at checkout (`placeOrder` in `lib/actions/marketplace.ts`)
+regardless of what the page happened to cache, so a stale number here
+is a minor UX nit, not an order-correctness risk.
+
+### What I deliberately did NOT do
+Considered and rejected: adding a blanket `take` limit to every
+unbounded `findMany()` query as a blind "safety net." Two problems
+with that: first, `lib/cup.ts`'s standings calculation genuinely needs
+every team and every finished fixture to compute a correct table — a
+`take` limit there wouldn't optimize anything, it would silently
+produce a *wrong* standings table. Second, every list/grid page
+(admin lists, the shop grid, the stories index) has no pagination UI
+yet — capping a query with no way to reach what's past the cap doesn't
+improve performance, it just makes data permanently unreachable
+through the UI, which is worse than the current behavior at today's
+scale (dozens of rows, not thousands). The honest fix is pagination,
+not a silent cap; that's flagged below as a real deferred item rather
+than quietly worked around.
+
 ## A note on this build environment
 
 This project was built and code-reviewed in a sandbox without network
@@ -415,6 +485,7 @@ ticketing and hospitality packages for Taita Cup.
 ## Not yet implemented
 
 - No image upload — image fields are URLs (paste an image link).
+- No pagination — every list/grid page (admin lists, `/shop`, `/stories`) returns its full table. Fine at today's scale; see the Performance section above for why a blind query `take` limit isn't the right fix once this needs addressing.
 - No password reset / email verification flow.
 - No rich-text editor for story bodies — plain textarea.
 - No OAuth providers configured (Google/etc.) — credentials only for now, but NextAuth makes adding one straightforward.
