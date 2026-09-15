@@ -13,6 +13,7 @@ export default async function AdminOverviewPage() {
     orders,
     pendingApplications,
     pendingProducts,
+    festivalSessions,
   ] = await Promise.all([
     prisma.destination.count(),
     prisma.story.count(),
@@ -25,6 +26,7 @@ export default async function AdminOverviewPage() {
     prisma.order.count(),
     prisma.partnerApplication.count({ where: { status: "PENDING" } }),
     prisma.product.count({ where: { status: "DRAFT", seller: { role: "SELLER" } } }),
+    prisma.festivalSession.count(),
   ]);
 
   const stats = [
@@ -39,6 +41,7 @@ export default async function AdminOverviewPage() {
     { label: "Shop orders", value: orders },
     { label: "Pending partner applications", value: pendingApplications },
     { label: "Pending listing reviews", value: pendingProducts },
+    { label: "Taita Week sessions", value: festivalSessions },
   ];
 
   return (
