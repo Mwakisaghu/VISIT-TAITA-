@@ -92,3 +92,35 @@ const APPLICATION_STATUS_LABELS: Record<string, string> = {
 export function applicationStatusLabel(status: string) {
   return APPLICATION_STATUS_LABELS[status] ?? status;
 }
+
+const SESSION_CATEGORY_LABELS: Record<string, string> = {
+  MUSIC: "Music",
+  FOOD: "Food",
+  CULTURE: "Culture",
+  SPORT: "Sport",
+  FAMILY: "Family",
+  MARKET: "Market",
+  TALKS: "Talks",
+};
+
+export function sessionCategoryLabel(category: string) {
+  return SESSION_CATEGORY_LABELS[category] ?? category;
+}
+
+const TICKET_STATUS_LABELS: Record<string, string> = {
+  FREE: "Free",
+  TICKETED: "Ticketed",
+  SOLD_OUT: "Sold out",
+};
+
+export function ticketStatusLabel(status: string) {
+  return TICKET_STATUS_LABELS[status] ?? status;
+}
+
+export function formatSessionTime(date: Date) {
+  return date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+}
+
+export function formatSessionDay(date: Date) {
+  return date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+}
