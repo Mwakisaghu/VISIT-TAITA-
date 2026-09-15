@@ -50,6 +50,7 @@ a self-service seller dashboard, and an interactive map.
    - 2 venues, 4 fictional Taita Cup clubs with rosters, and 8 fixtures (4 played, 4 upcoming) — see the Phase 3 section below
    - 6 sample Taita Made products across categories, all in stock
    - 3 sample partner applications (one pre-approved) — see the Partner Portal section below
+   - 2 festival venues and 7 Taita Week sessions spanning 3 days — see the Taita Week section below
    - All 6 sample destinations get approximate real-world coordinates, so `/map` isn't empty on first run
    - A demo admin account: `admin@visittaita.example` / `ChangeMe123!` — **change this password before deploying anywhere shared.**
 
@@ -371,6 +372,34 @@ sample destinations have approximate real-world coordinates for their
 real place names, same caveat as their descriptions: illustrative, not
 verified.
 
+## What's new in Phase 3 — Taita Week
+
+The festival programme — a day-by-day schedule across venues, ticket
+status per session, and an admin side to manage both.
+
+### Public page
+**`/events/taita-week`** — a single page: festival intro, then the
+full programme grouped by calendar day (derived from each session's
+`startsAt`, not a separate day field), with a venues list alongside.
+Each session shows its category, time range, venue, and ticket
+status (`Free` / `Ticketed` with a KES price / `Sold out`). Linked
+from `/events` ("Full Taita Week programme →").
+
+### Admin CMS (`/admin/week/...`)
+- **Venues** (`/admin/week/venues`) — name, location, image
+- **Programme** (`/admin/week/sessions`) — title, category (music,
+  food, culture, sport, family, market, talks), description, venue,
+  start/end time, ticket status and price, featured flag. The "new
+  session" form requires at least one venue to exist first, same
+  pattern as Taita Cup requiring teams+venues before fixtures.
+
+### Data model additions
+`FestivalVenue`, `FestivalSession` — see `prisma/schema.prisma`. A
+session's day is computed by grouping on the date portion of
+`startsAt` rather than stored as a separate field, so there's no way
+for a session's displayed day and its actual start time to drift out
+of sync with each other.
+
 ## Performance
 
 A deliberate pass over the existing pages, not a new feature.
@@ -478,9 +507,9 @@ handles body copy and UI.
 
 ## Roadmap
 
-**Not started:** Taita Week festival platform, experience/accommodation
-bookings, sponsorship management, mobile app, match reports/photos/video,
-ticketing and hospitality packages for Taita Cup.
+**Not started:** experience/accommodation bookings, sponsorship
+management, mobile app, match reports/photos/video, ticketing and
+hospitality packages for Taita Cup.
 
 ## Not yet implemented
 
@@ -494,4 +523,5 @@ ticketing and hospitality packages for Taita Cup.
 - Taita Made: no shipping cost calculation; no buyer-facing order history page (only the single order confirmation link); inventory is decremented at order creation rather than on confirmed payment, so an abandoned/failed payment restocks correctly (handled) but a customer can in principle tie up stock for the minute or two a payment is pending.
 - Partner portal: no email notifications (applicants don't get an email when approved/rejected — they have to check `/partners/apply` themselves); no invite flow (an applicant must already have a Visit Taita account before "grant seller access" can promote them); only the `SELLER` partner type has a working dashboard — `ACCOMMODATION`, `EXPERIENCE`, `FOOD`, `TRANSPORT`, `CREATOR`, `EVENT` and `SPONSOR` applications can be reviewed and approved, but there's no dedicated tooling for them yet, since Visit Taita doesn't have accommodation/experience/event listing features built at all (those are still on the roadmap).
 - Map: only Destinations are mapped — Taita Cup venues, Taita Made sellers, and partner businesses don't have pins yet, even though some of those models could reasonably get coordinates later; no clustering (fine at today's scale, would matter once destinations number in the hundreds); no route/directions.
+- Taita Week: `ticketUrl` is just an external link field (e.g. to a third-party ticketing site) — there's no in-platform ticket purchase flow, so `Ticketed` sessions aren't connected to the Pesapal/M-Pesa payment work at all yet. No individual session or venue detail pages — everything lives on the one `/events/taita-week` programme page.
 - Payments: no refunds (would need a separate admin-triggered flow calling Safaricom's reversal API or Pesapal's refund API — neither is built); no partial payments or M-Pesa Till/Buy Goods flow (only Paybill-style STK push); Pesapal-hosted checkout sessions have their own expiry with no explicit reminder to the buyer.
