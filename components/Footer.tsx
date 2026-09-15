@@ -7,6 +7,7 @@ const worlds = [
   "Taita Wild",
   "Taita Trails",
   "Taita Sounds",
+  "Taita Week",
   "Taita Passport",
 ];
 

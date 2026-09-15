@@ -436,3 +436,62 @@ model PartnerApplication {
   @@index([status])
   @@index([email])
 }
+
+// ---------------------------------------------------------------------------
+// Taita Week — festival programme
+// ---------------------------------------------------------------------------
+
+enum SessionCategory {
+  MUSIC
+  FOOD
+  CULTURE
+  SPORT
+  FAMILY
+  MARKET
+  TALKS
+}
+
+enum TicketStatus {
+  FREE
+  TICKETED
+  SOLD_OUT
+}
+
+model FestivalVenue {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  name      String
+  location  String
+  image     String
+  isDemo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions FestivalSession[]
+
+  @@index([slug])
+}
+
+model FestivalSession {
+  id           String          @id @default(cuid())
+  slug         String          @unique
+  title        String
+  category     SessionCategory
+  description  String
+  startsAt     DateTime
+  endsAt       DateTime?
+  ticketStatus TicketStatus    @default(FREE)
+  price        Int?
+  ticketUrl    String?
+  status       ContentStatus   @default(DRAFT)
+  featured     Boolean         @default(false)
+  isDemo       Boolean         @default(true)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  venueId String
+  venue   FestivalVenue @relation(fields: [venueId], references: [id], onDelete: Restrict)
+
+  @@index([status, startsAt])
+  @@index([category])
+}
