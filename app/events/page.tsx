@@ -27,12 +27,20 @@ export default async function EventsPage() {
           description="Taita Cup, Taita Week and Taita Sound, in one place."
         />
 
-        <Link
-          href="/events/taita-cup"
-          className="focus-ring mt-6 inline-block rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust"
-        >
-          Full Taita Cup standings & fixtures →
-        </Link>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/events/taita-cup"
+            className="focus-ring inline-block rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust"
+          >
+            Full Taita Cup standings & fixtures →
+          </Link>
+          <Link
+            href="/events/taita-week"
+            className="focus-ring inline-block rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust"
+          >
+            Full Taita Week programme →
+          </Link>
+        </div>
 
         {events.length > 0 ? (
           <div className="mt-10">
