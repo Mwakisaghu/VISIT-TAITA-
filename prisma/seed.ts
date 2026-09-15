@@ -346,6 +346,108 @@ const partnerApplications = [
   },
 ];
 
+const festivalVenues = [
+  {
+    slug: "voi-town-square",
+    name: "Voi Town Square",
+    location: "Voi",
+    image: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=1200",
+  },
+  {
+    slug: "wundanyi-cultural-grounds",
+    name: "Wundanyi Cultural Grounds",
+    location: "Wundanyi",
+    image: "https://images.unsplash.com/photo-1478147427282-58a87a120781?q=80&w=1200",
+  },
+];
+
+const festivalSessions = [
+  {
+    slug: "opening-ceremony",
+    title: "Opening Ceremony",
+    category: "CULTURE" as const,
+    description: "Taita Week opens with drumming, dance and a welcome from the hills' elders.",
+    venue: "voi-town-square",
+    starts: new Date("2026-12-04T18:00:00Z"),
+    ends: new Date("2026-12-04T20:00:00Z"),
+    ticketStatus: "FREE" as const,
+    price: undefined as number | undefined,
+    featured: true,
+  },
+  {
+    slug: "hills-sound-stage",
+    title: "Hills Sound Stage",
+    category: "MUSIC" as const,
+    description: "Live sets from Taita musicians blending mwazindika rhythm with modern production.",
+    venue: "voi-town-square",
+    starts: new Date("2026-12-04T20:00:00Z"),
+    ends: new Date("2026-12-04T23:00:00Z"),
+    ticketStatus: "TICKETED" as const,
+    price: 500,
+    featured: true,
+  },
+  {
+    slug: "taita-food-market",
+    title: "Taita Food Market",
+    category: "MARKET" as const,
+    description: "Stalls of hill-grown produce, honey, crafts and home cooking from across Taita Taveta.",
+    venue: "wundanyi-cultural-grounds",
+    starts: new Date("2026-12-05T10:00:00Z"),
+    ends: new Date("2026-12-05T16:00:00Z"),
+    ticketStatus: "FREE" as const,
+    price: undefined as number | undefined,
+    featured: false,
+  },
+  {
+    slug: "cooking-with-mama-chao",
+    title: "Cooking with Mama Chao",
+    category: "FOOD" as const,
+    description: "A live cooking demo of mukimo and matumbo, the way Wundanyi kitchens have made it for generations.",
+    venue: "wundanyi-cultural-grounds",
+    starts: new Date("2026-12-05T13:00:00Z"),
+    ends: new Date("2026-12-05T14:00:00Z"),
+    ticketStatus: "FREE" as const,
+    price: undefined as number | undefined,
+    featured: false,
+  },
+  {
+    slug: "elders-stories-circle",
+    title: "Elders' Stories Circle",
+    category: "TALKS" as const,
+    description: "Oral histories and folktales, told by Taita elders and gathered for the first time in writing.",
+    venue: "wundanyi-cultural-grounds",
+    starts: new Date("2026-12-05T16:00:00Z"),
+    ends: new Date("2026-12-05T17:00:00Z"),
+    ticketStatus: "FREE" as const,
+    price: undefined as number | undefined,
+    featured: false,
+  },
+  {
+    slug: "family-fun-day",
+    title: "Family Fun Day",
+    category: "FAMILY" as const,
+    description: "Games, face painting and a children's storytelling tent for the whole family.",
+    venue: "voi-town-square",
+    starts: new Date("2026-12-06T09:00:00Z"),
+    ends: new Date("2026-12-06T13:00:00Z"),
+    ticketStatus: "FREE" as const,
+    price: undefined as number | undefined,
+    featured: false,
+  },
+  {
+    slug: "closing-night-concert",
+    title: "Closing Night Concert",
+    category: "MUSIC" as const,
+    description: "Taita Week closes with a headline concert under the stars in Voi.",
+    venue: "voi-town-square",
+    starts: new Date("2026-12-06T19:00:00Z"),
+    ends: new Date("2026-12-06T22:00:00Z"),
+    ticketStatus: "TICKETED" as const,
+    price: 800,
+    featured: true,
+  },
+];
+
 async function main() {
 
   // Demo admin account — change this password immediately in any shared environment.
@@ -470,6 +572,52 @@ async function main() {
     });
   }
 
+  for (const v of festivalVenues) {
+    await prisma.festivalVenue.upsert({
+      where: { slug: v.slug },
+      update: v,
+      create: { ...v, isDemo: true },
+    });
+  }
+
+  const festivalVenueIdBySlug = new Map(
+    (await prisma.festivalVenue.findMany()).map((v) => [v.slug, v.id])
+  );
+
+  for (const s of festivalSessions) {
+    const venueId = festivalVenueIdBySlug.get(s.venue);
+    if (!venueId) continue;
+    await prisma.festivalSession.upsert({
+      where: { slug: s.slug },
+      update: {
+        title: s.title,
+        category: s.category,
+        description: s.description,
+        startsAt: s.starts,
+        endsAt: s.ends,
+        ticketStatus: s.ticketStatus,
+        price: s.price,
+        featured: s.featured,
+        status: "PUBLISHED",
+        venueId,
+      },
+      create: {
+        slug: s.slug,
+        title: s.title,
+        category: s.category,
+        description: s.description,
+        startsAt: s.starts,
+        endsAt: s.ends,
+        ticketStatus: s.ticketStatus,
+        price: s.price,
+        featured: s.featured,
+        status: "PUBLISHED",
+        isDemo: true,
+        venueId,
+      },
+    });
+  }
+
   console.log("Seed complete:");
   console.log(`  ${destinations.length} destinations`);
   console.log(`  ${stories.length} stories`);
@@ -478,6 +626,7 @@ async function main() {
   console.log(`  ${venues.length} venues, ${teams.length} teams, ${fixtures.length} fixtures (Taita Cup)`);
   console.log(`  ${products.length} products (Taita Made)`);
   console.log(`  ${partnerApplications.length} sample partner applications`);
+  console.log(`  ${festivalVenues.length} venues, ${festivalSessions.length} sessions (Taita Week)`);
   console.log(`  admin login: admin@visittaita.example / ChangeMe123!`);
 }
 
