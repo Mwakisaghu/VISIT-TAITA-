@@ -371,7 +371,7 @@ const festivalSessions = [
     starts: new Date("2026-12-04T18:00:00Z"),
     ends: new Date("2026-12-04T20:00:00Z"),
     ticketStatus: "FREE" as const,
-    price: undefined as number | undefined,
+    price: null as number | null,
     featured: true,
   },
   {
@@ -395,7 +395,7 @@ const festivalSessions = [
     starts: new Date("2026-12-05T10:00:00Z"),
     ends: new Date("2026-12-05T16:00:00Z"),
     ticketStatus: "FREE" as const,
-    price: undefined as number | undefined,
+    price: null as number | null,
     featured: false,
   },
   {
@@ -407,7 +407,7 @@ const festivalSessions = [
     starts: new Date("2026-12-05T13:00:00Z"),
     ends: new Date("2026-12-05T14:00:00Z"),
     ticketStatus: "FREE" as const,
-    price: undefined as number | undefined,
+    price: null as number | null,
     featured: false,
   },
   {
@@ -419,7 +419,7 @@ const festivalSessions = [
     starts: new Date("2026-12-05T16:00:00Z"),
     ends: new Date("2026-12-05T17:00:00Z"),
     ticketStatus: "FREE" as const,
-    price: undefined as number | undefined,
+    price: null as number | null,
     featured: false,
   },
   {
@@ -431,7 +431,7 @@ const festivalSessions = [
     starts: new Date("2026-12-06T09:00:00Z"),
     ends: new Date("2026-12-06T13:00:00Z"),
     ticketStatus: "FREE" as const,
-    price: undefined as number | undefined,
+    price: null as number | null,
     featured: false,
   },
   {
@@ -596,7 +596,7 @@ async function main() {
         startsAt: s.starts,
         endsAt: s.ends,
         ticketStatus: s.ticketStatus,
-        price: s.price,
+        price: s.price ?? null,
         featured: s.featured,
         status: "PUBLISHED",
         venueId,
@@ -609,7 +609,7 @@ async function main() {
         startsAt: s.starts,
         endsAt: s.ends,
         ticketStatus: s.ticketStatus,
-        price: s.price,
+        price: s.price ?? null,
         featured: s.featured,
         status: "PUBLISHED",
         isDemo: true,
