@@ -45,6 +45,11 @@ model User {
   ordersPlaced       Order[]       @relation("OrdersPlaced")
   applicationsReviewed PartnerApplication[] @relation("ApplicationsReviewed")
 
+  accommodationsOwned    Accommodation[]        @relation("AccommodationOwner")
+  experiencesOwned       Experience[]           @relation("ExperienceOwner")
+  accommodationEnquiries AccommodationEnquiry[] @relation("AccommodationEnquiriesMade")
+  experienceEnquiries    ExperienceEnquiry[]    @relation("ExperienceEnquiriesMade")
+
   @@index([role])
 }
 
@@ -494,4 +499,131 @@ model FestivalSession {
 
   @@index([status, startsAt])
   @@index([category])
+}
+
+// ---------------------------------------------------------------------------
+// Experiences & Accommodation — enquiry-based bookings
+// ---------------------------------------------------------------------------
+// Deliberately NOT a real-time booking/payment engine (no availability
+// calendar, no online payment capture) — matches the brief's Phase-3 scope:
+// listings + an enquiry form, with an optional external booking link for
+// partners who already run their own reservations system. Tied into the
+// existing PartnerType.ACCOMMODATION / PartnerType.EXPERIENCE application
+// types and the SELLER-style ownership pattern already used by Taita Made.
+
+enum AccommodationType {
+  HOTEL
+  LODGE
+  GUESTHOUSE
+  HOMESTAY
+  CAMPSITE
+}
+
+enum ExperienceCategory {
+  WILDLIFE
+  CULTURE
+  ADVENTURE
+  FOOD
+  WELLNESS
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  CONFIRMED
+  DECLINED
+}
+
+model Accommodation {
+  id                 String            @id @default(cuid())
+  slug               String            @unique
+  name               String
+  type               AccommodationType
+  region             String
+  description        String
+  image              String
+  priceFrom          Int? // whole KES, per night — optional ("contact for rates")
+  amenities          String[]          @default([])
+  contactPhone       String?
+  contactEmail       String?
+  externalBookingUrl String? // optional link to the partner's own booking engine
+  status             ContentStatus     @default(DRAFT)
+  featured           Boolean           @default(false)
+  isDemo             Boolean           @default(true)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  ownerId String?
+  owner   User?   @relation("AccommodationOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  enquiries AccommodationEnquiry[]
+
+  @@index([type, status])
+}
+
+model AccommodationEnquiry {
+  id              String        @id @default(cuid())
+  accommodationId String
+  accommodation   Accommodation @relation(fields: [accommodationId], references: [id], onDelete: Cascade)
+  name            String
+  email           String
+  phone           String
+  checkIn         DateTime?
+  checkOut        DateTime?
+  guests          Int?
+  message         String
+  status          EnquiryStatus @default(NEW)
+  createdAt       DateTime      @default(now())
+
+  userId String?
+  user   User?   @relation("AccommodationEnquiriesMade", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([accommodationId, status])
+}
+
+model Experience {
+  id                 String             @id @default(cuid())
+  slug               String             @unique
+  name               String
+  category           ExperienceCategory
+  region             String
+  description        String
+  image              String
+  priceFrom          Int? // whole KES, per person — optional
+  duration           String? // free text, e.g. "3 hours", "Full day"
+  groupSizeMax       Int?
+  contactPhone       String?
+  contactEmail       String?
+  externalBookingUrl String?
+  status             ContentStatus      @default(DRAFT)
+  featured           Boolean            @default(false)
+  isDemo             Boolean            @default(true)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  ownerId String?
+  owner   User?   @relation("ExperienceOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  enquiries ExperienceEnquiry[]
+
+  @@index([category, status])
+}
+
+model ExperienceEnquiry {
+  id            String        @id @default(cuid())
+  experienceId  String
+  experience    Experience    @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  name          String
+  email         String
+  phone         String
+  preferredDate DateTime?
+  partySize     Int?
+  message       String
+  status        EnquiryStatus @default(NEW)
+  createdAt     DateTime      @default(now())
+
+  userId String?
+  user   User?   @relation("ExperienceEnquiriesMade", fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([experienceId, status])
 }
