@@ -448,6 +448,134 @@ const festivalSessions = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Experiences & Accommodation — sample listings (enquiry-based booking).
+// Place names/regions are real; specific rates, amenities and contact
+// details are invented for layout purposes — replace before launch.
+// ---------------------------------------------------------------------------
+
+const accommodations = [
+  {
+    slug: "dawida-hill-lodge",
+    name: "Dawida Hill Lodge",
+    type: "LODGE" as const,
+    region: "Wundanyi",
+    description:
+      "A 12-room lodge on the Wundanyi ridge, every room facing the escarpment. Fireplace lounge, home-grown breakfast, guided sunrise walks on request.",
+    image: "https://images.unsplash.com/photo-1439130490301-25e322d88054?q=80&w=1200",
+    priceFrom: 8500,
+    amenities: ["Free WiFi", "Breakfast included", "Mountain view", "Guided walks"],
+    contactPhone: "+254712345001",
+    contactEmail: "stay@dawidahilllodge.example",
+    featured: true,
+  },
+  {
+    slug: "voi-gateway-hotel",
+    name: "Voi Gateway Hotel",
+    type: "HOTEL" as const,
+    region: "Voi",
+    description:
+      "A modern business-and-leisure hotel at the Tsavo gateway, five minutes from Voi town — the usual first or last stop for a Taita Cup or Taita Week trip.",
+    image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200",
+    priceFrom: 6000,
+    amenities: ["Free WiFi", "Pool", "Restaurant", "Airport transfer"],
+    contactPhone: "+254712345010",
+    contactEmail: "reservations@voigateway.example",
+    featured: true,
+  },
+  {
+    slug: "tsavo-fringe-tented-camp",
+    name: "Tsavo Fringe Tented Camp",
+    type: "CAMPSITE" as const,
+    region: "Taita Hills Wildlife Sanctuary",
+    description:
+      "Canvas tents on raised decks at the edge of the sanctuary, close enough to hear elephant at night. Shared campfire, no electricity after 10pm.",
+    image: "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?q=80&w=1200",
+    priceFrom: 4500,
+    amenities: ["Campfire", "Shared bathrooms", "Game drives on request"],
+    contactPhone: "+254712345011",
+    contactEmail: "camp@tsavofringe.example",
+    featured: false,
+  },
+  {
+    slug: "mama-atsango-homestay",
+    name: "Mama Atsango's Homestay",
+    type: "HOMESTAY" as const,
+    region: "Mwatate",
+    description:
+      "Two guest rooms in a family compound outside Mwatate — home-cooked meals, a working shamba, and evenings spent hearing Taita stories firsthand.",
+    image: "https://images.unsplash.com/photo-1523217582562-09d0def993a6?q=80&w=1200",
+    priceFrom: 2500,
+    amenities: ["Home-cooked meals", "Cultural immersion", "Family-run"],
+    contactPhone: "+254712345012",
+    contactEmail: null,
+    featured: false,
+  },
+];
+
+const experiences = [
+  {
+    slug: "sagalla-sunrise-hike",
+    name: "Sagalla Sunrise Hike",
+    category: "ADVENTURE" as const,
+    region: "Voi",
+    description:
+      "An early climb up Sagalla Hill timed for first light over Tsavo's red earth — on a clear morning, Kilimanjaro shows on the horizon.",
+    image: "https://images.unsplash.com/photo-1551632811-561732d1e306?q=80&w=1200",
+    priceFrom: 2000,
+    duration: "4 hours",
+    groupSizeMax: 10,
+    contactPhone: "+254712345002",
+    contactEmail: "hikes@taitatrailguides.example",
+    featured: true,
+  },
+  {
+    slug: "ngangao-forest-walk",
+    name: "Ngangao Forest Canopy Walk",
+    category: "WILDLIFE" as const,
+    region: "Dawida Hills",
+    description:
+      "A guided walk through one of Kenya's last indigenous cloud forests with a community forester — birdlife, endemic flora, and the conservation story behind it.",
+    image: "https://images.unsplash.com/photo-1448375240586-882707db888b?q=80&w=1200",
+    priceFrom: 1500,
+    duration: "3 hours",
+    groupSizeMax: 8,
+    contactPhone: "+254712345002",
+    contactEmail: "hikes@taitatrailguides.example",
+    featured: true,
+  },
+  {
+    slug: "wundanyi-market-food-tour",
+    name: "Wundanyi Market & Food Tour",
+    category: "FOOD" as const,
+    region: "Wundanyi",
+    description:
+      "A morning through Wundanyi's market stalls, ending at Mama Chao's Kitchen for a hands-on mukimo and matumbo lunch cooked the way Taita families have made it for generations.",
+    image: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=1200",
+    priceFrom: 1800,
+    duration: "Half day",
+    groupSizeMax: 12,
+    contactPhone: "+254712345003",
+    contactEmail: "alice@mamachaoskitchen.example",
+    featured: false,
+  },
+  {
+    slug: "taita-drumming-circle",
+    name: "Taita Drumming & Dance Circle",
+    category: "CULTURE" as const,
+    region: "Voi Town Square",
+    description:
+      "An evening workshop with local drummers and dancers — learn a mwazindika rhythm, then watch it performed the way it opens Taita Week.",
+    image: "https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?q=80&w=1200",
+    priceFrom: 1200,
+    duration: "2 hours",
+    groupSizeMax: 20,
+    contactPhone: null,
+    contactEmail: null,
+    featured: false,
+  },
+];
+
 async function main() {
 
   // Demo admin account — change this password immediately in any shared environment.
@@ -618,6 +746,23 @@ async function main() {
     });
   }
 
+  // --- Experiences & Accommodation ---
+  for (const a of accommodations) {
+    await prisma.accommodation.upsert({
+      where: { slug: a.slug },
+      update: { ...a, status: "PUBLISHED", ownerId: admin.id },
+      create: { ...a, status: "PUBLISHED", isDemo: true, ownerId: admin.id },
+    });
+  }
+
+  for (const x of experiences) {
+    await prisma.experience.upsert({
+      where: { slug: x.slug },
+      update: { ...x, status: "PUBLISHED", ownerId: admin.id },
+      create: { ...x, status: "PUBLISHED", isDemo: true, ownerId: admin.id },
+    });
+  }
+
   console.log("Seed complete:");
   console.log(`  ${destinations.length} destinations`);
   console.log(`  ${stories.length} stories`);
@@ -627,6 +772,7 @@ async function main() {
   console.log(`  ${products.length} products (Taita Made)`);
   console.log(`  ${partnerApplications.length} sample partner applications`);
   console.log(`  ${festivalVenues.length} venues, ${festivalSessions.length} sessions (Taita Week)`);
+  console.log(`  ${accommodations.length} accommodations, ${experiences.length} experiences`);
   console.log(`  admin login: admin@visittaita.example / ChangeMe123!`);
 }
 
