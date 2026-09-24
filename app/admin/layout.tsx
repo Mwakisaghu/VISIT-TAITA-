@@ -11,6 +11,8 @@ const nav = [
   { href: "/admin/cup/venues", label: "Cup: Venues" },
   { href: "/admin/week/sessions", label: "Week: Programme" },
   { href: "/admin/week/venues", label: "Week: Venues" },
+  { href: "/admin/accommodations", label: "Accommodations" },
+  { href: "/admin/experiences", label: "Experiences" },
   { href: "/admin/shop/products", label: "Shop: Products" },
   { href: "/admin/shop/orders", label: "Shop: Orders" },
   { href: "/admin/partners", label: "Partners" },
