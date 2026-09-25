@@ -1,17 +1,25 @@
 import type { MetadataRoute } from "next";
-import { discoverCategories, shopCategories } from "@/lib/data";
+import { discoverCategories, shopCategories, accommodationTypes, experienceCategories } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 
 const base = "https://visittaita.example";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [stories, teams, products] = await Promise.all([
+  const [stories, teams, products, accommodations, experiences] = await Promise.all([
     prisma.story.findMany({
       where: { status: "PUBLISHED" },
       select: { slug: true, updatedAt: true },
     }),
     prisma.sportTeam.findMany({ select: { slug: true, updatedAt: true } }),
     prisma.product.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    }),
+    prisma.accommodation.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+    }),
+    prisma.experience.findMany({
       where: { status: "PUBLISHED" },
       select: { slug: true, updatedAt: true },
     }),
@@ -25,6 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/events/taita-cup",
     "/events/taita-week",
     "/shop",
+    "/stay",
+    "/experiences",
     "/partners",
     "/partners/apply",
     "/map",
@@ -43,6 +53,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(),
   }));
 
+  const accommodationTypeRoutes = accommodationTypes.map((t) => ({
+    url: `${base}/stay/${t.key}`,
+    lastModified: new Date(),
+  }));
+
+  const experienceCategoryRoutes = experienceCategories.map((c) => ({
+    url: `${base}/experiences/${c.key}`,
+    lastModified: new Date(),
+  }));
+
   const storyRoutes = stories.map((s) => ({
     url: `${base}/stories/${s.slug}`,
     lastModified: s.updatedAt,
@@ -58,12 +78,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: p.updatedAt,
   }));
 
+  const accommodationRoutes = accommodations.map((a) => ({
+    url: `${base}/stay/listing/${a.slug}`,
+    lastModified: a.updatedAt,
+  }));
+
+  const experienceRoutes = experiences.map((x) => ({
+    url: `${base}/experiences/listing/${x.slug}`,
+    lastModified: x.updatedAt,
+  }));
+
   return [
     ...staticRoutes,
     ...categoryRoutes,
     ...shopCategoryRoutes,
+    ...accommodationTypeRoutes,
+    ...experienceCategoryRoutes,
     ...storyRoutes,
     ...teamRoutes,
     ...productRoutes,
+    ...accommodationRoutes,
+    ...experienceRoutes,
   ];
 }

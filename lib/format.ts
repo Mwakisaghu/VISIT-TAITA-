@@ -124,3 +124,27 @@ export function formatSessionTime(date: Date) {
 export function formatSessionDay(date: Date) {
   return date.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
 }
+
+const ACCOMMODATION_TYPE_LABELS: Record<string, string> = {
+  HOTEL: "Hotel",
+  LODGE: "Lodge",
+  GUESTHOUSE: "Guesthouse",
+  HOMESTAY: "Homestay",
+  CAMPSITE: "Campsite",
+};
+
+export function accommodationTypeLabel(type: string) {
+  return ACCOMMODATION_TYPE_LABELS[type] ?? type;
+}
+
+const EXPERIENCE_CATEGORY_LABELS: Record<string, string> = {
+  WILDLIFE: "Wildlife",
+  CULTURE: "Culture",
+  ADVENTURE: "Adventure",
+  FOOD: "Food",
+  WELLNESS: "Wellness",
+};
+
+export function experienceCategoryLabel(category: string) {
+  return EXPERIENCE_CATEGORY_LABELS[category] ?? category;
+}
