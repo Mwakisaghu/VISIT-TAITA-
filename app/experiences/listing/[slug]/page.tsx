@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import DemoNotice from "@/components/DemoNotice";
+import ExperienceEnquiryForm from "@/components/listings/ExperienceEnquiryForm";
 import { experienceCategoryLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -34,6 +35,9 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
     experience.duration ? { label: "Duration", value: experience.duration } : null,
     experience.groupSizeMax ? { label: "Max group size", value: `${experience.groupSizeMax} people` } : null,
   ].filter(Boolean) as { label: string; value: string }[];
+
+  const hasDirectContact =
+    experience.contactPhone || experience.contactEmail || experience.externalBookingUrl;
 
   return (
     <div>
@@ -87,46 +91,58 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
 
           {/* BOOKING CARD */}
           <aside>
-            <div className="sticky top-24 rounded-sm border border-stone/10 p-6">
-              <p className="font-body text-xs text-stone/50">From</p>
-              <p className="font-display text-3xl text-stone">
-                {experience.priceFrom ? formatPrice(experience.priceFrom) : "Contact for pricing"}
-              </p>
-              {experience.priceFrom && <p className="font-body text-xs text-stone/50">per person</p>}
-
-              <div className="mt-6 flex flex-col gap-3">
-                {experience.contactPhone && (
-                  <a
-                    href={`tel:${experience.contactPhone}`}
-                    className="focus-ring rounded-full bg-rust px-6 py-3 text-center font-body text-sm text-parchment hover:bg-rust-deep"
-                  >
-                    Call {experience.contactPhone}
-                  </a>
-                )}
-                {experience.contactEmail && (
-                  <a
-                    href={`mailto:${experience.contactEmail}`}
-                    className="focus-ring rounded-full border border-stone/20 px-6 py-3 text-center font-body text-sm text-stone hover:border-rust hover:text-rust"
-                  >
-                    Email to enquire
-                  </a>
-                )}
-                {experience.externalBookingUrl && (
-                  <a
-                    href={experience.externalBookingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="focus-ring rounded-full border border-stone/20 px-6 py-3 text-center font-body text-sm text-stone hover:border-rust hover:text-rust"
-                  >
-                    Book on partner site ↗
-                  </a>
-                )}
-                {!experience.contactPhone && !experience.contactEmail && !experience.externalBookingUrl && (
-                  <p className="font-body text-sm text-stone/50">
-                    Contact details coming soon — an in-platform enquiry form is on the way.
-                  </p>
-                )}
+            <div className="sticky top-24 flex flex-col gap-6 rounded-sm border border-stone/10 p-6">
+              <div>
+                <p className="font-body text-xs text-stone/50">From</p>
+                <p className="font-display text-3xl text-stone">
+                  {experience.priceFrom ? formatPrice(experience.priceFrom) : "Contact for pricing"}
+                </p>
+                {experience.priceFrom && <p className="font-body text-xs text-stone/50">per person</p>}
               </div>
+
+              <div className="border-t border-stone/10 pt-6">
+                <p className="font-display text-lg text-stone">Send an enquiry</p>
+                <p className="mt-1 font-body text-xs text-stone/50">
+                  Goes straight to whoever runs {experience.name} — no account needed.
+                </p>
+                <div className="mt-4">
+                  <ExperienceEnquiryForm experienceId={experience.id} />
+                </div>
+              </div>
+
+              {hasDirectContact && (
+                <div className="border-t border-stone/10 pt-6">
+                  <p className="font-body text-xs text-stone/50">Or contact directly</p>
+                  <div className="mt-3 flex flex-col gap-2">
+                    {experience.contactPhone && (
+                      <a
+                        href={`tel:${experience.contactPhone}`}
+                        className="focus-ring font-body text-sm text-stone hover:text-rust"
+                      >
+                        Call {experience.contactPhone}
+                      </a>
+                    )}
+                    {experience.contactEmail && (
+                      <a
+                        href={`mailto:${experience.contactEmail}`}
+                        className="focus-ring font-body text-sm text-stone hover:text-rust"
+                      >
+                        Email {experience.contactEmail}
+                      </a>
+                    )}
+                    {experience.externalBookingUrl && (
+                      <a
+                        href={experience.externalBookingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="focus-ring font-body text-sm text-stone hover:text-rust"
+                      >
+                        Partner booking site ↗
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </aside>
         </div>
