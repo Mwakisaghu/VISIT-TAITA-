@@ -16,6 +16,8 @@ export default async function AdminOverviewPage() {
     festivalSessions,
     accommodations,
     experiences,
+    pendingAccommodationEnquiries,
+    pendingExperienceEnquiries,
   ] = await Promise.all([
     prisma.destination.count(),
     prisma.story.count(),
@@ -31,6 +33,8 @@ export default async function AdminOverviewPage() {
     prisma.festivalSession.count(),
     prisma.accommodation.count(),
     prisma.experience.count(),
+    prisma.accommodationEnquiry.count({ where: { status: "NEW" } }),
+    prisma.experienceEnquiry.count({ where: { status: "NEW" } }),
   ]);
 
   const stats = [
@@ -48,6 +52,8 @@ export default async function AdminOverviewPage() {
     { label: "Taita Week sessions", value: festivalSessions },
     { label: "Accommodations", value: accommodations },
     { label: "Experiences", value: experiences },
+    { label: "New stay enquiries", value: pendingAccommodationEnquiries },
+    { label: "New experience enquiries", value: pendingExperienceEnquiries },
   ];
 
   return (

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import DemoNotice from "@/components/DemoNotice";
+import AccommodationEnquiryForm from "@/components/listings/AccommodationEnquiryForm";
 import { accommodationTypeLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -29,6 +30,9 @@ export const revalidate = 60;
 export default async function AccommodationDetailPage({ params }: { params: { slug: string } }) {
   const accommodation = await prisma.accommodation.findUnique({ where: { slug: params.slug } });
   if (!accommodation || accommodation.status !== "PUBLISHED") notFound();
+
+  const hasDirectContact =
+    accommodation.contactPhone || accommodation.contactEmail || accommodation.externalBookingUrl;
 
   return (
     <div>
@@ -87,46 +91,58 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
 
           {/* BOOKING CARD */}
           <aside>
-            <div className="sticky top-24 rounded-sm border border-stone/10 p-6">
-              <p className="font-body text-xs text-stone/50">From</p>
-              <p className="font-display text-3xl text-stone">
-                {accommodation.priceFrom ? formatPrice(accommodation.priceFrom) : "Contact for rates"}
-              </p>
-              {accommodation.priceFrom && <p className="font-body text-xs text-stone/50">per night</p>}
-
-              <div className="mt-6 flex flex-col gap-3">
-                {accommodation.contactPhone && (
-                  <a
-                    href={`tel:${accommodation.contactPhone}`}
-                    className="focus-ring rounded-full bg-rust px-6 py-3 text-center font-body text-sm text-parchment hover:bg-rust-deep"
-                  >
-                    Call {accommodation.contactPhone}
-                  </a>
-                )}
-                {accommodation.contactEmail && (
-                  <a
-                    href={`mailto:${accommodation.contactEmail}`}
-                    className="focus-ring rounded-full border border-stone/20 px-6 py-3 text-center font-body text-sm text-stone hover:border-rust hover:text-rust"
-                  >
-                    Email to enquire
-                  </a>
-                )}
-                {accommodation.externalBookingUrl && (
-                  <a
-                    href={accommodation.externalBookingUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="focus-ring rounded-full border border-stone/20 px-6 py-3 text-center font-body text-sm text-stone hover:border-rust hover:text-rust"
-                  >
-                    Book on partner site ↗
-                  </a>
-                )}
-                {!accommodation.contactPhone && !accommodation.contactEmail && !accommodation.externalBookingUrl && (
-                  <p className="font-body text-sm text-stone/50">
-                    Contact details coming soon — an in-platform enquiry form is on the way.
-                  </p>
-                )}
+            <div className="sticky top-24 flex flex-col gap-6 rounded-sm border border-stone/10 p-6">
+              <div>
+                <p className="font-body text-xs text-stone/50">From</p>
+                <p className="font-display text-3xl text-stone">
+                  {accommodation.priceFrom ? formatPrice(accommodation.priceFrom) : "Contact for rates"}
+                </p>
+                {accommodation.priceFrom && <p className="font-body text-xs text-stone/50">per night</p>}
               </div>
+
+              <div className="border-t border-stone/10 pt-6">
+                <p className="font-display text-lg text-stone">Send an enquiry</p>
+                <p className="mt-1 font-body text-xs text-stone/50">
+                  Goes straight to {accommodation.name} — no account needed.
+                </p>
+                <div className="mt-4">
+                  <AccommodationEnquiryForm accommodationId={accommodation.id} />
+                </div>
+              </div>
+
+              {hasDirectContact && (
+                <div className="border-t border-stone/10 pt-6">
+                  <p className="font-body text-xs text-stone/50">Or contact directly</p>
+                  <div className="mt-3 flex flex-col gap-2">
+                    {accommodation.contactPhone && (
+                      <a
+                        href={`tel:${accommodation.contactPhone}`}
+                        className="focus-ring font-body text-sm text-stone hover:text-rust"
+                      >
+                        Call {accommodation.contactPhone}
+                      </a>
+                    )}
+                    {accommodation.contactEmail && (
+                      <a
+                        href={`mailto:${accommodation.contactEmail}`}
+                        className="focus-ring font-body text-sm text-stone hover:text-rust"
+                      >
+                        Email {accommodation.contactEmail}
+                      </a>
+                    )}
+                    {accommodation.externalBookingUrl && (
+                      <a
+                        href={accommodation.externalBookingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="focus-ring font-body text-sm text-stone hover:text-rust"
+                      >
+                        Partner booking site ↗
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </aside>
         </div>
