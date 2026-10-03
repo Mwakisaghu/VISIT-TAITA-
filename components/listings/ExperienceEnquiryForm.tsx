@@ -13,13 +13,18 @@ export default function ExperienceEnquiryForm({ experienceId }: { experienceId: 
     setLoading(true);
     setError("");
     const formData = new FormData(e.currentTarget);
-    const result = await submitExperienceEnquiry(experienceId, formData);
-    setLoading(false);
-    if (result?.error) {
-      setError(result.error);
-      return;
+    try {
+      const result = await submitExperienceEnquiry(experienceId, formData);
+      if (result?.error) {
+        setError(result.error);
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong sending your enquiry — please try again.");
+    } finally {
+      setLoading(false);
     }
-    setSubmitted(true);
   }
 
   if (submitted) {

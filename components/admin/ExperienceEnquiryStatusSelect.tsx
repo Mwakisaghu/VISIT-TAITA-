@@ -20,10 +20,16 @@ export default function ExperienceEnquiryStatusSelect({
       value={value}
       disabled={isPending}
       onChange={(e) => {
+        const previous = value;
         const next = e.target.value;
         setValue(next);
         startTransition(async () => {
-          await updateExperienceEnquiryStatus(enquiryId, next);
+          try {
+            const result = await updateExperienceEnquiryStatus(enquiryId, next);
+            if (result?.error) setValue(previous);
+          } catch {
+            setValue(previous);
+          }
         });
       }}
       className="input"

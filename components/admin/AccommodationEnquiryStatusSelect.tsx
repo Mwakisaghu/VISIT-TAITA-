@@ -20,10 +20,16 @@ export default function AccommodationEnquiryStatusSelect({
       value={value}
       disabled={isPending}
       onChange={(e) => {
+        const previous = value;
         const next = e.target.value;
         setValue(next);
         startTransition(async () => {
-          await updateAccommodationEnquiryStatus(enquiryId, next);
+          try {
+            const result = await updateAccommodationEnquiryStatus(enquiryId, next);
+            if (result?.error) setValue(previous);
+          } catch {
+            setValue(previous);
+          }
         });
       }}
       className="input"
