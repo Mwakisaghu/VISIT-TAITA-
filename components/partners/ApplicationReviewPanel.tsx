@@ -2,6 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { reviewApplication, grantSellerAccess } from "@/lib/actions/partners";
+import { grantPartnerAccess } from "@/lib/actions/partner-access";
+
+type GrantResult = { error?: string; success?: boolean; name?: string } | null;
 
 export default function ApplicationReviewPanel({
   applicationId,
@@ -14,10 +17,11 @@ export default function ApplicationReviewPanel({
 }) {
   const [currentStatus, setCurrentStatus] = useState(status);
   const [isPending, startTransition] = useTransition();
-  const [grantResult, setGrantResult] = useState<{ error?: string; success?: boolean; name?: string } | null>(
-    null
-  );
+  const [grantResult, setGrantResult] = useState<GrantResult>(null);
   const [granting, setGranting] = useState(false);
+
+  const isSeller = partnerType === "SELLER";
+  const isListingPartner = partnerType === "ACCOMMODATION" || partnerType === "EXPERIENCE";
 
   function setStatus(next: "PENDING" | "APPROVED" | "REJECTED") {
     setCurrentStatus(next);
@@ -29,7 +33,9 @@ export default function ApplicationReviewPanel({
   async function handleGrant() {
     setGranting(true);
     setGrantResult(null);
-    const result = await grantSellerAccess(applicationId);
+    const result = isSeller
+      ? await grantSellerAccess(applicationId)
+      : await grantPartnerAccess(applicationId);
     setGrantResult(result);
     setGranting(false);
   }
@@ -57,11 +63,12 @@ export default function ApplicationReviewPanel({
         </div>
       </div>
 
-      {currentStatus === "APPROVED" && partnerType === "SELLER" && (
+      {currentStatus === "APPROVED" && (isSeller || isListingPartner) && (
         <div>
           <p className="font-body text-sm text-stone/70">
-            Grant marketplace access to this applicant if they already have a
-            Visit Taita account under the same email.
+            {isSeller
+              ? "Grant marketplace access to this applicant if they already have a Visit Taita account under the same email."
+              : "Grant partner access (manage their own stay or experience listings) if they already have a Visit Taita account under the same email."}
           </p>
           <button
             type="button"
@@ -69,11 +76,11 @@ export default function ApplicationReviewPanel({
             disabled={granting}
             className="focus-ring mt-3 rounded-full bg-canopy px-5 py-2 font-body text-sm text-parchment hover:bg-canopy-deep disabled:opacity-60"
           >
-            {granting ? "Checking…" : "Grant seller access"}
+            {granting ? "Checking…" : isSeller ? "Grant seller access" : "Grant partner access"}
           </button>
           {grantResult?.success && (
             <p className="mt-2 font-body text-sm text-canopy">
-              {grantResult.name} now has seller access.
+              {grantResult.name} now has {isSeller ? "seller" : "partner"} access.
             </p>
           )}
           {grantResult?.error && (

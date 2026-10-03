@@ -1,10 +1,19 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { deleteAccommodation } from "@/lib/actions/listings";
+import { deleteAccommodation, publishAccommodation } from "@/lib/actions/listings";
 import { formatPrice } from "@/lib/format";
 
 export default async function AdminAccommodationsPage() {
-  const accommodations = await prisma.accommodation.findMany({ orderBy: { updatedAt: "desc" } });
+  const accommodations = await prisma.accommodation.findMany({
+    orderBy: { updatedAt: "desc" },
+    include: { owner: { select: { name: true, role: true } } },
+  });
+
+  // Partner-submitted drafts waiting on an admin — same review step as
+  // Taita Made seller listings.
+  const pendingReview = accommodations.filter(
+    (a) => a.status === "DRAFT" && a.owner?.role === "PARTNER"
+  );
 
   return (
     <div>
@@ -17,6 +26,47 @@ export default async function AdminAccommodationsPage() {
           New accommodation
         </Link>
       </div>
+
+      {pendingReview.length > 0 && (
+        <div className="mt-8 rounded-sm border border-ochre/40 bg-ochre/10 p-5">
+          <p className="font-display text-lg text-stone">
+            Pending partner review ({pendingReview.length})
+          </p>
+          <div className="mt-3 divide-y divide-stone/10">
+            {pendingReview.map((a) => (
+              <div key={a.id} className="flex items-center justify-between gap-4 py-3">
+                <div>
+                  <p className="font-body text-xs text-stone/50">
+                    {a.owner?.name} · {a.type} · {a.region}
+                  </p>
+                  <p className="font-display text-base text-stone">{a.name}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href={`/admin/accommodations/${a.id}`}
+                    className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                  >
+                    Review
+                  </Link>
+                  <form
+                    action={async () => {
+                      "use server";
+                      await publishAccommodation(a.id);
+                    }}
+                  >
+                    <button
+                      type="submit"
+                      className="focus-ring rounded-full bg-canopy px-4 py-1.5 font-body text-sm text-parchment hover:bg-canopy-deep"
+                    >
+                      Publish
+                    </button>
+                  </form>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 divide-y divide-stone/10">
         {accommodations.map((a) => (
