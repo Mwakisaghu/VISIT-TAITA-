@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { notifyAccommodationEnquiry, notifyExperienceEnquiry } from "@/lib/notifications";
 
 type EnquiryResult = { success?: true; error?: string };
 
@@ -80,7 +81,7 @@ export async function submitAccommodationEnquiry(
   });
   if (recentFromEmail >= 5) return TOO_MANY;
 
-  await prisma.accommodationEnquiry.create({
+  const enquiry = await prisma.accommodationEnquiry.create({
     data: {
       accommodationId,
       name: data.name,
@@ -93,6 +94,9 @@ export async function submitAccommodationEnquiry(
       userId: session?.user?.id ?? null,
     },
   });
+
+  // Saved first — a mail failure must never lose the enquiry.
+  await notifyAccommodationEnquiry(enquiry, accommodation);
 
   revalidatePath("/admin/accommodations/enquiries");
   revalidatePath("/admin");
@@ -147,7 +151,7 @@ export async function submitExperienceEnquiry(
   });
   if (recentFromEmail >= 5) return TOO_MANY;
 
-  await prisma.experienceEnquiry.create({
+  const enquiry = await prisma.experienceEnquiry.create({
     data: {
       experienceId,
       name: data.name,
@@ -159,6 +163,8 @@ export async function submitExperienceEnquiry(
       userId: session?.user?.id ?? null,
     },
   });
+
+  await notifyExperienceEnquiry(enquiry, experience);
 
   revalidatePath("/admin/experiences/enquiries");
   revalidatePath("/admin");
