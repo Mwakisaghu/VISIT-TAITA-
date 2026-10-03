@@ -631,3 +631,81 @@ model ExperienceEnquiry {
   @@index([experienceId, status])
   @@index([userId])
 }
+
+// ---------------------------------------------------------------------------
+// Sponsorship — packages, sponsors, and inbound leads
+// ---------------------------------------------------------------------------
+// Packages mirror the rate card in the founding brief. Those figures are
+// "illustrative starting points / negotiation anchors", so the public page
+// presents them as indicative, never as fixed prices. Sponsors are real
+// partners only — nothing is seeded, so the site never shows an invented
+// sponsor.
+
+enum SponsorLeadStatus {
+  NEW
+  CONTACTED
+  PROPOSAL_SENT
+  WON
+  LOST
+}
+
+model SponsorPackage {
+  id            String        @id @default(cuid())
+  slug          String        @unique
+  name          String
+  startingPrice Int // whole KES, indicative "from" figure
+  priceNote     String? // e.g. "per year"
+  rights        String[]      @default([]) // core rights, shown as a list
+  sortOrder     Int           @default(0)
+  status        ContentStatus @default(DRAFT)
+  isDemo        Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  sponsors Sponsor[]
+  leads    SponsorLead[]
+
+  @@index([status, sortOrder])
+}
+
+model Sponsor {
+  id           String         @id @default(cuid())
+  slug         String         @unique
+  name         String
+  logo         String // image URL
+  website      String?
+  programs     EventProgram[] @default([]) // which event pages show this sponsor
+  showOnHome   Boolean        @default(false)
+  displayOrder Int            @default(0)
+  status       ContentStatus  @default(DRAFT)
+  isDemo       Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  packageId String?
+  package   SponsorPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+
+  @@index([status, displayOrder])
+  @@index([packageId])
+}
+
+model SponsorLead {
+  id          String            @id @default(cuid())
+  companyName String
+  contactName String
+  email       String
+  phone       String
+  website     String?
+  budgetRange String?
+  message     String
+  status      SponsorLeadStatus @default(NEW)
+  adminNotes  String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  packageId String?
+  package   SponsorPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([packageId])
+}
