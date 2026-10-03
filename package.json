@@ -9,7 +9,8 @@
     "lint": "next lint",
     "db:seed": "tsx prisma/seed.ts",
     "pesapal:register-ipn": "tsx scripts/register-pesapal-ipn.ts",
-    "dev:turbo": "next dev --turbo"
+    "dev:turbo": "next dev --turbo",
+    "email:test": "tsx scripts/send-test-email.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

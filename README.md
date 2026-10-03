@@ -583,3 +583,33 @@ the chosen package must exist and be published.
 
 ### Not built yet
 Email notification to the team when a lead arrives; sponsor reporting/analytics.
+
+## What's new — Email notifications
+
+Leads and enquiries now reach a person, not just the admin inbox.
+
+| Event | Emailed |
+|---|---|
+| Sponsor lead (`/sponsors`) | Team inbox(es) in `NOTIFY_EMAIL`, with a link to the lead in admin |
+| Stay / experience enquiry | Team inbox(es), **and** the listing's own contact email |
+
+- Replying to either email goes straight to the person who enquired (`Reply-To` is set to them).
+- **Demo listings never email their placeholder contact address** — only the team is told.
+- **Submitters are not sent a confirmation email.** That would let anyone use the public forms to send
+  mail to a third party's address. The on-page confirmation is shown instead.
+- Plain-text only: nothing a visitor types is ever rendered as HTML in an email.
+- A mail failure (or no email setup at all) **never blocks a submission** — the lead or enquiry is
+  saved first, and the email is best-effort with a 4-second timeout.
+
+### Setup (Resend)
+1. Create a free account at https://resend.com and an API key.
+2. Add to `.env`: `RESEND_API_KEY`, `EMAIL_FROM`, `NOTIFY_EMAIL` (see `.env.example`).
+3. Run `npm run email:test -- you@example.com` to confirm it works.
+
+**Important:** until you verify your own domain in Resend, the shared `onboarding@resend.dev` sender only
+delivers to the email address your Resend account was created with — enough for a single team inbox,
+not for emailing listing hosts or several people. Verify a domain, then use an address on it for `EMAIL_FROM`.
+
+### Not built yet
+Retry/queue for failed sends (a failure is logged, not retried); per-listing-owner notification
+preferences; delivery to a Slack/WhatsApp channel.

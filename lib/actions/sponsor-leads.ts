@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { notifySponsorLead } from "@/lib/notifications";
 import { rateLimit } from "@/lib/rate-limit";
 import { safeHttpUrl } from "@/lib/url";
 
@@ -75,16 +76,18 @@ export async function submitSponsorLead(formData: FormData): Promise<SponsorLead
   if (recentFromEmail >= 3) return TOO_MANY;
 
   let packageId: string | null = null;
+  let packageName: string | null = null;
   if (data.packageSlug) {
     const pkg = await prisma.sponsorPackage.findFirst({
       where: { slug: data.packageSlug, status: "PUBLISHED" },
-      select: { id: true },
+      select: { id: true, name: true },
     });
     if (!pkg) return { error: "That package is no longer available — please pick another." };
     packageId = pkg.id;
+    packageName = pkg.name;
   }
 
-  await prisma.sponsorLead.create({
+  const lead = await prisma.sponsorLead.create({
     data: {
       companyName: data.companyName,
       contactName: data.contactName,
@@ -96,6 +99,9 @@ export async function submitSponsorLead(formData: FormData): Promise<SponsorLead
       packageId,
     },
   });
+
+  // Saved first — a mail failure must never lose the lead.
+  await notifySponsorLead(lead, packageName);
 
   revalidatePath("/admin/sponsors/leads");
   revalidatePath("/admin");
