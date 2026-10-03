@@ -8,7 +8,9 @@ import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
 
-const TOO_MANY = { error: "Too many enquiries — please try again a little later." };
+type EnquiryResult = { success?: true; error?: string };
+
+const TOO_MANY: EnquiryResult = { error: "Too many enquiries — please try again a little later." };
 const HOUR_MS = 60 * 60 * 1000;
 
 function clientIp() {
@@ -41,7 +43,10 @@ const accommodationEnquirySchema = z.object({
   path: ["checkOut"],
 });
 
-export async function submitAccommodationEnquiry(accommodationId: string, formData: FormData) {
+export async function submitAccommodationEnquiry(
+  accommodationId: string,
+  formData: FormData
+): Promise<EnquiryResult> {
   const session = await getServerSession(authOptions);
 
   const rawCheckIn = formData.get("checkIn");
@@ -107,7 +112,10 @@ const experienceEnquirySchema = z.object({
   message: z.string().min(10).max(2000),
 });
 
-export async function submitExperienceEnquiry(experienceId: string, formData: FormData) {
+export async function submitExperienceEnquiry(
+  experienceId: string,
+  formData: FormData
+): Promise<EnquiryResult> {
   const session = await getServerSession(authOptions);
 
   const rawDate = formData.get("preferredDate");
