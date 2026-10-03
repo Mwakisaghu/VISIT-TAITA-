@@ -8,6 +8,7 @@ import DemoNotice from "@/components/DemoNotice";
 import ProductCard from "@/components/marketplace/ProductCard";
 import { discoverCategories } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
+import SponsorStrip from "@/components/sponsors/SponsorStrip";
 
 // Public, non-personalized content — safe to cache and revalidate rather
 // than hitting Postgres on every single request.
@@ -177,6 +178,8 @@ export default async function HomePage() {
           </Link>
         </div>
       </section>
+
+      <SponsorStrip program="HOME" />
 
       <Newsletter />
     </>

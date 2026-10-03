@@ -6,6 +6,7 @@ import FixtureRow from "@/components/cup/FixtureRow";
 import DemoNotice from "@/components/DemoNotice";
 import { getStandings } from "@/lib/cup";
 import { prisma } from "@/lib/prisma";
+import SponsorStrip from "@/components/sponsors/SponsorStrip";
 
 export const metadata: Metadata = {
   title: "Taita Cup",
@@ -111,6 +112,8 @@ export default async function TaitaCupPage() {
           </div>
         )}
       </div>
+
+      <SponsorStrip program="TAITA_CUP" />
     </div>
   );
 }

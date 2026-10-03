@@ -4,6 +4,7 @@ import SessionCard from "@/components/festival/SessionCard";
 import DemoNotice from "@/components/DemoNotice";
 import { formatSessionDay } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import SponsorStrip from "@/components/sponsors/SponsorStrip";
 
 export const metadata: Metadata = {
   title: "Taita Week",
@@ -100,6 +101,8 @@ export default async function TaitaWeekPage() {
           </div>
         )}
       </div>
+
+      <SponsorStrip program="TAITA_WEEK" />
     </div>
   );
 }
