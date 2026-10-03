@@ -576,6 +576,24 @@ const experiences = [
   },
 ];
 
+// ---------------------------------------------------------------------------
+// Sponsorship packages — straight from the rate card in the founding brief.
+// The brief calls these "illustrative starting points" and "negotiation
+// anchors, not fixed market prices", so the public page labels them
+// indicative. No sponsors are seeded: only real partners should appear.
+// ---------------------------------------------------------------------------
+
+const sponsorPackages = [
+  { slug: "founding-partner", name: "Founding Partner", startingPrice: 5000000, priceNote: "per year", rights: ["Master visibility", "Content", "Category exclusivity"] },
+  { slug: "taita-cup-title-partner", name: "Taita Cup Title Partner", startingPrice: 3000000, priceNote: null, rights: ["Naming", "Venue", "Content", "Hospitality"] },
+  { slug: "taita-week-title-partner", name: "Taita Week Title Partner", startingPrice: 3000000, priceNote: null, rights: ["Festival naming", "Media"] },
+  { slug: "taita-wild-partner", name: "Taita Wild Partner", startingPrice: 1500000, priceNote: null, rights: ["Conservation association", "Content association"] },
+  { slug: "taita-made-partner", name: "Taita Made Partner", startingPrice: 1000000, priceNote: null, rights: ["Marketplace integration", "Content integration"] },
+  { slug: "taita-youth-partner", name: "Taita Youth Partner", startingPrice: 1000000, priceNote: null, rights: ["Sport programme", "Community programme", "Youth programme"] },
+  { slug: "digital-partner", name: "Digital Partner", startingPrice: 1000000, priceNote: null, rights: ["Platform presence", "Digital presence"] },
+  { slug: "travel-partner", name: "Travel Partner", startingPrice: 750000, priceNote: null, rights: ["Travel content", "Travel offers"] },
+];
+
 async function main() {
 
   // Demo admin account — change this password immediately in any shared environment.
@@ -763,6 +781,15 @@ async function main() {
     });
   }
 
+  // --- Sponsorship packages ---
+  for (const [index, pkg] of sponsorPackages.entries()) {
+    await prisma.sponsorPackage.upsert({
+      where: { slug: pkg.slug },
+      update: {}, // preserve operator edits on re-seed; seed only creates missing rows
+      create: { ...pkg, sortOrder: index, status: "PUBLISHED", isDemo: false },
+    });
+  }
+
   console.log("Seed complete:");
   console.log(`  ${destinations.length} destinations`);
   console.log(`  ${stories.length} stories`);
@@ -773,6 +800,7 @@ async function main() {
   console.log(`  ${partnerApplications.length} sample partner applications`);
   console.log(`  ${festivalVenues.length} venues, ${festivalSessions.length} sessions (Taita Week)`);
   console.log(`  ${accommodations.length} accommodations, ${experiences.length} experiences`);
+  console.log(`  ${sponsorPackages.length} sponsorship packages`);
   console.log(`  admin login: admin@visittaita.example / ChangeMe123!`);
 }
 
