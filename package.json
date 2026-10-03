@@ -8,12 +8,15 @@
     "start": "next start",
     "lint": "next lint",
     "db:seed": "tsx prisma/seed.ts",
-    "pesapal:register-ipn": "tsx scripts/register-pesapal-ipn.ts"
+    "pesapal:register-ipn": "tsx scripts/register-pesapal-ipn.ts",
+    "dev:turbo": "next dev --turbo"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
     "@prisma/client": "^5.18.0",
     "bcryptjs": "^2.4.3",
     "leaflet": "^1.9.4",
