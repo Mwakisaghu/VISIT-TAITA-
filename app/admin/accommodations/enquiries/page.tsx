@@ -4,6 +4,7 @@ import AccommodationEnquiryStatusSelect from "@/components/admin/AccommodationEn
 export default async function AdminAccommodationEnquiriesPage() {
   const enquiries = await prisma.accommodationEnquiry.findMany({
     orderBy: { createdAt: "desc" },
+    take: 200,
     include: { accommodation: true },
   });
 
@@ -35,6 +36,9 @@ export default async function AdminAccommodationEnquiriesPage() {
           </div>
         ))}
         {enquiries.length === 0 && <p className="py-8 font-body text-stone/50">No enquiries yet.</p>}
+        {enquiries.length === 200 && (
+          <p className="py-4 font-body text-xs text-stone/40">Showing the latest 200 enquiries.</p>
+        )}
       </div>
     </div>
   );

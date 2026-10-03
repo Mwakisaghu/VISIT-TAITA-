@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+// Admin pages show live counts and inboxes — never serve a stale prerender.
+export const dynamic = "force-dynamic";
+
 const nav = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/destinations", label: "Destinations" },

@@ -5,6 +5,7 @@ import DemoNotice from "@/components/DemoNotice";
 import AccommodationEnquiryForm from "@/components/listings/AccommodationEnquiryForm";
 import { accommodationTypeLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { safeHttpUrl } from "@/lib/url";
 
 export async function generateStaticParams() {
   const accommodations = await prisma.accommodation.findMany({ select: { slug: true } });
@@ -16,7 +17,9 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const accommodation = await prisma.accommodation.findUnique({ where: { slug: params.slug } });
+  const accommodation = await prisma.accommodation.findFirst({
+    where: { slug: params.slug, status: "PUBLISHED" },
+  });
   if (!accommodation) return {};
   return {
     title: accommodation.name,
@@ -31,8 +34,8 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
   const accommodation = await prisma.accommodation.findUnique({ where: { slug: params.slug } });
   if (!accommodation || accommodation.status !== "PUBLISHED") notFound();
 
-  const hasDirectContact =
-    accommodation.contactPhone || accommodation.contactEmail || accommodation.externalBookingUrl;
+  const bookingUrl = safeHttpUrl(accommodation.externalBookingUrl);
+  const hasDirectContact = accommodation.contactPhone || accommodation.contactEmail || bookingUrl;
 
   return (
     <div>
@@ -130,9 +133,9 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
                         Email {accommodation.contactEmail}
                       </a>
                     )}
-                    {accommodation.externalBookingUrl && (
+                    {bookingUrl && (
                       <a
-                        href={accommodation.externalBookingUrl}
+                        href={bookingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="focus-ring font-body text-sm text-stone hover:text-rust"

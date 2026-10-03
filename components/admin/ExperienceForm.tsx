@@ -45,7 +45,7 @@ export default function ExperienceForm({ experience }: { experience?: Experience
           <input
             name="priceFrom"
             type="number"
-            min={0}
+            min={1}
             defaultValue={experience?.priceFrom ?? ""}
             className="input"
           />

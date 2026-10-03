@@ -44,7 +44,7 @@ export default function PartnerAccommodationForm({ accommodation }: { accommodat
         <input
           name="priceFrom"
           type="number"
-          min={0}
+          min={1}
           defaultValue={accommodation?.priceFrom ?? ""}
           className="input"
           placeholder="Leave blank for 'contact for rates'"

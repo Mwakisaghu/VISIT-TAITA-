@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SectionHeading from "@/components/SectionHeading";
+import DemoNotice from "@/components/DemoNotice";
 import ExperienceCard from "@/components/listings/ExperienceCard";
 import { experienceCategories } from "@/lib/data";
 import { slugToCategory } from "@/lib/format";
@@ -44,6 +45,12 @@ export default async function ExperienceCategoryPage({
           </div>
         ) : (
           <p className="mt-10 font-body text-stone/60">No {c.label.toLowerCase()} experiences listed yet.</p>
+        )}
+
+        {experiences.some((x) => x.isDemo) && (
+          <div className="mt-10">
+            <DemoNotice>sample listings for layout review — prices and availability aren&apos;t verified.</DemoNotice>
+          </div>
         )}
       </div>
     </div>
