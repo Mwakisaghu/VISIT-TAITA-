@@ -525,3 +525,28 @@ hospitality packages for Taita Cup.
 - Map: only Destinations are mapped — Taita Cup venues, Taita Made sellers, and partner businesses don't have pins yet, even though some of those models could reasonably get coordinates later; no clustering (fine at today's scale, would matter once destinations number in the hundreds); no route/directions.
 - Taita Week: `ticketUrl` is just an external link field (e.g. to a third-party ticketing site) — there's no in-platform ticket purchase flow, so `Ticketed` sessions aren't connected to the Pesapal/M-Pesa payment work at all yet. No individual session or venue detail pages — everything lives on the one `/events/taita-week` programme page.
 - Payments: no refunds (would need a separate admin-triggered flow calling Safaricom's reversal API or Pesapal's refund API — neither is built); no partial payments or M-Pesa Till/Buy Goods flow (only Paybill-style STK push); Pesapal-hosted checkout sessions have their own expiry with no explicit reminder to the buyer.
+
+## What's new in Phase 3 — Stay & Experiences
+
+Enquiry-based listings for places to stay and things to do. Deliberately
+not a live booking/payment engine: visitors browse, send an enquiry, and
+the host follows up (or the visitor uses the listing's external booking
+link when one is set). Availability calendars and reviews are deferred.
+
+### Public pages
+- `/stay` — accommodation index with type filters; `/stay/[type]` (hotel, lodge, guesthouse, homestay, campsite); `/stay/listing/[slug]` detail page.
+- `/experiences` — experience index with category filters; `/experiences/[category]` (wildlife, culture, adventure, food, wellness); `/experiences/listing/[slug]` detail page.
+- Detail pages carry a sticky enquiry card: dates/guests (stay) or preferred date/party size (experience), plus direct phone/email/external-booking links when provided. No account needed to enquire.
+- Linked from the nav and included in `sitemap.ts`.
+
+### Admin CMS
+- `/admin/accommodations` and `/admin/experiences` — create, edit, delete, with a "Pending partner review" queue and one-click Publish for partner-submitted drafts.
+- `/admin/accommodations/enquiries` and `/admin/experiences/enquiries` — enquiry inboxes with status `NEW → CONTACTED → CONFIRMED / DECLINED`.
+
+### Partner dashboard (`/partner`)
+- Approving an `ACCOMMODATION` or `EXPERIENCE` application in `/admin/partners` offers **Grant partner access**, which sets the applicant's existing account to the `PARTNER` role (same rules as seller access: the account must already exist, admins are never downgraded).
+- `PARTNER` users manage their own listings at `/partner/accommodations` and `/partner/experiences`. New listings always save as `DRAFT`; an admin publishes them. Ownership is enforced server-side.
+- Sellers keep `/partner/products`; the sidebar and dashboard stats adapt to the signed-in role.
+
+### Data model additions
+`Accommodation`, `Experience`, `AccommodationEnquiry`, `ExperienceEnquiry`, and the `AccommodationType`, `ExperienceCategory` and `EnquiryStatus` enums. Run `npx prisma migrate dev` and `npm run db:seed` (4 sample stays and 4 sample experiences, flagged `isDemo`).
