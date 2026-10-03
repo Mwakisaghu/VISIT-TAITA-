@@ -18,6 +18,8 @@ export default async function AdminOverviewPage() {
     experiences,
     pendingAccommodationEnquiries,
     pendingExperienceEnquiries,
+    sponsors,
+    newSponsorLeads,
   ] = await Promise.all([
     prisma.destination.count(),
     prisma.story.count(),
@@ -35,6 +37,8 @@ export default async function AdminOverviewPage() {
     prisma.experience.count(),
     prisma.accommodationEnquiry.count({ where: { status: "NEW" } }),
     prisma.experienceEnquiry.count({ where: { status: "NEW" } }),
+    prisma.sponsor.count({ where: { status: "PUBLISHED" } }),
+    prisma.sponsorLead.count({ where: { status: "NEW" } }),
   ]);
 
   const stats = [
@@ -54,6 +58,8 @@ export default async function AdminOverviewPage() {
     { label: "Experiences", value: experiences },
     { label: "New stay enquiries", value: pendingAccommodationEnquiries },
     { label: "New experience enquiries", value: pendingExperienceEnquiries },
+    { label: "Published sponsors", value: sponsors },
+    { label: "New sponsor leads", value: newSponsorLeads },
   ];
 
   return (

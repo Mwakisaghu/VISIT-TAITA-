@@ -41,6 +41,11 @@ export default function Footer() {
                   Partners &amp; sponsors
                 </Link>
               </li>
+              <li>
+                <Link href="/sponsors" className="focus-ring hover:text-ochre">
+                  Sponsorship packages
+                </Link>
+              </li>
               <li>Advertise with us</li>
               <li>Contact the team</li>
             </ul>

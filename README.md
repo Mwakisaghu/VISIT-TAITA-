@@ -550,3 +550,36 @@ link when one is set). Availability calendars and reviews are deferred.
 
 ### Data model additions
 `Accommodation`, `Experience`, `AccommodationEnquiry`, `ExperienceEnquiry`, and the `AccommodationType`, `ExperienceCategory` and `EnquiryStatus` enums. Run `npx prisma migrate dev` and `npm run db:seed` (4 sample stays and 4 sample experiences, flagged `isDemo`).
+
+## What's new in Phase 3 — Sponsorship hub
+
+Sponsorship is the largest revenue line in the founding brief, so it gets its own module: a public
+pitch page, a lead pipeline, and logo placement on the pages sponsors care about.
+
+### Public pages
+- `/sponsors` — what a partnership is built on, current partners, the rate-card packages as
+  **indicative** "from" figures (the brief calls them negotiation anchors, not fixed prices), and an
+  enquiry form. Package cards deep-link to the form with that package preselected
+  (`/sponsors?package=<slug>#enquire`).
+- Sponsor logo strips on Taita Cup, Taita Week and the homepage. Each strip renders only when at
+  least one **published** sponsor is assigned to it, so nothing appears until a real partner is added.
+- Linked from the footer and included in `sitemap.ts`.
+
+### Lead form protections
+Honeypot field; 5 submissions per IP per 10 minutes (best-effort, in-memory — resets on restart and
+isn't shared across instances); 3 per email per hour (database-backed); website must be http(s);
+the chosen package must exist and be published.
+
+### Admin CMS (`/admin/sponsors/...`)
+- `/admin/sponsors` — add/edit/delete confirmed sponsors: logo, website, package, which programme
+  pages show them (Taita Cup / Week / Sound), homepage toggle, display order, draft/published.
+- `/admin/sponsors/packages` — the rate-card packages (price, note, rights, order, status).
+- `/admin/sponsors/leads` — lead inbox with a detail page: pipeline status
+  (`NEW → CONTACTED → PROPOSAL_SENT → WON / LOST`) and internal notes.
+
+### Data model additions
+`SponsorPackage`, `Sponsor`, `SponsorLead` and the `SponsorLeadStatus` enum. `npm run db:seed` loads the
+8 packages from the brief's rate card. No sponsors are seeded — only list real, confirmed partners.
+
+### Not built yet
+Email notification to the team when a lead arrives; sponsor reporting/analytics.
