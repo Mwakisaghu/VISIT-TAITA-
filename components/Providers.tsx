@@ -5,7 +5,7 @@ import CartProvider from "@/components/marketplace/CartProvider";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    <SessionProvider refetchOnWindowFocus={false}>
       <CartProvider>{children}</CartProvider>
     </SessionProvider>
   );
