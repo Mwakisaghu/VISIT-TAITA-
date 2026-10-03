@@ -750,7 +750,7 @@ async function main() {
   for (const a of accommodations) {
     await prisma.accommodation.upsert({
       where: { slug: a.slug },
-      update: { ...a, status: "PUBLISHED", ownerId: admin.id },
+      update: {}, // preserve operator edits on re-seed; seed only creates missing rows
       create: { ...a, status: "PUBLISHED", isDemo: true, ownerId: admin.id },
     });
   }
@@ -758,7 +758,7 @@ async function main() {
   for (const x of experiences) {
     await prisma.experience.upsert({
       where: { slug: x.slug },
-      update: { ...x, status: "PUBLISHED", ownerId: admin.id },
+      update: {}, // preserve operator edits on re-seed; seed only creates missing rows
       create: { ...x, status: "PUBLISHED", isDemo: true, ownerId: admin.id },
     });
   }
