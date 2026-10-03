@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SectionHeading from "@/components/SectionHeading";
+import DemoNotice from "@/components/DemoNotice";
 import AccommodationCard from "@/components/listings/AccommodationCard";
 import { accommodationTypes } from "@/lib/data";
 import { slugToCategory } from "@/lib/format";
@@ -40,6 +41,12 @@ export default async function StayTypePage({ params }: { params: { type: string 
           </div>
         ) : (
           <p className="mt-10 font-body text-stone/60">No {t.label.toLowerCase()} listed yet.</p>
+        )}
+
+        {accommodations.some((a) => a.isDemo) && (
+          <div className="mt-10">
+            <DemoNotice>sample listings for layout review — rates and availability aren&apos;t verified.</DemoNotice>
+          </div>
         )}
       </div>
     </div>

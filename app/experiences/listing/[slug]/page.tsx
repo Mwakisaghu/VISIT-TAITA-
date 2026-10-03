@@ -5,6 +5,7 @@ import DemoNotice from "@/components/DemoNotice";
 import ExperienceEnquiryForm from "@/components/listings/ExperienceEnquiryForm";
 import { experienceCategoryLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { safeHttpUrl } from "@/lib/url";
 
 export async function generateStaticParams() {
   const experiences = await prisma.experience.findMany({ select: { slug: true } });
@@ -16,7 +17,9 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const experience = await prisma.experience.findUnique({ where: { slug: params.slug } });
+  const experience = await prisma.experience.findFirst({
+    where: { slug: params.slug, status: "PUBLISHED" },
+  });
   if (!experience) return {};
   return {
     title: experience.name,
@@ -36,8 +39,8 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
     experience.groupSizeMax ? { label: "Max group size", value: `${experience.groupSizeMax} people` } : null,
   ].filter(Boolean) as { label: string; value: string }[];
 
-  const hasDirectContact =
-    experience.contactPhone || experience.contactEmail || experience.externalBookingUrl;
+  const bookingUrl = safeHttpUrl(experience.externalBookingUrl);
+  const hasDirectContact = experience.contactPhone || experience.contactEmail || bookingUrl;
 
   return (
     <div>
@@ -130,9 +133,9 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
                         Email {experience.contactEmail}
                       </a>
                     )}
-                    {experience.externalBookingUrl && (
+                    {bookingUrl && (
                       <a
-                        href={experience.externalBookingUrl}
+                        href={bookingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="focus-ring font-body text-sm text-stone hover:text-rust"
