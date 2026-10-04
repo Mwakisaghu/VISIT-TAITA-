@@ -1,0 +1,107 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
+import { isRedeemable } from "@/lib/rewards";
+import { generateVoucherCode } from "@/lib/voucher-code";
+
+export type RedeemResult = {
+  success?: true;
+  error?: string;
+  code?: string;
+  rewardName?: string;
+  pointsSpent?: number;
+  newBalance?: number;
+};
+
+/** A problem the visitor should be told about; thrown inside the transaction so everything rolls back. */
+class RedeemError extends Error {}
+
+function isUniqueViolation(err: unknown) {
+  return typeof err === "object" && err !== null && (err as { code?: string }).code === "P2002";
+}
+
+/**
+ * Spends points on a reward and issues a voucher code — all in ONE transaction:
+ *  1. the points are taken with a conditional update (balance >= cost), so two
+ *     simultaneous redemptions can never spend the same points;
+ *  2. limited stock is taken the same way, so the last unit can't be given twice;
+ *  3. the voucher and the ledger entry are written together.
+ * If any step fails, nothing is kept.
+ */
+export async function redeemReward(rewardId: string): Promise<RedeemResult> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return { error: "Please sign in to redeem rewards." };
+  const userId = session.user.id;
+
+  if (!rateLimit(`redeem:${userId}`, 5, 60 * 1000)) {
+    return { error: "Too many attempts — please wait a minute and try again." };
+  }
+
+  // A voucher-code collision (vanishingly rare) aborts the transaction, so we
+  // retry the whole thing with a fresh code.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const result = await prisma.$transaction(async (tx) => {
+        const reward = await tx.reward.findFirst({
+          where: { id: String(rewardId), status: "PUBLISHED" },
+        });
+        if (!reward || !isRedeemable(reward)) {
+          throw new RedeemError("This reward isn't available any more.");
+        }
+
+        const spent = await tx.user.updateMany({
+          where: { id: userId, points: { gte: reward.pointsCost } },
+          data: { points: { decrement: reward.pointsCost } },
+        });
+        if (spent.count === 0) {
+          throw new RedeemError(`You need ${reward.pointsCost} points for this reward.`);
+        }
+
+        if (reward.stock !== null) {
+          const taken = await tx.reward.updateMany({
+            where: { id: reward.id, stock: { gt: 0 } },
+            data: { stock: { decrement: 1 } },
+          });
+          if (taken.count === 0) throw new RedeemError("Sorry — that reward has just run out.");
+        }
+
+        const code = generateVoucherCode();
+        const redemption = await tx.rewardRedemption.create({
+          data: { code, userId, rewardId: reward.id, pointsSpent: reward.pointsCost },
+        });
+        await tx.pointsEntry.create({
+          data: {
+            userId,
+            points: -reward.pointsCost,
+            reason: "REDEMPTION",
+            redemptionId: redemption.id,
+            note: `Redeemed: ${reward.name}`,
+          },
+        });
+
+        const user = await tx.user.findUnique({ where: { id: userId }, select: { points: true } });
+        return {
+          code,
+          rewardName: reward.name,
+          pointsSpent: reward.pointsCost,
+          newBalance: user?.points ?? 0,
+        };
+      });
+
+      revalidatePath("/passport");
+      revalidatePath("/passport/rewards");
+      revalidatePath("/admin/rewards");
+      return { success: true, ...result };
+    } catch (err) {
+      if (err instanceof RedeemError) return { error: err.message };
+      if (isUniqueViolation(err) && attempt < 2) continue; // code collision — try again
+      console.error("[rewards] redemption failed", err);
+      return { error: "Something went wrong — your points were not spent. Please try again." };
+    }
+  }
+  return { error: "Something went wrong — your points were not spent. Please try again." };
+}
