@@ -48,6 +48,8 @@ model User {
   redemptions          RewardRedemption[]
   rewardsOwned         Reward[]           @relation("RewardPartner")
   reviews              Review[]
+  creatorApplications  CreatorApplication[]
+  creator              Creator?
 
   accommodationsOwned    Accommodation[]        @relation("AccommodationOwner")
   experiencesOwned       Experience[]           @relation("ExperienceOwner")
@@ -855,4 +857,86 @@ model Review {
   @@index([accommodationId, status])
   @@index([experienceId, status])
   @@index([status, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Taita Field Crew — creators (Phase 1: applications + public profiles)
+// ---------------------------------------------------------------------------
+// A CreatorApplication is a request staff review; a Creator profile exists only
+// once someone is approved (and then their account gets the CREATOR role).
+// Two tracks: LOCAL_VOICE (community storytellers, no audience requirement) and
+// VISITING_CREATOR. Follower numbers are self-reported and unverifiable, so they
+// live only in an admin-only note and are never shown publicly. Links only —
+// there is no file storage.
+
+enum CreatorTrack {
+  LOCAL_VOICE
+  VISITING_CREATOR
+}
+
+enum CreatorSpecialty {
+  PHOTOGRAPHY
+  VIDEO
+  WRITING
+  AUDIO
+  SOCIAL
+  ILLUSTRATION
+}
+
+enum CreatorApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum CreatorStatus {
+  ACTIVE
+  PAUSED
+}
+
+model CreatorApplication {
+  id              String                   @id @default(cuid())
+  userId          String
+  track           CreatorTrack
+  displayName     String
+  bio             String
+  specialties     CreatorSpecialty[]       @default([])
+  location        String?
+  portfolioLinks  String[]                 @default([])
+  pitch           String // why Taita, and a story or mission idea
+  followerNote    String? // self-reported, admin-only, never shown publicly
+  agreedToTermsAt DateTime // creator guidelines (incl. disclosure rules) accepted
+  termsVersion    String
+  status          CreatorApplicationStatus @default(PENDING)
+  rejectionReason String? // shown to the applicant
+  adminNotes      String? // internal
+  reviewedAt      DateTime?
+  reviewedById    String?
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([userId, status])
+}
+
+model Creator {
+  id          String             @id @default(cuid())
+  userId      String             @unique
+  slug        String             @unique
+  displayName String
+  track       CreatorTrack
+  bio         String
+  specialties CreatorSpecialty[] @default([])
+  location    String?
+  avatar      String?
+  links       String[]           @default([])
+  status      CreatorStatus      @default(ACTIVE)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, track])
 }
