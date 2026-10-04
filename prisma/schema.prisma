@@ -47,6 +47,7 @@ model User {
   pointsEntries        PointsEntry[]
   redemptions          RewardRedemption[]
   rewardsOwned         Reward[]           @relation("RewardPartner")
+  reviews              Review[]
 
   accommodationsOwned    Accommodation[]        @relation("AccommodationOwner")
   experiencesOwned       Experience[]           @relation("ExperienceOwner")
@@ -566,6 +567,7 @@ model Accommodation {
   owner   User?   @relation("AccommodationOwner", fields: [ownerId], references: [id], onDelete: SetNull)
 
   enquiries AccommodationEnquiry[]
+  reviews   Review[]
 
   @@index([type, status])
   @@index([ownerId])
@@ -616,6 +618,7 @@ model Experience {
   owner   User?   @relation("ExperienceOwner", fields: [ownerId], references: [id], onDelete: SetNull)
 
   enquiries ExperienceEnquiry[]
+  reviews   Review[]
 
   @@index([category, status])
   @@index([ownerId])
@@ -809,4 +812,47 @@ model RewardRedemption {
 
   @@index([userId, createdAt])
   @@index([rewardId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Reviews — stays and experiences
+// ---------------------------------------------------------------------------
+// A review targets EXACTLY ONE of accommodation / experience (enforced in the
+// server action; the two unique constraints below stop a person reviewing the
+// same listing twice). Reviews are moderated: they are PENDING until an admin
+// approves them, and an edited review goes back to PENDING. "verified" is a
+// snapshot taken when the review was written: the author had a CONFIRMED
+// enquiry for that listing.
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Review {
+  id              String       @id @default(cuid())
+  userId          String
+  accommodationId String?
+  experienceId    String?
+  rating          Int // 1-5, enforced in the server action
+  title           String?
+  body            String
+  verified        Boolean      @default(false)
+  status          ReviewStatus @default(PENDING)
+  rejectionReason String?
+  moderatedAt     DateTime?
+  moderatedById   String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accommodation Accommodation? @relation(fields: [accommodationId], references: [id], onDelete: Cascade)
+  experience    Experience?    @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, accommodationId])
+  @@unique([userId, experienceId])
+  @@index([accommodationId, status])
+  @@index([experienceId, status])
+  @@index([status, createdAt])
 }
