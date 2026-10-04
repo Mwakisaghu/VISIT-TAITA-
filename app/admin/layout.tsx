@@ -29,7 +29,7 @@ const nav = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto flex max-w-6xl gap-10 px-6 py-12">
-      <aside className="w-48 shrink-0">
+      <aside className="w-48 shrink-0 print:hidden">
         <p className="font-display text-xl text-stone">Admin</p>
         <nav className="mt-6 flex flex-col gap-1 font-body text-sm">
           {nav.map((item) => (

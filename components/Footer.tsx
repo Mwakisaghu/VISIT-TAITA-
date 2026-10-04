@@ -13,7 +13,7 @@ const worlds = [
 
 export default function Footer() {
   return (
-    <footer className="bg-stone text-parchment/80">
+    <footer className="bg-stone text-parchment/80 print:hidden">
       <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-12 md:grid-cols-3">
           <div>

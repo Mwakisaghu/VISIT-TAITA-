@@ -25,7 +25,7 @@ export default function Nav() {
   const isSeller = !!session && session.user.role === "SELLER";
 
   return (
-    <header className="sticky top-0 z-50 bg-stone/95 backdrop-blur text-parchment">
+    <header className="sticky top-0 z-50 bg-stone/95 backdrop-blur text-parchment print:hidden">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="font-display text-lg tracking-tight">
           Visit Taita
