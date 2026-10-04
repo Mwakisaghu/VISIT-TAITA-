@@ -198,6 +198,8 @@ model Visit {
   destinationId String
   visitedAt     DateTime @default(now())
   method        VisitMethod @default(SELF_REPORTED)
+  // The last time this person passed a QR/GPS check-in here (refreshed on repeats; visitedAt stays the first).
+  lastVerifiedAt DateTime?
 
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   destination Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
@@ -744,6 +746,7 @@ enum VisitMethod {
 enum PointsReason {
   LEGACY // balance carried over from before the ledger existed
   CHECKIN
+  MISSION
   REDEMPTION
   REFUND
   ADJUSTMENT
@@ -942,6 +945,7 @@ model Creator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   claims MissionClaim[]
+  notes  FieldNote[]
 
   @@index([status, track])
 }
@@ -1002,6 +1006,7 @@ model Mission {
   destination Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
   sponsor     Sponsor?    @relation(fields: [sponsorId], references: [id], onDelete: SetNull)
   claims      MissionClaim[]
+  notes       FieldNote[]
 
   @@index([status, closesAt])
   @@index([destinationId])
@@ -1020,7 +1025,62 @@ model MissionClaim {
 
   mission Mission @relation(fields: [missionId], references: [id], onDelete: Restrict)
   creator Creator @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  note    FieldNote?
 
   @@unique([missionId, creatorId])
+  @@index([creatorId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Taita Field Crew — Field Notes (Phase 3)
+// ---------------------------------------------------------------------------
+// A creator's structured report on a mission. It can only be filed after a
+// VERIFIED check-in (QR or GPS) at the mission's destination made AFTER the
+// mission was claimed; that check-in's time and method are copied onto the note
+// (verifiedAt / verifiedMethod), which is what the public "Verified on location"
+// badge shows. The answers line up with promptsSnapshot (the mission's prompts
+// as they were when filed), so editing a mission later can't scramble old notes.
+// disclosureText is the hosted/sponsored line as it stood at filing time.
+// Approval publishes the note, completes the claim and awards the mission's
+// points once (the PENDING -> APPROVED move is a conditional update).
+
+enum FieldNoteStatus {
+  PENDING
+  APPROVED
+  CHANGES_REQUESTED
+  HIDDEN
+}
+
+model FieldNote {
+  id                  String          @id @default(cuid())
+  slug                String          @unique // "<mission-slug>--<creator-slug>"
+  claimId             String          @unique
+  missionId           String
+  creatorId           String
+  title               String
+  promptsSnapshot     String[]        @default([])
+  answers             String[]        @default([])
+  body                String?
+  photos              String[]        @default([])
+  links               String[]        @default([])
+  disclosureText      String?
+  disclosureConfirmed Boolean         @default(false)
+  verifiedAt          DateTime
+  verifiedMethod      VisitMethod
+  status              FieldNoteStatus @default(PENDING)
+  reviewNote          String? // shown to the creator when changes are requested
+  reviewedAt          DateTime?
+  reviewedById        String?
+  publishedAt         DateTime?
+  pointsAwarded       Int             @default(0)
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  claim   MissionClaim @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  mission Mission      @relation(fields: [missionId], references: [id], onDelete: Restrict)
+  creator Creator      @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([missionId, status])
   @@index([creatorId, status])
 }
