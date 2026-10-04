@@ -44,6 +44,8 @@ model User {
   productsSold       Product[]     @relation("ProductsSold")
   ordersPlaced       Order[]       @relation("OrdersPlaced")
   applicationsReviewed PartnerApplication[] @relation("ApplicationsReviewed")
+  pointsEntries        PointsEntry[]
+  redemptions          RewardRedemption[]
 
   accommodationsOwned    Accommodation[]        @relation("AccommodationOwner")
   experiencesOwned       Experience[]           @relation("ExperienceOwner")
@@ -89,6 +91,11 @@ model Destination {
 
   createdById String?
   createdBy   User?   @relation("DestinationCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  // Passport check-ins: a secret printed in the plaque's QR code (rotate to
+  // invalidate a leaked one) and how close, in metres, a GPS check-in must be.
+  checkinToken   String? @unique
+  checkinRadiusM Int     @default(300)
 
   visits Visit[]
 
@@ -185,6 +192,7 @@ model Visit {
   userId        String
   destinationId String
   visitedAt     DateTime @default(now())
+  method        VisitMethod @default(SELF_REPORTED)
 
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   destination Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
@@ -708,4 +716,89 @@ model SponsorLead {
 
   @@index([status, createdAt])
   @@index([packageId])
+}
+
+// ---------------------------------------------------------------------------
+// Passport — verified check-ins, points ledger, rewards
+// ---------------------------------------------------------------------------
+// Points are a LEDGER: User.points is a cached balance that must equal the sum
+// of that user's PointsEntry rows. Only verified check-ins (QR / GPS) earn
+// points; the old self-reported "mark visited" earns none, because points can
+// now be spent on real rewards.
+
+enum VisitMethod {
+  SELF_REPORTED
+  QR
+  LOCATION
+}
+
+enum PointsReason {
+  LEGACY // balance carried over from before the ledger existed
+  CHECKIN
+  REDEMPTION
+  REFUND
+  ADJUSTMENT
+}
+
+enum RedemptionStatus {
+  ISSUED
+  USED
+  CANCELLED
+}
+
+model PointsEntry {
+  id            String       @id @default(cuid())
+  userId        String
+  points        Int // positive = earned, negative = spent
+  reason        PointsReason
+  note          String?
+  destinationId String? // set for CHECKIN entries
+  redemptionId  String? // set for REDEMPTION / REFUND entries
+  createdAt     DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // One CHECKIN award per person per destination, enforced by the database,
+  // so un-marking and re-marking a visit can never farm points.
+  // (NULL destinationId rows — legacy, redemptions — never conflict.)
+  @@unique([userId, destinationId, reason])
+  @@index([userId, createdAt])
+}
+
+model Reward {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  name         String
+  description  String
+  pointsCost   Int
+  image        String?
+  partnerName  String? // who honours it, e.g. a lodge or sponsor
+  instructions String // how the holder redeems the voucher
+  stock        Int? // null = unlimited
+  validUntil   DateTime?
+  status       ContentStatus @default(DRAFT)
+  isDemo       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  redemptions RewardRedemption[]
+
+  @@index([status, pointsCost])
+}
+
+model RewardRedemption {
+  id          String           @id @default(cuid())
+  code        String           @unique // short voucher code shown to the holder
+  userId      String
+  rewardId    String
+  pointsSpent Int
+  status      RedemptionStatus @default(ISSUED)
+  createdAt   DateTime         @default(now())
+  usedAt      DateTime?
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward Reward @relation(fields: [rewardId], references: [id], onDelete: Restrict)
+
+  @@index([userId, createdAt])
+  @@index([rewardId, status])
 }
