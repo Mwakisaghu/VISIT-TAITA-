@@ -26,6 +26,7 @@ const nav = [
   { href: "/admin/partners", label: "Partners" },
   { href: "/admin/reviews", label: "Reviews" },
   { href: "/admin/creators", label: "Creators" },
+  { href: "/admin/missions", label: "Missions" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/rewards/redemptions", label: "Vouchers" },
   { href: "/admin/sponsors", label: "Sponsors" },

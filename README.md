@@ -784,4 +784,39 @@ The guidelines shown on the application form are a plain-language **draft**. Hav
 `CreatorApplication`, `Creator`, and the `CreatorTrack`, `CreatorSpecialty`, `CreatorApplicationStatus`, `CreatorStatus` enums.
 
 ### Not built yet
-Missions, Field Notes and verified-on-location badges, creator dashboard, impact tracking.
+Field Notes and verified-on-location badges (Phase 3), impact tracking and sponsor reporting (Phase 4).
+
+## What's new — Field Crew missions
+
+Phase 2 of the Field Crew: **missions** — briefs for creators, each tied to a real place.
+
+- **Missions** (`/admin/missions`): title, summary, brief, optional campaign and image, a **destination**, who it's
+  open to (both tracks, or one), up to 8 **evidence prompts** ("what it costs", "how long it takes", "one honest
+  caveat" — evidence, not adjectives), reward points, an optional spot limit and deadline. They are Draft / Open /
+  Closed.
+- **Opening a mission is checked.** It needs at least one prompt, a deadline not already past, and a destination that is
+  **published and can actually be checked in at** (a QR code or coordinates) — because Phase 3's "verified on
+  location" needs a place that can be verified. The reason is shown if it can't open.
+- **Disclosure is built in.** A mission is *independent*, *hosted* (a partner provides e.g. a stay) or *sponsored* (a
+  sponsor from the sponsorship hub funds it). Hosted and sponsored missions must say who and what is provided; that is
+  shown publicly ("Presented by …", "Hosted by …") and the **suggested disclosure line** creators paste into their posts
+  is generated from it (e.g. "In partnership with Acme Co through Visit Taita. #ad"). It is a suggestion to make
+  disclosure the easy default — not legal advice.
+- **Public pages:** `/missions` (open missions, plus recently closed) and `/missions/<slug>` — cached, with the visitor's
+  own claim state loaded on the client. Drafts are never public.
+- **Claiming** (Field Crew members only): a creator claims a spot, and can withdraw. The spot is taken with a
+  conditional update inside a transaction, so two creators can't both take the last one; a failed claim gives the spot
+  back. Limits: one claim per mission per creator (a withdrawn claim can be re-claimed), **3 active missions at a time**,
+  and the mission's track and deadline are enforced. Paused creators can't claim.
+- **`/crew`** — a creator's own page: their claimed missions with the prompts and their disclosure line, and the open
+  missions available to them. Being a creator is a **profile**, not a role, so a partner or staff member with a
+  profile can use it too; the Crew link in the nav shows for the Creator role.
+- A mission that has been claimed can only be closed, not deleted.
+- Also fixed: the **Partner** nav link now shows for `PARTNER` accounts (it only showed for sellers, so listing and
+  voucher partners had no link to their own dashboard).
+
+### Data model additions
+`Mission`, `MissionClaim`, and the `MissionStatus`, `MissionSupport`, `MissionClaimStatus` enums.
+
+### Not built yet
+Filing a Field Note, the verified-on-location check and badge, and awarding a mission's reward points (Phase 3).
