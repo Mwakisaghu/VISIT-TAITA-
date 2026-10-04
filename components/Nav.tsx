@@ -22,7 +22,9 @@ export default function Nav() {
   const { data: session, status } = useSession();
   const { count } = useCart();
   const isAdmin = !!session && ADMIN_ROLES.includes(session.user.role);
-  const isSeller = !!session && session.user.role === "SELLER";
+  // Sellers and listing/voucher partners both use the /partner dashboard (partners had no link before).
+  const isSeller = !!session && (session.user.role === "SELLER" || session.user.role === "PARTNER");
+  const isCreator = !!session && session.user.role === "CREATOR";
 
   return (
     <header className="sticky top-0 z-50 bg-stone/95 backdrop-blur text-parchment print:hidden">
@@ -49,6 +51,11 @@ export default function Nav() {
           {isSeller && (
             <Link href="/partner" className="focus-ring rounded-sm transition-colors hover:text-ochre">
               Partner
+            </Link>
+          )}
+          {isCreator && (
+            <Link href="/crew" className="focus-ring rounded-sm transition-colors hover:text-ochre">
+              Crew
             </Link>
           )}
           {isAdmin && (
@@ -121,6 +128,11 @@ export default function Nav() {
           {isSeller && (
             <Link href="/partner" onClick={() => setOpen(false)} className="focus-ring rounded-sm py-3">
               Partner
+            </Link>
+          )}
+          {isCreator && (
+            <Link href="/crew" onClick={() => setOpen(false)} className="focus-ring rounded-sm py-3">
+              Crew
             </Link>
           )}
           {isAdmin && (

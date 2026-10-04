@@ -51,6 +51,11 @@ export default function Footer() {
                   Field Crew
                 </Link>
               </li>
+              <li>
+                <Link href="/missions" className="focus-ring hover:text-ochre">
+                  Missions
+                </Link>
+              </li>
               <li>Advertise with us</li>
               <li>Contact the team</li>
             </ul>
