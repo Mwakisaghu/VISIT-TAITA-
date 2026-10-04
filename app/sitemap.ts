@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 const base = (process.env.NEXT_PUBLIC_APP_URL || "https://visittaita.example").replace(/\/+$/, "");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [stories, teams, products, accommodations, experiences] = await Promise.all([
+  const [stories, teams, products, accommodations, experiences, creators] = await Promise.all([
     prisma.story.findMany({
       where: { status: "PUBLISHED" },
       select: { slug: true, updatedAt: true },
@@ -23,6 +23,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       where: { status: "PUBLISHED" },
       select: { slug: true, updatedAt: true },
     }),
+    prisma.creator.findMany({
+      where: { status: "ACTIVE" },
+      select: { slug: true, updatedAt: true },
+    }),
   ]);
 
   const staticRoutes = [
@@ -38,6 +42,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/partners",
     "/partners/apply",
     "/sponsors",
+    "/creators",
     "/map",
   ].map((path) => ({
     url: `${base}${path}`,
@@ -89,6 +94,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: x.updatedAt,
   }));
 
+  const creatorRoutes = creators.map((c) => ({
+    url: `${base}/creators/${c.slug}`,
+    lastModified: c.updatedAt,
+  }));
+
   return [
     ...staticRoutes,
     ...categoryRoutes,
@@ -100,5 +110,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...productRoutes,
     ...accommodationRoutes,
     ...experienceRoutes,
+    ...creatorRoutes,
   ];
 }

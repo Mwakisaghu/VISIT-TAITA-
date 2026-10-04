@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import DemoNotice from "@/components/DemoNotice";
 import StoryCard from "@/components/StoryCard";
 import { categoryLabel } from "@/lib/format";
@@ -28,8 +29,14 @@ export async function generateMetadata({
 export const revalidate = 60;
 
 export default async function StoryPage({ params }: { params: { slug: string } }) {
-  const story = await prisma.story.findUnique({ where: { slug: params.slug } });
+  const story = await prisma.story.findUnique({
+    where: { slug: params.slug },
+    include: { author: { select: { creator: { select: { slug: true, displayName: true, status: true } } } } },
+  });
   if (!story || story.status !== "PUBLISHED") notFound();
+
+  // Credit the author only when they are an ACTIVE Field Crew member — never expose a staff account name.
+  const byline = story.author?.creator?.status === "ACTIVE" ? story.author.creator : null;
 
   const related = await prisma.story.findMany({
     where: { status: "PUBLISHED", slug: { not: story.slug } },
@@ -45,6 +52,14 @@ export default async function StoryPage({ params }: { params: { slug: string } }
           {story.title}
         </h1>
         <p className="mt-4 font-body text-sm text-stone/60">{story.readingTime}</p>
+        {byline && (
+          <p className="mt-2 font-body text-sm text-stone/70">
+            By{" "}
+            <Link href={`/creators/${byline.slug}`} className="underline hover:text-rust">
+              {byline.displayName}
+            </Link>
+          </p>
+        )}
 
         <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-sm">
           <Image

@@ -314,3 +314,89 @@ export async function notifyNewReview(r: {
     console.error("[notify] review notification failed", err);
   }
 }
+
+// ---------------------------------------------------------------------------
+// Field Crew: applications and decisions
+// ---------------------------------------------------------------------------
+// A new application goes to the team inbox. A decision goes to the applicant's own
+// account email (never to an address typed into a public form). Never throws.
+
+export async function notifyCreatorApplication(a: {
+  track: string;
+  displayName: string;
+  specialties: string[];
+  location: string | null;
+  linkCount: number;
+  pitch: string;
+}) {
+  try {
+    const team = parseRecipients(process.env.NOTIFY_EMAIL);
+    if (team.length === 0) return;
+    const pitch = a.pitch.length > 300 ? `${a.pitch.slice(0, 300).trimEnd()}…` : a.pitch;
+    await sendEmail({
+      to: team,
+      subject: `New Field Crew application: ${a.displayName}`,
+      text: [
+        "Someone has applied to join the Taita Field Crew.",
+        "",
+        details([
+          ["Name", a.displayName],
+          ["Track", a.track === "LOCAL_VOICE" ? "Local Voice" : "Visiting Creator"],
+          ["Creates", a.specialties.join(", ")],
+          ["Based in", a.location],
+          ["Portfolio links", a.linkCount],
+        ]),
+        "",
+        "Pitch:",
+        pitch,
+        "",
+        `Review it: ${adminLink("/admin/creators")}`,
+      ].join("\n"),
+    });
+  } catch (err) {
+    console.error("[notify] creator application notification failed", err);
+  }
+}
+
+export async function notifyCreatorDecision(d: {
+  decision: "APPROVED" | "REJECTED";
+  email: string;
+  name: string;
+  slug: string | null;
+  reason: string | null;
+}) {
+  try {
+    if (!isValidEmail(d.email.trim().toLowerCase())) return;
+    if (d.decision === "APPROVED") {
+      await sendEmail({
+        to: d.email,
+        subject: "Welcome to the Taita Field Crew",
+        text: [
+          `Hi ${d.name},`,
+          "",
+          "Your application to join the Taita Field Crew has been approved — welcome!",
+          "",
+          `Your public profile: ${adminLink(`/creators/${d.slug}`)}`,
+          "",
+          "We'll be in touch about missions. Until then, please keep the creator guidelines in mind —",
+          "especially: show real evidence, and always disclose when something was hosted, gifted or sponsored.",
+        ].join("\n"),
+      });
+    } else {
+      await sendEmail({
+        to: d.email,
+        subject: "About your Taita Field Crew application",
+        text: [
+          `Hi ${d.name},`,
+          "",
+          "Thank you for applying to the Taita Field Crew. We aren't able to approve your application right now.",
+          ...(d.reason ? ["", `Note from the team: ${d.reason}`] : []),
+          "",
+          `You're welcome to apply again any time: ${adminLink("/creators/apply")}`,
+        ].join("\n"),
+      });
+    }
+  } catch (err) {
+    console.error("[notify] creator decision notification failed", err);
+  }
+}

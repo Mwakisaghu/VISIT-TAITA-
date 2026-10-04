@@ -736,3 +736,52 @@ only ever shown as plain text.
 
 ### Not built yet
 Replies from the listing owner; reviews of destinations; "helpful" votes; sorting/filtering listings by rating.
+
+## What's new — Taita Field Crew (creators)
+
+The creator programme from the founding brief ("recruit the first creator cohort", 20+ creators or
+contributors). Phase 1 is applications, approval, public profiles and story bylines. The design is built around
+what the research on tourism creator programmes says works: evidence over adjectives, trust, and clear
+disclosure — and around something only Visit Taita has, **verified presence** from the Passport check-ins.
+
+### The plan
+1. **Phase 1 (this release):** apply → staff approve → public profile + directory → story bylines.
+2. **Phase 2:** *Missions* — briefs tied to a real place and campaign (optionally sponsor-backed), with the
+   evidence each note should include.
+3. **Phase 3:** *Field Notes* — structured reports a creator can file only after a **verified check-in** at the
+   place, published with a "Verified on location" badge, and labelled "Presented by …" automatically when a
+   mission is hosted or sponsored.
+4. **Phase 4:** impact tracking and sponsor reporting.
+
+### Phase 1
+- **Two tracks:** *Local Voice* (community storytellers — no audience size or portfolio required) and
+  *Visiting Creator* (a portfolio link is required).
+- `/creators/apply` — requires sign-in. Collects a public name, bio, what they create, up to 5 links, a pitch,
+  and agreement to the creator guidelines (the version is stored with the application). An optional
+  self-reported audience note is **admin-only and never shown publicly** — it can't be verified. One pending
+  application per person; rejected applicants can reapply.
+- `/admin/creators` — Pending / Approved / Rejected tabs plus **Field Crew** (pause or resume). **Approve** creates
+  the profile and grants the CREATOR role in one transaction; **Reject** takes an optional reason the applicant
+  sees. The applicant is emailed the decision at their account address, and the team inbox is emailed on each
+  new application.
+- Approval only changes the role of a plain account (member/visitor). A partner, seller or staff member keeps their
+  existing role (an account has one role) and still gets a Creator profile.
+- `/creators` (directory) and `/creators/<slug>` (profile with their published stories). Paused creators disappear.
+- Stories credit their author as **By <name>** only when the author is an *active* creator, so a staff account name
+  is never exposed.
+
+### Roles now refresh
+A user's role used to be read once at sign-in and trusted for the token's life (30 days by default), so a
+promotion didn't apply until the next sign-in and **a demoted admin or editor kept their access**. The role is now
+re-read from the database at most every 5 minutes, and the admin layout checks it on every render.
+
+### Guidelines
+The guidelines shown on the application form are a plain-language **draft**. Have your lawyer review them
+(disclosure wording and the content licence in particular) before launch; bump `CREATOR_TERMS_VERSION` in
+`lib/creators.ts` when you change them.
+
+### Data model additions
+`CreatorApplication`, `Creator`, and the `CreatorTrack`, `CreatorSpecialty`, `CreatorApplicationStatus`, `CreatorStatus` enums.
+
+### Not built yet
+Missions, Field Notes and verified-on-location badges, creator dashboard, impact tracking.
