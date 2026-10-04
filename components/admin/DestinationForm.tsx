@@ -1,4 +1,5 @@
 import type { Destination } from "@prisma/client";
+import Link from "next/link";
 import { saveDestination } from "@/lib/actions/admin";
 
 const categories = ["WILD", "CULTURE", "ADVENTURE", "FOOD", "SPORT", "PEOPLE"];
@@ -68,6 +69,33 @@ export default function DestinationForm({ destination }: { destination?: Destina
           />
         </Field>
       </div>
+
+      <Field label="GPS check-in radius (metres)">
+        <input
+          name="checkinRadiusM"
+          type="number"
+          min={50}
+          max={5000}
+          defaultValue={destination?.checkinRadiusM ?? 300}
+          className="input"
+        />
+      </Field>
+      <p className="-mt-3 font-body text-xs text-stone/50">
+        How close a visitor must be to check in with GPS (needs latitude and longitude above). 300 m suits most
+        sites; use a larger radius for big areas such as forests or lakes.
+      </p>
+
+      {destination && (
+        <div className="rounded-sm border border-stone/10 p-4">
+          <p className="font-body text-sm text-stone/70">QR check-in plaque</p>
+          <Link
+            href={`/admin/destinations/${destination.id}/qr`}
+            className="focus-ring mt-1 inline-block font-body text-sm text-rust hover:text-rust-deep"
+          >
+            {destination.checkinToken ? "View / print the plaque →" : "Generate the plaque →"}
+          </Link>
+        </div>
+      )}
 
       <Field label="Status">
         <select name="status" defaultValue={destination?.status ?? "DRAFT"} className="input">

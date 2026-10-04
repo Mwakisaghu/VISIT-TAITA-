@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { generateCheckinToken } from "@/lib/passport";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -35,6 +36,7 @@ const destinationSchema = z.object({
   image: z.string().url(),
   latitude: z.coerce.number().min(-90).max(90).optional(),
   longitude: z.coerce.number().min(-180).max(180).optional(),
+  checkinRadiusM: z.coerce.number().int().min(50).max(5000).optional(),
   status: z.enum(["DRAFT", "PUBLISHED"]),
   featured: z.coerce.boolean(),
 });
@@ -51,6 +53,7 @@ export async function saveDestination(id: string | null, formData: FormData) {
     image: formData.get("image"),
     latitude: rawLat ? rawLat : undefined,
     longitude: rawLng ? rawLng : undefined,
+    checkinRadiusM: formData.get("checkinRadiusM") || undefined,
     status: formData.get("status"),
     featured: formData.get("featured") === "on",
   });
@@ -64,6 +67,7 @@ export async function saveDestination(id: string | null, formData: FormData) {
         slug: `${slugify(parsed.name)}-${Math.random().toString(36).slice(2, 6)}`,
         isDemo: false,
         createdById: user.id,
+        checkinToken: generateCheckinToken(),
       },
     });
   }
