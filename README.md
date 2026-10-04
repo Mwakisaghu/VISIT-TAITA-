@@ -784,7 +784,7 @@ The guidelines shown on the application form are a plain-language **draft**. Hav
 `CreatorApplication`, `Creator`, and the `CreatorTrack`, `CreatorSpecialty`, `CreatorApplicationStatus`, `CreatorStatus` enums.
 
 ### Not built yet
-Impact tracking and sponsor reporting (Phase 4).
+(Impact and sponsor reporting is in the next section.)
 
 ## What's new — Field Crew missions
 
@@ -859,4 +859,41 @@ Passport checklist). 3. Make sure a mission's destination is published with a QR
 checks this). 4. Have your lawyer review the creator guidelines.
 
 ### Not built yet
-Impact tracking and sponsor reporting (Phase 4); replies and reactions on notes.
+Replies and reactions on notes. Linking a note to an accommodation or experience — which would be needed before any honest enquiry or booking attribution.
+
+## What's new — Impact and sponsor reports
+
+Phase 4 of the Field Crew: showing what the programme has produced, and giving sponsors proof of what they paid for —
+using only numbers the platform can honestly stand behind.
+
+**What is measured**
+- **Hard facts from your database:** missions, claims, published notes, points awarded.
+- **Page views** of notes and mission pages. The pages are cached, so views are counted from the browser by a small
+  beacon — once per browser session per page. Staff and obvious bots (crawlers, link-preview fetchers, scripts,
+  headless browsers, or a missing user-agent) are not counted; a visitor address is limited to 3 counted views per page
+  per day; only public items count (a draft or unknown id can't be padded). Only a per-day count is stored — no visitor
+  identity. They are an **approximation** and are labelled as one wherever shown.
+- **New verified visitors** — people whose *first-ever* QR/GPS check-in at a mission's place fell in a period (the
+  Passport records one check-in entry per person per place, so this is accurate), compared for "since the first note was
+  published" against an equal-length stretch just before. This is **context, not proof**: other things change visitor
+  numbers too.
+
+**What is deliberately not measured:** whether a note caused an enquiry or booking. Notes aren't linked to listings, so
+any such number would be invented. The reports say so.
+
+**Where**
+- `/admin/impact` — programme totals, a per-mission table (claims, notes, views, new visitors before → after, points) and
+  a list of sponsors with a report. Every metric is one batched query across all missions, not one per mission.
+- `/admin/impact/sponsors/<id>` — that sponsor's report (print or save as PDF), plus the **shareable link** controls.
+- `/report/<token>` — the sponsor's own view of the same report. The link carries an unguessable 96-bit token, shows that
+  one sponsor's report only, is never indexed (`noindex`, and `/report` is disallowed in robots.txt) and is never cached.
+  **Create / Replace (the old link stops working) / Turn off** from the admin page. Set `NEXT_PUBLIC_APP_URL` to your
+  public address first — the admin page warns if it isn't.
+- A sponsor's report covers only missions that are *sponsored by them* and have actually run (open or closed). Reports show
+  totals only: no emails, no user or creator ids.
+
+### Data model additions
+`ContentView` (one row per item per UTC day), `ViewKind`, and `Sponsor.reportToken`.
+
+### Not built yet
+Replies and reactions on notes; linking a note to a listing (the prerequisite for any enquiry/booking attribution).
