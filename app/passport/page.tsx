@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -39,6 +40,12 @@ export default async function PassportPage() {
         <p className="mt-2 font-body text-stone/70">
           {user.points} points · {checkedInCount} check-ins · {user.badges.length} of {allBadges.length} badges
         </p>
+        <Link
+          href="/passport/rewards"
+          className="focus-ring mt-4 inline-block rounded-full border border-stone/25 px-5 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust"
+        >
+          Spend your points →
+        </Link>
 
         {/* BADGES */}
         <div className="mt-12">
