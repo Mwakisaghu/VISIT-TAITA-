@@ -613,3 +613,72 @@ not for emailing listing hosts or several people. Verify a domain, then use an a
 ### Not built yet
 Retry/queue for failed sends (a failure is logged, not retried); per-listing-owner notification
 preferences; delivery to a Slack/WhatsApp channel.
+
+## What's new — Taita Passport check-ins & rewards
+
+The Passport now rewards being **there**. This supersedes the Phase 2 behaviour where tapping "Mark visited"
+earned points.
+
+### How points are earned
+- **Verified check-ins only.** Scan the QR plaque at a destination (`/checkin/<token>`) or tap **Check in here**
+  on the Passport page when nearby (GPS, within the destination's radius). Either awards **10 points** the first
+  time at that place. The amount lives in `lib/passport.ts` (`CHECKIN_POINTS`).
+- **"I've been here" still exists but earns no points** (it can still unlock badges). A verified check-in at the
+  same place upgrades it. Verified check-ins can't be un-marked.
+- **One award per person per destination**, enforced by a database constraint
+  (`@@unique([userId, destinationId, reason])`) — un-marking, re-marking, or switching between QR and GPS can't
+  pay twice.
+- GPS: reported accuracy must be ≤ 200 m, and some GPS error is forgiven (up to 100 m). Per-destination radius
+  is 50–5000 m (default 300).
+
+### Points are a ledger
+`User.points` is a cached balance that must equal the sum of that user's `PointsEntry` rows (reasons:
+`LEGACY`, `CHECKIN`, `REDEMPTION`, `REFUND`, `ADJUSTMENT`). To check or repair it:
+```bash
+npm run points:backfill -- --dry-run   # lists any user whose balance and ledger disagree
+npm run points:backfill                # records the difference (LEGACY the first time, ADJUSTMENT after)
+```
+Safe to re-run. **Run it once when you first deploy this**, before anyone checks in, so existing balances are
+carried into the ledger.
+
+### Rewards
+- Visitors redeem at `/passport/rewards` and receive a voucher code like `TAITA-K7M2QX`.
+- Redemption is **atomic**: points and limited stock are taken with conditional updates in one transaction, so
+  simultaneous redemptions can't spend the same points or the last unit of stock.
+- **No rewards are seeded.** Add one in `/admin/rewards` only after a partner has agreed to honour it.
+
+### Admin
+- `/admin/destinations` — each destination has a check-in radius and a QR code. New destinations get a code
+  automatically; **Generate missing codes** fills in existing ones (never changes a code that exists).
+- `/admin/destinations/<id>/qr` — a print-ready plaque. It refuses to draw a printable code while
+  `NEXT_PUBLIC_APP_URL` is localhost or a private address. **Replace the code** invalidates every printed plaque
+  for that destination (use it if a code leaks, then reprint).
+- `/admin/rewards` — reward CMS (cost, partner, instructions, stock — blank = unlimited — end date, image).
+  A redeemed reward can only be set to Draft, not deleted.
+- `/admin/rewards/redemptions` — find a voucher by code, **Mark used**, or **Cancel & refund** (returns the
+  points and restores stock, exactly once).
+- Sign-in and registration honour a same-site `?next=` path, so a QR scan survives signing in.
+
+### Launch checklist
+1. `npx prisma migrate dev` (or `migrate deploy` in production), then deploy.
+2. `npm run points:backfill`.
+3. Set `NEXT_PUBLIC_APP_URL` to your real public address in production.
+4. `/admin/destinations` → **Generate missing codes**; publish the destinations that should accept check-ins.
+5. Print each plaque from its `/qr` page and **test-scan it with a phone** before mounting it.
+6. Add rewards in `/admin/rewards` once partners agree to them.
+7. Decide who marks vouchers **Used** when a partner honours one.
+
+### Limits worth knowing
+- GPS coordinates come from the visitor's browser and can be faked by a determined person — it's friction, not
+  proof. The QR plaque is the stronger signal; rotate a code if it leaks.
+- Check-in and redemption rate limits are in-memory (best-effort; they reset on restart and aren't shared across
+  server instances). Double-awards and double-spends are prevented by the database, not by these limits.
+- Vouchers are marked used by an admin; there is no partner-facing screen yet.
+
+### Data model additions
+`Visit.method`, `Destination.checkinToken` / `checkinRadiusM`, `PointsEntry`, `Reward`, `RewardRedemption`
+and the `VisitMethod`, `PointsReason`, `RedemptionStatus` enums.
+
+### Not built yet
+Partner-facing voucher verification; emailing the team when a voucher is redeemed; streaks/leaderboards;
+check-in photos.
