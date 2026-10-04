@@ -46,6 +46,7 @@ model User {
   applicationsReviewed PartnerApplication[] @relation("ApplicationsReviewed")
   pointsEntries        PointsEntry[]
   redemptions          RewardRedemption[]
+  rewardsOwned         Reward[]           @relation("RewardPartner")
 
   accommodationsOwned    Accommodation[]        @relation("AccommodationOwner")
   experiencesOwned       Experience[]           @relation("ExperienceOwner")
@@ -781,9 +782,15 @@ model Reward {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
+  // The partner account that honours this reward. They can look up its vouchers and
+  // mark them used from /partner/vouchers. Null = only Visit Taita staff can.
+  ownerId String?
+  owner   User?   @relation("RewardPartner", fields: [ownerId], references: [id], onDelete: SetNull)
+
   redemptions RewardRedemption[]
 
   @@index([status, pointsCost])
+  @@index([ownerId])
 }
 
 model RewardRedemption {
@@ -795,6 +802,7 @@ model RewardRedemption {
   status      RedemptionStatus @default(ISSUED)
   createdAt   DateTime         @default(now())
   usedAt      DateTime?
+  usedById    String? // user id of the partner or admin who marked it used
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   reward Reward @relation(fields: [rewardId], references: [id], onDelete: Restrict)
