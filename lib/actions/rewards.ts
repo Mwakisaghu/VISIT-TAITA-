@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { notifyVoucherRedeemed } from "@/lib/notifications";
 import { rateLimit } from "@/lib/rate-limit";
 import { isRedeemable } from "@/lib/rewards";
 import { generateVoucherCode } from "@/lib/voucher-code";
@@ -45,9 +46,12 @@ export async function redeemReward(rewardId: string): Promise<RedeemResult> {
   // retry the whole thing with a fresh code.
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const result = await prisma.$transaction(async (tx) => {
+      // `notify` is for the notification only — it is deliberately NOT part of what
+      // we return to the visitor (it contains the partner's email address).
+      const { notify, ...result } = await prisma.$transaction(async (tx) => {
         const reward = await tx.reward.findFirst({
           where: { id: String(rewardId), status: "PUBLISHED" },
+          include: { owner: { select: { email: true } } },
         });
         if (!reward || !isRedeemable(reward)) {
           throw new RedeemError("This reward isn't available any more.");
@@ -83,18 +87,26 @@ export async function redeemReward(rewardId: string): Promise<RedeemResult> {
           },
         });
 
-        const user = await tx.user.findUnique({ where: { id: userId }, select: { points: true } });
+        const user = await tx.user.findUnique({ where: { id: userId }, select: { points: true, name: true } });
         return {
           code,
           rewardName: reward.name,
           pointsSpent: reward.pointsCost,
           newBalance: user?.points ?? 0,
+          notify: {
+            code,
+            rewardName: reward.name,
+            holderName: user?.name ?? null,
+            ownerEmail: reward.owner?.email ?? null,
+          },
         };
       });
 
       revalidatePath("/passport");
       revalidatePath("/passport/rewards");
       revalidatePath("/admin/rewards");
+      // Saved first — a mail failure must never undo or block a redemption.
+      await notifyVoucherRedeemed(notify);
       return { success: true, ...result };
     } catch (err) {
       if (err instanceof RedeemError) return { error: err.message };

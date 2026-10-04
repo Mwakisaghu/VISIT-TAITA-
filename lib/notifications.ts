@@ -1,4 +1,5 @@
 import { isValidEmail, parseRecipients, sendEmail } from "@/lib/email";
+import { holderLabel } from "@/lib/voucher-lookup";
 
 // Who gets told what:
 //  - The team inbox (NOTIFY_EMAIL, comma-separated) hears about every sponsor
@@ -201,5 +202,65 @@ export async function notifyExperienceEnquiry(
     });
   } catch (err) {
     console.error("[notify] experience enquiry notification failed", err);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Rewards: a voucher was redeemed
+// ---------------------------------------------------------------------------
+// Routed by who honours the reward: the partner assigned to it hears about it;
+// a staff-run reward goes to the team inbox instead. The holder appears as
+// first name + last initial only, and the visitor's email is never included.
+// Never throws.
+
+export async function notifyVoucherRedeemed(v: {
+  code: string;
+  rewardName: string;
+  holderName: string | null;
+  ownerEmail: string | null;
+}) {
+  try {
+    const holder = holderLabel(v.holderName);
+    const partner = v.ownerEmail ? v.ownerEmail.trim().toLowerCase() : "";
+
+    if (partner && isValidEmail(partner)) {
+      await sendEmail({
+        to: partner,
+        subject: `New voucher to honour: ${v.rewardName}`,
+        text: [
+          "A visitor has redeemed one of your rewards through Visit Taita.",
+          "",
+          details([
+            ["Reward", v.rewardName],
+            ["Voucher code", v.code],
+            ["Holder", holder],
+          ]),
+          "",
+          "When they show you the code, check it and mark it used here:",
+          adminLink("/partner/vouchers"),
+        ].join("\n"),
+      });
+      return;
+    }
+
+    const team = parseRecipients(process.env.NOTIFY_EMAIL);
+    if (team.length === 0) return;
+    await sendEmail({
+      to: team,
+      subject: `Voucher redeemed (staff to honour): ${v.rewardName}`,
+      text: [
+        "A visitor redeemed a reward that has no partner assigned, so staff need to honour it.",
+        "",
+        details([
+          ["Reward", v.rewardName],
+          ["Voucher code", v.code],
+          ["Holder", holder],
+        ]),
+        "",
+        `Open in admin: ${adminLink(`/admin/rewards/redemptions?code=${encodeURIComponent(v.code)}`)}`,
+      ].join("\n"),
+    });
+  } catch (err) {
+    console.error("[notify] voucher notification failed", err);
   }
 }

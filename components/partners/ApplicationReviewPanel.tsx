@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { reviewApplication, grantSellerAccess } from "@/lib/actions/partners";
 import { grantPartnerAccess } from "@/lib/actions/partner-access";
+import { PARTNER_ACCESS_TYPES } from "@/lib/partner-types";
 
 type GrantResult = { error?: string; success?: boolean; name?: string } | null;
 
@@ -21,7 +22,7 @@ export default function ApplicationReviewPanel({
   const [granting, setGranting] = useState(false);
 
   const isSeller = partnerType === "SELLER";
-  const isListingPartner = partnerType === "ACCOMMODATION" || partnerType === "EXPERIENCE";
+  const isListingPartner = PARTNER_ACCESS_TYPES.includes(partnerType);
 
   function setStatus(next: "PENDING" | "APPROVED" | "REJECTED") {
     setCurrentStatus(next);
@@ -68,7 +69,7 @@ export default function ApplicationReviewPanel({
           <p className="font-body text-sm text-stone/70">
             {isSeller
               ? "Grant marketplace access to this applicant if they already have a Visit Taita account under the same email."
-              : "Grant partner access (manage their own stay or experience listings) if they already have a Visit Taita account under the same email."}
+              : "Grant partner access (their own dashboard: listings and reward vouchers) if they already have a Visit Taita account under the same email."}
           </p>
           <button
             type="button"
