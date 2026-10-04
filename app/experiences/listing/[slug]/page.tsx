@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import DemoNotice from "@/components/DemoNotice";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
 import ExperienceEnquiryForm from "@/components/listings/ExperienceEnquiryForm";
 import { experienceCategoryLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -149,6 +150,8 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
             </div>
           </aside>
         </div>
+
+        <ReviewsSection kind="experience" listingId={experience.id} listingName={experience.name} />
       </div>
     </div>
   );
