@@ -58,8 +58,16 @@ export async function saveDestination(id: string | null, formData: FormData) {
     featured: formData.get("featured") === "on",
   });
 
+  if ((parsed.latitude === undefined) !== (parsed.longitude === undefined)) {
+    throw new Error("Enter both latitude and longitude, or leave both blank.");
+  }
+
   if (id) {
-    await prisma.destination.update({ where: { id }, data: parsed });
+    // Blank coordinates mean "no coordinates" — clear them instead of silently keeping the old values.
+    await prisma.destination.update({
+      where: { id },
+      data: { ...parsed, latitude: parsed.latitude ?? null, longitude: parsed.longitude ?? null },
+    });
   } else {
     await prisma.destination.create({
       data: {
