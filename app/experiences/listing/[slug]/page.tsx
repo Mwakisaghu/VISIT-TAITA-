@@ -151,7 +151,16 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
           </aside>
         </div>
 
-        <ReviewsSection kind="experience" listingId={experience.id} listingName={experience.name} />
+        <ReviewsSection
+          kind="experience"
+          listingId={experience.id}
+          listingName={experience.name}
+          structuredData={{
+            description: experience.description,
+            image: experience.image,
+            path: `/experiences/listing/${experience.slug}`,
+          }}
+        />
       </div>
     </div>
   );

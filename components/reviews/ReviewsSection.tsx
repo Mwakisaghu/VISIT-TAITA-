@@ -1,5 +1,8 @@
+import { checkinBaseUrl, isLocalUrl } from "@/lib/checkin-url";
 import { getApprovedReviews } from "@/lib/reviews-data";
 import type { ReviewKind } from "@/lib/reviews";
+import { jsonLdString, listingJsonLd } from "@/lib/structured-data";
+import { safeHttpUrl } from "@/lib/url";
 import { holderLabel } from "@/lib/voucher-lookup";
 import StarRating from "@/components/reviews/StarRating";
 import ReviewComposer from "@/components/reviews/ReviewComposer";
@@ -17,15 +20,32 @@ export default async function ReviewsSection({
   kind,
   listingId,
   listingName,
+  structuredData,
 }: {
   kind: ReviewKind;
   listingId: string;
   listingName: string;
+  /** When given, the page also emits schema.org rating data (only if there are approved reviews). */
+  structuredData?: { description: string; image: string; path: string };
 }) {
   const { summary, reviews } = await getApprovedReviews(kind, listingId);
 
+  const base = checkinBaseUrl();
+  const jsonLd = structuredData
+    ? listingJsonLd({
+        kind,
+        name: listingName,
+        description: structuredData.description,
+        image: safeHttpUrl(structuredData.image),
+        // Only a real public address — never a localhost URL in the markup.
+        url: base && !isLocalUrl(base) ? `${base}${structuredData.path}` : null,
+        summary,
+      })
+    : null;
+
   return (
     <section id="reviews" className="mt-20 scroll-mt-24 border-t border-stone/10 pt-12">
+      {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />}
       <h2 className="font-display text-3xl text-stone">Reviews</h2>
 
       <div className="mt-8 grid gap-12 lg:grid-cols-3">

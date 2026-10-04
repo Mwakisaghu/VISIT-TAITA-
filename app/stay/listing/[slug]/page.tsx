@@ -151,7 +151,16 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
           </aside>
         </div>
 
-        <ReviewsSection kind="accommodation" listingId={accommodation.id} listingName={accommodation.name} />
+        <ReviewsSection
+          kind="accommodation"
+          listingId={accommodation.id}
+          listingName={accommodation.name}
+          structuredData={{
+            description: accommodation.description,
+            image: accommodation.image,
+            path: `/stay/listing/${accommodation.slug}`,
+          }}
+        />
       </div>
     </div>
   );
