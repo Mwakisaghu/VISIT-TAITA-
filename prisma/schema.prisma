@@ -101,7 +101,8 @@ model Destination {
   checkinToken   String? @unique
   checkinRadiusM Int     @default(300)
 
-  visits Visit[]
+  visits   Visit[]
+  missions Mission[]
 
   @@index([category, status])
 }
@@ -699,6 +700,8 @@ model Sponsor {
   packageId String?
   package   SponsorPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
 
+  missions Mission[]
+
   @@index([status, displayOrder])
   @@index([packageId])
 }
@@ -938,5 +941,86 @@ model Creator {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  claims MissionClaim[]
+
   @@index([status, track])
+}
+
+// ---------------------------------------------------------------------------
+// Taita Field Crew — missions (Phase 2)
+// ---------------------------------------------------------------------------
+// A mission is a brief tied to a REAL destination (Phase 3's "verified on
+// location" check needs a place that can be checked in at), listing the
+// evidence a note should include. Disclosure is built in: a mission is
+// independent, HOSTED (a partner provides e.g. a stay) or SPONSORED (a sponsor
+// funds it), and the disclosure line creators paste into their posts is
+// generated from that. Claiming a spot is atomic: spotsTaken moves with a
+// conditional update, so two creators can't take the last spot.
+
+enum MissionStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+enum MissionSupport {
+  NONE
+  HOSTED
+  SPONSORED
+}
+
+enum MissionClaimStatus {
+  ACTIVE
+  WITHDRAWN
+  SUBMITTED
+  COMPLETED
+}
+
+model Mission {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  title         String
+  summary       String
+  brief         String
+  image         String?
+  campaign      String? // e.g. "48 Hours in Taita"
+  destinationId String
+  track         CreatorTrack? // null = open to both tracks
+  prompts       String[]       @default([]) // the evidence a note should include
+  support       MissionSupport @default(NONE)
+  supportNote   String? // what is provided (required when hosted or sponsored)
+  hostName      String? // who hosts (HOSTED)
+  sponsorId     String? // who sponsors (SPONSORED)
+  rewardPoints  Int            @default(0) // Passport points on completion (awarded in Phase 3)
+  maxCreators   Int? // null = unlimited
+  spotsTaken    Int            @default(0)
+  closesAt      DateTime?
+  status        MissionStatus  @default(DRAFT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  destination Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  sponsor     Sponsor?    @relation(fields: [sponsorId], references: [id], onDelete: SetNull)
+  claims      MissionClaim[]
+
+  @@index([status, closesAt])
+  @@index([destinationId])
+  @@index([sponsorId])
+}
+
+model MissionClaim {
+  id          String             @id @default(cuid())
+  missionId   String
+  creatorId   String
+  status      MissionClaimStatus @default(ACTIVE)
+  claimedAt   DateTime           @default(now())
+  withdrawnAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  mission Mission @relation(fields: [missionId], references: [id], onDelete: Restrict)
+  creator Creator @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@unique([missionId, creatorId])
+  @@index([creatorId, status])
 }
