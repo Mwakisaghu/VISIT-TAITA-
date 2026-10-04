@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import VerifiedBadge from "@/components/field-notes/VerifiedBadge";
+import ViewBeacon from "@/components/impact/ViewBeacon";
 import { supportBadge } from "@/components/missions/MissionCard";
 import { linkLabel, trackLabel } from "@/lib/creators";
 import { prisma } from "@/lib/prisma";
@@ -52,6 +53,7 @@ export default async function FieldNotePublicPage({ params }: { params: { slug: 
   return (
     <article className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
+        <ViewBeacon kind="NOTE" id={note.id} />
         <Link href="/notes" className="font-body text-sm text-stone/60 hover:text-rust">
           ← All Field Notes
         </Link>

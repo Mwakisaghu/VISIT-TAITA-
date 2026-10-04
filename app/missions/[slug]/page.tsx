@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import NoteCard from "@/components/field-notes/NoteCard";
+import ViewBeacon from "@/components/impact/ViewBeacon";
 import MissionClaimBox from "@/components/missions/MissionClaimBox";
 import { supportBadge } from "@/components/missions/MissionCard";
 import { trackLabel } from "@/lib/creators";
@@ -52,6 +53,7 @@ export default async function MissionPage({ params }: { params: { slug: string }
   return (
     <div className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
+        <ViewBeacon kind="MISSION" id={mission.id} />
         <Link href="/missions" className="font-body text-sm text-stone/60 hover:text-rust">
           ← All missions
         </Link>

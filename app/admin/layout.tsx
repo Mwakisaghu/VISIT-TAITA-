@@ -28,6 +28,7 @@ const nav = [
   { href: "/admin/creators", label: "Creators" },
   { href: "/admin/missions", label: "Missions" },
   { href: "/admin/field-notes", label: "Field Notes" },
+  { href: "/admin/impact", label: "Impact" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/rewards/redemptions", label: "Vouchers" },
   { href: "/admin/sponsors", label: "Sponsors" },
