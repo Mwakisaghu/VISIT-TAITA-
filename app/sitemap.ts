@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { discoverCategories, shopCategories, accommodationTypes, experienceCategories } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 
-const base = "https://visittaita.example";
+const base = (process.env.NEXT_PUBLIC_APP_URL || "https://visittaita.example").replace(/\/+$/, "");
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [stories, teams, products, accommodations, experiences] = await Promise.all([
