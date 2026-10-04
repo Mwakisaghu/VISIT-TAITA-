@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { ADMIN_ROLES, authOptions } from "@/lib/auth";
 
 // Admin pages show live counts and inboxes — never serve a stale prerender.
 export const dynamic = "force-dynamic";
@@ -29,7 +32,10 @@ const nav = [
   { href: "/admin/sponsors/leads", label: "Sponsor Leads" },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || !ADMIN_ROLES.includes(session.user.role)) redirect("/login");
+
   return (
     <div className="mx-auto flex max-w-6xl gap-10 px-6 py-12">
       <aside className="w-48 shrink-0 print:hidden">
