@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import MissionCard, { supportBadge } from "@/components/missions/MissionCard";
+import { isVerifiedFor, noteStatusLabel } from "@/lib/field-notes";
 import { disclosureLine, formatDeadline, missionAvailability } from "@/lib/missions";
 import { prisma } from "@/lib/prisma";
 
@@ -66,11 +67,18 @@ export default async function CrewPage() {
   const include = { destination: { select: { name: true } }, sponsor: { select: { name: true } } } as const;
 
   const claims = await prisma.missionClaim.findMany({
-    where: { creatorId: creator.id, status: { in: ["ACTIVE", "SUBMITTED"] } },
+    where: { creatorId: creator.id, status: { in: ["ACTIVE", "SUBMITTED", "COMPLETED"] } },
     orderBy: { claimedAt: "desc" },
-    include: { mission: { include } },
+    include: { mission: { include }, note: { select: { status: true, slug: true, reviewNote: true } } },
   });
   const heldIds = claims.map((c) => c.missionId);
+
+  // Has the creator passed a QR/GPS check-in at each mission's place since claiming it? One query for them all.
+  const visits = await prisma.visit.findMany({
+    where: { userId: session.user.id, destinationId: { in: claims.map((c) => c.mission.destinationId) } },
+    select: { destinationId: true, method: true, lastVerifiedAt: true },
+  });
+  const visitByPlace = new Map(visits.map((v) => [v.destinationId, v]));
 
   const candidates = await prisma.mission.findMany({
     where: {
@@ -106,6 +114,8 @@ export default async function CrewPage() {
               const m = c.mission;
               const disclosure = disclosureLine({ support: m.support, hostName: m.hostName, sponsorName: m.sponsor?.name ?? null });
               const badge = supportBadge(m);
+              const verified = isVerifiedFor(visitByPlace.get(m.destinationId) ?? null, c.claimedAt);
+              const note = c.note;
               return (
                 <article key={c.id} className="rounded-sm border border-stone/15 p-6">
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -120,7 +130,7 @@ export default async function CrewPage() {
                       </p>
                     </div>
                     <span className="rounded-full bg-canopy px-4 py-1 font-body text-xs text-parchment">
-                      {c.status === "SUBMITTED" ? "Note submitted" : "Claimed"}
+                      {c.status === "COMPLETED" ? "Published ✓" : c.status === "SUBMITTED" ? "Note submitted" : "Claimed"}
                     </span>
                   </div>
 
@@ -150,9 +160,31 @@ export default async function CrewPage() {
                     </p>
                   )}
 
-                  <p className="mt-5 font-body text-sm text-stone/60">
-                    Check in at {m.destination.name} (QR code on site, or &quot;Check in here&quot; on your Passport). Filing your Field Note opens soon.
-                  </p>
+                  <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-stone/10 pt-4">
+                    <p className="max-w-md font-body text-sm text-stone/70">
+                      {note
+                        ? `Field Note: ${noteStatusLabel(note.status)}`
+                        : verified
+                          ? `✓ Checked in at ${m.destination.name} — ready to file`
+                          : `Next: check in at ${m.destination.name} (QR code on site, or "Check in here" on your Passport).`}
+                    </p>
+                    {note?.status === "APPROVED" ? (
+                      <Link href={`/notes/${note.slug}`} className="focus-ring rounded-full border border-stone/25 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust">
+                        View your published note
+                      </Link>
+                    ) : note || verified ? (
+                      <Link href={`/crew/notes/${m.slug}`} className="focus-ring rounded-full bg-rust px-5 py-2 font-body text-sm text-parchment hover:bg-rust-deep">
+                        {note ? "Open your note" : "File your Field Note"}
+                      </Link>
+                    ) : (
+                      <Link href="/passport" className="focus-ring rounded-full border border-stone/25 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust">
+                        Open my Passport
+                      </Link>
+                    )}
+                  </div>
+                  {note?.status === "CHANGES_REQUESTED" && note.reviewNote && (
+                    <p className="mt-3 rounded-sm bg-rust/10 p-3 font-body text-sm text-stone">The team asked: {note.reviewNote}</p>
+                  )}
                 </article>
               );
             })}
