@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
+import { safeNext } from "@/lib/safe-next";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const next = safeNext(useSearchParams().get("next"));
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,7 +40,7 @@ export default function RegisterPage() {
       router.push("/login");
       return;
     }
-    router.push("/passport");
+    router.push(next ?? "/passport");
     router.refresh();
   }
 
@@ -104,10 +106,22 @@ export default function RegisterPage() {
 
       <p className="mt-6 font-body text-sm text-stone/60">
         Already have one?{" "}
-        <Link href="/login" className="text-rust hover:text-rust-deep">
+        <Link
+          href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
+          className="text-rust hover:text-rust-deep"
+        >
           Sign in
         </Link>
       </p>
     </div>
+  );
+}
+
+// useSearchParams needs a Suspense boundary so the page can still be prerendered.
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterForm />
+    </Suspense>
   );
 }
