@@ -66,6 +66,9 @@ export default async function PartnerLayout({ children }: { children: React.Reac
               </Link>
             </>
           )}
+          <Link href="/partner/vouchers" className={linkClass}>
+            Vouchers
+          </Link>
         </nav>
       </aside>
       <div className="min-w-0 flex-1">{children}</div>

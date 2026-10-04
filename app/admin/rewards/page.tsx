@@ -5,7 +5,7 @@ import { deleteReward } from "@/lib/actions/rewards-admin";
 export default async function AdminRewardsPage() {
   const rewards = await prisma.reward.findMany({
     orderBy: [{ status: "asc" }, { pointsCost: "asc" }],
-    include: { _count: { select: { redemptions: true } } },
+    include: { _count: { select: { redemptions: true } }, owner: { select: { name: true } } },
   });
 
   return (
@@ -36,6 +36,7 @@ export default async function AdminRewardsPage() {
                 {r.status} · {r.pointsCost} points · {r.stock === null ? "unlimited stock" : `${r.stock} left`} ·{" "}
                 {r._count.redemptions} redeemed
                 {r.partnerName ? ` · ${r.partnerName}` : ""}
+                {r.owner ? ` · handled by ${r.owner.name}` : " · staff handle vouchers"}
               </p>
               <p className="font-display text-lg text-stone">{r.name}</p>
             </div>

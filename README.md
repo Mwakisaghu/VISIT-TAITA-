@@ -668,17 +668,32 @@ carried into the ledger.
 6. Add rewards in `/admin/rewards` once partners agree to them.
 7. Decide who marks vouchers **Used** when a partner honours one.
 
+### Partner voucher verification
+Each reward can be assigned a **partner account** (a user with the Partner or Seller role) in
+`/admin/rewards`. That partner signs in, opens **Vouchers** in their dashboard (`/partner/vouchers`), types
+the code the visitor shows them, and sees whether it is valid, already used, or cancelled — then taps
+**Mark as used**.
+
+- A partner only ever sees vouchers for **their own** rewards. A code that belongs to someone else's reward is
+  reported as "not found", exactly like a code that doesn't exist.
+- They see the holder's first name and last initial only — no email, no full name.
+- Marking used is a single conditional update (ownership + status), so it can't be done twice or by the wrong
+  partner. It records **who** did it (`RewardRedemption.usedById`) and when.
+- A reward past its end date can't be marked used by a partner (an admin can override).
+- **Cancelling and refunding stay admin-only.**
+- Rewards with no partner assigned can still only be handled by staff in `/admin/rewards/redemptions`.
+
 ### Limits worth knowing
 - GPS coordinates come from the visitor's browser and can be faked by a determined person — it's friction, not
   proof. The QR plaque is the stronger signal; rotate a code if it leaks.
 - Check-in and redemption rate limits are in-memory (best-effort; they reset on restart and aren't shared across
   server instances). Double-awards and double-spends are prevented by the database, not by these limits.
-- Vouchers are marked used by an admin; there is no partner-facing screen yet.
+- Vouchers are marked used by the reward's own partner at `/partner/vouchers` (or by an admin).
 
 ### Data model additions
 `Visit.method`, `Destination.checkinToken` / `checkinRadiusM`, `PointsEntry`, `Reward`, `RewardRedemption`
 and the `VisitMethod`, `PointsReason`, `RedemptionStatus` enums.
 
 ### Not built yet
-Partner-facing voucher verification; emailing the team when a voucher is redeemed; streaks/leaderboards;
+Emailing the team when a voucher is redeemed; streaks/leaderboards;
 check-in photos.

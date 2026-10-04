@@ -56,6 +56,7 @@ const rewardSchema = z.object({
   stock: z.coerce.number().int().min(0).max(1_000_000).optional(),
   validUntil: z.coerce.date().optional(),
   image: httpUrl.optional().or(z.literal("")),
+  ownerId: z.string().optional().or(z.literal("")),
   status: z.enum(["DRAFT", "PUBLISHED"]),
 });
 
@@ -74,8 +75,17 @@ export async function saveReward(id: string | null, formData: FormData) {
     // End of the chosen day, so "valid until 31 Dec" includes the 31st.
     validUntil: rawValidUntil === "" ? undefined : `${rawValidUntil}T23:59:59.999Z`,
     image: formData.get("image") || "",
+    ownerId: formData.get("ownerId") || "",
     status: formData.get("status"),
   });
+
+  if (parsed.ownerId) {
+    const partner = await prisma.user.findFirst({
+      where: { id: parsed.ownerId, role: { in: ["PARTNER", "SELLER"] } },
+      select: { id: true },
+    });
+    if (!partner) throw new Error("Choose a partner account (a user with the Partner or Seller role).");
+  }
 
   const data = {
     name: parsed.name,
@@ -86,6 +96,7 @@ export async function saveReward(id: string | null, formData: FormData) {
     stock: parsed.stock ?? null, // blank = unlimited
     validUntil: parsed.validUntil ?? null,
     image: parsed.image || null,
+    ownerId: parsed.ownerId || null,
     status: parsed.status,
   };
 
@@ -128,7 +139,7 @@ export async function setRedemptionStatus(
   status: string
 ): Promise<RedemptionActionResult> {
   try {
-    await requireAdmin();
+    const admin = await requireAdmin();
     if (status !== "USED" && status !== "CANCELLED") return { error: "Invalid status." };
     if (!REDEMPTION_STATUSES.includes(status)) return { error: "Invalid status." };
 
@@ -145,7 +156,11 @@ export async function setRedemptionStatus(
 
       const moved = await tx.rewardRedemption.updateMany({
         where: { id: redemptionId, status: "ISSUED" },
-        data: { status, usedAt: status === "USED" ? new Date() : null },
+        data: {
+          status,
+          usedAt: status === "USED" ? new Date() : null,
+          usedById: status === "USED" ? admin.id : null,
+        },
       });
       if (moved.count === 0) throw new StatusError("This voucher was just changed by someone else.");
 
