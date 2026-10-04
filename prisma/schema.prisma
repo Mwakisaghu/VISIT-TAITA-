@@ -702,6 +702,9 @@ model Sponsor {
   packageId String?
   package   SponsorPackage? @relation(fields: [packageId], references: [id], onDelete: SetNull)
 
+  // The secret in the shareable impact-report link (rotate to invalidate; null = no link).
+  reportToken String? @unique
+
   missions Mission[]
 
   @@index([status, displayOrder])
@@ -1083,4 +1086,29 @@ model FieldNote {
   @@index([status, createdAt])
   @@index([missionId, status])
   @@index([creatorId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Impact — page views (Taita Field Crew, Phase 4)
+// ---------------------------------------------------------------------------
+// One row per item per UTC day, holding a count — not one row per visit, so it
+// stays small and holds no visitor identity. Views are counted from the browser
+// (the note and mission pages are cached, so a server-side counter would miss
+// most visits), once per browser session per item, excluding obvious bots and
+// staff. They are an approximation and are labelled as one wherever shown.
+
+enum ViewKind {
+  NOTE
+  MISSION
+}
+
+model ContentView {
+  id       String   @id @default(cuid())
+  kind     ViewKind
+  targetId String
+  day      DateTime @db.Date
+  count    Int      @default(0)
+
+  @@unique([kind, targetId, day])
+  @@index([kind, targetId])
 }

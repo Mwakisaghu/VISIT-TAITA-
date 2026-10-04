@@ -400,3 +400,85 @@ export async function notifyCreatorDecision(d: {
     console.error("[notify] creator decision notification failed", err);
   }
 }
+
+// ---------------------------------------------------------------------------
+// Field Notes: submissions and decisions
+// ---------------------------------------------------------------------------
+// A new or revised note goes to the team inbox; a decision goes to the creator's own
+// account email. Never throws, and never blocks the action that triggered it.
+
+export async function notifyFieldNoteSubmitted(n: {
+  title: string;
+  creatorName: string;
+  missionTitle: string;
+  place: string;
+  revised: boolean;
+}) {
+  try {
+    const team = parseRecipients(process.env.NOTIFY_EMAIL);
+    if (team.length === 0) return;
+    await sendEmail({
+      to: team,
+      subject: `${n.revised ? "Revised" : "New"} Field Note to review: ${n.title}`,
+      text: [
+        n.revised ? "A creator has revised a Field Note after feedback." : "A creator has filed a Field Note.",
+        "",
+        details([
+          ["Title", n.title],
+          ["Creator", n.creatorName],
+          ["Mission", n.missionTitle],
+          ["Place", n.place],
+        ]),
+        "",
+        "It was filed after a verified check-in at the place.",
+        `Review it: ${adminLink("/admin/field-notes")}`,
+      ].join("\n"),
+    });
+  } catch (err) {
+    console.error("[notify] field note submission notification failed", err);
+  }
+}
+
+export async function notifyFieldNoteDecision(d: {
+  decision: "APPROVED" | "CHANGES_REQUESTED";
+  email: string;
+  name: string;
+  title: string;
+  slug: string;
+  reason: string | null;
+  points: number;
+}) {
+  try {
+    if (!isValidEmail(d.email.trim().toLowerCase())) return;
+    if (d.decision === "APPROVED") {
+      await sendEmail({
+        to: d.email,
+        subject: `Your Field Note is published: ${d.title}`,
+        text: [
+          `Hi ${d.name},`,
+          "",
+          `Your Field Note "${d.title}" has been approved and is now live with a "Verified on location" badge.`,
+          "",
+          `See it: ${adminLink(`/notes/${d.slug}`)}`,
+          ...(d.points > 0 ? ["", `We've added ${d.points} points to your Passport.`] : []),
+        ].join("\n"),
+      });
+    } else {
+      await sendEmail({
+        to: d.email,
+        subject: `Changes requested on your Field Note: ${d.title}`,
+        text: [
+          `Hi ${d.name},`,
+          "",
+          `Thanks for filing "${d.title}". Before we can publish it, we'd like a few changes:`,
+          "",
+          d.reason ?? "",
+          "",
+          `You can edit and resubmit it from your crew page: ${adminLink("/crew")}`,
+        ].join("\n"),
+      });
+    }
+  } catch (err) {
+    console.error("[notify] field note decision notification failed", err);
+  }
+}

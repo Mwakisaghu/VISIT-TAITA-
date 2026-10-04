@@ -112,14 +112,21 @@ async function recordVerifiedCheckin(
 
   if (!existing) {
     try {
-      await prisma.visit.create({ data: { userId, destinationId: destination.id, method } });
+      await prisma.visit.create({ data: { userId, destinationId: destination.id, method, lastVerifiedAt: new Date() } });
     } catch (err) {
       if (!isUniqueViolation(err)) throw err; // created concurrently — fine
     }
   } else if (existing.method === "SELF_REPORTED") {
     await prisma.visit.update({
       where: { id: existing.id },
-      data: { method, visitedAt: new Date() },
+      data: { method, visitedAt: new Date(), lastVerifiedAt: new Date() },
+    });
+  } else {
+    // A repeat check-in awards nothing, but it refreshes the proof: a Field Note needs a check-in
+    // made AFTER the mission was claimed, and a place they'd verified before must still be able to meet that.
+    await prisma.visit.update({
+      where: { id: existing.id },
+      data: { lastVerifiedAt: new Date() },
     });
   }
 

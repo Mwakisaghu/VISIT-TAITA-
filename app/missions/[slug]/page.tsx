@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import NoteCard from "@/components/field-notes/NoteCard";
 import MissionClaimBox from "@/components/missions/MissionClaimBox";
 import { supportBadge } from "@/components/missions/MissionCard";
 import { trackLabel } from "@/lib/creators";
@@ -30,6 +31,13 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 export default async function MissionPage({ params }: { params: { slug: string } }) {
   const mission = await loadMission(params.slug);
   if (!mission) notFound();
+
+  const publishedNotes = await prisma.fieldNote.findMany({
+    where: { missionId: mission.id, status: "APPROVED", creator: { status: "ACTIVE" } },
+    orderBy: { publishedAt: "desc" },
+    take: 6,
+    include: { creator: { select: { displayName: true } } },
+  });
 
   const image = safeHttpUrl(mission.image);
   const availability = missionAvailability(mission);
@@ -129,7 +137,7 @@ export default async function MissionPage({ params }: { params: { slug: string }
               &quot;Check in here&quot; on your Passport — Field Notes are tied to a verified visit.
             </li>
             <li>
-              <strong className="text-stone">3. File your Field Note.</strong> Opening soon.
+              <strong className="text-stone">3. File your Field Note.</strong> From your crew page, answer the prompts and add your photos. Our team reviews it, and once published it carries a &quot;Verified on location&quot; badge.
             </li>
           </ol>
         </section>
@@ -143,6 +151,20 @@ export default async function MissionPage({ params }: { params: { slug: string }
             </p>
           )}
         </div>
+
+        {publishedNotes.length > 0 && (
+          <section className="mt-14 border-t border-stone/10 pt-10">
+            <h2 className="font-display text-2xl text-stone">Field Notes from this mission</h2>
+            <div className="mt-6 grid gap-6 sm:grid-cols-2">
+              {publishedNotes.map((n) => (
+                <NoteCard
+                  key={n.id}
+                  note={{ ...n, mission: { support: mission.support, hostName: mission.hostName, destination: mission.destination, sponsor: mission.sponsor } }}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
