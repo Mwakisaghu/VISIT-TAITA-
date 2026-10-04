@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { PARTNER_ACCESS_TYPES } from "@/lib/partner-types";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -27,8 +28,8 @@ export async function grantPartnerAccess(applicationId: string) {
   });
   if (!application) return { error: "Application not found." };
 
-  if (application.partnerType !== "ACCOMMODATION" && application.partnerType !== "EXPERIENCE") {
-    return { error: "Partner access applies to accommodation and experience applications only." };
+  if (!PARTNER_ACCESS_TYPES.includes(application.partnerType)) {
+    return { error: "Partner access applies to accommodation, experience, food and transport applications only." };
   }
 
   const matchedUser = await prisma.user.findUnique({
