@@ -56,6 +56,11 @@ export default function Footer() {
                   Missions
                 </Link>
               </li>
+              <li>
+                <Link href="/notes" className="focus-ring hover:text-ochre">
+                  Field Notes
+                </Link>
+              </li>
               <li>Advertise with us</li>
               <li>Contact the team</li>
             </ul>

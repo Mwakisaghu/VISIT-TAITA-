@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import NoteCard from "@/components/field-notes/NoteCard";
 import StoryCard from "@/components/StoryCard";
 import { initials, linkLabel, specialtyLabel, trackLabel } from "@/lib/creators";
 import { prisma } from "@/lib/prisma";
@@ -27,11 +28,20 @@ export default async function CreatorProfilePage({ params }: { params: { slug: s
   const creator = await loadCreator(params.slug);
   if (!creator) notFound();
 
-  const [stories] = await Promise.all([
+  const [stories, notes] = await Promise.all([
     prisma.story.findMany({
       where: { authorId: creator.userId, status: "PUBLISHED" },
       orderBy: { createdAt: "desc" },
       take: 12,
+    }),
+    prisma.fieldNote.findMany({
+      where: { creatorId: creator.id, status: "APPROVED" },
+      orderBy: { publishedAt: "desc" },
+      take: 12,
+      include: {
+        creator: { select: { displayName: true } },
+        mission: { select: { support: true, hostName: true, destination: { select: { name: true } }, sponsor: { select: { name: true } } } },
+      },
     }),
   ]);
 
@@ -98,6 +108,18 @@ export default async function CreatorProfilePage({ params }: { params: { slug: s
               ))}
             </ul>
           </div>
+        )}
+
+        {notes.length > 0 && (
+          <section className="mt-16 border-t border-stone/10 pt-12">
+            <h2 className="font-display text-3xl text-stone">Field Notes</h2>
+            <p className="mt-2 font-body text-sm text-stone/60">Each one filed after a verified check-in at the place.</p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2">
+              {notes.map((n) => (
+                <NoteCard key={n.id} note={n} />
+              ))}
+            </div>
+          </section>
         )}
 
         {stories.length > 0 && (
