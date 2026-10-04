@@ -122,7 +122,8 @@ export async function claimMission(missionId: string): Promise<MissionResult> {
           data: { status: "ACTIVE", withdrawnAt: null, claimedAt: new Date() },
         });
       } else {
-        await tx.missionClaim.create({ data: { missionId: mission.id, creatorId: creator.id } });
+        // The app's clock, like the check-in timestamps a Field Note is compared against.
+        await tx.missionClaim.create({ data: { missionId: mission.id, creatorId: creator.id, claimedAt: new Date() } });
       }
     });
   } catch (err) {
