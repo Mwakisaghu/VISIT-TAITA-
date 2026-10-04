@@ -4,6 +4,7 @@ import DemoNotice from "@/components/DemoNotice";
 import AccommodationCard from "@/components/listings/AccommodationCard";
 import { accommodationTypes } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
+import { getRatingSummaries } from "@/lib/reviews-data";
 
 export const metadata: Metadata = {
   title: "Stay in Taita",
@@ -17,6 +18,9 @@ export default async function StayPage() {
     where: { status: "PUBLISHED" },
     orderBy: [{ featured: "desc" }, { name: "asc" }],
   });
+
+  // One grouped query for the whole page — not one per card.
+  const ratings = await getRatingSummaries("accommodation", accommodations.map((a) => a.id));
   const hasDemo = accommodations.some((a) => a.isDemo);
 
   return (
@@ -53,7 +57,7 @@ export default async function StayPage() {
         {accommodations.length > 0 ? (
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {accommodations.map((a) => (
-              <AccommodationCard key={a.slug} accommodation={a} />
+              <AccommodationCard key={a.slug} accommodation={a} rating={ratings.get(a.id) ?? null} />
             ))}
           </div>
         ) : (

@@ -6,6 +6,7 @@ import AccommodationCard from "@/components/listings/AccommodationCard";
 import { accommodationTypes } from "@/lib/data";
 import { slugToCategory } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { getRatingSummaries } from "@/lib/reviews-data";
 
 export function generateStaticParams() {
   return accommodationTypes.map((t) => ({ type: t.key }));
@@ -28,6 +29,9 @@ export default async function StayTypePage({ params }: { params: { type: string 
     orderBy: [{ featured: "desc" }, { name: "asc" }],
   });
 
+  // One grouped query for the whole page — not one per card.
+  const ratings = await getRatingSummaries("accommodation", accommodations.map((a) => a.id));
+
   return (
     <div className="px-6 py-20">
       <div className="mx-auto max-w-6xl">
@@ -36,7 +40,7 @@ export default async function StayTypePage({ params }: { params: { type: string 
         {accommodations.length > 0 ? (
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {accommodations.map((a) => (
-              <AccommodationCard key={a.slug} accommodation={a} />
+              <AccommodationCard key={a.slug} accommodation={a} rating={ratings.get(a.id) ?? null} />
             ))}
           </div>
         ) : (

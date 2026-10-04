@@ -6,6 +6,7 @@ import ExperienceCard from "@/components/listings/ExperienceCard";
 import { experienceCategories } from "@/lib/data";
 import { slugToCategory } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { getRatingSummaries } from "@/lib/reviews-data";
 
 export function generateStaticParams() {
   return experienceCategories.map((c) => ({ category: c.key }));
@@ -32,6 +33,9 @@ export default async function ExperienceCategoryPage({
     orderBy: [{ featured: "desc" }, { name: "asc" }],
   });
 
+  // One grouped query for the whole page — not one per card.
+  const ratings = await getRatingSummaries("experience", experiences.map((x) => x.id));
+
   return (
     <div className="px-6 py-20">
       <div className="mx-auto max-w-6xl">
@@ -40,7 +44,7 @@ export default async function ExperienceCategoryPage({
         {experiences.length > 0 ? (
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {experiences.map((x) => (
-              <ExperienceCard key={x.slug} experience={x} />
+              <ExperienceCard key={x.slug} experience={x} rating={ratings.get(x.id) ?? null} />
             ))}
           </div>
         ) : (

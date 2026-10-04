@@ -4,6 +4,7 @@ import DemoNotice from "@/components/DemoNotice";
 import ExperienceCard from "@/components/listings/ExperienceCard";
 import { experienceCategories } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
+import { getRatingSummaries } from "@/lib/reviews-data";
 
 export const metadata: Metadata = {
   title: "Experiences",
@@ -17,6 +18,9 @@ export default async function ExperiencesPage() {
     where: { status: "PUBLISHED" },
     orderBy: [{ featured: "desc" }, { name: "asc" }],
   });
+
+  // One grouped query for the whole page — not one per card.
+  const ratings = await getRatingSummaries("experience", experiences.map((x) => x.id));
   const hasDemo = experiences.some((x) => x.isDemo);
 
   return (
@@ -53,7 +57,7 @@ export default async function ExperiencesPage() {
         {experiences.length > 0 ? (
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {experiences.map((x) => (
-              <ExperienceCard key={x.slug} experience={x} />
+              <ExperienceCard key={x.slug} experience={x} rating={ratings.get(x.id) ?? null} />
             ))}
           </div>
         ) : (
