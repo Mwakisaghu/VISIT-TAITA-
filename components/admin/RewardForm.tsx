@@ -1,7 +1,13 @@
 import type { Reward } from "@prisma/client";
 import { saveReward } from "@/lib/actions/rewards-admin";
 
-export default function RewardForm({ reward }: { reward?: Reward }) {
+export default function RewardForm({
+  reward,
+  partners,
+}: {
+  reward?: Reward;
+  partners: { id: string; name: string; email: string }[];
+}) {
   const action = saveReward.bind(null, reward?.id ?? null);
 
   return (
@@ -75,6 +81,21 @@ export default function RewardForm({ reward }: { reward?: Reward }) {
       <Field label="Image URL (optional)">
         <input name="image" type="url" defaultValue={reward?.image ?? ""} className="input" placeholder="https://" />
       </Field>
+
+      <Field label="Partner account that honours it (optional)">
+        <select name="ownerId" defaultValue={reward?.ownerId ?? ""} className="input">
+          <option value="">— None: only Visit Taita staff mark vouchers used —</option>
+          {partners.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name} ({p.email})
+            </option>
+          ))}
+        </select>
+      </Field>
+      <p className="-mt-3 font-body text-xs text-stone/50">
+        A partner (or seller) account can look up this reward&apos;s voucher codes and mark them used from its own
+        dashboard. Leave blank if staff will handle it.
+      </p>
 
       <Field label="Status">
         <select name="status" defaultValue={reward?.status ?? "DRAFT"} className="input">
