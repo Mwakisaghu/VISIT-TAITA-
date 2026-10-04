@@ -719,6 +719,12 @@ only ever shown as plain text.
 - Authors are shown as first name + last initial (e.g. "Jane D."); their email is never shown publicly.
 - The public list and rating summary render inside the **cached** listing page; the signed-in visitor's own form
   loads on the client, so the page keeps its ISR caching.
+- **Ratings on cards:** stay and experience cards show **★ 4.6 (12)** once a listing has an approved review. A page
+  of cards costs one grouped query, not one per card.
+- **Search engines:** a listing page with at least one approved review also emits `aggregateRating` structured
+  data (JSON-LD; a stay is a `LodgingBusiness`, an experience a `Product`). Only approved reviews count, nothing
+  is emitted for a listing with none, and the `url` is omitted unless `NEXT_PUBLIC_APP_URL` is a real public
+  address. Whether Google shows star snippets is Google's decision — this makes the pages eligible, not guaranteed.
 
 ### Admin
 `/admin/reviews` — a moderation queue (Pending by default; Approved / Rejected tabs), with **Approve**,
@@ -729,5 +735,4 @@ only ever shown as plain text.
 `Review` and the `ReviewStatus` enum.
 
 ### Not built yet
-Star ratings on the listing cards and in search results; `aggregateRating` structured data for search engines;
-replies from the listing owner; reviews of destinations; "helpful" votes.
+Replies from the listing owner; reviews of destinations; "helpful" votes; sorting/filtering listings by rating.
