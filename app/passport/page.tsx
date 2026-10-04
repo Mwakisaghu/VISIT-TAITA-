@@ -3,7 +3,9 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { toggleVisit } from "@/lib/actions/passport";
+import { CHECKIN_POINTS } from "@/lib/passport";
 import SectionHeading from "@/components/SectionHeading";
+import LocationCheckinButton from "@/components/passport/LocationCheckinButton";
 
 export const metadata = { title: "Your Passport" };
 
@@ -25,8 +27,9 @@ export default async function PassportPage() {
 
   if (!user) redirect("/login");
 
-  const visitedIds = new Set(user.visits.map((v) => v.destinationId));
+  const visitMethodByDestination = new Map(user.visits.map((v) => [v.destinationId, v.method]));
   const earnedBadgeKeys = new Set(user.badges.map((b) => b.badge.key));
+  const checkedInCount = user.visits.filter((v) => v.method !== "SELF_REPORTED").length;
 
   return (
     <div className="px-6 py-16">
@@ -34,7 +37,7 @@ export default async function PassportPage() {
         <p className="font-body text-sm text-rust">Taita Passport</p>
         <h1 className="mt-1 font-display text-4xl text-stone">{user.name}</h1>
         <p className="mt-2 font-body text-stone/70">
-          {user.points} points · {user.badges.length} of {allBadges.length} badges
+          {user.points} points · {checkedInCount} check-ins · {user.badges.length} of {allBadges.length} badges
         </p>
 
         {/* BADGES */}
@@ -47,9 +50,7 @@ export default async function PassportPage() {
                 <div
                   key={badge.id}
                   className={`rounded-sm border p-4 text-center ${
-                    earned
-                      ? "border-ochre bg-ochre/10"
-                      : "border-stone/10 opacity-40"
+                    earned ? "border-ochre bg-ochre/10" : "border-stone/10 opacity-40"
                   }`}
                   title={badge.description}
                 >
@@ -61,38 +62,57 @@ export default async function PassportPage() {
           </div>
         </div>
 
-        {/* DESTINATIONS */}
+        {/* CHECK-INS */}
         <div className="mt-16">
           <SectionHeading
-            title="Mark your visits"
-            description="Tell us where you've been in Taita to unlock badges and points."
+            title="Check in around Taita"
+            description={`Earn ${CHECKIN_POINTS} points the first time you check in at a place — scan the QR code on site, or tap "Check in here" when you're nearby.`}
           />
           <div className="mt-6 divide-y divide-stone/10">
             {destinations.map((d) => {
-              const visited = visitedIds.has(d.id);
+              const method = visitMethodByDestination.get(d.id);
+              const verified = method === "QR" || method === "LOCATION";
+              const selfReported = method === "SELF_REPORTED";
+              const hasCoordinates = d.latitude !== null && d.longitude !== null;
+
               return (
-                <div key={d.id} className="flex items-center justify-between gap-4 py-4">
+                <div key={d.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
                   <div>
                     <p className="font-display text-lg text-stone">{d.name}</p>
-                    <p className="font-body text-sm text-stone/50">{d.region}</p>
+                    <p className="font-body text-sm text-stone/50">
+                      {d.region}
+                      {selfReported && " · marked as visited (no points)"}
+                    </p>
                   </div>
-                  <form
-                    action={async () => {
-                      "use server";
-                      await toggleVisit(d.id);
-                    }}
-                  >
-                    <button
-                      type="submit"
-                      className={`focus-ring rounded-full px-4 py-2 font-body text-sm transition-colors ${
-                        visited
-                          ? "bg-canopy text-parchment hover:bg-canopy-deep"
-                          : "border border-stone/20 text-stone hover:border-rust hover:text-rust"
-                      }`}
-                    >
-                      {visited ? "Visited ✓" : "Mark visited"}
-                    </button>
-                  </form>
+
+                  {verified ? (
+                    <span className="rounded-full bg-canopy px-4 py-2 font-body text-sm text-parchment">
+                      Checked in ✓
+                    </span>
+                  ) : (
+                    <div className="flex flex-wrap items-start justify-end gap-3">
+                      {hasCoordinates ? (
+                        <LocationCheckinButton destinationId={d.id} />
+                      ) : (
+                        <p className="max-w-[12rem] text-right font-body text-xs text-stone/50">
+                          Scan the QR code at the site to check in.
+                        </p>
+                      )}
+                      <form
+                        action={async () => {
+                          "use server";
+                          await toggleVisit(d.id);
+                        }}
+                      >
+                        <button
+                          type="submit"
+                          className="focus-ring rounded-full border border-stone/20 px-4 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust"
+                        >
+                          {selfReported ? "Undo" : "I've been here"}
+                        </button>
+                      </form>
+                    </div>
+                  )}
                 </div>
               );
             })}

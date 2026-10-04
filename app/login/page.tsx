@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn, getSession } from "next-auth/react";
+import { safeNext } from "@/lib/safe-next";
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const next = safeNext(useSearchParams().get("next"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -35,7 +37,9 @@ export default function LoginPage() {
     const session = await getSession();
     const role = session?.user?.role;
 
-    if (role && ADMIN_ROLES.includes(role)) {
+    if (next) {
+      router.push(next);
+    } else if (role && ADMIN_ROLES.includes(role)) {
       router.push("/admin");
     } else if (role === "SELLER") {
       router.push("/partner");
@@ -93,10 +97,22 @@ export default function LoginPage() {
 
       <p className="mt-6 font-body text-sm text-stone/60">
         No Passport yet?{" "}
-        <Link href="/register" className="text-rust hover:text-rust-deep">
+        <Link
+          href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"}
+          className="text-rust hover:text-rust-deep"
+        >
           Create one
         </Link>
       </p>
     </div>
+  );
+}
+
+// useSearchParams needs a Suspense boundary so the page can still be prerendered.
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
