@@ -18,6 +18,8 @@ export default async function AdminOverviewPage() {
     experiences,
     pendingAccommodationEnquiries,
     pendingExperienceEnquiries,
+    rewardsLive,
+    vouchersReady,
     sponsors,
     newSponsorLeads,
   ] = await Promise.all([
@@ -37,6 +39,8 @@ export default async function AdminOverviewPage() {
     prisma.experience.count(),
     prisma.accommodationEnquiry.count({ where: { status: "NEW" } }),
     prisma.experienceEnquiry.count({ where: { status: "NEW" } }),
+    prisma.reward.count({ where: { status: "PUBLISHED" } }),
+    prisma.rewardRedemption.count({ where: { status: "ISSUED" } }),
     prisma.sponsor.count({ where: { status: "PUBLISHED" } }),
     prisma.sponsorLead.count({ where: { status: "NEW" } }),
   ]);
@@ -58,6 +62,8 @@ export default async function AdminOverviewPage() {
     { label: "Experiences", value: experiences },
     { label: "New stay enquiries", value: pendingAccommodationEnquiries },
     { label: "New experience enquiries", value: pendingExperienceEnquiries },
+    { label: "Published rewards", value: rewardsLive },
+    { label: "Vouchers awaiting use", value: vouchersReady },
     { label: "Published sponsors", value: sponsors },
     { label: "New sponsor leads", value: newSponsorLeads },
   ];
