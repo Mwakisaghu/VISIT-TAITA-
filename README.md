@@ -682,6 +682,11 @@ the code the visitor shows them, and sees whether it is valid, already used, or 
 - A reward past its end date can't be marked used by a partner (an admin can override).
 - **Cancelling and refunding stay admin-only.**
 - Rewards with no partner assigned can still only be handled by staff in `/admin/rewards/redemptions`.
+- **Email:** when a visitor redeems a reward, the assigned partner is emailed the code, the reward and the holder's
+  first name + initial; a staff-run reward emails the team inbox instead. It needs the email setup above, and a
+  mail failure never blocks a redemption.
+- **Who can be a voucher partner:** accommodation, experience, **food and transport** applications can all be
+  granted partner access in `/admin/partners`; marketplace sellers get seller access.
 
 ### Limits worth knowing
 - GPS coordinates come from the visitor's browser and can be faked by a determined person — it's friction, not
