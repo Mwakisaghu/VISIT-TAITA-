@@ -784,7 +784,7 @@ The guidelines shown on the application form are a plain-language **draft**. Hav
 `CreatorApplication`, `Creator`, and the `CreatorTrack`, `CreatorSpecialty`, `CreatorApplicationStatus`, `CreatorStatus` enums.
 
 ### Not built yet
-Field Notes and verified-on-location badges (Phase 3), impact tracking and sponsor reporting (Phase 4).
+Impact tracking and sponsor reporting (Phase 4).
 
 ## What's new — Field Crew missions
 
@@ -819,4 +819,44 @@ Phase 2 of the Field Crew: **missions** — briefs for creators, each tied to a 
 `Mission`, `MissionClaim`, and the `MissionStatus`, `MissionSupport`, `MissionClaimStatus` enums.
 
 ### Not built yet
-Filing a Field Note, the verified-on-location check and badge, and awarding a mission's reward points (Phase 3).
+(Filing a Field Note, the verified-on-location badge and the reward points are in the next section.)
+
+## What's new — Field Notes (verified on location)
+
+Phase 3 of the Field Crew, and the part that sets it apart: a creator's report on a mission that can only be filed
+**after a verified check-in at the place**.
+
+- **The rule.** A creator can file a note only if they have passed a **QR or GPS check-in** at the mission's destination
+  **after claiming the mission**. "Marking a place visited" (self-reported) is not proof, and neither is a check-in made
+  before claiming — otherwise one old visit could back any note. The check-in's time and method are copied onto the
+  note and shown publicly as **"Verified on location"**.
+- **Why a new column.** A repeat check-in at an already-verified place used to change nothing, so a creator who had
+  verified a place before could never produce a check-in *after* claiming. `Visit.lastVerifiedAt` is now refreshed by
+  every successful QR/GPS check-in (points are still awarded once). Check-ins made before this release carry no proof
+  timestamp, so a creator simply checks in again.
+- **The note.** A title, an answer to each of the mission's evidence prompts (snapshotted, so editing the mission later
+  can't scramble old notes), an optional story, photo links (up to 6) and links to their own posts (up to 5) — at least
+  one photo or post link, links only since there is no file storage. For a hosted or sponsored mission they must confirm
+  they disclosed it, and the disclosure line is stored on the note.
+- **Review.** `/admin/field-notes`: **Publish** (completes the creator's claim and awards the mission's points to their
+  Passport once — the PENDING→APPROVED move is a conditional update inside a transaction, so two editors can't award
+  twice), **Request changes** (a reason is required; the creator edits and resubmits in place), **Hide / Restore** (no
+  points taken back or re-awarded). A published or hidden note can't be edited by the creator. The team is emailed on each
+  submission; the creator is emailed the decision at their account address.
+- **Public.** `/notes` (index) and `/notes/<slug>` (the note, with the verified badge, who hosted or sponsored it, the
+  evidence, the photos and links to their posts); notes also appear on the mission page and the creator's profile. Only
+  published notes are public.
+- **Creators** file from `/crew` → their mission → `/crew/notes/<mission>`, which shows whether they've checked in yet
+  and tells them how if not. Completed missions stay on the crew page as "Published ✓".
+- `/crew` is disallowed in robots.txt; `/notes` and published notes are in the sitemap.
+
+### Data model additions
+`FieldNote`, `FieldNoteStatus`, `Visit.lastVerifiedAt`, and `PointsReason.MISSION`.
+
+### Launch checklist for Field Notes
+1. Run the migration, then restart. 2. Print and test-scan the QR plaque for each mission destination (see the
+Passport checklist). 3. Make sure a mission's destination is published with a QR code or coordinates (opening a mission
+checks this). 4. Have your lawyer review the creator guidelines.
+
+### Not built yet
+Impact tracking and sponsor reporting (Phase 4); replies and reactions on notes.
