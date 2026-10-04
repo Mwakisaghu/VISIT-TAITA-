@@ -1,4 +1,5 @@
 import { isValidEmail, parseRecipients, sendEmail } from "@/lib/email";
+import { starString } from "@/lib/reviews";
 import { holderLabel } from "@/lib/voucher-lookup";
 
 // Who gets told what:
@@ -262,5 +263,54 @@ export async function notifyVoucherRedeemed(v: {
     });
   } catch (err) {
     console.error("[notify] voucher notification failed", err);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Reviews: one is waiting for approval
+// ---------------------------------------------------------------------------
+// Goes to the team inbox only. The reviewer appears as first name + last
+// initial and their email is never included. Never throws.
+
+export async function notifyNewReview(r: {
+  kind: "accommodation" | "experience";
+  listingName: string;
+  rating: number;
+  title: string | null;
+  body: string;
+  verified: boolean;
+  reviewerName: string | null;
+  edited: boolean;
+}) {
+  try {
+    const team = parseRecipients(process.env.NOTIFY_EMAIL);
+    if (team.length === 0) return;
+
+    const excerpt = r.body.length > 300 ? `${r.body.slice(0, 300).trimEnd()}…` : r.body;
+    const text = [
+      `${r.edited ? "A review was edited and" : "A new review"} is waiting for approval.`,
+      "",
+      details([
+        ["Listing", r.listingName],
+        ["Type", r.kind === "accommodation" ? "Stay" : "Experience"],
+        ["Rating", `${starString(r.rating)} (${r.rating}/5)`],
+        ["Reviewer", holderLabel(r.reviewerName)],
+        ["Verified guest", r.verified ? "Yes — confirmed enquiry" : "No"],
+        ["Headline", r.title],
+      ]),
+      "",
+      "Review:",
+      excerpt,
+      "",
+      `Moderate it: ${adminLink("/admin/reviews")}`,
+    ].join("\n");
+
+    await sendEmail({
+      to: team,
+      subject: `${r.edited ? "Edited" : "New"} review to approve: ${r.listingName} (${r.rating}★)`,
+      text,
+    });
+  } catch (err) {
+    console.error("[notify] review notification failed", err);
   }
 }

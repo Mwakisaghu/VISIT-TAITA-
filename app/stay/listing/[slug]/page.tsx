@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import DemoNotice from "@/components/DemoNotice";
+import ReviewsSection from "@/components/reviews/ReviewsSection";
 import AccommodationEnquiryForm from "@/components/listings/AccommodationEnquiryForm";
 import { accommodationTypeLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -149,6 +150,8 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
             </div>
           </aside>
         </div>
+
+        <ReviewsSection kind="accommodation" listingId={accommodation.id} listingName={accommodation.name} />
       </div>
     </div>
   );

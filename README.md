@@ -702,3 +702,32 @@ and the `VisitMethod`, `PointsReason`, `RedemptionStatus` enums.
 ### Not built yet
 Emailing the team when a voucher is redeemed; streaks/leaderboards;
 check-in photos.
+
+## What's new — Reviews
+
+Visitors can review **stays and experiences**. Reviews are moderated, and the review text a visitor writes is
+only ever shown as plain text.
+
+### How it works
+- Any signed-in visitor can write one review per listing (a database constraint enforces it) — a 1–5 star rating,
+  an optional headline, and 20–2,000 characters of text. They can edit or delete it later.
+- **Every review is PENDING until an admin approves it**, and **an edit sends it back to PENDING** so an approved
+  review can't be swapped for something else. A rejection can carry a short reason the author sees.
+- **"Verified guest"**: shown when the author had an enquiry for that listing that staff marked **CONFIRMED** in
+  the enquiry inbox. It's a snapshot taken when they wrote the review.
+- Listing owners can't review their own listing. Reviews are limited to 5 submissions per hour per person.
+- Authors are shown as first name + last initial (e.g. "Jane D."); their email is never shown publicly.
+- The public list and rating summary render inside the **cached** listing page; the signed-in visitor's own form
+  loads on the client, so the page keeps its ISR caching.
+
+### Admin
+`/admin/reviews` — a moderation queue (Pending by default; Approved / Rejected tabs), with **Approve**,
+**Reject** (optional reason) and **Delete**. The overview shows how many are waiting, and the team inbox
+(`NOTIFY_EMAIL`) is emailed when one is submitted or edited.
+
+### Data model additions
+`Review` and the `ReviewStatus` enum.
+
+### Not built yet
+Star ratings on the listing cards and in search results; `aggregateRating` structured data for search engines;
+replies from the listing owner; reviews of destinations; "helpful" votes.
