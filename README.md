@@ -1042,3 +1042,42 @@ confirmation and no rate limit**. This fixes both, properly.
 ### Data model additions
 `NewsletterSubscriber` gains `status` (PENDING / ACTIVE / UNSUBSCRIBED), `token`, `confirmedAt`, `unsubscribedAt`; new
 `NewsletterCampaign`; `EmailLog` gains `unsubscribeUrl` and `campaignId`.
+
+## What's new — Account email security
+
+Two gaps shipped with the app: **email addresses were never verified** (anyone could register with someone else's address, which
+also locked the real owner out of ever signing up), and **there was no password reset at all** — forget your password and you were
+locked out for good. Both are fixed on one token system, plus a few related hardening changes.
+
+- **Email verification.** Registering emails a link; clicking it (a button on the page — opening a link changes nothing, because
+  email scanners open every link) verifies the address. Until then a member **can't write reviews or apply to the Field Crew**
+  (both are public, or email the account address). Everything else works. The account page shows the status and a "Send me a new
+  link" button. **Staff are exempt**, so an unreachable address can never lock an admin out. The check reads the database every time,
+  so verifying takes effect immediately.
+- **Forgot your password.** `/forgot-password` (linked from sign-in) emails a link that works **once, for an hour**. The answer is the
+  same whether or not an account has that address, and it is rate-limited per visitor and per address. Completing a reset also
+  verifies the address (it proves they control it), **ends every other sign-in** for that account, cancels any other outstanding
+  links, and emails the owner that the password changed. This is also how someone reclaims an address a stranger registered.
+- **Links are stored only as a hash**, so a copy of the database can't be used to verify an address or take over an account.
+- **Sign-in is harder to attack.** Failed sign-ins are counted per email+address and per address (8 and 40 per 15 minutes); over the
+  limit, sign-in is refused even with the right password. A wrong email now takes as long to reject as a wrong password. *The
+  counting is held in memory, so on a serverless host each running copy counts separately: it makes guessing much slower but is not
+  a hard guarantee — a shared store (Redis/Upstash) would make it exact.*
+- **Local development:** if email isn't configured and you're not in production, the verification/reset link is printed in the
+  server console so you can still try the flow.
+- **Hardening found on the way:** the newsletter sign-up logic took the visitor's IP as an *argument* from a server-action file;
+  server actions are public endpoints, so a caller could invent one to dodge the per-visitor limit. It now lives in a plain module
+  and the route reads the address from the request.
+
+### What this means for testing
+New accounts must verify their email before reviewing or applying to the Field Crew. With email configured the link arrives by
+email; in local development it is printed in the terminal running `npm run dev`. Seeded staff accounts are exempt.
+
+### Known limits
+- Existing members are unverified until they click a link (there's no bulk "ask everyone" button; they're prompted on their account page).
+- Registering with an address that's already taken still says so (you can't hide that on a sign-up form); it now points to "Forgot
+  your password?".
+- Sessions are ended on the next 5-minute role check after a reset, not instantly.
+
+### Data model additions
+`User.emailVerifiedAt`, `User.passwordChangedAt`; new `AccountToken` (hashed, single-use, expiring).
