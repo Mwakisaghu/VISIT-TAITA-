@@ -571,8 +571,9 @@ model Accommodation {
   ownerId String?
   owner   User?   @relation("AccommodationOwner", fields: [ownerId], references: [id], onDelete: SetNull)
 
-  enquiries AccommodationEnquiry[]
-  reviews   Review[]
+  enquiries          AccommodationEnquiry[]
+  reviews            Review[]
+  featuredByMissions Mission[]
 
   @@index([type, status])
   @@index([ownerId])
@@ -595,8 +596,17 @@ model AccommodationEnquiry {
   userId String?
   user   User?   @relation("AccommodationEnquiriesMade", fields: [userId], references: [id], onDelete: SetNull)
 
+  // Set only when the visitor reached this listing through a link on a mission or one of its Field Notes,
+  // and the listing is the one that mission features. Never required, never affects the enquiry itself.
+  referredByNoteId    String?
+  referredByNote      FieldNote? @relation(fields: [referredByNoteId], references: [id], onDelete: SetNull)
+  referredByMissionId String?
+  referredByMission   Mission?   @relation(fields: [referredByMissionId], references: [id], onDelete: SetNull)
+
   @@index([accommodationId, status])
   @@index([userId])
+  @@index([referredByMissionId])
+  @@index([referredByNoteId])
 }
 
 model Experience {
@@ -622,8 +632,9 @@ model Experience {
   ownerId String?
   owner   User?   @relation("ExperienceOwner", fields: [ownerId], references: [id], onDelete: SetNull)
 
-  enquiries ExperienceEnquiry[]
-  reviews   Review[]
+  enquiries          ExperienceEnquiry[]
+  reviews            Review[]
+  featuredByMissions Mission[]
 
   @@index([category, status])
   @@index([ownerId])
@@ -645,8 +656,16 @@ model ExperienceEnquiry {
   userId String?
   user   User?   @relation("ExperienceEnquiriesMade", fields: [userId], references: [id], onDelete: SetNull)
 
+  // See AccommodationEnquiry.referredByNoteId.
+  referredByNoteId    String?
+  referredByNote      FieldNote? @relation(fields: [referredByNoteId], references: [id], onDelete: SetNull)
+  referredByMissionId String?
+  referredByMission   Mission?   @relation(fields: [referredByMissionId], references: [id], onDelete: SetNull)
+
   @@index([experienceId, status])
   @@index([userId])
+  @@index([referredByMissionId])
+  @@index([referredByNoteId])
 }
 
 // ---------------------------------------------------------------------------
@@ -998,6 +1017,8 @@ model Mission {
   supportNote   String? // what is provided (required when hosted or sponsored)
   hostName      String? // who hosts (HOSTED)
   sponsorId     String? // who sponsors (SPONSORED)
+  accommodationId String? // a stay featured on the mission page and its notes
+  experienceId    String? // an experience featured on the mission page and its notes
   rewardPoints  Int            @default(0) // Passport points on completion (awarded in Phase 3)
   maxCreators   Int? // null = unlimited
   spotsTaken    Int            @default(0)
@@ -1006,14 +1027,20 @@ model Mission {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  destination Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
-  sponsor     Sponsor?    @relation(fields: [sponsorId], references: [id], onDelete: SetNull)
-  claims      MissionClaim[]
-  notes       FieldNote[]
+  destination           Destination    @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+  sponsor               Sponsor?       @relation(fields: [sponsorId], references: [id], onDelete: SetNull)
+  featuredAccommodation Accommodation? @relation(fields: [accommodationId], references: [id], onDelete: SetNull)
+  featuredExperience    Experience?    @relation(fields: [experienceId], references: [id], onDelete: SetNull)
+  claims                MissionClaim[]
+  notes                 FieldNote[]
+  accommodationEnquiries AccommodationEnquiry[]
+  experienceEnquiries    ExperienceEnquiry[]
 
   @@index([status, closesAt])
   @@index([destinationId])
   @@index([sponsorId])
+  @@index([accommodationId])
+  @@index([experienceId])
 }
 
 model MissionClaim {
@@ -1082,6 +1109,8 @@ model FieldNote {
   claim   MissionClaim @relation(fields: [claimId], references: [id], onDelete: Cascade)
   mission Mission      @relation(fields: [missionId], references: [id], onDelete: Restrict)
   creator Creator      @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  accommodationEnquiries AccommodationEnquiry[]
+  experienceEnquiries    ExperienceEnquiry[]
 
   @@index([status, createdAt])
   @@index([missionId, status])
