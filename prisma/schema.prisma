@@ -1141,3 +1141,37 @@ model ContentView {
   @@unique([kind, targetId, day])
   @@index([kind, targetId])
 }
+
+// ---------------------------------------------------------------------------
+// Email outbox
+// ---------------------------------------------------------------------------
+// Every notification email is recorded here before it is sent, so a failure is visible and can be retried
+// instead of vanishing. PENDING = not delivered yet (a retry is scheduled); SENT = delivered; FAILED = gave up
+// after all retries (it can still be retried by hand while the message is kept).
+//
+// Privacy: the message body (which can contain an enquirer's details) is stored ONLY while the email still needs
+// sending. It is cleared the moment the email is delivered, and cleared for anything unsent after 7 days; the
+// rows themselves are deleted after 30 days. The admin screen never shows bodies.
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model EmailLog {
+  id            String      @id @default(cuid())
+  to            String[]
+  replyTo       String?
+  subject       String
+  body          String? // cleared once sent, and for unsent mail after 7 days
+  status        EmailStatus @default(PENDING)
+  attempts      Int         @default(0)
+  lastError     String? // includes the provider's own message, e.g. why a domain was refused
+  nextAttemptAt DateTime? // when the next retry is due (also used as a short lease while one is in flight)
+  sentAt        DateTime?
+  createdAt     DateTime    @default(now())
+
+  @@index([status, nextAttemptAt])
+  @@index([createdAt])
+}
