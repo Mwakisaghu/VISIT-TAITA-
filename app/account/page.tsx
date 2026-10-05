@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import DeleteAccountForm from "@/components/account/DeleteAccountForm";
+import ResendVerificationButton from "@/components/account/ResendVerificationButton";
 import UnsubscribeButton from "@/components/account/UnsubscribeButton";
 import { getDeletionBlockers } from "@/lib/account-data";
 import { authOptions } from "@/lib/auth";
@@ -43,7 +44,7 @@ export default async function AccountPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, name: true, email: true, role: true, createdAt: true, termsAcceptedAt: true, termsVersion: true },
+    select: { id: true, name: true, email: true, role: true, createdAt: true, termsAcceptedAt: true, termsVersion: true, emailVerifiedAt: true },
   });
   if (!user) {
     return (
@@ -85,6 +86,22 @@ export default async function AccountPage() {
         <p className="mt-4 font-body text-sm text-stone/60">
           To correct your details, <Link href="/contact" className="underline hover:text-rust">contact us</Link>.
         </p>
+      </section>
+
+      <section className="mt-12 border-t border-stone/10 pt-10">
+        <h2 className="font-display text-2xl text-stone">Email address</h2>
+        {user.emailVerifiedAt ? (
+          <p className="mt-3 font-body text-stone/70">Verified on {formatDate(user.emailVerifiedAt)}.</p>
+        ) : (
+          <>
+            <p className="mt-3 max-w-prose font-body text-stone/70">
+              Your email address isn&apos;t verified yet. We sent a link to <strong>{user.email}</strong> when you registered — click it to verify. Until then you can&apos;t write reviews or apply to the Field Crew.
+            </p>
+            <div className="mt-4">
+              <ResendVerificationButton />
+            </div>
+          </>
+        )}
       </section>
 
       <section className="mt-12 border-t border-stone/10 pt-10">

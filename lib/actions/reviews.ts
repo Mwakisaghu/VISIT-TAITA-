@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { notifyNewReview } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { requireVerifiedEmail } from "@/lib/verified-email";
 import {
   REVIEW_MAX_BODY,
   REVIEW_MAX_TITLE,
@@ -111,6 +112,10 @@ export async function submitReview(
   const session = await getServerSession(authOptions);
   if (!session?.user) return { error: "Please sign in to write a review." };
   const userId = session.user.id;
+
+  // A review is public, so it needs an address that has been confirmed as theirs.
+  const emailCheck = await requireVerifiedEmail(userId, session.user.role);
+  if (!emailCheck.ok) return { error: emailCheck.error };
 
   if (!isReviewKind(kind)) return { error: "This listing isn't available for reviews." };
 

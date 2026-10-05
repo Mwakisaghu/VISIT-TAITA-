@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import { sendVerificationEmail } from "@/lib/account-verification";
 import { prisma } from "@/lib/prisma";
 import { LEGAL_VERSION } from "@/lib/site-info";
 
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
   const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (existing) {
     return NextResponse.json(
-      { error: "An account with that email already exists." },
+      { error: "An account with that email already exists. If it's yours, use 'Forgot your password?' on the sign-in page." },
       { status: 409 }
     );
   }
@@ -50,6 +51,13 @@ export async function POST(request: Request) {
       termsVersion: LEGAL_VERSION,
     },
   });
+
+  // Ask them to verify the address. Registration must never fail because an email couldn't be sent.
+  try {
+    await sendVerificationEmail(user.id);
+  } catch (err) {
+    console.error("[register] couldn't send the verification email", err);
+  }
 
   return NextResponse.json({ id: user.id, email: user.email });
 }

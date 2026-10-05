@@ -40,7 +40,7 @@ export async function getDeletionBlockers(user: { id: string; role: string }): P
 export async function buildAccountExport(userId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, name: true, email: true, role: true, points: true, createdAt: true, termsAcceptedAt: true, termsVersion: true },
+    select: { id: true, name: true, email: true, role: true, points: true, createdAt: true, termsAcceptedAt: true, termsVersion: true, emailVerifiedAt: true },
   });
   if (!user) return null;
 
@@ -98,6 +98,7 @@ export async function buildAccountExport(userId: string) {
       memberSince: user.createdAt,
       termsAcceptedAt: user.termsAcceptedAt,
       termsVersion: user.termsVersion,
+      emailVerifiedAt: user.emailVerifiedAt,
       newsletterSubscribed: !!newsletter && newsletter.status === "ACTIVE" && !!newsletter.confirmedAt,
       newsletterStatus: newsletter?.status ?? null,
       newsletterSince: newsletter?.confirmedAt ?? null,

@@ -10,7 +10,9 @@ const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
 
 function LoginForm() {
   const router = useRouter();
-  const next = safeNext(useSearchParams().get("next"));
+  const params = useSearchParams();
+  const next = safeNext(params.get("next"));
+  const resetDone = params.get("reset") === "1";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -30,7 +32,11 @@ function LoginForm() {
     setLoading(false);
 
     if (res?.error) {
-      setError("That email and password don't match an account.");
+      setError(
+        res.error === "TooManyAttempts"
+          ? "Too many attempts. Please wait a few minutes before trying again, or reset your password."
+          : "That email and password don't match an account."
+      );
       return;
     }
 
@@ -84,6 +90,8 @@ function LoginForm() {
           />
         </div>
 
+        {resetDone && !error && <p className="font-body text-sm text-canopy">Your password has been changed. Sign in with the new one.</p>}
+
         {error && <p className="font-body text-sm text-rust">{error}</p>}
 
         <button
@@ -94,6 +102,12 @@ function LoginForm() {
           {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>
+
+      <p className="mt-4 font-body text-sm text-stone/60">
+        <Link href="/forgot-password" className="text-rust hover:text-rust-deep">
+          Forgot your password?
+        </Link>
+      </p>
 
       <p className="mt-6 font-body text-sm text-stone/60">
         No Passport yet?{" "}

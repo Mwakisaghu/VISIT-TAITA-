@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { processDueEmails, purgeOldEmails } from "@/lib/email-outbox";
+import { purgeExpiredTokens } from "@/lib/account-tokens";
 import { purgeStaleSubscribers } from "@/lib/newsletter-maintenance";
 
 // Never cached: it does work every time it is called.
@@ -36,7 +37,14 @@ export async function GET(req: Request) {
     } catch (err) {
       console.error("[cron/emails] couldn't purge stale subscribers", err);
     }
-    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers } });
+    // Expired verification and reset links are deleted too; again, a failure here never stops email retries.
+    let expiredTokens = 0;
+    try {
+      expiredTokens = await purgeExpiredTokens();
+    } catch (err) {
+      console.error("[cron/emails] couldn't purge expired account tokens", err);
+    }
+    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens } });
   } catch (err) {
     console.error("[cron/emails] failed", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
