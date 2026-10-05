@@ -33,6 +33,9 @@ model User {
   email        String   @unique
   passwordHash String
   role         Role     @default(VISITOR)
+  // When the person accepted the Terms and acknowledged the Privacy Policy, and which version of them.
+  termsAcceptedAt DateTime?
+  termsVersion    String?
   points       Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -390,8 +393,9 @@ model Order {
   pesapalMerchantReference String?
   pesapalConfirmationCode  String?
 
-  buyerId String
-  buyer   User   @relation("OrdersPlaced", fields: [buyerId], references: [id], onDelete: Cascade)
+  // Optional + SetNull: if the buyer deletes their account the order is kept (anonymised) for the payment record.
+  buyerId String?
+  buyer   User?  @relation("OrdersPlaced", fields: [buyerId], references: [id], onDelete: SetNull)
 
   items OrderItem[]
 
