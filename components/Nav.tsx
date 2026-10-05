@@ -13,6 +13,7 @@ const links = [
   { href: "/stories", label: "Stories" },
   { href: "/events", label: "Events" },
   { href: "/shop", label: "Shop" },
+  { href: "/search", label: "Search" },
 ];
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];

@@ -1081,3 +1081,35 @@ email; in local development it is printed in the terminal running `npm run dev`.
 
 ### Data model additions
 `User.emailVerifiedAt`, `User.passwordChangedAt`; new `AccountToken` (hashed, single-use, expiring).
+
+## What's new — Site search
+
+There was no way to search the site. `/search` (a **Search** link in the main navigation) finds places, stories, stays,
+experiences, shop products, Taita Cup teams, creators, missions, Field Notes and the site's own pages (map, passport, contact…).
+
+- **Only what is public.** Each content type uses the *same* visibility rule as the sitemap (published stories, products, stays,
+  experiences and places; active creators; open or closed missions; approved Field Notes). A test runs the sitemap and the
+  search over the same data and fails if they ever disagree, so search can't reveal a draft, a hidden note or a paused creator.
+- **Only what is displayed.** Contact emails and phone numbers, SKUs, stock levels, owners and a Field Note's internal review
+  note are never searched or loaded — searching for someone's phone number or email finds nothing.
+- **How it matches.** Every word must appear somewhere in the item (case-insensitive); little words like "in" and "the" are
+  ignored, so "hiking in taita" works. Results are ranked: a title match beats a summary match beats a body match; a title that
+  starts with, or contains as a whole word, what you typed ranks higher; a title containing *all* the words gets a bonus.
+  Each result shows an excerpt with the matched words marked.
+- **Grouped, with "See all".** The overview shows the best 6 per type; "See all stays results →" narrows to one type (up to 30).
+- **Safe by construction.** Search words are always database *parameters* (never part of the SQL); the characters `%`, `_` and
+  `\` are stripped (they would otherwise act as wildcards); queries are capped (80 characters, 6 words); highlighting is built
+  from plain segments rendered by React, so nothing from the database is ever treated as HTML; results are rate-limited (60 a
+  minute per visitor); the page is `noindex`.
+- **One failure doesn't break search.** If one content type's query fails it is logged and the page says some results couldn't be
+  loaded — the rest still appear.
+- It works with JavaScript off (a plain form).
+
+### Known limits
+- It matches the letters you type, as part of any word: "hik" finds "hiking", but "hike" does not, and a misspelling finds
+  nothing. There is no typo-tolerance, stemming or synonyms. Postgres full-text search or trigram matching (`pg_trgm`) would add that later; for a
+  county site with hundreds of items this is fast enough.
+- Matching is done with `ILIKE`, which can't use an index, so searches scan the text columns. Fine at this size; revisit if the
+  stories or products grow into the many thousands.
+- Reviews are not searched (they are user content behind moderation), and Swahili/English are not linked.
+- Search words are not recorded. Learning which searches find nothing would be useful, but needs a privacy decision first.
