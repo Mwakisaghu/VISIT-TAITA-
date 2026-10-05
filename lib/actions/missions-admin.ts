@@ -142,10 +142,26 @@ export async function saveMission(id: string | null, formData: FormData): Promis
     const status = text(formData, "status") || "DRAFT";
     if (!(MISSION_STATUSES as readonly string[]).includes(status)) return { error: "Choose a status." };
 
-    const existing = id ? await prisma.mission.findUnique({ where: { id }, select: { id: true, slug: true, spotsTaken: true } }) : null;
+    const existing = id ? await prisma.mission.findUnique({ where: { id }, select: { id: true, slug: true, spotsTaken: true, accommodationId: true, experienceId: true } }) : null;
     if (id && !existing) return { error: "Mission not found." };
     if (existing && maxCreators !== null && existing.spotsTaken > maxCreators) {
       return { error: `${existing.spotsTaken} creators already hold a spot — you can't set the limit below that.` };
+    }
+
+    // ---- featured listings (optional) ----
+    // Must be a real, PUBLISHED listing — unless it's the one already saved on this mission, so an old mission can
+    // still be edited after its listing was unpublished (it just isn't shown publicly until republished).
+    const accommodationId = text(formData, "accommodationId");
+    const experienceId = text(formData, "experienceId");
+    if (accommodationId && accommodationId !== existing?.accommodationId) {
+      const stay = await prisma.accommodation.findUnique({ where: { id: accommodationId }, select: { name: true, status: true } });
+      if (!stay) return { error: "Choose a stay from the list." };
+      if (stay.status !== "PUBLISHED") return { error: `${stay.name} isn't published yet — publish it before featuring it.` };
+    }
+    if (experienceId && experienceId !== existing?.experienceId) {
+      const experience = await prisma.experience.findUnique({ where: { id: experienceId }, select: { name: true, status: true } });
+      if (!experience) return { error: "Choose an experience from the list." };
+      if (experience.status !== "PUBLISHED") return { error: `${experience.name} isn't published yet — publish it before featuring it.` };
     }
 
     if (status === "OPEN") {
@@ -170,6 +186,8 @@ export async function saveMission(id: string | null, formData: FormData): Promis
       rewardPoints,
       maxCreators,
       closesAt,
+      accommodationId: accommodationId || null,
+      experienceId: experienceId || null,
       status: status as (typeof MISSION_STATUSES)[number],
     };
 
