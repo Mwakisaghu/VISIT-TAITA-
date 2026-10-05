@@ -126,6 +126,11 @@ export async function createPesapalOrder(orderId: string) {
     return { error: "Payments are not fully configured (missing NEXT_PUBLIC_APP_URL)." };
   }
 
+  // The buyer may have deleted their account since (the order is kept as an anonymous payment record).
+  if (!order.buyer) {
+    return { error: "This order's account no longer exists, so it can't be paid." };
+  }
+
   const [firstName, ...rest] = order.buyer.name.split(" ");
 
   try {

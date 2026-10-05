@@ -19,7 +19,7 @@ export default async function AdminOrdersPage() {
               <div>
                 <p className="font-display text-lg text-stone">{order.orderNumber}</p>
                 <p className="font-body text-sm text-stone/60">
-                  {order.buyer.name} · {order.buyer.email} · {order.phone}
+                  {order.buyer ? `${order.buyer.name} · ${order.buyer.email}` : "Deleted account"} · {order.phone}
                 </p>
                 <p className="font-body text-xs text-stone/50">
                   {fulfillmentLabel(order.fulfillment)}
