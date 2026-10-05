@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       // Private areas, and /checkin/ whose URLs contain a secret QR token.
-      disallow: ["/account", "/admin", "/api", "/checkin", "/crew", "/passport", "/partner", "/report"],
+      disallow: ["/account", "/admin", "/api", "/checkin", "/crew", "/forgot-password", "/passport", "/partner", "/report", "/reset-password", "/verify-email"],
     },
     sitemap: `${base}/sitemap.xml`,
   };
