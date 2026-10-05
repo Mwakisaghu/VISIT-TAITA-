@@ -215,10 +215,13 @@ const enquiryStatusSchema = z.enum(["NEW", "CONTACTED", "CONFIRMED", "DECLINED"]
 
 export async function updateAccommodationEnquiryStatus(id: string, status: string) {
   try {
-    await requireAdmin();
+    const admin = await requireAdmin();
     const parsed = enquiryStatusSchema.safeParse(status);
     if (!parsed.success) return { error: "Invalid status." };
-    await prisma.accommodationEnquiry.update({ where: { id }, data: { status: parsed.data } });
+    await prisma.accommodationEnquiry.update({
+      where: { id },
+      data: { status: parsed.data, statusChangedAt: new Date(), statusChangedById: admin.id },
+    });
   } catch {
     return { error: "Couldn't update the status — please try again." };
   }
@@ -229,10 +232,13 @@ export async function updateAccommodationEnquiryStatus(id: string, status: strin
 
 export async function updateExperienceEnquiryStatus(id: string, status: string) {
   try {
-    await requireAdmin();
+    const admin = await requireAdmin();
     const parsed = enquiryStatusSchema.safeParse(status);
     if (!parsed.success) return { error: "Invalid status." };
-    await prisma.experienceEnquiry.update({ where: { id }, data: { status: parsed.data } });
+    await prisma.experienceEnquiry.update({
+      where: { id },
+      data: { status: parsed.data, statusChangedAt: new Date(), statusChangedById: admin.id },
+    });
   } catch {
     return { error: "Couldn't update the status — please try again." };
   }

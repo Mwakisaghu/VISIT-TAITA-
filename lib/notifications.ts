@@ -86,7 +86,7 @@ export async function notifySponsorLead(
 // Stay / experience enquiries
 // ---------------------------------------------------------------------------
 
-type Listing = { name: string; isDemo: boolean; contactEmail: string | null };
+type Listing = { name: string; isDemo: boolean; contactEmail: string | null; ownerId?: string | null };
 
 async function sendEnquiryEmails(opts: {
   kind: "stay" | "experience";
@@ -130,7 +130,9 @@ async function sendEnquiryEmails(opts: {
         subject: `Enquiry for ${listing.name} via Visit Taita`,
         text: body(
           `Someone has enquired about ${listing.name} through Visit Taita. Reply to this email to reach them directly.`,
-          "Sent by Visit Taita on behalf of the enquirer."
+          listing.ownerId
+            ? `Sent by Visit Taita on behalf of the enquirer.\n\nMark it contacted, confirmed or declined in your partner dashboard: ${adminLink("/partner/enquiries")}`
+            : "Sent by Visit Taita on behalf of the enquirer."
         ),
         replyTo: enquirerEmail,
       })

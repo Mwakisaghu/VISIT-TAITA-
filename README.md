@@ -859,7 +859,7 @@ Passport checklist). 3. Make sure a mission's destination is published with a QR
 checks this). 4. Have your lawyer review the creator guidelines.
 
 ### Not built yet
-Replies and reactions on notes. Tracking whether an enquiry became an actual booking (we can only see enquiries and whether the host marked them confirmed).
+Replies and reactions on notes. Tracking whether an enquiry became an actual booking or payment (we can see enquiries and whether the HOST marked them confirmed — see the partner inbox).
 
 ## What's new — Impact and sponsor reports
 
@@ -975,3 +975,33 @@ The pages and controls a platform needs before it collects real people's data.
 
 ### Data model additions
 `User.termsAcceptedAt`, `User.termsVersion`; `Order.buyerId` is now optional.
+
+## What's new — Partner enquiry inbox
+
+Hosts were emailed every enquiry but could do nothing with it: the dashboard showed only a count, and only your admin team
+could set an enquiry's status — the people last to know whether a booking happened. That made "Confirmed" (which sponsor
+reports and review verification depend on) unreliable and the "partner lead conversion" KPI unmeasurable.
+
+- **`/partner/enquiries`** (Enquiries in the partner sidebar; the dashboard's "New enquiries" tile links to it): every enquiry
+  for the stays and experiences **the signed-in host owns**, newest first, in tabs — New / Contacted / Confirmed / Declined / All
+  — with counts. Each shows the guest, their message, dates and party size, and one-tap **Email**, **Call** and **WhatsApp**
+  buttons with a polite reply pre-filled. (WhatsApp appears only when the number is clearly valid — Kenyan 07xx/01xx/254… or
+  an international number; landlines and ambiguous numbers get no WhatsApp button rather than a wrong link.)
+- **Status:** Mark contacted → Confirm or Decline, and back again for mistakes. Confirming says plainly what it means: it
+  lets that guest leave a verified review, and counts in sponsor reports.
+- **Ownership is enforced in the query, not afterwards.** A host can only ever load or change enquiries for listings they own,
+  and "not yours" gives the *identical* message as "doesn't exist", so ids can't be probed. Only what a host needs to reply is
+  loaded (no account ids, no referral data).
+- **Audit:** every status change records who made it and when (`statusChangedAt` / `statusChangedById`) — including changes
+  made by admins — because "confirmed" feeds reports.
+- **The host's email now links to the inbox** when the listing has an owner who can sign in.
+- Listing partners (role PARTNER) and admins can use it; sellers (shop only) have no listings, so no inbox.
+
+### Known limits
+- A host can confirm their own enquiries, which counts in sponsor reports and unlocks that guest's verified review (owners can
+  never review their own listing). It is an honour system with an audit trail; if it is ever abused, the trail shows who.
+- The guest is not emailed when an enquiry is confirmed or declined (a natural follow-up).
+- Enquiries made on demo listings or listings with no owner are only visible to your admin team.
+
+### Data model additions
+`statusChangedAt` and `statusChangedById` on `AccommodationEnquiry` and `ExperienceEnquiry`.
