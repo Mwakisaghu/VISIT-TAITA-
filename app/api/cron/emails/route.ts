@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { processDueEmails, purgeOldEmails } from "@/lib/email-outbox";
+import { purgeStaleSubscribers } from "@/lib/newsletter-maintenance";
 
 // Never cached: it does work every time it is called.
 export const dynamic = "force-dynamic";
@@ -28,7 +29,14 @@ export async function GET(req: Request) {
   try {
     const retried = await processDueEmails(50);
     const purged = await purgeOldEmails();
-    return NextResponse.json({ ok: true, retried, purged });
+    // Unconfirmed newsletter signups are deleted after 30 days. If that fails it must never stop email retries.
+    let staleSubscribers = 0;
+    try {
+      staleSubscribers = await purgeStaleSubscribers();
+    } catch (err) {
+      console.error("[cron/emails] couldn't purge stale subscribers", err);
+    }
+    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers } });
   } catch (err) {
     console.error("[cron/emails] failed", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

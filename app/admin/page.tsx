@@ -32,7 +32,7 @@ export default async function AdminOverviewPage() {
     prisma.story.count(),
     prisma.event.count(),
     prisma.user.count(),
-    prisma.newsletterSubscriber.count(),
+    prisma.newsletterSubscriber.count({ where: { status: "ACTIVE", confirmedAt: { not: null } } }),
     prisma.sportTeam.count(),
     prisma.sportFixture.count(),
     prisma.product.count(),

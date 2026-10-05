@@ -1,22 +1,16 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { subscribeToNewsletter } from "@/lib/actions/newsletter";
 
-const schema = z.object({ email: z.string().email() });
-
+/**
+ * Starts a newsletter subscription. It does NOT add anyone to the list: it emails a confirmation link (double opt-in),
+ * and the reply is the same whether or not the address was already known.
+ */
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
-  const parsed = schema.safeParse(body);
+  const forwarded = request.headers.get("x-forwarded-for") ?? "";
+  const ip = forwarded.split(",")[0].trim() || request.headers.get("x-real-ip") || null;
 
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
-  }
-
-  await prisma.newsletterSubscriber.upsert({
-    where: { email: parsed.data.email.toLowerCase() },
-    update: {},
-    create: { email: parsed.data.email.toLowerCase() },
-  });
-
+  const result = await subscribeToNewsletter(String((body as { email?: unknown } | null)?.email ?? ""), ip);
+  if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
   return NextResponse.json({ ok: true });
 }
