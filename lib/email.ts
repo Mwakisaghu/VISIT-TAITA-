@@ -28,7 +28,14 @@ export type EmailResult = {
   queued?: boolean;
   error?: string;
 };
-export type EmailPayload = { to: string[]; replyTo?: string | null; subject: string; text: string };
+export type EmailPayload = {
+  to: string[];
+  replyTo?: string | null;
+  subject: string;
+  text: string;
+  /** This recipient's one-click unsubscribe URL (newsletters, confirmation requests). Sent as List-Unsubscribe headers. */
+  unsubscribeUrl?: string | null;
+};
 
 const TIMEOUT_MS = 4000;
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:"]+$/;
@@ -85,6 +92,12 @@ export async function deliverEmail(payload: EmailPayload, idempotencyKey?: strin
   };
   if (payload.replyTo && isValidEmail(payload.replyTo.trim())) body.reply_to = payload.replyTo.trim();
 
+  // A one-click unsubscribe the mail app can offer (Gmail and Yahoo expect it from bulk senders). Only a plain http(s) URL.
+  const unsub = payload.unsubscribeUrl?.trim();
+  if (unsub && /^https?:\/\/[^\s<>"]+$/i.test(unsub)) {
+    body.headers = { "List-Unsubscribe": `<${unsub}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
+  }
+
   const headers: Record<string, string> = { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" };
   if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
 
@@ -117,6 +130,7 @@ export async function sendEmail(input: {
   subject: string;
   text: string;
   replyTo?: string;
+  unsubscribeUrl?: string;
 }): Promise<EmailResult> {
   const to = parseRecipients(Array.isArray(input.to) ? input.to.join(",") : input.to);
   if (to.length === 0) return { ok: false, skipped: true, error: "no valid recipients" };
@@ -134,6 +148,7 @@ export async function sendEmail(input: {
     replyTo: input.replyTo && isValidEmail(input.replyTo.trim()) ? input.replyTo.trim() : null,
     subject: cleanHeader(input.subject),
     text: input.text,
+    unsubscribeUrl: input.unsubscribeUrl ?? null,
   };
 
   // 1. Record the intent first, so a crash or outage can't lose it. If this fails, send anyway.
@@ -145,6 +160,7 @@ export async function sendEmail(input: {
         replyTo: payload.replyTo,
         subject: payload.subject,
         body: payload.text,
+        unsubscribeUrl: payload.unsubscribeUrl ?? null,
         status: "PENDING",
         attempts: 0,
         nextAttemptAt: nextAttemptAfter(1, new Date()),

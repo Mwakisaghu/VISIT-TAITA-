@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-type Row = { id: string; to: string[]; replyTo: string | null; subject: string; body: string | null; attempts: number };
+type Row = { id: string; to: string[]; replyTo: string | null; subject: string; body: string | null; attempts: number; unsubscribeUrl: string | null };
 export type AttemptOutcome = "sent" | "retry" | "gaveUp" | "skipped" | "error";
 
 /**
@@ -28,7 +28,7 @@ async function attemptRow(row: Row, now: Date): Promise<AttemptOutcome> {
     return "gaveUp";
   }
 
-  const result = await deliverEmail({ to: row.to, replyTo: row.replyTo, subject: row.subject, text: row.body }, `email-${row.id}`);
+  const result = await deliverEmail({ to: row.to, replyTo: row.replyTo, subject: row.subject, text: row.body, unsubscribeUrl: row.unsubscribeUrl }, `email-${row.id}`);
   return recordOutcome(row.id, row.attempts, result, now);
 }
 
@@ -44,7 +44,7 @@ export async function processDueEmails(limit = 20, now: Date = new Date()): Prom
     where: { status: "PENDING", nextAttemptAt: { lte: now } },
     orderBy: { nextAttemptAt: "asc" },
     take: Math.max(1, Math.min(limit, 100)),
-    select: { id: true, to: true, replyTo: true, subject: true, body: true, attempts: true },
+    select: { id: true, to: true, replyTo: true, subject: true, body: true, attempts: true, unsubscribeUrl: true },
   });
   summary.due = rows.length;
 
@@ -66,7 +66,7 @@ export type RetryOutcome = { ok: true; message: string } | { ok: false; error: s
 export async function retryEmailNow(id: string, now: Date = new Date()): Promise<RetryOutcome> {
   const row = await prisma.emailLog.findUnique({
     where: { id },
-    select: { id: true, to: true, replyTo: true, subject: true, body: true, attempts: true, status: true },
+    select: { id: true, to: true, replyTo: true, subject: true, body: true, attempts: true, status: true, unsubscribeUrl: true },
   });
   if (!row) return { ok: false, error: "Email not found." };
   if (row.status === "SENT") return { ok: false, error: "That email was already delivered." };
@@ -80,7 +80,7 @@ export async function retryEmailNow(id: string, now: Date = new Date()): Promise
   });
   if (leased.count === 0) return { ok: false, error: "That email was just handled." };
 
-  const result = await deliverEmail({ to: row.to, replyTo: row.replyTo, subject: row.subject, text: row.body }, `email-${row.id}`);
+  const result = await deliverEmail({ to: row.to, replyTo: row.replyTo, subject: row.subject, text: row.body, unsubscribeUrl: row.unsubscribeUrl }, `email-${row.id}`);
   const outcome = await recordOutcome(row.id, row.attempts, result, now);
   if (outcome === "sent") return { ok: true, message: "Sent." };
   return { ok: false, error: result.error ?? "It still couldn't be sent." };
