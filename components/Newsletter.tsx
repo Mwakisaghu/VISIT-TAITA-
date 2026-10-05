@@ -35,7 +35,7 @@ export default function Newsletter() {
         </p>
 
         {status === "done" ? (
-          <p className="mt-8 font-body text-ochre">You&apos;re on the list. Karibu.</p>
+          <p className="mt-8 font-body text-ochre">Almost there — we&apos;ve emailed you a link to confirm. Karibu.</p>
         ) : (
           <form
             className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center"

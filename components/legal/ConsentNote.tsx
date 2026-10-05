@@ -5,7 +5,7 @@ export type ConsentKind = "enquiry" | "newsletter" | "lead" | "order" | "contact
 const TEXT: Record<ConsentKind, string> = {
   enquiry:
     "We share your name, email, phone and message with the host and with Visit Taita so they can reply to you.",
-  newsletter: "By joining you agree to receive our monthly letter. You can unsubscribe at any time.",
+  newsletter: "We'll email you a link to confirm. By confirming you agree to receive our monthly letter, and you can unsubscribe at any time.",
   lead: "We use your details to reply to your enquiry or assess your application.",
   order:
     "We share your phone and delivery address with the seller to fulfil your order, and keep order and payment records.",

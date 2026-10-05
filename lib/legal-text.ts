@@ -38,7 +38,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
           "**Reviews:** your rating and text. They are shown publicly with your first name and last initial. A review can show as \"verified\" if you made a confirmed enquiry with that host.",
           "**Shop orders:** your name and email (from your account), phone number, delivery address, what you ordered, and the payment status and reference numbers from M-Pesa or Pesapal. We do not receive or store your card details or M-Pesa PIN.",
           "**The Field Crew (creators):** if you apply, the details in your application and any profile or Field Notes you publish. An audience-size note, if you add one, is seen only by our team.",
-          "**The newsletter:** your email address.",
+          "**The newsletter:** your email address. We email you a link to confirm before sending anything. If you unsubscribe we keep the address on a do-not-email list so we never email you again; deleting your account removes it.",
           "**Sponsor and partner enquiries and applications:** the contact and business details you give us.",
           "**Contact messages:** your name, email and message, used only to reply to you.",
           "**Email delivery records:** the recipient, subject and delivery status of emails we send, so we can retry failures. The message text is cleared once the email is delivered, and after 7 days if it never is. The records themselves are deleted after 30 days.",
