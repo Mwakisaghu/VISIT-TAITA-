@@ -36,6 +36,11 @@ model User {
   // When the person accepted the Terms and acknowledged the Privacy Policy, and which version of them.
   termsAcceptedAt DateTime?
   termsVersion    String?
+  // Set when they click the link we emailed to this address (or complete a password reset, which proves the same thing).
+  emailVerifiedAt DateTime?
+  // Set when the password is reset. Any sign-in older than this is ended (see lib/auth.ts).
+  passwordChangedAt DateTime?
+  accountTokens     AccountToken[]
   points       Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -217,6 +222,27 @@ model Visit {
 // A person only receives the newsletter after CONFIRMING their address (double opt-in): a new signup is PENDING until they
 // click the link we email them. Rows that existed before this (ACTIVE, with no confirmedAt) are "legacy": they are not mailed
 // until they confirm. Unsubscribing keeps the row as a do-not-email record (deleting an account removes it).
+enum AccountTokenPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
+// A single-use, expiring link we email: "verify this address" or "reset this password". Only a SHA-256 HASH of the secret is
+// stored, so a copy of the database can't be used to verify an address or take over an account.
+model AccountToken {
+  id        String              @id @default(cuid())
+  userId    String
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purpose   AccountTokenPurpose
+  tokenHash String              @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  @@index([userId, purpose])
+  @@index([expiresAt])
+}
+
 enum SubscriberStatus {
   PENDING
   ACTIVE
