@@ -859,7 +859,7 @@ Passport checklist). 3. Make sure a mission's destination is published with a QR
 checks this). 4. Have your lawyer review the creator guidelines.
 
 ### Not built yet
-Replies and reactions on notes. Linking a note to an accommodation or experience — which would be needed before any honest enquiry or booking attribution.
+Replies and reactions on notes. Tracking whether an enquiry became an actual booking (we can only see enquiries and whether the host marked them confirmed).
 
 ## What's new — Impact and sponsor reports
 
@@ -897,3 +897,32 @@ any such number would be invented. The reports say so.
 
 ### Not built yet
 Replies and reactions on notes; linking a note to a listing (the prerequisite for any enquiry/booking attribution).
+
+## What's new — Featured listings and enquiry tracking
+
+Closes the gap the impact reports had to admit to: notes weren't connected to anything bookable, so there was no honest
+way to say what a mission led to.
+
+- **Feature a stay and/or an experience on a mission** (`/admin/missions` → "Feature a listing"). It must be a real,
+  published listing. It appears as **"Plan your own visit"** on the mission page and on every one of the mission's
+  published Field Notes (only while the listing stays published).
+- **The links carry where the visitor came from** (`?from=mission:<slug>` or `?from=note:<slug>`). The listing pages
+  stay cached: the enquiry form reads the link in the browser and sends it with the enquiry.
+- **Attribution can't be forged.** An enquiry is credited to a mission or note only when the listing is the one that
+  mission **actually features**, the mission is public and the note is published. Anything else is silently ignored — a
+  made-up `?from=` on any listing credits nothing. The enquiry itself is always saved and emailed exactly as before; a
+  referral never blocks or changes it.
+- **The visitor is told.** Under the links: "If you send an enquiry from one of these links, we record that it started
+  here, so hosts and sponsors can see what a mission led to. Nothing else about you is shared."
+- **Where it shows:** the admin enquiry lists say "Came from the Field Note …" / "the mission …"; `/admin/impact` has an
+  "Enquiries (confirmed)" column; the sponsor report shows "Enquiries started" (and how many the host or our team marked
+  confirmed) per mission and in total.
+- **What it still can't show:** whether an enquiry became a booking or was paid for. "Confirmed" means someone marked the
+  enquiry confirmed; the report says so and never claims a note *caused* a booking.
+
+### Data model additions
+`Mission.accommodationId` / `experienceId`, and `referredByNoteId` / `referredByMissionId` on both enquiry models (all
+optional; deleting a note or mission never deletes an enquiry).
+
+### Not built yet
+Replies and reactions on notes; tracking an enquiry through to a paid booking.
