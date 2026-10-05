@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -63,7 +64,9 @@ export default async function PartnerDashboardPage() {
           <div className="mt-3 grid grid-cols-3 gap-4">
             <Stat value={accommodationTotal} label="Accommodations" />
             <Stat value={experienceTotal} label="Experiences" />
-            <Stat value={stayEnquiries + experienceEnquiries} label="New enquiries" />
+            <Link href="/partner/enquiries" className="focus-ring rounded-sm transition-opacity hover:opacity-80">
+              <Stat value={stayEnquiries + experienceEnquiries} label="New enquiries" />
+            </Link>
           </div>
         </div>
       )}
