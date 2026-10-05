@@ -61,15 +61,37 @@ export default function Footer() {
                   Field Notes
                 </Link>
               </li>
-              <li>Advertise with us</li>
-              <li>Contact the team</li>
+              <li>
+                <Link href="/sponsors" className="focus-ring hover:text-ochre">
+                  Advertise with us
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="focus-ring hover:text-ochre">
+                  Contact the team
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
         <div className="mt-16 flex flex-col gap-2 border-t border-parchment/10 pt-6 font-body text-xs text-parchment/50 md:flex-row md:items-center md:justify-between">
           <p>© {new Date().getFullYear()} Visit Taita. Preview build — not yet live.</p>
-          <p>Taita Taveta, Kenya</p>
+          <nav aria-label="Legal and about" className="flex flex-wrap gap-x-4 gap-y-1">
+            <Link href="/about" className="focus-ring hover:text-ochre">
+              About
+            </Link>
+            <Link href="/privacy" className="focus-ring hover:text-ochre">
+              Privacy
+            </Link>
+            <Link href="/terms" className="focus-ring hover:text-ochre">
+              Terms
+            </Link>
+            <Link href="/contact" className="focus-ring hover:text-ochre">
+              Contact
+            </Link>
+            <span>Taita Taveta, Kenya</span>
+          </nav>
         </div>
       </div>
     </footer>

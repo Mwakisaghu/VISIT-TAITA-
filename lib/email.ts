@@ -21,7 +21,13 @@ import { nextAttemptAfter } from "@/lib/email-retry";
 import { recordOutcome } from "@/lib/email-record";
 import { prisma } from "@/lib/prisma";
 
-export type EmailResult = { ok: boolean; skipped?: boolean; error?: string };
+export type EmailResult = {
+  ok: boolean;
+  skipped?: boolean;
+  /** True when the attempt was recorded in the outbox, so a failed send WILL be retried (nothing is lost). */
+  queued?: boolean;
+  error?: string;
+};
 export type EmailPayload = { to: string[]; replyTo?: string | null; subject: string; text: string };
 
 const TIMEOUT_MS = 4000;
@@ -153,5 +159,6 @@ export async function sendEmail(input: {
   // 2. Try now. 3. Record what happened (never throws).
   const result = await deliverEmail(payload, logId ? `email-${logId}` : undefined);
   if (logId) await recordOutcome(logId, 0, result);
-  return result;
+  // queued: the row exists, so if this attempt failed the retry schedule will pick it up. Without a row a failure is final.
+  return { ...result, queued: logId !== null };
 }

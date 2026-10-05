@@ -12,6 +12,7 @@ function RegisterForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [accepted, setAccepted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +24,7 @@ function RegisterForm() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, acceptTerms: accepted }),
     });
     const data = await res.json();
 
@@ -92,6 +93,21 @@ function RegisterForm() {
           />
           <p className="mt-1 font-body text-xs text-stone/50">At least 8 characters.</p>
         </div>
+
+        <label className="flex items-start gap-3 font-body text-sm text-stone/70">
+          <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} required className="mt-1" />
+          <span>
+            I&apos;m 18 or over, I agree to the{" "}
+            <Link href="/terms" target="_blank" className="underline hover:text-rust">
+              Terms of Use
+            </Link>{" "}
+            and I&apos;ve read the{" "}
+            <Link href="/privacy" target="_blank" className="underline hover:text-rust">
+              Privacy Policy
+            </Link>
+            .
+          </span>
+        </label>
 
         {error && <p className="font-body text-sm text-rust">{error}</p>}
 
