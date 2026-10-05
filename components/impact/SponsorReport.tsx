@@ -36,11 +36,12 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
         )}
       </header>
 
-      <section className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <section className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-5">
         <Tile label="Missions run" value={formatCount(data.totals.missions)} />
         <Tile label="Creators involved" value={formatCount(data.totals.creators)} />
         <Tile label="Field Notes published" value={formatCount(data.totals.notes)} />
         <Tile label="Page views (approx.)" value={formatCount(data.totals.views)} />
+        <Tile label="Enquiries started" value={formatCount(data.totals.enquiries)} />
       </section>
 
       {data.missions.length === 0 ? (
@@ -61,7 +62,7 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
                 </h2>
                 {m.supportNote && <p className="mt-1 font-body text-sm text-stone/70">What your sponsorship provided: {m.supportNote}</p>}
 
-                <dl className="mt-4 grid grid-cols-3 gap-4">
+                <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
                   <div>
                     <dt className="font-body text-xs text-stone/50">Creators</dt>
                     <dd className="font-body text-lg text-stone">{formatCount(i.claims)}</dd>
@@ -73,6 +74,13 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
                   <div>
                     <dt className="font-body text-xs text-stone/50">Page views (approx.)</dt>
                     <dd className="font-body text-lg text-stone">{formatCount(i.views)}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-body text-xs text-stone/50">Enquiries started</dt>
+                    <dd className="font-body text-lg text-stone">
+                      {formatCount(i.enquiries)}
+                      {i.enquiries > 0 && <span className="font-body text-xs text-stone/50"> ({formatCount(i.confirmed)} confirmed)</span>}
+                    </dd>
                   </div>
                 </dl>
 

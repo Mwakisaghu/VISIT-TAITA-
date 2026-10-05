@@ -45,6 +45,6 @@ export function describeVisitors(before: number, after: number, days: number) {
 export const METHODOLOGY = [
   "Views are counted from visitors' browsers, once per browser session per page, excluding staff and obvious bots. They are an approximation, not an audited figure.",
   "\"New verified visitors\" counts people whose first-ever QR or GPS check-in at the place fell in each period. It is context, not proof — other things also change visitor numbers, and we cannot show that a note caused a visit.",
-  "We do not track whether a note led to an enquiry or booking, and we don't claim it did.",
+  "Enquiries are counted only when a visitor reached a stay or experience through a link on the mission or one of its Field Notes and then sent an enquiry there. \"Confirmed\" means the host or our team marked it confirmed. We cannot see whether a stay or experience was ultimately booked or paid for, and we don't claim a note caused it.",
   "Reports show totals only. They never include visitors' or creators' private details.",
 ];
