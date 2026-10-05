@@ -48,6 +48,11 @@ export default function Nav() {
               Passport
             </Link>
           )}
+          {session && (
+            <Link href="/account" className="focus-ring rounded-sm transition-colors hover:text-ochre">
+              Account
+            </Link>
+          )}
           {isSeller && (
             <Link href="/partner" className="focus-ring rounded-sm transition-colors hover:text-ochre">
               Partner
@@ -123,6 +128,11 @@ export default function Nav() {
           {session && (
             <Link href="/passport" onClick={() => setOpen(false)} className="focus-ring rounded-sm py-3">
               Passport
+            </Link>
+          )}
+          {session && (
+            <Link href="/account" onClick={() => setOpen(false)} className="focus-ring rounded-sm py-3">
+              Account
             </Link>
           )}
           {isSeller && (
