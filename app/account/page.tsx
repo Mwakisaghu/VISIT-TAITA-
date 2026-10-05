@@ -54,7 +54,7 @@ export default async function AccountPage() {
   }
 
   const [subscriber, blockers] = await Promise.all([
-    prisma.newsletterSubscriber.findUnique({ where: { email: user.email }, select: { createdAt: true } }),
+    prisma.newsletterSubscriber.findUnique({ where: { email: user.email }, select: { createdAt: true, status: true, confirmedAt: true } }),
     getDeletionBlockers({ id: user.id, role: user.role }),
   ]);
 
@@ -89,9 +89,25 @@ export default async function AccountPage() {
 
       <section className="mt-12 border-t border-stone/10 pt-10">
         <h2 className="font-display text-2xl text-stone">Newsletter</h2>
-        {subscriber ? (
+        {subscriber && subscriber.status === "ACTIVE" && subscriber.confirmedAt ? (
           <>
-            <p className="mt-3 font-body text-stone/70">You&apos;re subscribed (since {formatDate(subscriber.createdAt)}).</p>
+            <p className="mt-3 font-body text-stone/70">You&apos;re subscribed (since {formatDate(subscriber.confirmedAt)}).</p>
+            <div className="mt-4">
+              <UnsubscribeButton />
+            </div>
+          </>
+        ) : subscriber && subscriber.status === "PENDING" ? (
+          <>
+            <p className="mt-3 max-w-prose font-body text-stone/70">We&apos;ve emailed you a link to confirm your address. Click it to start receiving the letter.</p>
+            <div className="mt-4">
+              <UnsubscribeButton />
+            </div>
+          </>
+        ) : subscriber && subscriber.status === "ACTIVE" ? (
+          <>
+            <p className="mt-3 max-w-prose font-body text-stone/70">
+              You signed up before we asked people to confirm, so we won&apos;t email you until you do. Sign up again from the bottom of any page and we&apos;ll send you a confirmation link.
+            </p>
             <div className="mt-4">
               <UnsubscribeButton />
             </div>

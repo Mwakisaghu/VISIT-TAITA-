@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth";
 import { getDeletionBlockers } from "@/lib/account-data";
 import { authOptions } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
+import { cancelPendingCampaignEmails } from "@/lib/newsletter-maintenance";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -83,6 +84,7 @@ export async function deleteMyAccount(password: string): Promise<AccountResult> 
 
       // 5. The newsletter subscription (it is keyed by email).
       await tx.newsletterSubscriber.deleteMany({ where: { email: user.email } });
+      await cancelPendingCampaignEmails(tx, user.email); // a deleted account must not receive a newsletter that was already queued
 
       // 6. The account itself — cascades the Passport, reviews, creator profile, claims and Field Notes.
       await tx.user.delete({ where: { id: user.id } });
@@ -118,7 +120,9 @@ export async function unsubscribeNewsletter(): Promise<AccountResult> {
   if (!session?.user) return { error: "Please sign in." };
   const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { email: true } });
   if (!user) return { error: "This account no longer exists." };
-  await prisma.newsletterSubscriber.deleteMany({ where: { email: user.email } });
+  // Keep the row as a do-not-email record (so they can't be re-added by accident) and cancel anything already queued for them.
+  await prisma.newsletterSubscriber.updateMany({ where: { email: user.email, status: { not: "UNSUBSCRIBED" } }, data: { status: "UNSUBSCRIBED", unsubscribedAt: new Date() } });
+  await cancelPendingCampaignEmails(prisma, user.email);
   revalidatePath("/account");
   return { success: true };
 }
