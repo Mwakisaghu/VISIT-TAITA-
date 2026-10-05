@@ -214,10 +214,38 @@ model Visit {
 // Newsletter
 // ---------------------------------------------------------------------------
 
+// A person only receives the newsletter after CONFIRMING their address (double opt-in): a new signup is PENDING until they
+// click the link we email them. Rows that existed before this (ACTIVE, with no confirmedAt) are "legacy": they are not mailed
+// until they confirm. Unsubscribing keeps the row as a do-not-email record (deleting an account removes it).
+enum SubscriberStatus {
+  PENDING
+  ACTIVE
+  UNSUBSCRIBED
+}
+
 model NewsletterSubscriber {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id             String           @id @default(cuid())
+  email          String           @unique
+  createdAt      DateTime         @default(now())
+  status         SubscriberStatus @default(ACTIVE) // existing rows stay ACTIVE (legacy, unconfirmed)
+  token          String?          @unique // secret in the confirm and unsubscribe links
+  confirmedAt    DateTime?
+  unsubscribedAt DateTime?
+
+  @@index([status])
+}
+
+// One newsletter. A draft can be edited; sending turns it into one outbox row per confirmed subscriber (EmailLog.campaignId),
+// so delivery, retries and progress all come from the email outbox. startedAt is null while it is still a draft.
+model NewsletterCampaign {
+  id             String    @id @default(cuid())
+  subject        String
+  body           String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  startedAt      DateTime?
+  recipientCount Int       @default(0)
+  createdById    String?
 }
 
 // ---------------------------------------------------------------------------
@@ -1183,7 +1211,10 @@ model EmailLog {
   nextAttemptAt DateTime? // when the next retry is due (also used as a short lease while one is in flight)
   sentAt        DateTime?
   createdAt     DateTime    @default(now())
+  unsubscribeUrl String? // this recipient's one-click unsubscribe link (newsletters and confirmation requests)
+  campaignId     String? // the newsletter this email belongs to, so progress can be shown
 
   @@index([status, nextAttemptAt])
   @@index([createdAt])
+  @@index([campaignId])
 }
