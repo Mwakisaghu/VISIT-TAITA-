@@ -73,7 +73,7 @@ export default async function PassportPage() {
         <div className="mt-16">
           <SectionHeading
             title="Check in around Taita"
-            description={`Earn ${CHECKIN_POINTS} points the first time you check in at a place — scan the QR code on site, or tap "Check in here" when you're nearby.`}
+            description={`Earn ${CHECKIN_POINTS} points the first time you check in at a place — scan the QR code on site, or tap "Check in here" when you're nearby. Your location is used once, only to confirm you're close — we don't store it.`}
           />
           <div className="mt-6 divide-y divide-stone/10">
             {destinations.map((d) => {

@@ -1,5 +1,7 @@
 "use client";
 
+import ConsentNote from "@/components/legal/ConsentNote";
+
 import { useState } from "react";
 
 export default function Newsletter() {
@@ -59,6 +61,11 @@ export default function Newsletter() {
               {status === "loading" ? "Joining…" : "Join the letter"}
             </button>
           </form>
+        )}
+        {status !== "done" && (
+          <div className="mt-4">
+            <ConsentNote kind="newsletter" tone="light" />
+          </div>
         )}
         {status === "error" && (
           <p className="mt-4 font-body text-sm text-parchment/70">

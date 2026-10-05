@@ -1,5 +1,7 @@
 "use client";
 
+import ConsentNote from "@/components/legal/ConsentNote";
+
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { submitSponsorLead } from "@/lib/actions/sponsor-leads";
@@ -131,6 +133,7 @@ export default function SponsorLeadForm({
       >
         {loading ? "Sending…" : "Send enquiry"}
       </button>
+      <ConsentNote kind="lead" />
     </form>
   );
 }

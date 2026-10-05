@@ -1,5 +1,7 @@
 "use client";
 
+import ConsentNote from "@/components/legal/ConsentNote";
+
 import { useState } from "react";
 import { useReferral } from "@/components/listings/useReferral";
 import { submitExperienceEnquiry } from "@/lib/actions/enquiries";
@@ -74,6 +76,7 @@ export default function ExperienceEnquiryForm({ experienceId }: { experienceId: 
       >
         {loading ? "Sending…" : "Send enquiry"}
       </button>
+      <ConsentNote kind="enquiry" />
     </form>
   );
 }

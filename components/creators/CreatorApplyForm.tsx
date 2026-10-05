@@ -1,5 +1,7 @@
 "use client";
 
+import ConsentNote from "@/components/legal/ConsentNote";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { submitCreatorApplication } from "@/lib/actions/creators";
@@ -143,6 +145,7 @@ export default function CreatorApplyForm({ defaultName }: { defaultName: string 
       >
         {busy ? "Sending…" : "Apply to the Field Crew"}
       </button>
+      <ConsentNote kind="creator" />
     </form>
   );
 }

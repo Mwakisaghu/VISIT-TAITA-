@@ -1,5 +1,7 @@
 "use client";
 
+import ConsentNote from "@/components/legal/ConsentNote";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -193,6 +195,8 @@ export default function CheckoutPage() {
           )}
 
           {error && <p className="font-body text-sm text-rust">{error}</p>}
+
+          <ConsentNote kind="order" />
 
           <button
             type="submit"

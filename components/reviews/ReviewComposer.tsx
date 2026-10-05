@@ -206,6 +206,8 @@ export default function ReviewComposer({
           </p>
         )}
 
+        <p className="font-body text-xs text-stone/50">Your review will be shown publicly with your first name and last initial.</p>
+
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="submit"

@@ -1,5 +1,7 @@
 "use client";
 
+import ConsentNote from "@/components/legal/ConsentNote";
+
 import { useState } from "react";
 import Link from "next/link";
 import { submitApplication, getApplicationStatus } from "@/lib/actions/partners";
@@ -114,6 +116,7 @@ export default function ApplyPage() {
           >
             {loading ? "Sending…" : "Submit application"}
           </button>
+          <ConsentNote kind="lead" />
         </form>
 
         <div className="mt-16 border-t border-stone/10 pt-8">

@@ -1,5 +1,7 @@
 "use client";
 
+import ConsentNote from "@/components/legal/ConsentNote";
+
 import { useState } from "react";
 import { useReferral } from "@/components/listings/useReferral";
 import { submitAccommodationEnquiry } from "@/lib/actions/enquiries";
@@ -78,6 +80,7 @@ export default function AccommodationEnquiryForm({ accommodationId }: { accommod
       >
         {loading ? "Sending…" : "Send enquiry"}
       </button>
+      <ConsentNote kind="enquiry" />
     </form>
   );
 }
