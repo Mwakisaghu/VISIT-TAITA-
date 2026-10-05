@@ -1005,3 +1005,40 @@ reports and review verification depend on) unreliable and the "partner lead conv
 
 ### Data model additions
 `statusChangedAt` and `statusChangedById` on `AccommodationEnquiry` and `ExperienceEnquiry`.
+
+## What's new — Newsletter
+
+You were collecting subscribers but could never email them — and the sign-up form added **any address anyone typed, with no
+confirmation and no rate limit**. This fixes both, properly.
+
+- **Double opt-in.** Signing up now emails a confirmation link; the person is PENDING until they click it, and only
+  **confirmed** subscribers are ever mailed. The form answers identically for a known and an unknown address (so it can't reveal
+  who is subscribed), and is rate-limited (10 sign-ups an hour per visitor, 3 confirmation emails an hour per address).
+  Unconfirmed sign-ups are deleted after 30 days (by the cron endpoint). The confirm and unsubscribe pages only *show a button* —
+  email security scanners open every link in a message and would otherwise confirm or unsubscribe people by accident.
+- **Older sign-ups** (from before this) are kept but **not mailed** until they confirm. `/admin/newsletter` shows how many and has an
+  "Ask N subscribers to confirm" button (200 at a time).
+- **`/admin/newsletter`** (Newsletter in the admin nav): subscriber counts, a plain-text composer (save a draft, **Send me a test**,
+  Send), and each newsletter's progress. A footer is added automatically: why they're getting it, **their own** unsubscribe link,
+  and who is sending (`SITE_LEGAL_NAME` / `CONTACT_ADDRESS`).
+- **Exactly once.** Sending claims the newsletter and creates one outbox email per confirmed subscriber in a single transaction, so
+  a double-click, two admins or a retry can't send it twice; if queuing fails it stays a draft. Delivery, retries and progress come
+  from the email outbox: the first batch goes immediately, the rest by the cron endpoint (`/api/cron/emails`) or the "Send next
+  batch" button.
+- **Unsubscribing** works from the link in every email, from the one-click button mail apps show (`List-Unsubscribe` /
+  `List-Unsubscribe-Post`, which Gmail and Yahoo expect from bulk senders), and from the account page. It keeps the address as a
+  do-not-email record, and **cancels anything already queued** for that person. Deleting an account removes the record.
+- **Sending is refused, with the reason, when it would be pointless or harmful:** email not configured; Resend's **test sender**
+  (it only delivers to your own address, so every subscriber would bounce); or a non-public `NEXT_PUBLIC_APP_URL` (the unsubscribe
+  links would be broken). Test sends to yourself always work.
+- The newsletter is **plain text** (no images or layout) — the email layer is plain-text by design. HTML templates are a possible later step.
+
+### Before you send your first real newsletter
+1. Verify your domain in Resend and set `EMAIL_FROM` to an address on it.
+2. Set `NEXT_PUBLIC_APP_URL` to the real public address, and `SITE_LEGAL_NAME` / `CONTACT_ADDRESS`.
+3. Set `CRON_SECRET` and schedule `/api/cron/emails` — otherwise large lists only go out when you press "Send next batch".
+4. Use **Send me a test** and open the unsubscribe link from it (a test has no real link — send yourself a real subscription first).
+
+### Data model additions
+`NewsletterSubscriber` gains `status` (PENDING / ACTIVE / UNSUBSCRIBED), `token`, `confirmedAt`, `unsubscribedAt`; new
+`NewsletterCampaign`; `EmailLog` gains `unsubscribeUrl` and `campaignId`.
