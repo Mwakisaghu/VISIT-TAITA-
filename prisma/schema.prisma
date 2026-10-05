@@ -607,6 +607,10 @@ model AccommodationEnquiry {
   referredByMissionId String?
   referredByMission   Mission?   @relation(fields: [referredByMissionId], references: [id], onDelete: SetNull)
 
+  // Who last changed the status, and when. "Confirmed" feeds sponsor reports and review verification, so this is kept.
+  statusChangedAt   DateTime?
+  statusChangedById String? // the user id of the host or admin; plain id (no relation), so deleting that user never touches the enquiry
+
   @@index([accommodationId, status])
   @@index([userId])
   @@index([referredByMissionId])
@@ -665,6 +669,10 @@ model ExperienceEnquiry {
   referredByNote      FieldNote? @relation(fields: [referredByNoteId], references: [id], onDelete: SetNull)
   referredByMissionId String?
   referredByMission   Mission?   @relation(fields: [referredByMissionId], references: [id], onDelete: SetNull)
+
+  // Who last changed the status, and when. "Confirmed" feeds sponsor reports and review verification, so this is kept.
+  statusChangedAt   DateTime?
+  statusChangedById String? // the user id of the host or admin; plain id (no relation), so deleting that user never touches the enquiry
 
   @@index([experienceId, status])
   @@index([userId])
