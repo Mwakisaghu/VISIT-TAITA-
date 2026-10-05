@@ -926,3 +926,52 @@ optional; deleting a note or mission never deletes an enquiry).
 
 ### Not built yet
 Replies and reactions on notes; tracking an enquiry through to a paid booking.
+
+## What's new — Legal and trust basics
+
+The pages and controls a platform needs before it collects real people's data.
+
+> **These texts are a plain-language DRAFT written against what the application actually does. They have NOT been reviewed
+> by a lawyer, and I am not one.** Kenya's Data Protection Act (2019) is the relevant law; check the specifics — including
+> any duty to register with the Office of the Data Protection Commissioner — with your adviser before launch.
+
+- **Pages:** `/privacy`, `/terms`, `/about`, `/contact` (with a contact form), linked from the footer and in the sitemap.
+  Nothing about the organisation is guessed: the legal name, contact details and ODPC registration number come from the
+  environment variables in `.env.example`, and a missing one shows as **[to be completed]**.
+- **The draft notice:** the Privacy Policy and Terms show a visible "Draft — pending legal review" box until you set
+  `LEGAL_REVIEWED_ON` (YYYY-MM-DD). It is a deliberate forcing function. Text lives in `lib/legal-text.ts`; when what the
+  product collects or shares changes, update it and bump `LEGAL_VERSION` in `lib/site-info.ts`. (Env values are read when
+  the page is built, so redeploy after changing them.)
+- **Registration** now requires ticking "I'm 18 or over, I agree to the Terms and have read the Privacy Policy". The server
+  enforces it, and stores when and which version was accepted (`User.termsAcceptedAt` / `termsVersion`). Existing accounts
+  show "Before we recorded this".
+- **Plain-language notices** under every form that collects personal data (enquiries, sponsor and partner forms, checkout,
+  creator application, newsletter, contact) say what will happen to the details, with a link to the policy. Reviews say they
+  show your first name and last initial; the Passport says your location is used once and not stored (it isn't — a check-in
+  records only that it happened and when).
+- **`/account`** (Account in the nav once signed in):
+  - **Download my data** — a JSON file of everything linked to the account: details, Passport, reviews, your enquiries, orders,
+    creator profile and notes. It excludes the password (only a hash exists) and the team's internal notes. It only ever
+    returns the caller's own data (the id comes from the session) and is rate-limited.
+  - **Delete my account** — asks for the password again, then does everything in one transaction: gives back mission spots
+    their claims held, cancels unused vouchers and restores limited stock, **anonymises** their enquiries, **keeps shop orders
+    as anonymous payment records** (buyer unlinked, phone and address wiped — they may be needed for accounting), removes the
+    newsletter subscription, then deletes the account (which removes the Passport, reviews, creator profile and Field Notes).
+    Stories they wrote stay without their name. A confirmation email is sent.
+  - **It refuses, and says why,** for staff accounts, accounts that manage listings/products/rewards, and accounts with an
+    order in progress.
+  - **Unsubscribe** from the newsletter (withdraws consent) from the same page.
+- **Why orders needed a schema change:** `Order.buyerId` is now optional (`SetNull`). It used to cascade, so deleting a buyer
+  would have deleted their payment records.
+- **Cookies:** the site sets only the cookies needed to stay signed in, and counts page views without identifying anyone, so
+  no cookie banner is used. Say so in the policy (it does) and revisit if you add analytics or advertising.
+
+### Known gaps (not covered here)
+- **Accounts aren't email-verified**, so someone can register with an address that isn't theirs. For that reason the data
+  export is limited to data linked to the account and never matches on email; requests about unlinked data (an enquiry sent
+  while signed out) go through the contact page. Email verification is worth adding.
+- There is no automatic deletion of old enquiries yet; the policy says they're kept as long as needed and can be removed on request.
+- Corrections to name/email go through the contact page; there is no self-service profile editor.
+
+### Data model additions
+`User.termsAcceptedAt`, `User.termsVersion`; `Order.buyerId` is now optional.
