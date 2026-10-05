@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { subscribeToNewsletter } from "@/lib/actions/newsletter";
+import { subscribeToNewsletter } from "@/lib/newsletter-subscribe";
 
 /**
  * Starts a newsletter subscription. It does NOT add anyone to the list: it emails a confirmation link (double opt-in),
