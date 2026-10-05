@@ -32,7 +32,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
       body: [
         "We collect only what each part of the site needs. Here is what, by what you are doing:",
         { list: [
-          "**Your account:** your name, email address and a password. The password is stored only as a one-way hash, so we cannot read it. We use these to create your account and sign you in.",
+          "**Your account:** your name, email address and a password. The password is stored only as a one-way hash, so we cannot read it. We use these to create your account and sign you in. We email you a link to verify your address and, if you ask, to reset your password.",
           "**The Taita Passport:** the places you check in at, when, and how (QR code, location, or marked by you), the points you earn, rewards and vouchers you claim, and badges. We use this to run the Passport and its rewards.",
           "**Enquiries about stays and experiences:** your name, email, phone number, message and any dates or party size. We share these with the host of that listing and with our team so they can reply to you. If you reached the listing from a mission or a Field Note, we also record which one, so hosts and sponsors can see what a mission led to.",
           "**Reviews:** your rating and text. They are shown publicly with your first name and last initial. A review can show as \"verified\" if you made a confirmed enquiry with that host.",
