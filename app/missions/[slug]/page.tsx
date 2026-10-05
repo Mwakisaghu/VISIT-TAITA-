@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import NoteCard from "@/components/field-notes/NoteCard";
+import FeaturedListings from "@/components/listings/FeaturedListings";
 import ViewBeacon from "@/components/impact/ViewBeacon";
 import MissionClaimBox from "@/components/missions/MissionClaimBox";
 import { supportBadge } from "@/components/missions/MissionCard";
@@ -17,7 +18,12 @@ export const revalidate = 60;
 async function loadMission(slug: string) {
   const mission = await prisma.mission.findUnique({
     where: { slug },
-    include: { destination: { select: { name: true, region: true } }, sponsor: { select: { name: true } } },
+    include: {
+      destination: { select: { name: true, region: true } },
+      sponsor: { select: { name: true } },
+      featuredAccommodation: { select: { slug: true, name: true, image: true, region: true, priceFrom: true, status: true } },
+      featuredExperience: { select: { slug: true, name: true, image: true, region: true, priceFrom: true, status: true } },
+    },
   });
   // A draft is never public.
   return mission && mission.status !== "DRAFT" ? mission : null;
@@ -143,6 +149,8 @@ export default async function MissionPage({ params }: { params: { slug: string }
             </li>
           </ol>
         </section>
+
+        <FeaturedListings stay={mission.featuredAccommodation} experience={mission.featuredExperience} referral={{ kind: "mission", slug: mission.slug }} />
 
         <div className="mt-10">
           {availability.open || mission.status === "OPEN" ? (

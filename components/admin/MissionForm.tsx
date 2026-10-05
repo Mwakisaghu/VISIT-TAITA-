@@ -16,15 +16,20 @@ import {
 
 type DestinationOption = { id: string; name: string; status: string; hasCheckin: boolean };
 type SponsorOption = { id: string; name: string };
+type ListingOption = { id: string; name: string; status: string };
 
 export default function MissionForm({
   mission,
   destinations,
   sponsors,
+  stays = [],
+  experiences = [],
 }: {
   mission?: Mission;
   destinations: DestinationOption[];
   sponsors: SponsorOption[];
+  stays?: ListingOption[];
+  experiences?: ListingOption[];
 }) {
   const router = useRouter();
   const [support, setSupport] = useState<string>(mission?.support ?? "NONE");
@@ -95,6 +100,39 @@ export default function MissionForm({
         </select>
         <span className="font-body text-xs text-stone/40">To open a mission its destination must be published and have a QR code or coordinates.</span>
       </label>
+
+      <fieldset className="rounded-sm border border-stone/15 p-4">
+        <legend className="px-1 font-body text-sm text-stone/70">Feature a listing (optional)</legend>
+        <p className="font-body text-xs text-stone/50">
+          Shown as &quot;Plan your own visit&quot; on the mission and its Field Notes. Enquiries sent from those links are counted for this mission.
+        </p>
+        <div className="mt-3 grid gap-4 sm:grid-cols-2">
+          <label className="flex flex-col gap-1">
+            <span className={label}>A stay</span>
+            <select name="accommodationId" defaultValue={mission?.accommodationId ?? ""} className="input">
+              <option value="">— None —</option>
+              {stays.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                  {s.status !== "PUBLISHED" ? " (unpublished)" : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className={label}>An experience</span>
+            <select name="experienceId" defaultValue={mission?.experienceId ?? ""} className="input">
+              <option value="">— None —</option>
+              {experiences.map((x) => (
+                <option key={x.id} value={x.id}>
+                  {x.name}
+                  {x.status !== "PUBLISHED" ? " (unpublished)" : ""}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </fieldset>
 
       <label className="flex flex-col gap-1">
         <span className={label}>Open to</span>

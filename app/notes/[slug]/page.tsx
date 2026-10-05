@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import VerifiedBadge from "@/components/field-notes/VerifiedBadge";
+import FeaturedListings from "@/components/listings/FeaturedListings";
 import ViewBeacon from "@/components/impact/ViewBeacon";
 import { supportBadge } from "@/components/missions/MissionCard";
 import { linkLabel, trackLabel } from "@/lib/creators";
@@ -26,6 +27,8 @@ async function loadNote(slug: string) {
           hostName: true,
           destination: { select: { name: true } },
           sponsor: { select: { name: true } },
+          featuredAccommodation: { select: { slug: true, name: true, image: true, region: true, priceFrom: true, status: true } },
+          featuredExperience: { select: { slug: true, name: true, image: true, region: true, priceFrom: true, status: true } },
         },
       },
     },
@@ -125,6 +128,8 @@ export default async function FieldNotePublicPage({ params }: { params: { slug: 
             </ul>
           </section>
         )}
+
+        <FeaturedListings stay={note.mission.featuredAccommodation} experience={note.mission.featuredExperience} referral={{ kind: "note", slug: note.slug }} />
 
         <p className="mt-12 border-t border-stone/10 pt-6 font-body text-sm text-stone/60">
           Written for the mission{" "}

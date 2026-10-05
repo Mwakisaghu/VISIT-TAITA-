@@ -5,7 +5,7 @@ export default async function AdminAccommodationEnquiriesPage() {
   const enquiries = await prisma.accommodationEnquiry.findMany({
     orderBy: { createdAt: "desc" },
     take: 200,
-    include: { accommodation: true },
+    include: { accommodation: true, referredByNote: { select: { title: true } }, referredByMission: { select: { title: true } } },
   });
 
   return (
@@ -28,6 +28,11 @@ export default async function AdminAccommodationEnquiriesPage() {
                 <p className="font-body text-sm text-stone/60">
                   {e.email} · {e.phone}
                 </p>
+                {(e.referredByNote || e.referredByMission) && (
+                  <p className="mt-1 font-body text-xs text-rust">
+                    Came from {e.referredByNote ? `the Field Note “${e.referredByNote.title}”` : `the mission “${e.referredByMission?.title}”`}
+                  </p>
+                )}
                 <p className="mt-2 max-w-prose font-body text-sm text-stone/70">{e.message}</p>
                 <p className="mt-1 font-body text-xs text-stone/40">{e.createdAt.toLocaleString()}</p>
               </div>

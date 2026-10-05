@@ -5,6 +5,7 @@ import { z } from "zod";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
+import { parseReferral } from "@/lib/referral";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
 import { notifyAccommodationEnquiry, notifyExperienceEnquiry } from "@/lib/notifications";
@@ -13,6 +14,33 @@ type EnquiryResult = { success?: true; error?: string };
 
 const TOO_MANY: EnquiryResult = { error: "Too many enquiries — please try again a little later." };
 const HOUR_MS = 60 * 60 * 1000;
+
+type ListingRef = { kind: "accommodation" | "experience"; id: string };
+
+/**
+ * Works out whether an enquiry began on a mission page or one of its Field Notes (the `from` link).
+ *
+ * Credit is given ONLY when the listing is the one that mission actually features — otherwise anyone could add
+ * ?from=... to any listing URL and pad a sponsor's numbers — and only for a mission that is public and a note that
+ * is published. It never blocks or alters the enquiry: anything doubtful just means "no referral".
+ */
+async function resolveReferral(raw: FormDataEntryValue | null, listing: ListingRef): Promise<{ noteId: string | null; missionId: string } | null> {
+  const ref = parseReferral(typeof raw === "string" ? raw : null);
+  if (!ref) return null;
+  const select = { id: true, accommodationId: true, experienceId: true } as const;
+  const features = (m: { accommodationId: string | null; experienceId: string | null }) =>
+    listing.kind === "accommodation" ? m.accommodationId === listing.id : m.experienceId === listing.id;
+  try {
+    if (ref.kind === "note") {
+      const note = await prisma.fieldNote.findFirst({ where: { slug: ref.slug, status: "APPROVED" }, select: { id: true, mission: { select } } });
+      return note && features(note.mission) ? { noteId: note.id, missionId: note.mission.id } : null;
+    }
+    const mission = await prisma.mission.findFirst({ where: { slug: ref.slug, status: { in: ["OPEN", "CLOSED"] } }, select });
+    return mission && features(mission) ? { noteId: null, missionId: mission.id } : null;
+  } catch {
+    return null;
+  }
+}
 
 function clientIp() {
   const forwarded = headers().get("x-forwarded-for");
@@ -81,9 +109,13 @@ export async function submitAccommodationEnquiry(
   });
   if (recentFromEmail >= 5) return TOO_MANY;
 
+  const referral = await resolveReferral(formData.get("from"), { kind: "accommodation", id: accommodationId });
+
   const enquiry = await prisma.accommodationEnquiry.create({
     data: {
       accommodationId,
+      referredByNoteId: referral?.noteId ?? null,
+      referredByMissionId: referral?.missionId ?? null,
       name: data.name,
       email: data.email.toLowerCase(),
       phone: data.phone,
@@ -151,9 +183,13 @@ export async function submitExperienceEnquiry(
   });
   if (recentFromEmail >= 5) return TOO_MANY;
 
+  const referral = await resolveReferral(formData.get("from"), { kind: "experience", id: experienceId });
+
   const enquiry = await prisma.experienceEnquiry.create({
     data: {
       experienceId,
+      referredByNoteId: referral?.noteId ?? null,
+      referredByMissionId: referral?.missionId ?? null,
       name: data.name,
       email: data.email.toLowerCase(),
       phone: data.phone,

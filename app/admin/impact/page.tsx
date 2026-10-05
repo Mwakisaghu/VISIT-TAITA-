@@ -60,6 +60,7 @@ export default async function AdminImpactPage() {
                   <th className="py-2 pr-4 font-normal">Claims</th>
                   <th className="py-2 pr-4 font-normal">Notes</th>
                   <th className="py-2 pr-4 font-normal">Views</th>
+                  <th className="py-2 pr-4 font-normal">Enquiries (confirmed)</th>
                   <th className="py-2 pr-4 font-normal">New visitors (before → after)</th>
                   <th className="py-2 font-normal">Points</th>
                 </tr>
@@ -80,6 +81,9 @@ export default async function AdminImpactPage() {
                       <td className="py-3 pr-4">{formatCount(i?.claims ?? 0)}</td>
                       <td className="py-3 pr-4">{formatCount(i?.notes ?? 0)}</td>
                       <td className="py-3 pr-4">{formatCount(i?.views ?? 0)}</td>
+                      <td className="py-3 pr-4">
+                        {formatCount(i?.enquiries ?? 0)} ({formatCount(i?.confirmed ?? 0)})
+                      </td>
                       <td className="py-3 pr-4">
                         {i && i.visitorsBefore !== null && i.visitorsAfter !== null ? `${i.visitorsBefore} → ${i.visitorsAfter} (${i.windowDays}d)` : "—"}
                       </td>

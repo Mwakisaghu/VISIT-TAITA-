@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useReferral } from "@/components/listings/useReferral";
 import { submitAccommodationEnquiry } from "@/lib/actions/enquiries";
 
 export default function AccommodationEnquiryForm({ accommodationId }: { accommodationId: string }) {
+  const referral = useReferral();
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,7 @@ export default function AccommodationEnquiryForm({ accommodationId }: { accommod
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      {referral && <input type="hidden" name="from" value={referral} />}
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
           <span className="font-body text-xs text-stone/50">Check-in</span>
