@@ -1211,3 +1211,29 @@ The QR codes drawn on the shirt mockups are decoration and **do not scan**. Real
 - **The admin refuses to produce a code until the site address is real** (https, not localhost, not a placeholder): a shirt can't be recalled.
 - **Honest limit:** the codes are verified by decoding them with an independent reader at small sizes, blurred, rotated, noisy and damaged. That
   is not the same as scanning a *printed shirt* — print one sample and scan it on two or three phones before a batch.
+
+## What's new — Admin accounts
+
+Until now the only admin that could exist was the one created by the seed script, and no screen could create a staff account or change a
+role. **Admin → Users** (admins and super admins only) fixes that.
+
+- **Creating staff: invite, never share a password.** *Invite staff* creates the account and emails a link where the person chooses **their own**
+  password (valid 7 days). Nobody types, sees or is sent a password. Everyone gets their own account — never share a login.
+- **The first super admin** comes from the command line, with a random password shown once: `npm run admin:create -- --email you@example.com --name "Your Name"`
+  (add `--promote` to make an existing account a super admin; its password is not changed). Then use "Forgot password" to choose your own.
+- **Roles.** Super admin: everything, including creating and changing admins. Admin: everything in the admin area, and can manage editors, content managers
+  and members — but not other admins. Editor and content manager: use the admin area; can't manage people. Partner, seller and creator accounts are
+  earned through their own approval screens, so their role can't be changed here (give such a person staff access with a separate staff account).
+  `EVENT_MANAGER` exists in the database but grants no access anywhere, so it isn't offered.
+- **Rules enforced on the server** (not just hidden buttons): you can't change your own role or suspend yourself; an admin can't touch another admin; the last active
+  super admin can't be demoted or suspended; an unverified email can't be given staff access; the acting admin is re-read from the database on every action.
+- **Suspend and reinstate** (with a reason other admins can see). A suspended account can't sign in and any sign-in it has is ended. **Sign out everywhere**
+  ends every session without touching the password. A demoted or suspended administrator loses access within about a minute (staff are re-checked every
+  minute; everyone else every five).
+- **Send a password or verification link** from a person's page. A staff member who never chose a password gets the invitation again.
+- **Activity log:** who invited, changed, suspended or signed out whom, and when. When someone deletes their own account their email is removed from it, and
+  these records appear in their data export. The privacy policy says so.
+- **Security warning:** the seed script creates `admin@visittaita.example` with the password `ChangeMe123!`, which is published in the source. The admin area
+  shows a warning while that account still has it, and the seed now refuses to run when `NODE_ENV=production`.
+- **Not included:** an admin can't delete someone else's account (suspend it; people can delete their own), change someone's email address, or edit a
+  person's name. There are no fine-grained permissions beyond the roles above.
