@@ -41,3 +41,20 @@ export function passwordChangedText(name: string): string {
 function firstName(name: string): string {
   return String(name ?? "").trim().split(/\s+/)[0] || "there";
 }
+
+export function inviteText(name: string, inviterName: string, roleLabel: string, url: string, loginUrl: string): string {
+  return [
+    `Hi ${firstName(name)},`,
+    "",
+    `${inviterName} has invited you to help run Visit Taita as ${roleLabel}.`,
+    "",
+    "To get started, choose your own password with this link:",
+    url,
+    "",
+    `It works once, for 7 days. After that you can sign in at ${loginUrl} and open the Admin area.`,
+    "",
+    "If you weren't expecting this, ignore this email — nothing happens, and no one can sign in as you until you choose a password.",
+    "",
+    "Visit Taita",
+  ].join("\n");
+}

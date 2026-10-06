@@ -9,6 +9,9 @@ export const TOKEN_TTL_MS: Record<TokenPurpose, number> = {
   RESET_PASSWORD: 60 * 60 * 1000,
 };
 
+/** An invitation to choose a first password lives for a week (a new colleague may not read their email for days). */
+export const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
 // Works with the normal client or a transaction client.
 type Db = Pick<typeof prisma, "accountToken">;
 
@@ -26,11 +29,11 @@ export function hashToken(raw: string): string {
  * Creates a fresh link for this person and purpose, and cancels any earlier one that hasn't been used — so only the
  * newest email's link ever works. Returns the raw secret (for the email); only its hash is saved.
  */
-export async function issueToken(db: Db, userId: string, purpose: TokenPurpose, now: Date = new Date()): Promise<string> {
+export async function issueToken(db: Db, userId: string, purpose: TokenPurpose, now: Date = new Date(), ttlMs: number = TOKEN_TTL_MS[purpose]): Promise<string> {
   const raw = newRawToken();
   await db.accountToken.deleteMany({ where: { userId, purpose, usedAt: null } });
   await db.accountToken.create({
-    data: { userId, purpose, tokenHash: hashToken(raw), expiresAt: new Date(now.getTime() + TOKEN_TTL_MS[purpose]) },
+    data: { userId, purpose, tokenHash: hashToken(raw), expiresAt: new Date(now.getTime() + ttlMs) },
   });
   return raw;
 }

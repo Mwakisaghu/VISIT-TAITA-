@@ -1,5 +1,5 @@
-import { issueToken } from "@/lib/account-tokens";
-import { resetText, verificationText } from "@/lib/account-emails";
+import { INVITE_TTL_MS, issueToken } from "@/lib/account-tokens";
+import { inviteText, resetText, verificationText } from "@/lib/account-emails";
 import { checkinBaseUrl } from "@/lib/checkin-url";
 import { emailConfigured, sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
@@ -36,5 +36,17 @@ export async function sendPasswordResetEmail(userId: string): Promise<SendOutcom
   const raw = await issueToken(prisma, userId, "RESET_PASSWORD");
   const url = `${base}/reset-password?token=${encodeURIComponent(raw)}`;
   await deliver(user.email, "Reset your Visit Taita password", resetText(user.name, url), url);
+  return "sent";
+}
+
+/** Emails a newly invited staff member a link to choose their OWN password. The link lives for 7 days. */
+export async function sendStaffInviteEmail(userId: string, inviterName: string, roleLabel: string): Promise<SendOutcome> {
+  const base = checkinBaseUrl();
+  if (!base) return "skipped";
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, name: true } });
+  if (!user) return "skipped";
+  const raw = await issueToken(prisma, userId, "RESET_PASSWORD", new Date(), INVITE_TTL_MS);
+  const url = `${base}/reset-password?token=${encodeURIComponent(raw)}`;
+  await deliver(user.email, "You're invited to Visit Taita", inviteText(user.name, inviterName, roleLabel, url, `${base}/login`), url);
   return "sent";
 }
