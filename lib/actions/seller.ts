@@ -5,7 +5,9 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
+import { IMAGE_REF_MESSAGE, isImageRef } from "@/lib/image-ref";
 import { prisma } from "@/lib/prisma";
+import { parseOptionLabel, parseOptionList } from "@/lib/product-options";
 
 const SELLER_ROLES = ["SELLER", ...ADMIN_ROLES];
 
@@ -29,7 +31,7 @@ const productSchema = z.object({
   name: z.string().min(2),
   description: z.string().min(10),
   price: z.coerce.number().int().positive(),
-  image: z.string().url(),
+  image: z.string().trim().refine(isImageRef, IMAGE_REF_MESSAGE),
   category: z.enum([
     "CLOTHING",
     "ART",
@@ -77,12 +79,18 @@ export async function saveSellerProduct(id: string | null, formData: FormData) {
     featured: formData.get("featured") === "on",
   });
 
+  const optionList = parseOptionList(formData.get("options"));
+  if ("error" in optionList) throw new Error(optionList.error);
+  const optionLabel = parseOptionLabel(formData.get("optionLabel"));
+  if ("error" in optionLabel) throw new Error(optionLabel.error);
+  const data = { ...parsed, options: optionList.options, optionLabel: optionLabel.label };
+
   if (id) {
-    await prisma.product.update({ where: { id }, data: parsed });
+    await prisma.product.update({ where: { id }, data });
   } else {
     await prisma.product.create({
       data: {
-        ...parsed,
+        ...data,
         slug: `${slugify(parsed.name)}-${Math.random().toString(36).slice(2, 6)}`,
         status: "DRAFT",
         isDemo: false,

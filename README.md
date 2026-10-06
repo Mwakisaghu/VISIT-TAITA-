@@ -1113,3 +1113,56 @@ experiences, shop products, Taita Cup teams, creators, missions, Field Notes and
   stories or products grow into the many thousands.
 - Reviews are not searched (they are user content behind moderation), and Swahili/English are not linked.
 - Search words are not recorded. Learning which searches find nothing would be useful, but needs a privacy decision first.
+
+## What's new — Brand, footer and social
+
+- **The logo.** Reconstructed from the white-shirt mockups: the lettering is rebuilt as exact geometry (identical A's and T's, shared
+  cap line and baseline); the S, ridge and acacia are traced curves (the S, ridge and tree detail come from the larger black-shirt
+  rendering of the same drawing, fitted into the polo's proportions). **It is a faithful reconstruction, not the official file** — replace
+  `public/brand/*` and `lib/brand-paths.ts` when the original vector exists. Navy `#1B2C4C`; tagline "More than a place."
+- **The kit** (`public/brand/`, see its README): SVG logo in navy/white/black, transparent PNGs, the ridge-and-acacia mark, a 1024 px
+  square logo, a **1080 px profile picture for Instagram and WhatsApp** (the lockup stays inside the circle crop), and a **1200×630
+  link-preview image** (what WhatsApp, Instagram and Facebook show when the site is shared). The favicon and Apple icon are the acacia.
+- **`<Logo />`** (`components/brand/Logo.tsx`) draws the logo in the surrounding *text colour*, so the same component is cream on the
+  dark nav and footer and navy on a light page. The nav now shows the logo.
+- **A new footer:** logo, tagline, social icons, Explore / Take part / Talk-to-us columns, the Taita worlds, legal links. Explore and
+  Take part sit side by side on a phone.
+- **Instagram and WhatsApp.** Set `INSTAGRAM_HANDLE` (handle, @handle or a profile URL) and `WHATSAPP_NUMBER` (any common format).
+  They then appear in the footer and on the contact page, and Instagram goes into the site's structured data. **Leave them blank and
+  nothing is shown — no dead links.** A WhatsApp chat starts with `WHATSAPP_MESSAGE` (or a polite default). The privacy policy notes
+  that those services handle messages under their own terms.
+- **Link previews now work.** `metadataBase` used to be a placeholder domain and there was no share image. The site address is found
+  the same way on Vercel and Netlify (`NEXT_PUBLIC_APP_URL`, then Netlify's `URL`, then Vercel's production domain). An
+  Organization record (name, logo, Instagram) is added for search engines.
+
+## What's new — Shop: sizes and the Visit Taita merchandise
+
+- **Sizes.** A product can offer options (normally S–XXL). The buyer must choose one; the cart keeps the same shirt in M and in L as
+  two lines; the server **checks the size against what the product really offers** (never the cart's say-so); the order stores the
+  size as it was at order time; and it shows in the cart, checkout, the buyer's order and the admin orders. Set them in the admin or
+  seller product form ("Options, e.g. sizes"). **Stock is shared across the sizes** — it is not tracked per size.
+- **Stock can no longer be oversold.** The old checkout checked stock *before* its transaction and decremented without a condition, so
+  two buyers could both take the last item. The stock is now taken first, inside the transaction, only if enough is still there;
+  anything that fails rolls the whole order back. A product on several cart lines is counted once.
+- **Product images may be a site path** (`/merch/shirt.jpg`) as well as an https URL. (Before, both product forms demanded an absolute
+  URL, which would have stopped an admin from ever editing a shirt that ships with the site. The new check also refuses
+  `javascript:` and `data:` URLs, which the old one accepted.)
+- **The 8 shirts.** `npm run merch:seed` creates them: classic white polo, polo with navy trim, navy match-day tee, white/black raglan,
+  black & gold basketball jersey, white classic tee, forest-green tee, black tee. **They are created as DRAFTS with ZERO stock and
+  PLACEHOLDER prices — nothing can be bought** until you set each real price and stock in Admin → Shop → Products and publish. Re-running
+  the seed never overwrites anything already there. The pictures are design previews (each description says so): photograph the real
+  samples before you sell, and note the white classic tee's hang tag still reads "More than a destination."
+- **The QR codes on the shirt mockups don't scan** (they are drawn, not generated). Don't print from them: a real, tested QR needs
+  generating, ideally pointing at a short redirect on your own domain so printed shirts never go stale.
+
+## Deploying on Vercel or Netlify
+
+Nothing in the code is specific to either host. What to set up on whichever you choose:
+- **Environment variables:** everything in `.env.example` (database, auth, email, payments, the legal and social settings, `CRON_SECRET`).
+- **Public address:** set `NEXT_PUBLIC_APP_URL` to your real domain (emails, QR codes, link previews and the sitemap use it).
+- **Scheduled job:** call `GET /api/cron/emails` every 10–15 minutes with `Authorization: Bearer <CRON_SECRET>` — a Vercel cron (sub-daily
+  needs a paid plan), a Netlify scheduled function, or any free external pinger (works on either, any plan).
+- **Database:** run `npx prisma migrate deploy` against your production database as a deploy step, not at request time.
+- **Prisma client:** `postinstall` now runs `prisma generate`, so a cached build can't ship a client that predates a migration.
+- **Images:** `next/image` works on both. Remote image hosts are allow-listed in `next.config.js`; `/brand` and `/merch` ship with the build.
+- **Photo uploads (next feature)** will use S3-compatible or Cloudinary storage, so they work on either host.

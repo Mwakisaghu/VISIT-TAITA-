@@ -5,7 +5,9 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
+import { IMAGE_REF_MESSAGE, isImageRef } from "@/lib/image-ref";
 import { prisma } from "@/lib/prisma";
+import { parseOptionLabel, parseOptionList, resolveOption } from "@/lib/product-options";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -31,7 +33,7 @@ const productSchema = z.object({
   name: z.string().min(2),
   description: z.string().min(10),
   price: z.coerce.number().int().positive(),
-  image: z.string().url(),
+  image: z.string().trim().refine(isImageRef, IMAGE_REF_MESSAGE),
   category: z.enum([
     "CLOTHING",
     "ART",
@@ -66,12 +68,18 @@ export async function saveProduct(id: string | null, formData: FormData) {
     featured: formData.get("featured") === "on",
   });
 
+  const optionList = parseOptionList(formData.get("options"));
+  if ("error" in optionList) throw new Error(optionList.error);
+  const optionLabel = parseOptionLabel(formData.get("optionLabel"));
+  if ("error" in optionLabel) throw new Error(optionLabel.error);
+  const data = { ...parsed, options: optionList.options, optionLabel: optionLabel.label };
+
   if (id) {
-    await prisma.product.update({ where: { id }, data: parsed });
+    await prisma.product.update({ where: { id }, data });
   } else {
     await prisma.product.create({
       data: {
-        ...parsed,
+        ...data,
         slug: `${slugify(parsed.name)}-${Math.random().toString(36).slice(2, 6)}`,
         isDemo: false,
         sellerId: user.id,
@@ -119,7 +127,9 @@ export async function updateOrderStatus(id: string, status: string) {
 
 const cartItemSchema = z.object({
   productId: z.string(),
-  quantity: z.number().int().positive(),
+  quantity: z.number().int().positive().max(10),
+  // The size (or other choice). Checked against what the product really offers — never trusted.
+  option: z.string().max(20).optional(),
 });
 
 const checkoutSchema = z.object({
@@ -165,7 +175,9 @@ export async function placeOrder(formData: FormData) {
     where: { id: { in: productIds }, status: "PUBLISHED" },
   });
 
-  const orderItemsData: { productId: string; quantity: number; unitPrice: number }[] = [];
+  const orderItemsData: { productId: string; quantity: number; unitPrice: number; option: string | null }[] = [];
+  // Total wanted per product across ALL its cart lines: the same shirt in two sizes shares one stock.
+  const wanted = new Map<string, number>();
   let totalAmount = 0;
 
   for (const item of parsed.cart) {
@@ -173,42 +185,62 @@ export async function placeOrder(formData: FormData) {
     if (!product) {
       return { error: "One of the items in your cart is no longer available." };
     }
-    if (product.inventory < item.quantity) {
+    const chosen = resolveOption(product, item.option);
+    if (!chosen.ok) return { error: chosen.error };
+
+    const total = (wanted.get(product.id) ?? 0) + item.quantity;
+    wanted.set(product.id, total);
+    if (product.inventory < total) {
       return { error: `Only ${product.inventory} left of "${product.name}".` };
     }
     orderItemsData.push({
       productId: product.id,
       quantity: item.quantity,
-      unitPrice: product.price,
+      unitPrice: product.price, // always the database price, never the cart's
+      option: chosen.option,
     });
     totalAmount += product.price * item.quantity;
   }
 
   const orderNumber = `TM-${Date.now().toString(36).toUpperCase()}`;
 
-  const order = await prisma.$transaction(async (tx) => {
-    const created = await tx.order.create({
-      data: {
-        orderNumber,
-        buyerId: session.user.id,
-        fulfillment: parsed.fulfillment,
-        paymentMethod: parsed.paymentMethod,
-        phone: parsed.phone,
-        address: parsed.address,
-        totalAmount,
-        items: { create: orderItemsData },
-      },
-    });
-
-    for (const item of orderItemsData) {
-      await tx.product.update({
-        where: { id: item.productId },
-        data: { inventory: { decrement: item.quantity } },
-      });
+  class SoldOut extends Error {
+    constructor(public productName: string) {
+      super("sold out");
     }
+  }
 
-    return created;
-  });
+  let order: { id: string };
+  try {
+    order = await prisma.$transaction(async (tx) => {
+      // Take the stock FIRST, and only if enough is still there (one atomic step per product). The check above is only a
+      // friendly early answer: this is what stops two buyers from both getting the last item. If anything fails the whole
+      // transaction rolls back, so no stock is lost.
+      for (const [productId, quantity] of wanted) {
+        const taken = await tx.product.updateMany({
+          where: { id: productId, inventory: { gte: quantity } },
+          data: { inventory: { decrement: quantity } },
+        });
+        if (taken.count === 0) throw new SoldOut(products.find((p) => p.id === productId)?.name ?? "That item");
+      }
+
+      return tx.order.create({
+        data: {
+          orderNumber,
+          buyerId: session.user.id,
+          fulfillment: parsed.fulfillment,
+          paymentMethod: parsed.paymentMethod,
+          phone: parsed.phone,
+          address: parsed.address,
+          totalAmount,
+          items: { create: orderItemsData },
+        },
+      });
+    });
+  } catch (err) {
+    if (err instanceof SoldOut) return { error: `Sorry — "${err.productName}" has just sold out, or there isn't enough left.` };
+    throw err;
+  }
 
   revalidatePath("/shop");
   revalidatePath("/admin/shop/orders");
