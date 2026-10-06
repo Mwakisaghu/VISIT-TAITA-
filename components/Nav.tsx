@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useSession, signOut } from "next-auth/react";
+import Logo from "@/components/brand/Logo";
 import { useCart } from "@/components/marketplace/CartProvider";
 
 const links = [
@@ -30,8 +31,8 @@ export default function Nav() {
   return (
     <header className="sticky top-0 z-50 bg-stone/95 backdrop-blur text-parchment print:hidden">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="font-display text-lg tracking-tight">
-          Visit Taita
+        <Link href="/" aria-label="Visit Taita — home" className="focus-ring rounded-sm">
+          <Logo decorative className="h-10 w-auto text-parchment" />
         </Link>
 
         <nav className="hidden gap-8 font-body text-sm md:flex">
