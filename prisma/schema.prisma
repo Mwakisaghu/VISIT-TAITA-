@@ -394,6 +394,10 @@ model Product {
   category    ProductCategory
   sku         String          @unique
   inventory   Int             @default(0)
+  // What a buyer must choose before adding it to the cart — normally SIZES (["S","M","L","XL"]). Empty = nothing to choose.
+  // Stock is shared across the options (it is not tracked per size).
+  options     String[]        @default([])
+  optionLabel String          @default("Size")
   offersShipping   Boolean    @default(true)
   offersPickup     Boolean    @default(true)
   status      ContentStatus   @default(DRAFT)
@@ -462,6 +466,7 @@ model OrderItem {
   id        String @id @default(cuid())
   quantity  Int
   unitPrice Int // snapshot of Product.price at order time
+  option    String? // the size (or other choice) the buyer picked, as it was at order time
 
   orderId String
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
