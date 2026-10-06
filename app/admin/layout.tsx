@@ -33,6 +33,7 @@ const nav = [
   { href: "/admin/newsletter", label: "Newsletter" },
   { href: "/admin/qr", label: "QR links" },
   { href: "/admin/users", label: "Users", managers: true },
+  { href: "/admin/bookings", label: "Bookings", managers: true },
   { href: "/admin/emails", label: "Emails" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/rewards/redemptions", label: "Vouchers" },
