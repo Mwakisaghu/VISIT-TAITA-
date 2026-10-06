@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ContactForm from "@/components/legal/ContactForm";
 import { orPlaceholder, readSiteInfo } from "@/lib/site-info";
+import { readSocial } from "@/lib/social";
 
 export const metadata: Metadata = {
   title: "Contact us",
@@ -11,6 +12,7 @@ export const revalidate = 3600;
 
 export default function ContactPage() {
   const info = readSiteInfo();
+  const social = readSocial();
   return (
     <div className="px-6 py-16">
       <div className="mx-auto grid max-w-5xl gap-14 lg:grid-cols-[1fr_1.2fr]">
@@ -30,6 +32,26 @@ export default function ContactPage() {
               <div>
                 <dt className="text-xs text-stone/50">Phone</dt>
                 <dd className="text-stone">{info.phone}</dd>
+              </div>
+            )}
+            {social.whatsapp && (
+              <div>
+                <dt className="text-xs text-stone/50">WhatsApp</dt>
+                <dd>
+                  <a href={social.whatsapp.link()} target="_blank" rel="noopener noreferrer" className="text-stone underline hover:text-rust">
+                    {social.whatsapp.display}
+                  </a>
+                </dd>
+              </div>
+            )}
+            {social.instagram && (
+              <div>
+                <dt className="text-xs text-stone/50">Instagram</dt>
+                <dd>
+                  <a href={social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-stone underline hover:text-rust">
+                    @{social.instagram.handle}
+                  </a>
+                </dd>
               </div>
             )}
             <div>

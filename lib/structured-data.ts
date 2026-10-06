@@ -48,3 +48,17 @@ export function jsonLdString(data: unknown): string {
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
 }
+
+/** The organisation, for search engines and link previews. `sameAs` lists its official social profiles. */
+export function organizationJsonLd(opts: { name: string; url: string; logo: string; description: string; email?: string | null; sameAs?: string[] }) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: opts.name,
+    url: opts.url,
+    logo: opts.logo,
+    description: opts.description,
+    ...(opts.email ? { email: opts.email } : {}),
+    ...(opts.sameAs && opts.sameAs.length > 0 ? { sameAs: opts.sameAs } : {}),
+  };
+}
