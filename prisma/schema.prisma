@@ -241,6 +241,33 @@ model UploadedImage {
   @@index([uploaderId])
 }
 
+// A short, permanent address on our own domain (/go/<slug>) that a printed QR code points at. The destination can be changed
+// later without reprinting; a link can be switched off but never deleted or renamed, because printed copies exist.
+model ShortLink {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  label         String
+  target        String // a page on this site (starting with /) or a full https:// address
+  active        Boolean        @default(true)
+  clicks        Int            @default(0)
+  lastClickedAt DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  days          ShortLinkDay[]
+}
+
+// Scans per day (East Africa Time). No IP address, device or person is recorded — only a count.
+model ShortLinkDay {
+  id     String    @id @default(cuid())
+  linkId String
+  link   ShortLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  day    DateTime  @db.Date
+  count  Int       @default(0)
+
+  @@unique([linkId, day])
+  @@index([day])
+}
+
 enum AccountTokenPurpose {
   VERIFY_EMAIL
   RESET_PASSWORD
