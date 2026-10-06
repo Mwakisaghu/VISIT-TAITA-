@@ -1194,3 +1194,20 @@ stored picture — so nothing downstream changed.
 - **Needs `sharp`:** run `npm install` after applying (it is now a dependency). It also runs the picture processing on Vercel and Netlify.
 - **Not yet:** pictures are served at their stored size even where a page uses `unoptimized`; a next step is smaller variants for cards
   and thumbnails. There is also no upload for reviews or a creator's own avatar form yet.
+
+## What's new — QR codes for the shirts
+
+The QR codes drawn on the shirt mockups are decoration and **do not scan**. Real ones are made in **Admin → QR links**.
+
+- **A short, permanent address, not the destination.** The code contains `https://your-domain/go/hills`. That address forwards to a page, and
+  you can change the page **at any time without reprinting**. A short address also makes a simpler code with bigger squares, which scans better on fabric.
+- **It always redirects.** An unknown, switched-off or broken link goes to the home page — never an error page — and if the database is down the
+  built-in links (`hills`, `passport`, `shop`, `stories`, `crew`) still work. The redirect is temporary (302) and never cached, so edits apply at once.
+- **A link can be switched off or re-pointed, but never deleted or renamed** (printed copies exist). Where it may point is checked: a page on
+  this site or a full https:// address — never http, `javascript:`, localhost, the admin or the API.
+- **Scans are counted** per day (East Africa Time) with no IP address, device or person recorded; link-preview robots (WhatsApp, Slack…) aren't counted.
+- **Print-ready files.** Download a vector SVG (what a printer wants) or a PNG. Level-Q error correction (a quarter of the code can be damaged),
+  the standard 4-square white border, black on white. The page tells you the minimum and recommended printed width for that exact code.
+- **The admin refuses to produce a code until the site address is real** (https, not localhost, not a placeholder): a shirt can't be recalled.
+- **Honest limit:** the codes are verified by decoding them with an independent reader at small sizes, blurred, rotated, noisy and damaged. That
+  is not the same as scanning a *printed shirt* — print one sample and scan it on two or three phones before a batch.
