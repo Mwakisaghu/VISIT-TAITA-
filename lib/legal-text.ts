@@ -42,6 +42,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
           "**Sponsor and partner enquiries and applications:** the contact and business details you give us.",
           "**Contact messages:** your name, email and message, used only to reply to you.",
           "**Administrative records:** when a staff member creates, invites, suspends or changes the role of an account, we record who did it, which account, and when, for security. If you delete your account, your email address is removed from those records.",
+          "**Bookings and payments:** your name, email and phone number, the booking itself, and the payments and refunds on it (amount, date, M-Pesa receipt and the phone number that paid). The host sees your name, phone, email and note for your bookings. If you delete your account we remove your name, email, phone and note from your bookings but keep the payment record (including the phone number that paid) for accounting.",
           "**Pictures you upload:** the picture, which account uploaded it, and when. We shrink every picture and remove hidden location data (such as GPS) from it. Pictures you uploaded are deleted when you delete your account, unless they are still in use on the site.",
           "**WhatsApp and Instagram:** if you message us there, those services handle your message under their own terms. We see your name or username, your number (on WhatsApp) and what you send, and use it only to reply.",
           "**Email delivery records:** the recipient, subject and delivery status of emails we send, so we can retry failures. The message text is cleared once the email is delivered, and after 7 days if it never is. The records themselves are deleted after 30 days.",
@@ -173,6 +174,21 @@ export function termsSections(info: SiteInfo): LegalSection[] {
       body: [
         "Visit Taita introduces you to hosts, guides and other operators. They are independent businesses, not part of Visit Taita. When you send an enquiry we pass your details to them. Any booking, price, service or payment is an agreement between you and them.",
         "We try to keep listings accurate but do not guarantee availability, prices or quality, and we are not responsible for what a host or operator does or does not do.",
+      ],
+    },
+    {
+      id: "bookings",
+      title: "Booking experiences online",
+      body: [
+        "When a host offers online booking, we take your booking and payment for the experience. The experience itself is provided by the host, not by Visit Taita, and you should follow the host's safety instructions.",
+        { list: [
+          "Prices are per person, in Kenyan shillings, as shown when you book. Each host chooses how you pay: in full, a deposit with the balance later, or after they accept your request. We show you which before you pay. If a deposit booking is made too close to the date, the full price is due.",
+          "Seats are held for 30 minutes while you pay. A request lapses if the host doesn't answer within 48 hours; nothing is charged for a request until the host accepts it. A booking is confirmed when the payment has been received.",
+          "If you don't pay the balance of a deposit booking by its due date, the booking is cancelled and the deposit is kept.",
+          "Each host chooses a cancellation policy — Flexible, Moderate or Strict. It is shown before you pay, and the policy you saw is the one that applies to your booking even if the host changes it later.",
+          "Whatever the policy: you get a full refund if you cancel within 24 hours of booking and the experience is more than 48 hours away; a full refund (or a free move to another date) if the host or we cancel; and we may refund in full in extenuating circumstances such as illness, a death in the family or a disaster. No-shows are not refunded, and we never charge you more than you have already paid.",
+          "Refunds go back to the M-Pesa number or card you paid with. We send M-Pesa refunds by hand, normally within 3 working days.",
+        ] },
       ],
     },
     {

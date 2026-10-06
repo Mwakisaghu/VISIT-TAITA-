@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { syncPesapalOrderStatus } from "@/lib/actions/payments";
+import { handlePesapalIpn } from "@/lib/booking-payments";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -10,6 +11,7 @@ export async function GET(request: Request) {
   if (orderTrackingId) {
     try {
       await syncPesapalOrderStatus(orderTrackingId);
+      await handlePesapalIpn(orderTrackingId); // an experience booking, if it is one
     } catch {
       // Swallow errors here — Pesapal will retry the IPN, and the order
       // confirmation page also syncs status independently on load.

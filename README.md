@@ -1237,3 +1237,45 @@ role. **Admin → Users** (admins and super admins only) fixes that.
   shows a warning while that account still has it, and the seed now refuses to run when `NODE_ENV=production`.
 - **Not included:** an admin can't delete someone else's account (suspend it; people can delete their own), change someone's email address, or edit a
   person's name. There are no fine-grained permissions beyond the roles above.
+
+## What's new — Experience bookings
+
+Guests can book an experience, pay for it with M-Pesa or a card, and cancel it, all online. Hosts choose how they want to be paid, set their
+dates and capacity, and answer requests. Admins send the refunds. Switch it on per experience: **Partner → My experiences → an experience →
+Booking & availability**.
+
+- **Three ways to pay, chosen by each host:** *full price when booking*; *a deposit now* (10–90%, 30% by default) *and the balance later*
+  (1–30 days before the start — if the guest books too close to the date, the full price is simply due); or *request → the host accepts → the
+  guest pays* (the host has 48 hours; nothing is charged before they say yes; the guest then has 24 hours).
+- **Dates and capacity.** A host adds dates (one at a time, or "every week for 4/8/12/26 weeks"), each with its own capacity, in Nairobi time.
+  Seats are held while a guest pays (30 minutes), and the count is changed atomically, so two people can never take the last seat. A host
+  can close a date, change its capacity (never below what is booked) or cancel it (everyone is told and refunded in full).
+- **A payment is only ever believed after the provider confirms it.** M-Pesa's callback URL is public and unsigned, so a request saying "paid"
+  proves nothing: our handler only *triggers* a check (Safaricom's STK query, Pesapal's transaction status), and the amount must match. A
+  payment that arrives after a hold lapsed revives the booking if the seats are still free, or is refunded if not; a duplicate payment is refunded.
+- **The refund policy**, researched from Airbnb Experiences, Viator, GetYourGuide and Withlocals (the market norm is a full refund up to 24
+  hours before, sometimes 3 or 7 days) and Kenyan operators (deposits of 20–50%, steeper penalties near departure). Each host picks one,
+  and the guest sees it before paying: **Flexible** (full refund until 24 hours before), **Moderate** (full until 3 days, 50% until 24
+  hours), **Strict** (full until 7 days, 50% until 3 days). The policy a guest booked under is copied onto the booking and never changes.
+  *Cooling-off:* a full refund within 24 hours of booking if the experience was more than 48 hours away. *Always full:* the host cancels,
+  we cancel, or a date is cancelled (weather, safety). *Extenuating circumstances* (illness, a death, a disaster): an admin can override the
+  policy. *No-shows:* no refund. *We never charge a guest more than they have paid* — a deposit-only guest isn't chased for the rest. A
+  deposit booking whose balance isn't paid by its due date is cancelled and the deposit kept (stated before they pay).
+- **What happens by itself** (in the same job as the email retries): unpaid holds and unanswered requests lapse; a balance reminder goes out
+  48 hours before it is due; unpaid balances lapse; past bookings are completed; payments whose callback never arrived are checked with
+  the provider; each date's seat counter is re-checked against its bookings. **Schedule `/api/cron/emails` every 5 minutes if your host
+  allows it** (10–15 works, but holds last 30 minutes).
+- **What is done by hand:** *M-Pesa refunds.* Safaricom's automatic reversals need separate approval, so each refund appears in
+  **Admin → Bookings → Refunds to send** with the number to pay and the amount; send it, enter the M-Pesa receipt, and the guest is emailed.
+  Card refunds are made in your Pesapal dashboard and recorded the same way.
+- **Money screens are for admins and super admins only.** Editors and content managers can use the admin area but can't cancel bookings or
+  handle refunds. A host can only ever see and change their own experiences and bookings.
+- **Accounts:** a guest can't delete their account while a booking is coming up or a refund is owed; afterwards their name, email, phone and
+  note are removed from their bookings, but the payment record is kept for accounting (and the privacy policy says so). An experience with
+  bookings can't be deleted (switch booking off and unpublish it).
+- **Not included:** paying hosts out (there is no commission or payout ledger yet — you pay hosts yourself from what you collect), automatic
+  refunds, child/adult prices, discount codes, waiting lists, rescheduling (a guest cancels and books again; a host can move people by
+  cancelling a date), calendar invitations, and tying reviews to completed bookings. **Real M-Pesa and Pesapal payments have only been
+  tested against stand-ins in development — run a real payment of a few shillings, and a refund, before you take bookings.**
+- **A finding about the shop (not changed here):** the shop's M-Pesa callback marks an order paid straight from the request it receives,
+  without confirming with Safaricom or checking the amount. Bookings do both; the shop should be hardened the same way.

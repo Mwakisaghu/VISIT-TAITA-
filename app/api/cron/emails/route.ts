@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { processDueEmails, purgeOldEmails } from "@/lib/email-outbox";
 import { purgeExpiredTokens } from "@/lib/account-tokens";
 import { purgeStaleSubscribers } from "@/lib/newsletter-maintenance";
+import { processBookingsDue } from "@/lib/booking-jobs";
 import { prisma } from "@/lib/prisma";
 import { purgeOrphanUploads } from "@/lib/uploads/cleanup";
 import { getStorage } from "@/lib/uploads/storage";
@@ -55,7 +56,14 @@ export async function GET(req: Request) {
     } catch (err) {
       console.error("[cron/emails] couldn't purge unused uploads", err);
     }
-    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads } });
+    // Bookings: resolve missed payments, lapse unpaid holds and unanswered requests, balance reminders and lapses, completion.
+    let bookings: unknown = null;
+    try {
+      bookings = await processBookingsDue();
+    } catch (err) {
+      console.error("[cron/emails] bookings job failed", err);
+    }
+    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads }, bookings });
   } catch (err) {
     console.error("[cron/emails] failed", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

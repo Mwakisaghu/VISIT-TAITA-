@@ -4,6 +4,8 @@ import Image from "next/image";
 import DemoNotice from "@/components/DemoNotice";
 import ReviewsSection from "@/components/reviews/ReviewsSection";
 import ExperienceEnquiryForm from "@/components/listings/ExperienceEnquiryForm";
+import BookingPanel from "@/components/bookings/BookingPanel";
+import { currentBookingUser } from "@/lib/booking-auth";
 import { experienceCategoryLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
@@ -41,6 +43,14 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
   ].filter(Boolean) as { label: string; value: string }[];
 
   const bookingUrl = safeHttpUrl(experience.externalBookingUrl);
+
+  // Online booking: only when the host has switched it on, set a price and added dates that still have room.
+  const bookable = experience.bookingEnabled && !!experience.priceFrom;
+  const openDates = bookable
+    ? (await prisma.experienceSession.findMany({ where: { experienceId: experience.id, status: "OPEN", startsAt: { gt: new Date(Date.now() + experience.bookingCutoffHours * 3600000) } }, orderBy: { startsAt: "asc" }, take: 24 }))
+        .filter((s) => s.capacity - s.seatsTaken > 0).slice(0, 12)
+    : [];
+  const viewer = bookable ? await currentBookingUser() : null;
   const hasDirectContact = experience.contactPhone || experience.contactEmail || bookingUrl;
 
   return (
@@ -103,6 +113,20 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
                 </p>
                 {experience.priceFrom && <p className="font-body text-xs text-stone/50">per person</p>}
               </div>
+
+              {bookable && (
+                <div className="border-t border-stone/10 pt-6">
+                  <p className="font-display text-lg text-stone">{experience.paymentMode === "AFTER_CONFIRMATION" ? "Request to book" : "Book online"}</p>
+                  <div className="mt-4">
+                    <BookingPanel
+                      experienceId={experience.id} unitPrice={experience.priceFrom as number} paymentMode={experience.paymentMode} depositPercent={experience.depositPercent}
+                      balanceDueDays={experience.balanceDueDays} policy={experience.cancellationPolicy} maxGuests={experience.maxGuestsPerBooking}
+                      sessions={openDates.map((s) => ({ id: s.id, startsAt: s.startsAt.toISOString(), seatsLeft: s.capacity - s.seatsTaken, note: s.note }))}
+                      signedIn={!!viewer} verified={!!viewer?.emailVerifiedAt} loginHref={`/login?next=/experiences/listing/${experience.slug}`}
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="border-t border-stone/10 pt-6">
                 <p className="font-display text-lg text-stone">Send an enquiry</p>
