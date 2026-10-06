@@ -6,6 +6,9 @@ import { prisma } from "@/lib/prisma";
 
 // How long a login token may keep a role before it is re-checked against the database.
 const ROLE_REFRESH_MS = 5 * 60 * 1000;
+// Staff are re-checked far more often: a suspended or demoted administrator must lose access within about a minute.
+const STAFF_REFRESH_MS = 60 * 1000;
+const refreshEvery = (role: unknown) => (ADMIN_ROLES.includes(role as string) ? STAFF_REFRESH_MS : ROLE_REFRESH_MS);
 
 // A real bcrypt hash of a throwaway string, made once. Sign-in compares the password against THIS when the email is unknown,
 // so rejecting an unknown address takes as long as rejecting a wrong password and doesn't reveal which addresses have accounts.
@@ -43,6 +46,9 @@ export const authOptions: NextAuthOptions = {
         }
         clearLoginFailures(email, ip);
 
+        // A suspended account is refused only AFTER the password is right, so this message can't be used to find out which addresses have accounts.
+        if (user.suspendedAt) throw new Error("AccountSuspended");
+
         return {
           id: user.id,
           name: user.name,
@@ -68,12 +74,12 @@ export const authOptions: NextAuthOptions = {
       // apply until the next sign-in, and a DEMOTED admin or editor kept their access.
       // Re-read it from the database at most every few minutes instead.
       const checkedAt = typeof (token as any).roleCheckedAt === "number" ? (token as any).roleCheckedAt : 0;
-      if (token.id && Date.now() - checkedAt > ROLE_REFRESH_MS) {
+      if (token.id && Date.now() - checkedAt > refreshEvery(token.role)) {
         let sessionEnded = false;
         try {
           const fresh = await prisma.user.findUnique({
             where: { id: token.id as string },
-            select: { role: true, passwordChangedAt: true },
+            select: { role: true, passwordChangedAt: true, suspendedAt: true, sessionsRevokedAt: true },
           });
           token.role = fresh ? fresh.role : "VISITOR"; // a deleted account loses its access
           (token as any).roleCheckedAt = Date.now();
@@ -81,6 +87,9 @@ export const authOptions: NextAuthOptions = {
           // The password was changed AFTER this sign-in: whoever has this session (maybe not the owner) must sign in again.
           const signedInAt = typeof (token as any).signedInAt === "number" ? (token as any).signedInAt : 0;
           if (fresh?.passwordChangedAt && signedInAt < fresh.passwordChangedAt.getTime()) sessionEnded = true;
+          // An administrator suspended the account, or chose "sign out everywhere" after this sign-in.
+          if (fresh?.suspendedAt) sessionEnded = true;
+          if (fresh?.sessionsRevokedAt && signedInAt < fresh.sessionsRevokedAt.getTime()) sessionEnded = true;
         } catch {
           // Database hiccup: keep the current role and try again on the next request.
         }

@@ -35,7 +35,9 @@ function LoginForm() {
       setError(
         res.error === "TooManyAttempts"
           ? "Too many attempts. Please wait a few minutes before trying again, or reset your password."
-          : "That email and password don't match an account."
+          : res.error === "AccountSuspended"
+            ? "This account has been suspended. Please contact us if you think that is a mistake."
+            : "That email and password don't match an account."
       );
       return;
     }
