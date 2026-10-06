@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { ADMIN_ROLES, authOptions } from "@/lib/auth";
+import { isManager } from "@/lib/user-admin";
 
 // Admin pages show live counts and inboxes — never serve a stale prerender.
 export const dynamic = "force-dynamic";
@@ -31,6 +32,7 @@ const nav = [
   { href: "/admin/impact", label: "Impact" },
   { href: "/admin/newsletter", label: "Newsletter" },
   { href: "/admin/qr", label: "QR links" },
+  { href: "/admin/users", label: "Users", managers: true },
   { href: "/admin/emails", label: "Emails" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/rewards/redemptions", label: "Vouchers" },
@@ -48,7 +50,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="w-48 shrink-0 print:hidden">
         <p className="font-display text-xl text-stone">Admin</p>
         <nav className="mt-6 flex flex-col gap-1 font-body text-sm">
-          {nav.map((item) => (
+          {nav.filter((item) => !("managers" in item) || isManager(session.user.role)).map((item) => (
             <Link
               key={item.href}
               href={item.href}

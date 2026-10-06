@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import DemoAdminWarning from "@/components/admin/DemoAdminWarning";
 
 export default async function AdminOverviewPage() {
   const [
@@ -86,6 +87,7 @@ export default async function AdminOverviewPage() {
   return (
     <div>
       <h1 className="font-display text-3xl text-stone">Overview</h1>
+      <DemoAdminWarning />
       <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3">
         {stats.map((s) => (
           <div key={s.label} className="rounded-sm border border-stone/10 p-5">

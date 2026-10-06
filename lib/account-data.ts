@@ -44,7 +44,7 @@ export async function buildAccountExport(userId: string) {
   });
   if (!user) return null;
 
-  const [visits, points, badges, vouchers, reviews, stayEnq, expEnq, orders, creator, applications, claims, notes, newsletter, stays, experiences, products, rewards, uploads] =
+  const [visits, points, badges, vouchers, reviews, stayEnq, expEnq, orders, creator, applications, claims, notes, newsletter, stays, experiences, products, rewards, uploads, adminRecords] =
     await Promise.all([
       prisma.visit.findMany({ where: { userId }, orderBy: { visitedAt: "asc" }, select: { visitedAt: true, method: true, lastVerifiedAt: true, destination: { select: { name: true } } } }),
       prisma.pointsEntry.findMany({ where: { userId }, orderBy: { createdAt: "asc" }, select: { points: true, reason: true, note: true, createdAt: true } }),
@@ -85,6 +85,7 @@ export async function buildAccountExport(userId: string) {
       prisma.product.findMany({ where: { sellerId: userId }, select: { name: true } }),
       prisma.reward.findMany({ where: { ownerId: userId }, select: { name: true } }),
       prisma.uploadedImage.findMany({ where: { uploaderId: userId }, orderBy: { createdAt: "asc" }, select: { url: true, purpose: true, createdAt: true } }),
+      prisma.adminAuditLog.findMany({ where: { targetUserId: userId }, orderBy: { createdAt: "asc" }, select: { action: true, detail: true, createdAt: true } }),
     ]);
 
   return {
@@ -129,6 +130,7 @@ export async function buildAccountExport(userId: string) {
       : null,
     managed: { stays: stays.map((x) => x.name), experiences: experiences.map((x) => x.name), products: products.map((x) => x.name), rewards: rewards.map((x) => x.name) },
     uploads: uploads.map((u) => ({ url: u.url, kind: u.purpose, uploadedAt: u.createdAt })),
+    administrativeActions: adminRecords.map((r) => ({ action: r.action, detail: r.detail, at: r.createdAt })),
     notIncluded: [
       "Your password — we only store a one-way hash of it, which cannot be turned back into your password.",
       "Internal notes our team may have written about applications or enquiries.",

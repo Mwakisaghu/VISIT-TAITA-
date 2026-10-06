@@ -41,6 +41,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
           "**The newsletter:** your email address. We email you a link to confirm before sending anything. If you unsubscribe we keep the address on a do-not-email list so we never email you again; deleting your account removes it.",
           "**Sponsor and partner enquiries and applications:** the contact and business details you give us.",
           "**Contact messages:** your name, email and message, used only to reply to you.",
+          "**Administrative records:** when a staff member creates, invites, suspends or changes the role of an account, we record who did it, which account, and when, for security. If you delete your account, your email address is removed from those records.",
           "**Pictures you upload:** the picture, which account uploaded it, and when. We shrink every picture and remove hidden location data (such as GPS) from it. Pictures you uploaded are deleted when you delete your account, unless they are still in use on the site.",
           "**WhatsApp and Instagram:** if you message us there, those services handle your message under their own terms. We see your name or username, your number (on WhatsApp) and what you send, and use it only to reply.",
           "**Email delivery records:** the recipient, subject and delivery status of emails we send, so we can retry failures. The message text is cleared once the email is delivered, and after 7 days if it never is. The records themselves are deleted after 30 days.",
