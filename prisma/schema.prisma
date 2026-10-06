@@ -50,6 +50,7 @@ model User {
   accountTokens     AccountToken[]
   auditActions      AdminAuditLog[] @relation("AuditActor")
   uploads           UploadedImage[]
+  bookings          Booking[]       @relation("BookingsMade")
   points       Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -292,6 +293,176 @@ model AdminAuditLog {
 
   @@index([createdAt])
   @@index([targetUserId, createdAt])
+}
+
+// ================= Experience bookings =================
+// How a guest pays: all at once, a deposit now and the balance later, or only after the host has accepted the request.
+enum BookingPaymentMode {
+  FULL
+  DEPOSIT
+  AFTER_CONFIRMATION
+}
+
+// How much a guest gets back, and until when (see lib/booking.ts for the exact rules).
+enum CancellationPolicy {
+  FLEXIBLE
+  MODERATE
+  STRICT
+}
+
+enum SessionStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum BookingStatus {
+  REQUESTED // waiting for the host to accept (seats are held)
+  AWAITING_PAYMENT // seats are held until it is paid
+  CONFIRMED // paid (a deposit booking may still owe its balance)
+  COMPLETED
+  CANCELLED
+  DECLINED
+  EXPIRED
+  NO_SHOW
+}
+
+enum BookingActor {
+  GUEST
+  HOST
+  ADMIN
+  SYSTEM
+}
+
+enum BookingPaymentKind {
+  FULL
+  DEPOSIT
+  BALANCE
+}
+
+enum BookingPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum RefundStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+// One bookable date and time of an experience, with its own capacity. Times are stored in UTC and shown in East Africa Time.
+model ExperienceSession {
+  id           String        @id @default(cuid())
+  experienceId String
+  experience   Experience    @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+  startsAt     DateTime
+  capacity     Int
+  seatsTaken   Int           @default(0) // seats held or sold; only ever changed together with a booking (see lib/booking-ops.ts)
+  status       SessionStatus @default(OPEN)
+  note         String?
+  createdAt    DateTime      @default(now())
+  bookings     Booking[]
+
+  @@unique([experienceId, startsAt])
+  @@index([startsAt, status])
+}
+
+model Booking {
+  id           String            @id @default(cuid())
+  reference    String            @unique
+  experienceId String
+  experience   Experience        @relation(fields: [experienceId], references: [id], onDelete: Restrict)
+  sessionId    String
+  session      ExperienceSession @relation(fields: [sessionId], references: [id], onDelete: Restrict)
+  // Kept (with the guest's details) as a payment record if the guest deletes their account; the details are then blanked.
+  userId       String?
+  user         User?             @relation("BookingsMade", fields: [userId], references: [id], onDelete: SetNull)
+  guestName    String
+  guestEmail   String
+  guestPhone   String
+  guests       Int
+  note         String?
+
+  // Everything about the deal is copied here when it is made, so a later change to the experience never rewrites a booking.
+  unitPrice          Int
+  totalAmount        Int
+  paymentMode        BookingPaymentMode
+  depositAmount      Int?
+  balanceDueAt       DateTime?
+  cancellationPolicy CancellationPolicy
+
+  status                BookingStatus
+  expiresAt             DateTime? // when an unpaid hold or an unanswered request lapses
+  paidAmount            Int           @default(0)
+  refundedAmount        Int           @default(0) // refunds raised (owed or already sent)
+  confirmedAt           DateTime?
+  completedAt           DateTime?
+  cancelledAt           DateTime?
+  cancelledBy           BookingActor?
+  cancelReason          String?
+  balanceReminderSentAt DateTime?
+  termsAcceptedAt       DateTime
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  payments BookingPayment[]
+  refunds  BookingRefund[]
+
+  @@index([userId])
+  @@index([sessionId, status])
+  @@index([experienceId])
+  @@index([status, expiresAt])
+}
+
+model BookingPayment {
+  id        String               @id @default(cuid())
+  bookingId String
+  booking   Booking              @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  kind      BookingPaymentKind
+  method    PaymentMethod
+  amount    Int
+  status    BookingPaymentStatus @default(PENDING)
+  phone     String? // the M-Pesa number that was charged
+  failureReason String?
+
+  mpesaCheckoutRequestId   String? @unique
+  mpesaMerchantRequestId   String?
+  mpesaReceiptNumber       String?
+  pesapalOrderTrackingId   String? @unique
+  pesapalMerchantReference String? @unique
+  pesapalConfirmationCode  String?
+
+  paidAt    DateTime?
+  createdAt DateTime  @default(now())
+  refunds   BookingRefund[]
+
+  @@index([bookingId, status])
+  @@index([status, createdAt])
+}
+
+// Money owed back to a guest. M-Pesa refunds are sent by hand (Safaricom's automatic reversal needs separate approval), so each one
+// is a row here for an administrator to send and then mark as sent, with the M-Pesa receipt.
+model BookingRefund {
+  id            String         @id @default(cuid())
+  bookingId     String
+  booking       Booking        @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  paymentId     String?
+  payment       BookingPayment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  amount        Int
+  reason        String
+  status        RefundStatus   @default(PENDING)
+  method        PaymentMethod
+  destination   String? // the phone number to send an M-Pesa refund to
+  reference     String? // the M-Pesa receipt (or card refund reference) once sent
+  note          String?
+  createdAt     DateTime       @default(now())
+  processedAt   DateTime?
+  processedById String?
+
+  @@index([status, createdAt])
+  @@index([bookingId])
 }
 
 enum AccountTokenPurpose {
@@ -759,6 +930,15 @@ model Experience {
   priceFrom          Int? // whole KES, per person — optional
   duration           String? // free text, e.g. "3 hours", "Full day"
   groupSizeMax       Int?
+
+  // ---- Online booking (off until the host has set a price and added dates). priceFrom above is the price per person. ----
+  bookingEnabled      Boolean            @default(false)
+  paymentMode         BookingPaymentMode @default(FULL)
+  depositPercent      Int                @default(30)
+  balanceDueDays      Int                @default(3) // a deposit booking's balance is due this many days before the start
+  cancellationPolicy  CancellationPolicy @default(FLEXIBLE)
+  bookingCutoffHours  Int                @default(12) // bookings close this many hours before the start
+  maxGuestsPerBooking Int                @default(10)
   contactPhone       String?
   contactEmail       String?
   externalBookingUrl String?
@@ -774,6 +954,8 @@ model Experience {
   enquiries          ExperienceEnquiry[]
   reviews            Review[]
   featuredByMissions Mission[]
+  sessions           ExperienceSession[]
+  bookings           Booking[]
 
   @@index([category, status])
   @@index([ownerId])
