@@ -63,7 +63,7 @@ export async function buildAccountExport(userId: string) {
         select: {
           orderNumber: true, createdAt: true, status: true, fulfillment: true, address: true, phone: true, totalAmount: true,
           paymentMethod: true, paymentStatus: true, paidAt: true, mpesaReceiptNumber: true, pesapalConfirmationCode: true,
-          items: { select: { quantity: true, unitPrice: true, product: { select: { name: true } } } },
+          items: { select: { quantity: true, unitPrice: true, option: true, product: { select: { name: true } } } },
         },
       }),
       prisma.creator.findUnique({ where: { userId }, select: { id: true, slug: true, displayName: true, track: true, bio: true, specialties: true, location: true, avatar: true, links: true, status: true, createdAt: true } }),
@@ -117,7 +117,7 @@ export async function buildAccountExport(userId: string) {
       stays: stayEnq.map(({ accommodation, ...rest }) => ({ listing: accommodation.name, ...rest })),
       experiences: expEnq.map(({ experience, ...rest }) => ({ listing: experience.name, ...rest })),
     },
-    orders: orders.map(({ items, ...rest }) => ({ ...rest, items: items.map((i) => ({ product: i.product.name, quantity: i.quantity, unitPrice: i.unitPrice })) })),
+    orders: orders.map(({ items, ...rest }) => ({ ...rest, items: items.map((i) => ({ product: i.product.name, option: i.option, quantity: i.quantity, unitPrice: i.unitPrice })) })),
     creator: creator
       ? {
           profile: creator,

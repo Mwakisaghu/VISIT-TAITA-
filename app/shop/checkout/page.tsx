@@ -1,6 +1,7 @@
 "use client";
 
 import ConsentNote from "@/components/legal/ConsentNote";
+import { lineKey } from "@/lib/product-options";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -63,7 +64,7 @@ export default function CheckoutPage() {
     formData.set("address", address);
     formData.set(
       "cart",
-      JSON.stringify(items.map((i) => ({ productId: i.productId, quantity: i.quantity })))
+      JSON.stringify(items.map((i) => ({ productId: i.productId, quantity: i.quantity, option: i.option ?? undefined })))
     );
 
     const orderResult = await placeOrder(formData);
@@ -109,9 +110,10 @@ export default function CheckoutPage() {
 
         <div className="mt-6 rounded-sm border border-stone/10 p-4">
           {items.map((item) => (
-            <div key={item.productId} className="flex justify-between font-body text-sm text-stone/70">
+            <div key={lineKey(item)} className="flex justify-between font-body text-sm text-stone/70">
               <span>
                 {item.quantity} × {item.name}
+                {item.option ? ` (${item.option})` : ""}
               </span>
               <span>{formatPrice(item.price * item.quantity)}</span>
             </div>

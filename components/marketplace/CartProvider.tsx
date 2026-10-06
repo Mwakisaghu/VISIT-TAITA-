@@ -1,21 +1,16 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { addLine, cartTotals, removeLine, sanitizeCart, setLineQuantity, type CartLine } from "@/lib/cart";
 
-export type CartItem = {
-  productId: string;
-  slug: string;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-};
+export type CartItem = CartLine;
 
 type CartContextValue = {
   items: CartItem[];
   addItem: (item: Omit<CartItem, "quantity">, quantity?: number) => void;
-  removeItem: (productId: string) => void;
-  setQuantity: (productId: string, quantity: number) => void;
+  /** `key` is lineKey(item): a product AND its option (size). */
+  removeItem: (key: string) => void;
+  setQuantity: (key: string, quantity: number) => void;
   clear: () => void;
   count: number;
   subtotal: number;
@@ -32,7 +27,7 @@ export default function CartProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setItems(JSON.parse(raw));
+      if (raw) setItems(sanitizeCart(JSON.parse(raw))); // anything malformed is dropped, never trusted
     } catch {
       // ignore corrupted cart data
     }
@@ -41,42 +36,27 @@ export default function CartProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (!hydrated) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // storage full or blocked: the cart still works for this visit
+    }
   }, [items, hydrated]);
 
-  function addItem(item: Omit<CartItem, "quantity">, quantity = 1) {
-    setItems((prev) => {
-      const existing = prev.find((i) => i.productId === item.productId);
-      if (existing) {
-        return prev.map((i) =>
-          i.productId === item.productId ? { ...i, quantity: i.quantity + quantity } : i
-        );
-      }
-      return [...prev, { ...item, quantity }];
-    });
-  }
-
-  function removeItem(productId: string) {
-    setItems((prev) => prev.filter((i) => i.productId !== productId));
-  }
-
-  function setQuantity(productId: string, quantity: number) {
-    if (quantity <= 0) {
-      removeItem(productId);
-      return;
-    }
-    setItems((prev) => prev.map((i) => (i.productId === productId ? { ...i, quantity } : i)));
-  }
-
-  function clear() {
-    setItems([]);
-  }
-
-  const count = items.reduce((sum, i) => sum + i.quantity, 0);
-  const subtotal = items.reduce((sum, i) => sum + i.quantity * i.price, 0);
+  const { count, subtotal } = cartTotals(items);
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, setQuantity, clear, count, subtotal }}>
+    <CartContext.Provider
+      value={{
+        items,
+        addItem: (item, quantity = 1) => setItems((prev) => addLine(prev, item, quantity)),
+        removeItem: (key) => setItems((prev) => removeLine(prev, key)),
+        setQuantity: (key, quantity) => setItems((prev) => setLineQuantity(prev, key, quantity)),
+        clear: () => setItems([]),
+        count,
+        subtotal,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

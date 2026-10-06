@@ -1,5 +1,7 @@
 "use client";
 
+import { lineKey } from "@/lib/product-options";
+
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
@@ -31,7 +33,7 @@ export default function CartPage() {
 
         <div className="mt-8 divide-y divide-stone/10">
           {items.map((item) => (
-            <div key={item.productId} className="flex items-center gap-4 py-5">
+            <div key={lineKey(item)} className="flex items-center gap-4 py-5">
               <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-sm bg-stone/10">
                 <Image src={item.image} alt={item.name} fill unoptimized sizes="80px" className="object-cover" />
               </div>
@@ -40,12 +42,17 @@ export default function CartPage() {
                   {item.name}
                 </Link>
                 <p className="font-body text-sm text-stone/60">{formatPrice(item.price)}</p>
+                {item.option && (
+                  <p className="font-body text-sm text-stone/60">
+                    {item.optionLabel ?? "Size"}: {item.option}
+                  </p>
+                )}
               </div>
               <select
                 value={item.quantity}
-                onChange={(e) => setQuantity(item.productId, Number(e.target.value))}
+                onChange={(e) => setQuantity(lineKey(item), Number(e.target.value))}
                 className="input"
-                aria-label={`Quantity for ${item.name}`}
+                aria-label={`Quantity for ${item.name}${item.option ? ` (${item.option})` : ""}`}
               >
                 {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
                   <option key={n} value={n}>
@@ -55,7 +62,7 @@ export default function CartPage() {
               </select>
               <button
                 type="button"
-                onClick={() => removeItem(item.productId)}
+                onClick={() => removeItem(lineKey(item))}
                 className="focus-ring font-body text-sm text-stone/40 hover:text-rust"
               >
                 Remove

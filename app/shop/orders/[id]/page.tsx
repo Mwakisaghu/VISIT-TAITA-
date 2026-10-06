@@ -59,6 +59,7 @@ export default async function OrderConfirmationPage({
             <div key={item.id} className="flex justify-between py-3 font-body text-sm text-stone/70">
               <span>
                 {item.quantity} × {item.product.name}
+                {item.option ? ` (${item.option})` : ""}
               </span>
               <span>{formatPrice(item.unitPrice * item.quantity)}</span>
             </div>

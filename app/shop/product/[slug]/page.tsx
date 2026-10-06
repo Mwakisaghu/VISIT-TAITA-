@@ -66,6 +66,8 @@ export default async function ProductPage({ params }: { params: { slug: string }
               price={product.price}
               image={product.image}
               inventory={product.inventory}
+              options={product.options}
+              optionLabel={product.optionLabel}
             />
           </div>
 

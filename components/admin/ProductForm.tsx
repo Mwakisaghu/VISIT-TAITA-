@@ -53,12 +53,21 @@ export default function ProductForm({ product }: { product?: Product }) {
         />
       </Field>
 
-      <Field label="Image URL">
-        <input name="image" type="url" defaultValue={product?.image} required className="input" />
+      <Field label="Image URL (or a site path like /merch/shirt.jpg)">
+        <input name="image" type="text" inputMode="url" defaultValue={product?.image} required className="input" />
       </Field>
 
       <Field label="SKU">
         <input name="sku" defaultValue={product?.sku} required className="input" />
+      </Field>
+
+      <Field label="Options, e.g. sizes (optional)">
+        <input name="options" defaultValue={product?.options?.join(", ") ?? ""} placeholder="S, M, L, XL, XXL" className="input" />
+        <span className="font-body text-xs text-stone/50">Separate with commas. A buyer must choose one. Stock is shared across the options.</span>
+      </Field>
+
+      <Field label="Option label">
+        <input name="optionLabel" defaultValue={product?.optionLabel ?? "Size"} maxLength={20} className="input" />
       </Field>
 
       <Field label="Inventory">

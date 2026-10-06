@@ -52,6 +52,7 @@ export default async function AdminOrdersPage() {
               {order.items.map((item) => (
                 <li key={item.id}>
                   {item.quantity} × {item.product.name}
+                  {item.option ? ` (${item.option})` : ""}
                 </li>
               ))}
             </ul>
