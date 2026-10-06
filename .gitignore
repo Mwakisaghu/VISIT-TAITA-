@@ -7,3 +7,6 @@ out
 .DS_Store
 dev.db
 tsconfig.tsbuildinfo
+
+# pictures uploaded while developing locally (production pictures live in object storage)
+/public/uploads/
