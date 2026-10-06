@@ -40,7 +40,15 @@ model User {
   emailVerifiedAt DateTime?
   // Set when the password is reset. Any sign-in older than this is ended (see lib/auth.ts).
   passwordChangedAt DateTime?
+  // Set by an administrator. A suspended account can't sign in and any sign-in it has is ended (see lib/auth.ts).
+  suspendedAt     DateTime?
+  suspendedReason String?
+  // Set when an administrator invited this person. "Invite pending" means: invited, and hasn't yet chosen a password.
+  invitedAt DateTime?
+  // "Sign out everywhere": any sign-in older than this is ended.
+  sessionsRevokedAt DateTime?
   accountTokens     AccountToken[]
+  auditActions      AdminAuditLog[] @relation("AuditActor")
   uploads           UploadedImage[]
   points       Int      @default(0)
   createdAt    DateTime @default(now())
@@ -266,6 +274,24 @@ model ShortLinkDay {
 
   @@unique([linkId, day])
   @@index([day])
+}
+
+// Who changed which account, and when: creating, inviting, changing a role, suspending, sending reset links. The email addresses
+// are copied in (a snapshot) so the record still makes sense after an account is deleted — and the target's address is blanked
+// when THEIR account is deleted.
+model AdminAuditLog {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  actorId      String?
+  actor        User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  actorEmail   String
+  action       String // user.invite | user.role | user.suspend | user.reinstate | user.signout | user.reset_link | user.verify_link
+  targetUserId String?
+  targetEmail  String?
+  detail       String?
+
+  @@index([createdAt])
+  @@index([targetUserId, createdAt])
 }
 
 enum AccountTokenPurpose {
