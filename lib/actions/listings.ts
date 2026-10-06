@@ -170,6 +170,9 @@ export async function saveExperience(id: string | null, formData: FormData) {
 
 export async function deleteExperience(id: string) {
   await requireAdmin();
+  if ((await prisma.booking.count({ where: { experienceId: id } })) > 0) {
+    throw new Error("This experience has bookings, so it can't be deleted — they are payment records. Switch booking off and unpublish it instead.");
+  }
   await prisma.experience.delete({ where: { id } });
   revalidatePath("/admin/experiences");
   revalidatePath("/experiences");
@@ -347,6 +350,9 @@ export async function deletePartnerExperience(id: string) {
     throw new Error("You can only delete your own listings.");
   }
 
+  if ((await prisma.booking.count({ where: { experienceId: id } })) > 0) {
+    throw new Error("This experience has bookings, so it can't be deleted — they are payment records. Switch booking off and unpublish it instead.");
+  }
   await prisma.experience.delete({ where: { id } });
   revalidatePath("/partner/experiences");
   revalidatePath("/experiences");
