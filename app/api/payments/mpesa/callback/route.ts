@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { extractCallbackMetadata, type MpesaCallbackBody } from "@/lib/mpesa";
 import { restockOrderItems } from "@/lib/actions/payments";
+import { handleMpesaCallback } from "@/lib/booking-payments";
 
 // Safaricom expects a 200 with this exact shape regardless of outcome —
 // otherwise it treats the callback as failed and retries.
@@ -21,7 +22,15 @@ export async function POST(request: Request) {
   const order = await prisma.order.findFirst({
     where: { mpesaCheckoutRequestId: callback.CheckoutRequestID },
   });
-  if (!order) return ACK;
+  if (!order) {
+    // Not a shop order: it may be an experience booking. (That handler never trusts this request — it asks Safaricom.)
+    try {
+      await handleMpesaCallback(body);
+    } catch (err) {
+      console.error("[mpesa callback] booking handler failed:", (err as Error).message);
+    }
+    return ACK;
+  }
 
   // Idempotency guard: only act the first time this order transitions out
   // of PENDING — Safaricom (like most payment providers) may deliver the
