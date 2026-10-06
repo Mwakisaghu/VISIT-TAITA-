@@ -1,5 +1,6 @@
 import type { Experience } from "@prisma/client";
 import { saveExperience } from "@/lib/actions/listings";
+import ImageField from "@/components/uploads/ImageField";
 
 const categories = ["WILDLIFE", "CULTURE", "ADVENTURE", "FOOD", "WELLNESS"];
 
@@ -36,9 +37,7 @@ export default function ExperienceForm({ experience }: { experience?: Experience
         />
       </Field>
 
-      <Field label="Image URL">
-        <input name="image" type="url" defaultValue={experience?.image} required className="input" />
-      </Field>
+      <ImageField name="image" label="Image" purpose="photo" defaultValue={experience?.image} required />
 
       <div className="grid grid-cols-2 gap-4">
         <Field label="Price from (KES per person, optional)">

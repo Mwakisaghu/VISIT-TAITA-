@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Mission } from "@prisma/client";
 import { saveMission } from "@/lib/actions/missions-admin";
 import { CREATOR_TRACKS, TRACK_LABELS } from "@/lib/creators";
+import ImageField from "@/components/uploads/ImageField";
 import {
   MISSION_LIMITS as L,
   MISSION_STATUSES,
@@ -81,10 +82,7 @@ export default function MissionForm({
           <span className={label}>Campaign (optional)</span>
           <input name="campaign" defaultValue={mission?.campaign ?? ""} maxLength={L.campaignMax} className="input" placeholder="e.g. 48 Hours in Taita" />
         </label>
-        <label className="flex flex-col gap-1">
-          <span className={label}>Image URL (optional)</span>
-          <input name="image" type="url" defaultValue={mission?.image ?? ""} className="input" placeholder="https://" />
-        </label>
+        <ImageField name="image" label="Image" purpose="photo" defaultValue={mission?.image ?? ""} />
       </div>
 
       <label className="flex flex-col gap-1">

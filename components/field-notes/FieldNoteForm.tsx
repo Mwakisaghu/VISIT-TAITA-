@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { submitFieldNote } from "@/lib/actions/field-notes";
 import { NOTE_LIMITS as L } from "@/lib/field-notes";
+import ImageListField from "@/components/uploads/ImageListField";
 
 export type FieldNoteDefaults = {
   title: string;
@@ -98,10 +99,7 @@ export default function FieldNoteForm({
         <textarea name="body" defaultValue={defaults?.body} maxLength={L.bodyMax} rows={6} className="input" />
       </label>
 
-      <label className="flex flex-col gap-1">
-        <span className={label}>Photo links — one per line, up to {L.maxPhotos}</span>
-        <textarea name="photos" defaultValue={defaults?.photos} rows={3} className="input" placeholder={"yourphotos.com/sagalla-1.jpg"} />
-      </label>
+      <ImageListField name="photos" label="Photos" purpose="note" max={L.maxPhotos} defaultValue={defaults?.photos} />
 
       <label className="flex flex-col gap-1">
         <span className={label}>Links to your own posts about this — one per line, up to {L.maxLinks}</span>

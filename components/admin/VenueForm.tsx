@@ -1,5 +1,6 @@
 import type { SportVenue } from "@prisma/client";
 import { saveVenue } from "@/lib/actions/cup";
+import ImageField from "@/components/uploads/ImageField";
 
 export default function VenueForm({ venue }: { venue?: SportVenue }) {
   const action = saveVenue.bind(null, venue?.id ?? null);
@@ -15,9 +16,7 @@ export default function VenueForm({ venue }: { venue?: SportVenue }) {
       <Field label="Capacity (optional)">
         <input name="capacity" type="number" min={0} defaultValue={venue?.capacity ?? ""} className="input" />
       </Field>
-      <Field label="Image URL">
-        <input name="image" type="url" defaultValue={venue?.image} required className="input" />
-      </Field>
+      <ImageField name="image" label="Image" purpose="photo" defaultValue={venue?.image} required />
 
       <button
         type="submit"

@@ -1,5 +1,6 @@
 import type { Product } from "@prisma/client";
 import { saveProduct } from "@/lib/actions/marketplace";
+import ImageField from "@/components/uploads/ImageField";
 
 const categories = [
   "CLOTHING",
@@ -53,9 +54,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         />
       </Field>
 
-      <Field label="Image URL (or a site path like /merch/shirt.jpg)">
-        <input name="image" type="text" inputMode="url" defaultValue={product?.image} required className="input" />
-      </Field>
+      <ImageField name="image" label="Image" purpose="product" defaultValue={product?.image} required />
 
       <Field label="SKU">
         <input name="sku" defaultValue={product?.sku} required className="input" />

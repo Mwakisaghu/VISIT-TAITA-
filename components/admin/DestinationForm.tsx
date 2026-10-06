@@ -1,6 +1,7 @@
 import type { Destination } from "@prisma/client";
 import Link from "next/link";
 import { saveDestination } from "@/lib/actions/admin";
+import ImageField from "@/components/uploads/ImageField";
 
 const categories = ["WILD", "CULTURE", "ADVENTURE", "FOOD", "SPORT", "PEOPLE"];
 
@@ -37,15 +38,7 @@ export default function DestinationForm({ destination }: { destination?: Destina
         />
       </Field>
 
-      <Field label="Image URL">
-        <input
-          name="image"
-          type="url"
-          defaultValue={destination?.image}
-          required
-          className="input"
-        />
-      </Field>
+      <ImageField name="image" label="Image" purpose="photo" defaultValue={destination?.image} required />
 
       <div className="grid grid-cols-2 gap-4">
         <Field label="Latitude (optional — for the map)">

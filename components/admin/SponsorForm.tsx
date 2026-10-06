@@ -1,6 +1,7 @@
 import type { Sponsor } from "@prisma/client";
 import { saveSponsor } from "@/lib/actions/sponsors";
 import { SPONSOR_PROGRAMS } from "@/lib/sponsors";
+import ImageField from "@/components/uploads/ImageField";
 
 export default function SponsorForm({
   sponsor,
@@ -17,9 +18,7 @@ export default function SponsorForm({
         <input name="name" defaultValue={sponsor?.name} required className="input" />
       </Field>
 
-      <Field label="Logo URL">
-        <input name="logo" type="url" defaultValue={sponsor?.logo} required className="input" />
-      </Field>
+      <ImageField name="logo" label="Logo" purpose="logo" defaultValue={sponsor?.logo} required />
 
       <Field label="Website (optional)">
         <input
