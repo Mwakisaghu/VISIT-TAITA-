@@ -595,6 +595,11 @@ const sponsorPackages = [
 ];
 
 async function main() {
+  // The demo data includes an admin with a PUBLICLY KNOWN password. Never create it on a live site.
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_PRODUCTION_SEED !== "yes") {
+    console.error("Refusing to seed: NODE_ENV is production, and the demo data includes an admin account whose password is published in the source code. Create your admin with `npm run admin:create` instead.");
+    process.exit(1);
+  }
 
   // Demo admin account — change this password immediately in any shared environment.
   const adminPasswordHash = await bcrypt.hash("ChangeMe123!", 10);

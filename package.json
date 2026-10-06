@@ -10,6 +10,7 @@
     "postinstall": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "merch:seed": "tsx scripts/seed-merch.ts",
+    "admin:create": "tsx scripts/create-admin.ts",
     "pesapal:register-ipn": "tsx scripts/register-pesapal-ipn.ts",
     "dev:turbo": "next dev --turbo",
     "email:test": "tsx scripts/send-test-email.ts",
