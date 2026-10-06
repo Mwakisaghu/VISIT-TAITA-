@@ -41,6 +41,7 @@ model User {
   // Set when the password is reset. Any sign-in older than this is ended (see lib/auth.ts).
   passwordChangedAt DateTime?
   accountTokens     AccountToken[]
+  uploads           UploadedImage[]
   points       Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -222,6 +223,24 @@ model Visit {
 // A person only receives the newsletter after CONFIRMING their address (double opt-in): a new signup is PENDING until they
 // click the link we email them. Rows that existed before this (ACTIVE, with no confirmedAt) are "legacy": they are not mailed
 // until they confirm. Unsubscribing keeps the row as a do-not-email record (deleting an account removes it).
+// A picture someone uploaded. We keep a record so unused files can be cleaned up, a person's pictures can be deleted with their
+// account and listed in their data export, and uploads can be rate-limited. The file itself lives in object storage.
+model UploadedImage {
+  id         String   @id @default(cuid())
+  key        String   @unique // where it is in storage
+  url        String   @unique // the public address it is served from
+  purpose    String // photo | product | logo | avatar | note
+  bytes      Int
+  width      Int
+  height     Int
+  createdAt  DateTime @default(now())
+  uploaderId String?
+  uploader   User?    @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([uploaderId])
+}
+
 enum AccountTokenPurpose {
   VERIFY_EMAIL
   RESET_PASSWORD
