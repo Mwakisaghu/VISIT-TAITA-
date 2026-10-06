@@ -9,6 +9,8 @@ import { sendEmail } from "@/lib/email";
 import { cancelPendingCampaignEmails } from "@/lib/newsletter-maintenance";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
+import { deleteUnusedUploads } from "@/lib/uploads/cleanup";
+import { getStorage } from "@/lib/uploads/storage";
 
 export type AccountResult = { success?: true; error?: string };
 
@@ -53,6 +55,9 @@ export async function deleteMyAccount(password: string): Promise<AccountResult> 
   const blockers = await getDeletionBlockers({ id: user.id, role: user.role });
   if (blockers.length > 0) return { error: blockers.join(" ") };
 
+  // Their uploaded pictures: remember which, so the FILES can be removed once the account is gone.
+  const myUploads = await prisma.uploadedImage.findMany({ where: { uploaderId: user.id }, select: { id: true, key: true, url: true } });
+
   try {
     await prisma.$transaction(async (tx) => {
       // 1. Give back the mission spots their (non-withdrawn) claims were holding.
@@ -96,6 +101,15 @@ export async function deleteMyAccount(password: string): Promise<AccountResult> 
 
   // Public pages that may have shown their profile or notes.
   for (const path of ["/", "/creators", "/notes", "/missions", "/admin"]) revalidatePath(path);
+
+  // Delete their pictures (best effort; one still used by something that stays on the site is left, and the weekly clean-up
+  // removes it once nothing uses it). The account is already gone either way.
+  try {
+    const storage = getStorage();
+    if (storage.driver) await deleteUnusedUploads(prisma, storage.driver, myUploads);
+  } catch (err) {
+    console.error("[account] couldn't delete uploaded pictures", err);
+  }
 
   // Best effort, after the fact. The address is only used for this one message.
   await sendEmail({
