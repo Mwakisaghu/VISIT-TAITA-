@@ -30,6 +30,7 @@ const nav = [
   { href: "/admin/field-notes", label: "Field Notes" },
   { href: "/admin/impact", label: "Impact" },
   { href: "/admin/newsletter", label: "Newsletter" },
+  { href: "/admin/qr", label: "QR links" },
   { href: "/admin/emails", label: "Emails" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/rewards/redemptions", label: "Vouchers" },
