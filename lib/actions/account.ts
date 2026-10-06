@@ -91,7 +91,10 @@ export async function deleteMyAccount(password: string): Promise<AccountResult> 
       await tx.newsletterSubscriber.deleteMany({ where: { email: user.email } });
       await cancelPendingCampaignEmails(tx, user.email); // a deleted account must not receive a newsletter that was already queued
 
-      // 6. The account itself — cascades the Passport, reviews, creator profile, claims and Field Notes.
+      // 6. The administrative record keeps WHAT was done, but their email address is removed from it.
+      await tx.adminAuditLog.updateMany({ where: { targetUserId: user.id }, data: { targetEmail: null } });
+
+      // 7. The account itself — cascades the Passport, reviews, creator profile, claims and Field Notes.
       await tx.user.delete({ where: { id: user.id } });
     });
   } catch (err) {
