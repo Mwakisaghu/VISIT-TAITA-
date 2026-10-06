@@ -1,5 +1,6 @@
 import type { Reward } from "@prisma/client";
 import { saveReward } from "@/lib/actions/rewards-admin";
+import ImageField from "@/components/uploads/ImageField";
 
 export default function RewardForm({
   reward,
@@ -78,9 +79,7 @@ export default function RewardForm({
         </Field>
       </div>
 
-      <Field label="Image URL (optional)">
-        <input name="image" type="url" defaultValue={reward?.image ?? ""} className="input" placeholder="https://" />
-      </Field>
+      <ImageField name="image" label="Image" purpose="product" defaultValue={reward?.image ?? ""} />
 
       <Field label="Partner account that honours it (optional)">
         <select name="ownerId" defaultValue={reward?.ownerId ?? ""} className="input">

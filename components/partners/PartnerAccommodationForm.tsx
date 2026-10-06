@@ -1,5 +1,6 @@
 import type { Accommodation } from "@prisma/client";
 import { savePartnerAccommodation } from "@/lib/actions/listings";
+import ImageField from "@/components/uploads/ImageField";
 
 const types = ["HOTEL", "LODGE", "GUESTHOUSE", "HOMESTAY", "CAMPSITE"];
 
@@ -36,9 +37,7 @@ export default function PartnerAccommodationForm({ accommodation }: { accommodat
         />
       </Field>
 
-      <Field label="Image URL">
-        <input name="image" type="url" defaultValue={accommodation?.image} required className="input" />
-      </Field>
+      <ImageField name="image" label="Image" purpose="photo" defaultValue={accommodation?.image} required />
 
       <Field label="Price from (KES per night, optional)">
         <input

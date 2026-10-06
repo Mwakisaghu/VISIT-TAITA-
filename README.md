@@ -1166,3 +1166,31 @@ Nothing in the code is specific to either host. What to set up on whichever you 
 - **Prisma client:** `postinstall` now runs `prisma generate`, so a cached build can't ship a client that predates a migration.
 - **Images:** `next/image` works on both. Remote image hosts are allow-listed in `next.config.js`; `/brand` and `/merch` ship with the build.
 - **Photo uploads (next feature)** will use S3-compatible or Cloudinary storage, so they work on either host.
+
+## What's new — Picture uploads
+
+Every picture field (destinations, stories, stays, experiences, venues, products, rewards, missions, sponsor logos, and Field Note
+photos) is now an **upload button** instead of a web-address box. The form still saves exactly what it did before — the address of the
+stored picture — so nothing downstream changed.
+
+- **Quality.** Pictures that are too small are *refused* with a clear message (photos need 1200×600 px, product photos 800×500, profile
+  photos 400×400, logos 200×60), so nothing blurry gets in. Pictures are never enlarged. Larger ones are stored at up to 2400 px as
+  WebP at quality 86 — visually indistinguishable from the original (the tests measure this) at a fraction of the size.
+- **Phones.** A photo of 3.5 MB or less is sent untouched at full quality. A bigger one (phone photos are 5–12 MB) is scaled down in the
+  browser first, with a progress bar, so it doesn't take minutes on a mobile connection. iPhone HEIC photos get a specific message
+  explaining how to share them as JPEG.
+- **Privacy.** Every picture is re-encoded: the camera's **GPS location and all other hidden data are removed**, and it is turned upright.
+- **Safety.** The file's name and declared type are never believed: it must really decode as a JPEG, PNG, WebP or AVIF. SVGs, GIFs, PDFs,
+  HTML disguised as a picture, and "decompression bombs" (a tiny file that expands to gigabytes) are refused. Anything glued onto a
+  picture does not survive re-encoding.
+- **Who may upload what** is decided on the server: staff anything; a host photos and a logo; a seller product photos; a creator Field
+  Note photos and a profile picture; members and visitors nothing. Uploads are rate-limited (40 an hour; staff 200).
+- **Storage** is any S3-compatible service — **Cloudflare R2 is the suggested one** (free allowance, no charge for downloads). Set the
+  `S3_*` values in `.env.example`. The same code runs on Vercel and Netlify (the files live in the bucket, not on the host). In
+  development, with nothing set, pictures go to `public/uploads`. In production with nothing set, forms **fall back to the old
+  web-address box** rather than breaking. The storage requests are signed by hand (no cloud SDK) and tested against AWS's own published example.
+- **Clean-up.** The email cron job also deletes pictures nothing uses any more once they are a week old (a replaced photo, or an upload
+  never saved into a form). A person's pictures are deleted with their account (unless still in use) and listed in their data export.
+- **Needs `sharp`:** run `npm install` after applying (it is now a dependency). It also runs the picture processing on Vercel and Netlify.
+- **Not yet:** pictures are served at their stored size even where a page uses `unoptimized`; a next step is smaller variants for cards
+  and thumbnails. There is also no upload for reviews or a creator's own avatar form yet.

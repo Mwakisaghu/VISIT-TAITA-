@@ -1,5 +1,6 @@
 import type { Story } from "@prisma/client";
 import { saveStory } from "@/lib/actions/admin";
+import ImageField from "@/components/uploads/ImageField";
 
 const categories = ["PEOPLE", "PLACES", "CULTURE", "SPORT", "ADVENTURE"];
 
@@ -39,9 +40,7 @@ export default function StoryForm({ story }: { story?: Story }) {
         />
       </Field>
 
-      <Field label="Image URL">
-        <input name="image" type="url" defaultValue={story?.image} required className="input" />
-      </Field>
+      <ImageField name="image" label="Image" purpose="photo" defaultValue={story?.image} required />
 
       <Field label="Status">
         <select name="status" defaultValue={story?.status ?? "DRAFT"} className="input">

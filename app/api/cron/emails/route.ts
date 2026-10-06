@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { processDueEmails, purgeOldEmails } from "@/lib/email-outbox";
 import { purgeExpiredTokens } from "@/lib/account-tokens";
 import { purgeStaleSubscribers } from "@/lib/newsletter-maintenance";
+import { prisma } from "@/lib/prisma";
+import { purgeOrphanUploads } from "@/lib/uploads/cleanup";
+import { getStorage } from "@/lib/uploads/storage";
 
 // Never cached: it does work every time it is called.
 export const dynamic = "force-dynamic";
@@ -44,7 +47,15 @@ export async function GET(req: Request) {
     } catch (err) {
       console.error("[cron/emails] couldn't purge expired account tokens", err);
     }
-    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens } });
+    // Pictures nothing uses any more (a week after upload) are deleted. A failure here never stops email retries.
+    let orphanUploads = 0;
+    try {
+      const storage = getStorage();
+      if (storage.driver) orphanUploads = (await purgeOrphanUploads(prisma, storage.driver)).deleted;
+    } catch (err) {
+      console.error("[cron/emails] couldn't purge unused uploads", err);
+    }
+    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads } });
   } catch (err) {
     console.error("[cron/emails] failed", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

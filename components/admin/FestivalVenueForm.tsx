@@ -1,5 +1,6 @@
 import type { FestivalVenue } from "@prisma/client";
 import { saveFestivalVenue } from "@/lib/actions/festival";
+import ImageField from "@/components/uploads/ImageField";
 
 export default function FestivalVenueForm({ venue }: { venue?: FestivalVenue }) {
   const action = saveFestivalVenue.bind(null, venue?.id ?? null);
@@ -12,9 +13,7 @@ export default function FestivalVenueForm({ venue }: { venue?: FestivalVenue }) 
       <Field label="Location">
         <input name="location" defaultValue={venue?.location} required className="input" />
       </Field>
-      <Field label="Image URL">
-        <input name="image" type="url" defaultValue={venue?.image} required className="input" />
-      </Field>
+      <ImageField name="image" label="Image" purpose="photo" defaultValue={venue?.image} required />
 
       <button
         type="submit"
