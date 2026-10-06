@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import PartnerExperienceForm from "@/components/partners/PartnerExperienceForm";
+import Link from "next/link";
 
 export default async function EditPartnerExperiencePage({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
@@ -15,6 +16,9 @@ export default async function EditPartnerExperiencePage({ params }: { params: { 
   return (
     <div>
       <h1 className="font-display text-3xl text-stone">Edit experience</h1>
+      <p className="mt-2 font-body text-sm">
+        <Link href={`/partner/experiences/${experience.id}/availability`} className="text-rust underline">Booking &amp; availability →</Link> set your dates, how guests pay and your cancellation policy.
+      </p>
       <PartnerExperienceForm experience={experience} />
     </div>
   );
