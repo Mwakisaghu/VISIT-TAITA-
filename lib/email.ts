@@ -21,6 +21,7 @@ import { nextAttemptAfter } from "@/lib/email-retry";
 import { recordOutcome } from "@/lib/email-record";
 import { prisma } from "@/lib/prisma";
 
+<<<<<<< HEAD
 export type EmailResult = {
   ok: boolean;
   skipped?: boolean;
@@ -36,6 +37,10 @@ export type EmailPayload = {
   /** This recipient's one-click unsubscribe URL (newsletters, confirmation requests). Sent as List-Unsubscribe headers. */
   unsubscribeUrl?: string | null;
 };
+=======
+export type EmailResult = { ok: boolean; skipped?: boolean; error?: string };
+export type EmailPayload = { to: string[]; replyTo?: string | null; subject: string; text: string };
+>>>>>>> 48c0a62 (Emails)
 
 const TIMEOUT_MS = 4000;
 const EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@[^\s@<>()[\]\\,;:"]+\.[^\s@<>()[\]\\,;:"]+$/;
@@ -92,12 +97,15 @@ export async function deliverEmail(payload: EmailPayload, idempotencyKey?: strin
   };
   if (payload.replyTo && isValidEmail(payload.replyTo.trim())) body.reply_to = payload.replyTo.trim();
 
+<<<<<<< HEAD
   // A one-click unsubscribe the mail app can offer (Gmail and Yahoo expect it from bulk senders). Only a plain http(s) URL.
   const unsub = payload.unsubscribeUrl?.trim();
   if (unsub && /^https?:\/\/[^\s<>"]+$/i.test(unsub)) {
     body.headers = { "List-Unsubscribe": `<${unsub}>`, "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
   }
 
+=======
+>>>>>>> 48c0a62 (Emails)
   const headers: Record<string, string> = { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" };
   if (idempotencyKey) headers["Idempotency-Key"] = idempotencyKey;
 
@@ -130,7 +138,10 @@ export async function sendEmail(input: {
   subject: string;
   text: string;
   replyTo?: string;
+<<<<<<< HEAD
   unsubscribeUrl?: string;
+=======
+>>>>>>> 48c0a62 (Emails)
 }): Promise<EmailResult> {
   const to = parseRecipients(Array.isArray(input.to) ? input.to.join(",") : input.to);
   if (to.length === 0) return { ok: false, skipped: true, error: "no valid recipients" };
@@ -148,7 +159,10 @@ export async function sendEmail(input: {
     replyTo: input.replyTo && isValidEmail(input.replyTo.trim()) ? input.replyTo.trim() : null,
     subject: cleanHeader(input.subject),
     text: input.text,
+<<<<<<< HEAD
     unsubscribeUrl: input.unsubscribeUrl ?? null,
+=======
+>>>>>>> 48c0a62 (Emails)
   };
 
   // 1. Record the intent first, so a crash or outage can't lose it. If this fails, send anyway.
@@ -160,7 +174,10 @@ export async function sendEmail(input: {
         replyTo: payload.replyTo,
         subject: payload.subject,
         body: payload.text,
+<<<<<<< HEAD
         unsubscribeUrl: payload.unsubscribeUrl ?? null,
+=======
+>>>>>>> 48c0a62 (Emails)
         status: "PENDING",
         attempts: 0,
         nextAttemptAt: nextAttemptAfter(1, new Date()),
@@ -175,6 +192,10 @@ export async function sendEmail(input: {
   // 2. Try now. 3. Record what happened (never throws).
   const result = await deliverEmail(payload, logId ? `email-${logId}` : undefined);
   if (logId) await recordOutcome(logId, 0, result);
+<<<<<<< HEAD
   // queued: the row exists, so if this attempt failed the retry schedule will pick it up. Without a row a failure is final.
   return { ...result, queued: logId !== null };
+=======
+  return result;
+>>>>>>> 48c0a62 (Emails)
 }

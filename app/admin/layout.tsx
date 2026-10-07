@@ -30,10 +30,13 @@ const nav = [
   { href: "/admin/missions", label: "Missions" },
   { href: "/admin/field-notes", label: "Field Notes" },
   { href: "/admin/impact", label: "Impact" },
+<<<<<<< HEAD
   { href: "/admin/newsletter", label: "Newsletter" },
   { href: "/admin/qr", label: "QR links" },
   { href: "/admin/users", label: "Users", managers: true },
   { href: "/admin/bookings", label: "Bookings", managers: true },
+=======
+>>>>>>> 48c0a62 (Emails)
   { href: "/admin/emails", label: "Emails" },
   { href: "/admin/rewards", label: "Rewards" },
   { href: "/admin/rewards/redemptions", label: "Vouchers" },

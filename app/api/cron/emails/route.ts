@@ -1,12 +1,15 @@
 import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { processDueEmails, purgeOldEmails } from "@/lib/email-outbox";
+<<<<<<< HEAD
 import { purgeExpiredTokens } from "@/lib/account-tokens";
 import { purgeStaleSubscribers } from "@/lib/newsletter-maintenance";
 import { processBookingsDue } from "@/lib/booking-jobs";
 import { prisma } from "@/lib/prisma";
 import { purgeOrphanUploads } from "@/lib/uploads/cleanup";
 import { getStorage } from "@/lib/uploads/storage";
+=======
+>>>>>>> 48c0a62 (Emails)
 
 // Never cached: it does work every time it is called.
 export const dynamic = "force-dynamic";
@@ -34,6 +37,7 @@ export async function GET(req: Request) {
   try {
     const retried = await processDueEmails(50);
     const purged = await purgeOldEmails();
+<<<<<<< HEAD
     // Unconfirmed newsletter signups are deleted after 30 days. If that fails it must never stop email retries.
     let staleSubscribers = 0;
     try {
@@ -64,6 +68,9 @@ export async function GET(req: Request) {
       console.error("[cron/emails] bookings job failed", err);
     }
     return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads }, bookings });
+=======
+    return NextResponse.json({ ok: true, retried, purged });
+>>>>>>> 48c0a62 (Emails)
   } catch (err) {
     console.error("[cron/emails] failed", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
