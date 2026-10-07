@@ -3,6 +3,7 @@ import Link from "next/link";
 import VerifiedBadge from "@/components/field-notes/VerifiedBadge";
 import { supportBadge } from "@/components/missions/MissionCard";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 export type NoteCardData = {
   slug: string;
@@ -29,7 +30,7 @@ export default function NoteCard({ note }: { note: NoteCardData }) {
     >
       {photo && (
         <div className="relative h-44 w-full bg-stone/10">
-          <Image src={photo} alt="" fill unoptimized sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
+          <Image src={photo} alt="" fill unoptimized={!canOptimize(photo)} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
         </div>
       )}
       <div className="flex flex-1 flex-col p-5">

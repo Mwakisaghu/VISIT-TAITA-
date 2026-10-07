@@ -4,6 +4,7 @@ import { METHODOLOGY, describeVisitors, formatCount } from "@/lib/impact";
 import type { SponsorReportData } from "@/lib/impact-data";
 import { formatDeadline } from "@/lib/missions";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 function Tile({ label, value }: { label: string; value: string }) {
   return (
@@ -31,7 +32,7 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
         </div>
         {logo && (
           <span className="relative h-16 w-32 shrink-0">
-            <Image src={logo} alt={`${data.sponsor.name} logo`} fill unoptimized sizes="128px" className="object-contain object-right" />
+            <Image src={logo} alt={`${data.sponsor.name} logo`} fill unoptimized={!canOptimize(logo)} sizes="128px" className="object-contain object-right" />
           </span>
         )}
       </header>

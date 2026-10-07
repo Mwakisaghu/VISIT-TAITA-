@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Destination } from "@prisma/client";
 import { categoryToSlug } from "@/lib/format";
+import { canOptimize } from "@/lib/image-src";
 
 export default function DestinationCard({ destination }: { destination: Destination }) {
   return (
@@ -14,7 +15,7 @@ export default function DestinationCard({ destination }: { destination: Destinat
           src={destination.image}
           alt={destination.name}
           fill
-          unoptimized
+          unoptimized={!canOptimize(destination.image)}
           sizes="(min-width: 640px) 33vw, 50vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />

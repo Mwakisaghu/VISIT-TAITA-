@@ -8,6 +8,7 @@ import SponsorLeadForm from "@/components/sponsors/SponsorLeadForm";
 import { formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 export const metadata: Metadata = {
   title: "Sponsor Taita",
@@ -105,7 +106,7 @@ export default async function SponsorsPage() {
                       src={s.logo}
                       alt={s.name}
                       fill
-                      unoptimized
+                      unoptimized={!canOptimize(s.logo)}
                       sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
                       className="object-contain grayscale transition duration-300 group-hover:grayscale-0"
                     />

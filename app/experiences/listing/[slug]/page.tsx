@@ -9,6 +9,7 @@ import { currentBookingUser } from "@/lib/booking-auth";
 import { experienceCategoryLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 export async function generateStaticParams() {
   const experiences = await prisma.experience.findMany({ select: { slug: true } });
@@ -61,7 +62,7 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
           src={experience.image}
           alt={experience.name}
           fill
-          unoptimized
+          unoptimized={!canOptimize(experience.image)}
           priority
           sizes="100vw"
           className="object-cover"

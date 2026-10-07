@@ -11,6 +11,7 @@ import { trackLabel } from "@/lib/creators";
 import { disclosureLine, formatDeadline, missionAvailability, spotsLeft } from "@/lib/missions";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 // Same for every visitor, so it stays cached. The visitor's own claim state loads on the client.
 export const revalidate = 60;
@@ -71,7 +72,7 @@ export default async function MissionPage({ params }: { params: { slug: string }
 
         {image && (
           <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-sm bg-stone/10">
-            <Image src={image} alt="" fill unoptimized priority sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
+            <Image src={image} alt="" fill unoptimized={!canOptimize(image)} priority sizes="(min-width: 768px) 768px, 100vw" className="object-cover" />
           </div>
         )}
 

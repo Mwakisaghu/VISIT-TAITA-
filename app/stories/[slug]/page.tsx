@@ -6,6 +6,7 @@ import DemoNotice from "@/components/DemoNotice";
 import StoryCard from "@/components/StoryCard";
 import { categoryLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { canOptimize } from "@/lib/image-src";
 
 export async function generateStaticParams() {
   const stories = await prisma.story.findMany({ select: { slug: true } });
@@ -66,7 +67,7 @@ export default async function StoryPage({ params }: { params: { slug: string } }
             src={story.image}
             alt={story.title}
             fill
-            unoptimized
+            unoptimized={!canOptimize(story.image)}
             priority
             sizes="(min-width: 768px) 768px, 100vw"
             className="object-cover"

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Product } from "@prisma/client";
 import { categoryLabel, formatPrice } from "@/lib/format";
+import { canOptimize } from "@/lib/image-src";
 
 export default function ProductCard({ product }: { product: Product }) {
   const outOfStock = product.inventory <= 0;
@@ -13,7 +14,7 @@ export default function ProductCard({ product }: { product: Product }) {
           src={product.image}
           alt={product.name}
           fill
-          unoptimized
+          unoptimized={!canOptimize(product.image)}
           sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />

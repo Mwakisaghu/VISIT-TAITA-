@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Creator } from "@prisma/client";
 import { initials, specialtyLabel, trackLabel } from "@/lib/creators";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 export default function CreatorCard({ creator }: { creator: Creator }) {
   const avatar = safeHttpUrl(creator.avatar);
@@ -14,7 +15,7 @@ export default function CreatorCard({ creator }: { creator: Creator }) {
       <div className="flex items-center gap-4">
         {avatar ? (
           <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-stone/10">
-            <Image src={avatar} alt="" fill unoptimized sizes="56px" className="object-cover" />
+            <Image src={avatar} alt="" fill unoptimized={!canOptimize(avatar)} sizes="56px" className="object-cover" />
           </span>
         ) : (
           <span

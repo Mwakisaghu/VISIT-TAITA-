@@ -7,6 +7,7 @@ import StoryCard from "@/components/StoryCard";
 import { initials, linkLabel, specialtyLabel, trackLabel } from "@/lib/creators";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 // Same for every visitor, so it stays cached.
 export const revalidate = 60;
@@ -59,7 +60,7 @@ export default async function CreatorProfilePage({ params }: { params: { slug: s
         <div className="mt-8 flex flex-col gap-6 sm:flex-row sm:items-center">
           {avatar ? (
             <span className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full bg-stone/10">
-              <Image src={avatar} alt={creator.displayName} fill unoptimized sizes="96px" className="object-cover" />
+              <Image src={avatar} alt={creator.displayName} fill unoptimized={!canOptimize(avatar)} sizes="96px" className="object-cover" />
             </span>
           ) : (
             <span
