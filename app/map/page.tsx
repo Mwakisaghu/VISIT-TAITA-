@@ -3,6 +3,7 @@ import SectionHeading from "@/components/SectionHeading";
 import DemoNotice from "@/components/DemoNotice";
 import MapLoader from "@/components/map/MapLoader";
 import { prisma } from "@/lib/prisma";
+import { optimizedUrl } from "@/lib/image-src";
 
 export const metadata: Metadata = {
   title: "Map",
@@ -30,7 +31,7 @@ export default async function MapPage() {
       category: d.category,
       region: d.region,
       blurb: d.blurb,
-      image: d.image,
+      image: optimizedUrl(d.image, 384), // the popup shows it 192 px wide: send a 384 px copy, not the full-size file
       latitude: d.latitude as number,
       longitude: d.longitude as number,
     }));

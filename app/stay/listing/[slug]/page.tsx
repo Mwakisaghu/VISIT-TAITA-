@@ -7,6 +7,7 @@ import AccommodationEnquiryForm from "@/components/listings/AccommodationEnquiry
 import { accommodationTypeLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 export async function generateStaticParams() {
   const accommodations = await prisma.accommodation.findMany({ select: { slug: true } });
@@ -46,7 +47,7 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
           src={accommodation.image}
           alt={accommodation.name}
           fill
-          unoptimized
+          unoptimized={!canOptimize(accommodation.image)}
           priority
           sizes="100vw"
           className="object-cover"

@@ -5,6 +5,7 @@ import DemoNotice from "@/components/DemoNotice";
 import AddToCartButton from "@/components/marketplace/AddToCartButton";
 import { categoryLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { canOptimize } from "@/lib/image-src";
 
 export async function generateStaticParams() {
   const products = await prisma.product.findMany({ select: { slug: true } });
@@ -39,7 +40,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
             src={product.image}
             alt={product.name}
             fill
-            unoptimized
+            unoptimized={!canOptimize(product.image)}
             priority
             sizes="(min-width: 768px) 50vw, 100vw"
             className="object-cover"

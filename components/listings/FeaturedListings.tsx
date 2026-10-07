@@ -3,6 +3,7 @@ import Link from "next/link";
 import { formatPrice } from "@/lib/format";
 import { listingHref, type Referral } from "@/lib/referral";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 type ListingBrief = {
   slug: string;
@@ -22,7 +23,7 @@ function Card({ href, brief, kicker, price }: { href: string; brief: ListingBrie
     >
       {image && (
         <span className="relative h-20 w-24 shrink-0 overflow-hidden rounded-sm bg-stone/10">
-          <Image src={image} alt="" fill unoptimized sizes="96px" className="object-cover" />
+          <Image src={image} alt="" fill unoptimized={!canOptimize(image)} sizes="96px" className="object-cover" />
         </span>
       )}
       <span className="min-w-0">

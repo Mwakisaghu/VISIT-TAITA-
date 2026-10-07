@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redemptionStatusLabel } from "@/lib/rewards";
 import RedeemButton from "@/components/passport/RedeemButton";
+import { canOptimize } from "@/lib/image-src";
 
 export const metadata: Metadata = { title: "Rewards" };
 export const dynamic = "force-dynamic";
@@ -112,7 +113,7 @@ export default async function RewardsPage() {
                         src={r.image}
                         alt={r.name}
                         fill
-                        unoptimized
+                        unoptimized={!canOptimize(r.image)}
                         sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                         className="object-cover"
                       />

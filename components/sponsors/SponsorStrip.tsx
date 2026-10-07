@@ -3,6 +3,7 @@ import Link from "next/link";
 import DemoNotice from "@/components/DemoNotice";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 type StripProgram = "TAITA_CUP" | "TAITA_WEEK" | "TAITA_SOUND" | "HOME";
 
@@ -51,7 +52,7 @@ export default async function SponsorStrip({ program }: { program: StripProgram 
                   src={s.logo}
                   alt={s.name}
                   fill
-                  unoptimized
+                  unoptimized={!canOptimize(s.logo)}
                   sizes="128px"
                   className="object-contain grayscale transition duration-300 group-hover:grayscale-0"
                 />

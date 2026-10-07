@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Story } from "@prisma/client";
 import { categoryLabel } from "@/lib/format";
+import { canOptimize } from "@/lib/image-src";
 
 export default function StoryCard({ story, size = "regular" }: { story: Story; size?: "regular" | "large" }) {
   return (
@@ -15,7 +16,7 @@ export default function StoryCard({ story, size = "regular" }: { story: Story; s
           src={story.image}
           alt={story.title}
           fill
-          unoptimized
+          unoptimized={!canOptimize(story.image)}
           sizes={size === "large" ? "(min-width: 768px) 66vw, 100vw" : "(min-width: 640px) 33vw, 100vw"}
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />

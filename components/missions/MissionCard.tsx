@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Mission } from "@prisma/client";
 import { formatDeadline, missionAvailability, spotsLeft } from "@/lib/missions";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 type MissionWithRelations = Mission & {
   destination: { name: string };
@@ -29,7 +30,7 @@ export default function MissionCard({ mission }: { mission: MissionWithRelations
     >
       {image && (
         <div className="relative h-44 w-full bg-stone/10">
-          <Image src={image} alt="" fill unoptimized sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
+          <Image src={image} alt="" fill unoptimized={!canOptimize(image)} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover" />
         </div>
       )}
       <div className="flex flex-1 flex-col p-5">

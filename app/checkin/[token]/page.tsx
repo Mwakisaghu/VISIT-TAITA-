@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import QrCheckinConfirm from "@/components/passport/QrCheckinConfirm";
+import { canOptimize } from "@/lib/image-src";
 
 export const metadata: Metadata = {
   title: "Check in",
@@ -70,7 +71,7 @@ export default async function CheckinPage({ params }: { params: { token: string 
           src={destination.image}
           alt={destination.name}
           fill
-          unoptimized
+          unoptimized={!canOptimize(destination.image)}
           priority
           sizes="448px"
           className="object-cover"

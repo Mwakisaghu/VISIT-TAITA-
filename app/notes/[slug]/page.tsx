@@ -9,6 +9,7 @@ import { supportBadge } from "@/components/missions/MissionCard";
 import { linkLabel, trackLabel } from "@/lib/creators";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
+import { canOptimize } from "@/lib/image-src";
 
 // Same for every visitor, so it stays cached.
 export const revalidate = 60;
@@ -90,7 +91,7 @@ export default async function FieldNotePublicPage({ params }: { params: { slug: 
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             {photos.map((src, i) => (
               <div key={src} className={`relative aspect-[4/3] overflow-hidden rounded-sm bg-stone/10 ${i === 0 && photos.length % 2 === 1 ? "sm:col-span-2" : ""}`}>
-                <Image src={src} alt={`Photo by ${note.creator.displayName} at ${note.mission.destination.name}`} fill unoptimized sizes="(min-width: 640px) 50vw, 100vw" className="object-cover" />
+                <Image src={src} alt={`Photo by ${note.creator.displayName} at ${note.mission.destination.name}`} fill unoptimized={!canOptimize(src)} sizes="(min-width: 640px) 50vw, 100vw" className="object-cover" />
               </div>
             ))}
           </div>
