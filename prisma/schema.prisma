@@ -51,6 +51,9 @@ model User {
   auditActions      AdminAuditLog[] @relation("AuditActor")
   uploads           UploadedImage[]
   bookings          Booking[]       @relation("BookingsMade")
+  // Where a host's payouts are sent (an M-Pesa number, 2547… or 2541…). Set by the host.
+  payoutPhone       String?
+  hostPayouts       HostPayout[]    @relation("HostPayouts")
   points       Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -409,11 +412,15 @@ model Booking {
 
   payments BookingPayment[]
   refunds  BookingRefund[]
+  // The payout that includes this booking's earnings. Empty until it is paid out (or when a payout is cancelled and the booking is released).
+  payoutId String?
+  payout   HostPayout? @relation(fields: [payoutId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([sessionId, status])
   @@index([experienceId])
   @@index([status, expiresAt])
+  @@index([payoutId])
 }
 
 model BookingPayment {
@@ -1502,4 +1509,44 @@ model EmailLog {
   @@index([status, nextAttemptAt])
   @@index([createdAt])
   @@index([campaignId])
+}
+
+// ---- Host payouts: what hosts are owed and when it was sent ----
+
+enum PayoutStatus {
+  PENDING // prepared; waiting for an admin to send the M-Pesa payment
+  PAID // sent, with the M-Pesa receipt recorded
+  CANCELLED // not sent; its bookings were released and will appear in the next payout
+}
+
+/// One row (id "singleton"): the platform's commission and how long earnings are held before they can be paid out.
+model PayoutSettings {
+  id                String   @id
+  commissionPercent Int      @default(10)
+  holdDays          Int      @default(2)
+  updatedAt         DateTime @updatedAt
+  updatedById       String?
+}
+
+model HostPayout {
+  id                String       @id @default(cuid())
+  hostId            String
+  host              User         @relation("HostPayouts", fields: [hostId], references: [id], onDelete: Restrict)
+  grossAmount       Int // what the guests paid and kept after refunds, for the bookings in this payout
+  commissionPercent Int // the commission in force when this payout was prepared
+  commissionAmount  Int
+  amount            Int // grossAmount - commissionAmount: what the host is sent
+  bookingCount      Int
+  destination       String // the host's M-Pesa number when it was prepared
+  status            PayoutStatus @default(PENDING)
+  reference         String? // the M-Pesa receipt of the payment sent
+  note              String?
+  createdAt         DateTime     @default(now())
+  createdById       String?
+  processedAt       DateTime?
+  processedById     String?
+  bookings          Booking[]
+
+  @@index([hostId, status])
+  @@index([status, createdAt])
 }
