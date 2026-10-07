@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { syncPesapalOrderStatus } from "@/lib/actions/payments";
+import { handleShopPesapalIpn } from "@/lib/shop-payments";
 import { handlePesapalIpn } from "@/lib/booking-payments";
 
 export async function GET(request: Request) {
@@ -10,7 +10,7 @@ export async function GET(request: Request) {
 
   if (orderTrackingId) {
     try {
-      await syncPesapalOrderStatus(orderTrackingId);
+      await handleShopPesapalIpn(orderTrackingId); // a shop order, if it is one — acts only on Pesapal's own answer
       await handlePesapalIpn(orderTrackingId); // an experience booking, if it is one
     } catch {
       // Swallow errors here — Pesapal will retry the IPN, and the order
