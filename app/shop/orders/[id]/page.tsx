@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { syncPesapalOrderStatus } from "@/lib/actions/payments";
+import { confirmShopPesapal } from "@/lib/shop-payments";
 import PaymentStatusPoller from "@/components/marketplace/PaymentStatusPoller";
 import { formatPrice, fulfillmentLabel, orderStatusLabel } from "@/lib/format";
 
@@ -21,7 +21,7 @@ export default async function OrderConfirmationPage({
   // OrderTrackingId in the URL — but the redirect itself carries no status,
   // so sync with Pesapal directly rather than waiting on the IPN alone.
   if (searchParams.OrderTrackingId) {
-    await syncPesapalOrderStatus(searchParams.OrderTrackingId);
+    await confirmShopPesapal(searchParams.OrderTrackingId);
   }
 
   const order = await prisma.order.findUnique({
