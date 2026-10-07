@@ -8,7 +8,19 @@ const storageHost = (() => {
   }
 })();
 
+// Sent with every page. See README ("Security headers") for what each does.
+const securityHeaders = [
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "X-Frame-Options", value: "SAMEORIGIN" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self), payment=(), usb=()" },
+  { key: "Strict-Transport-Security", value: "max-age=15552000" },
+];
+
 const nextConfig = {
+  async headers() {
+    return [{ source: "/:path*", headers: securityHeaders }];
+  },
   images: {
     // Uploaded pictures never change (every upload gets a new random name), so the resized copies can be kept for a month rather than the
     // default 60 seconds — visitors and the server stop redoing the same work.
