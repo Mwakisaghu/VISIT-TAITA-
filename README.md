@@ -1371,3 +1371,27 @@ database address and password in `.env.example`. These checks exist so that cann
 - **Sign-up is rate limited** (15 attempts an hour per connection). Like every limit in the app it is held in memory on each server instance, so on
   serverless hosting it slows scripted abuse rather than capping it; a shared store (Redis/Upstash) would make it exact.
 - **Set `CRON_SECRET`** (see `.env.example`) and schedule `/api/cron/emails` — without it nothing scheduled runs.
+
+## Host payouts
+
+Guests pay Visit Taita when they book. A host is then owed **what the guests paid and kept (after refunds), less Visit Taita's commission**, and is
+paid by M-Pesa. Admin: **Stays & experiences -> Host payouts** (admins and super admins only). Host: **Partner -> Payouts**.
+
+- **Settings you can change (Host payouts page):** the commission (starts at **10%**) and how long earnings are **held** after the experience (starts at
+  **2 days**, to leave time for a dispute). These are starting values I chose because you hadn't specified any — set your real ones before the first payout.
+  A change applies only to payouts prepared afterwards; every payout records the rate it was prepared with.
+- **What earns money, and when:** a booking earns once the experience has happened (completed, or a no-show — no-shows are never refunded) or after a
+  cancellation in which some money was kept under the cancellation policy (including a deposit kept because the balance wasn't paid). It becomes
+  *payable* after the holding period. Fully refunded bookings earn nothing. Experiences Visit Taita runs itself (no host) never produce a payout.
+- **The flow:** the host sets their M-Pesa number (a Safaricom number; shown masked, every change is recorded in the Activity log). An admin presses
+  **Prepare** (for one host or **Prepare all**); hosts without a valid number are skipped and named. The admin sends the money by M-Pesa **by hand** (as with
+  refunds) and records the **receipt** — the host is emailed. If it can't be sent, **"I couldn't send it"** cancels that payout with a reason and its
+  bookings return to *ready* for the next one.
+- **Safe against double clicks and two admins:** each booking can be in only one payout (an atomic claim), and a payout can be recorded only once.
+- **The money is whole shillings:** the commission is rounded per booking and the host receives the remainder, so nothing is lost or invented; each
+  payout shows its booking-by-booking breakdown.
+- **Not included — please decide these:** paying out automatically (M-Pesa business payments need separate Safaricom approval); **tax** (VAT on the
+  commission, withholding tax, invoices or statements for hosts) — ask your accountant; the **host agreement** (the commission, hold and payout terms are not in
+  the Terms of Use; have a lawyer write them); shop **sellers** (this covers experience hosts only); and money that has to be taken *back* from a host
+  after they were paid (it cannot happen through normal cancellations, which stop once an experience has happened, but an exceptional refund would be
+  settled by hand).
