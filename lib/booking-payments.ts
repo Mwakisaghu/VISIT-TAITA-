@@ -17,6 +17,16 @@ export type StartResult = { ok: true; paymentId: string; url?: string } | { ok: 
 /** Safaricom numbers: 07xx / 01xx / +2547xx / +2541xx. */
 export const isSafaricomNumber = (normalised: string) => /^254[71]\d{8}$/.test(normalised);
 
+/** A guest phone number: a Safaricom number is stored as 2547…; anything else just has to look like a phone number. (Lives here, not in the
+ *  "use server" actions file, because Next.js only allows async functions to be exported from those.) */
+export function cleanPhone(raw: unknown): string | null {
+  const s = typeof raw === "string" ? raw.trim() : "";
+  const n = normalizeMpesaPhone(s);
+  if (isSafaricomNumber(n)) return n;
+  const digits = s.replace(/[\s()-]/g, "");
+  return /^\+?\d{9,15}$/.test(digits) ? digits : null;
+}
+
 type Payable = { ok: false; error: string; nothingDue?: boolean } | { ok: true; b: NonNullable<Awaited<ReturnType<typeof prisma.booking.findFirst>>>; due: { kind: "FULL" | "DEPOSIT" | "BALANCE"; amount: number } };
 
 async function payableBooking(bookingId: string, userId: string, now: Date): Promise<Payable> {

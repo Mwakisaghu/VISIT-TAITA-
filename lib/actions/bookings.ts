@@ -5,8 +5,7 @@ import { cancellationQuote, nextPaymentDue, type CancellationPolicyKey, type Pay
 import { createBooking, endBooking } from "@/lib/booking-ops";
 import { currentBookingUser } from "@/lib/booking-auth";
 import { notifyBooking } from "@/lib/booking-emails";
-import { isSafaricomNumber, startCardPayment, startMpesaPayment, syncBookingPayments } from "@/lib/booking-payments";
-import { normalizeMpesaPhone } from "@/lib/mpesa";
+import { cleanPhone, startCardPayment, startMpesaPayment, syncBookingPayments } from "@/lib/booking-payments";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -14,15 +13,6 @@ const HOUR = 60 * 60 * 1000;
 export type BookingActionResult = { ok: true; id?: string; message?: string; url?: string } | { ok: false; error: string };
 
 const signIn = { ok: false as const, error: "Please sign in to book." };
-
-/** A guest phone number: a Safaricom number is stored as 2547…; anything else just has to look like a phone number. */
-export function cleanPhone(raw: unknown): string | null {
-  const s = typeof raw === "string" ? raw.trim() : "";
-  const n = normalizeMpesaPhone(s);
-  if (isSafaricomNumber(n)) return n;
-  const digits = s.replace(/[\s()-]/g, "");
-  return /^\+?\d{9,15}$/.test(digits) ? digits : null;
-}
 
 export async function createBookingAction(formData: FormData): Promise<BookingActionResult> {
   const user = await currentBookingUser();
