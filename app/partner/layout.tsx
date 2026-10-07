@@ -70,6 +70,9 @@ export default async function PartnerLayout({ children }: { children: React.Reac
               <Link href="/partner/bookings" className={linkClass}>
                 Bookings
               </Link>
+              <Link href="/partner/payouts" className={linkClass}>
+                Payouts
+              </Link>
             </>
           )}
           <Link href="/partner/vouchers" className={linkClass}>
