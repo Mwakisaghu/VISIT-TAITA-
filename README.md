@@ -1347,3 +1347,27 @@ The admin menu used to be 32 links in one column. It is now nine sections you ca
 - **A page added later must be added to the menu:** a test (\`admin_nav_test\`) fails if any page under \`app/admin\` isn't under a menu entry. The
   menu lives in \`lib/admin-nav.ts\`.
 - **Not changed:** the individual admin pages (lists and forms) are as they were; only the menu, breadcrumb, overview and accounts list changed.
+
+## Repository safety checks
+
+A commit once went to `main` with Git's leftover merge-conflict markers inside three source files (the site could not build) and with a real
+database address and password in `.env.example`. These checks exist so that cannot happen again:
+
+- **`npm run check:repo`** (also run by GitHub on every pull request, see `.github/workflows/ci.yml`) fails if there are: merge-conflict markers in
+  source files; secrets, a personal email or a real database address in tracked files; environment or key files tracked; a `"use server"`
+  file exporting anything but async functions (Next.js refuses to compile that); a setting the code reads that `.env.example` doesn't
+  mention; the Prisma schema and the migrations disagreeing (the live database would lack columns); or `.gitignore` missing environment or key
+  files. It never prints a secret's value.
+- **A commit hook** runs the quick version on what you are about to commit and refuses the commit if it finds markers or secrets. It installs
+  itself when you run `npm install`. Skip it once, if you must, with `git commit --no-verify`.
+- **`node scripts/check-repo.mjs --history`** also scans every past commit for secrets. A secret that was ever committed stays readable in the
+  history of a public repository even after it is deleted from the files: change that password or key, then consider rewriting history.
+- **Never `git add .` in the middle of a rebase or merge.** `git status` first: files listed as "both modified" still have markers in them.
+  Finish with `git rebase --continue`, or cancel with `git rebase --abort`.
+- **Security headers** (`next.config.js`): `X-Content-Type-Options: nosniff`; `X-Frame-Options: SAMEORIGIN` (the site can't be framed by other sites);
+  `Referrer-Policy: strict-origin-when-cross-origin`; `Permissions-Policy` (camera, microphone, payment and USB off; location allowed only for this site,
+  for Passport check-in); `Strict-Transport-Security` (180 days, HTTPS only). There is **no Content-Security-Policy yet** — it needs a careful
+  rollout and a wrong one breaks pages.
+- **Sign-up is rate limited** (15 attempts an hour per connection). Like every limit in the app it is held in memory on each server instance, so on
+  serverless hosting it slows scripted abuse rather than capping it; a shared store (Redis/Upstash) would make it exact.
+- **Set `CRON_SECRET`** (see `.env.example`) and schedule `/api/cron/emails` — without it nothing scheduled runs.
