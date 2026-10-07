@@ -1279,3 +1279,31 @@ Booking & availability**.
   tested against stand-ins in development — run a real payment of a few shillings, and a refund, before you take bookings.**
 - **A finding about the shop (not changed here):** the shop's M-Pesa callback marks an order paid straight from the request it receives,
   without confirming with Safaricom or checking the amount. Bookings do both; the shop should be hardened the same way.
+
+## Shop payments — hardened
+
+The shop's payment code used to believe whatever reached its public callback URLs. It no longer does. What changed, and why:
+
+- **A payment is only believed after the provider confirms it.** M-Pesa's callback URL is public and unsigned, so a request saying "paid"
+  proves nothing; it now only *prompts* a check with Safaricom (the STK query) or Pesapal (the transaction status), and the amount must
+  match the order total. Before, anyone who learned a checkout id could post a fake success and get goods without paying — or post a fake
+  "cancelled" to fail someone else's genuine order and put its stock back on the shelf.
+- **Orders settle exactly once.** A callback, a page poll and a Pesapal notification can arrive at the same instant; each change is now an
+  atomic "pending -> paid/failed" claim, and the stock is returned in the same transaction, so it can no longer be added back twice.
+- **Stock rule: an order that is unpaid, pending or paid holds its stock; a failed order has given it back.** Retrying a failed order
+  therefore takes the stock again (or says an item has sold out). Previously a failed order could be retried and paid after its stock had
+  already been returned, which could oversell.
+- **No second prompt on top of one in flight.** Tapping "pay" twice used to send two M-Pesa prompts and overwrite the first one's tracking
+  id, so paying the first one could not be recognised. A cancelled order can no longer be paid either.
+- **Internal functions are no longer public endpoints.** "Restock this order", "sync this order" and "sync this tracking id" were exported
+  from a server-actions file, which makes them callable from outside. They now live in \`lib/shop-payments.ts\`, which is not a server-actions
+  file, and the buyer-facing actions only start a payment or read its status.
+- **Two situations are flagged for a person, never silent.** Both show in **Admin -> Shop -> Orders** next to the order: *"Amount mismatch"* (the
+  provider confirmed a payment but for a different amount, so the order is left pending) and *"A payment arrived after this order was marked
+  failed"* (a payment confirmed after we had already failed the order and returned its stock; refund it or fulfil it).
+- **Not changed:** an order that is placed but never paid keeps its stock reserved (there is no expiry for abandoned orders yet), and bookings
+  were already built this way.
+- **Also fixed here:** \`cleanPhone\` (bookings) was exported from a server-actions file, which made \`next build\` fail; it now lives in
+  \`lib/booking-payments.ts\`.
+- **Before relying on it, make one real M-Pesa and one real card payment of a few shillings** — the confirmation calls have only been tested
+  against stand-ins.
