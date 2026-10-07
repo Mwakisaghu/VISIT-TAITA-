@@ -134,3 +134,14 @@ export function buildUserWhere(q: UserListQuery): Record<string, unknown> {
   if (q.status === "pending") and.push({ invitedAt: { not: null }, emailVerifiedAt: null, passwordChangedAt: null, suspendedAt: null });
   return and.length ? { AND: and } : {};
 }
+
+/** Page numbers to show under a long list: the first, the last, and a few either side of where you are (null = a gap "…"). */
+export function pageNumbers(page: number, pages: number): Array<number | null> {
+  if (pages <= 1) return [];
+  const keep = new Set<number>([1, pages]);
+  for (let p = page - 2; p <= page + 2; p++) if (p >= 1 && p <= pages) keep.add(p);
+  const sorted = [...keep].sort((a, b) => a - b);
+  const out: Array<number | null> = [];
+  sorted.forEach((p, i) => { if (i > 0 && p - sorted[i - 1] > 1) out.push(null); out.push(p); });
+  return out;
+}

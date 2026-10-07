@@ -1,71 +1,31 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import AdminCrumb from "@/components/admin/AdminCrumb";
+import AdminNav from "@/components/admin/AdminNav";
+import { loadAdminBadges } from "@/lib/admin-badges";
+import { visibleGroups } from "@/lib/admin-nav";
 import { ADMIN_ROLES, authOptions } from "@/lib/auth";
 import { isManager } from "@/lib/user-admin";
 
 // Admin pages show live counts and inboxes — never serve a stale prerender.
 export const dynamic = "force-dynamic";
 
-const nav = [
-  { href: "/admin", label: "Overview" },
-  { href: "/admin/destinations", label: "Destinations" },
-  { href: "/admin/stories", label: "Stories" },
-  { href: "/admin/events", label: "Events" },
-  { href: "/admin/cup/teams", label: "Cup: Teams" },
-  { href: "/admin/cup/players", label: "Cup: Players" },
-  { href: "/admin/cup/fixtures", label: "Cup: Fixtures" },
-  { href: "/admin/cup/venues", label: "Cup: Venues" },
-  { href: "/admin/week/sessions", label: "Week: Programme" },
-  { href: "/admin/week/venues", label: "Week: Venues" },
-  { href: "/admin/accommodations", label: "Accommodations" },
-  { href: "/admin/accommodations/enquiries", label: "Stay Enquiries" },
-  { href: "/admin/experiences", label: "Experiences" },
-  { href: "/admin/experiences/enquiries", label: "Experience Enquiries" },
-  { href: "/admin/shop/products", label: "Shop: Products" },
-  { href: "/admin/shop/orders", label: "Shop: Orders" },
-  { href: "/admin/partners", label: "Partners" },
-  { href: "/admin/reviews", label: "Reviews" },
-  { href: "/admin/creators", label: "Creators" },
-  { href: "/admin/missions", label: "Missions" },
-  { href: "/admin/field-notes", label: "Field Notes" },
-  { href: "/admin/impact", label: "Impact" },
-<<<<<<< HEAD
-  { href: "/admin/newsletter", label: "Newsletter" },
-  { href: "/admin/qr", label: "QR links" },
-  { href: "/admin/users", label: "Users", managers: true },
-  { href: "/admin/bookings", label: "Bookings", managers: true },
-=======
->>>>>>> 48c0a62 (Emails)
-  { href: "/admin/emails", label: "Emails" },
-  { href: "/admin/rewards", label: "Rewards" },
-  { href: "/admin/rewards/redemptions", label: "Vouchers" },
-  { href: "/admin/sponsors", label: "Sponsors" },
-  { href: "/admin/sponsors/packages", label: "Sponsor Packages" },
-  { href: "/admin/sponsors/leads", label: "Sponsor Leads" },
-];
-
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
   if (!session?.user || !ADMIN_ROLES.includes(session.user.role)) redirect("/login");
 
+  const groups = visibleGroups(session.user.role);
+  const badges = await loadAdminBadges(isManager(session.user.role));
+
   return (
-    <div className="mx-auto flex max-w-6xl gap-10 px-6 py-12">
-      <aside className="w-48 shrink-0 print:hidden">
-        <p className="font-display text-xl text-stone">Admin</p>
-        <nav className="mt-6 flex flex-col gap-1 font-body text-sm">
-          {nav.filter((item) => !("managers" in item) || isManager(session.user.role)).map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="focus-ring rounded-sm px-2 py-2 text-stone/70 hover:bg-stone/5 hover:text-stone"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+    <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-8 sm:px-6 lg:flex-row lg:gap-10 lg:py-12">
+      <aside className="w-full shrink-0 print:hidden lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:w-64 lg:self-start lg:overflow-y-auto">
+        <AdminNav groups={groups} badges={badges} />
       </aside>
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="min-w-0 flex-1">
+        <AdminCrumb groups={groups} />
+        {children}
+      </div>
     </div>
   );
 }

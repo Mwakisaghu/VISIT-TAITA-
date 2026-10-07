@@ -1326,3 +1326,24 @@ pasted, and the optimiser only handles hosts you have approved in \`next.config.
 - **Check your host's image-optimisation allowance** (Vercel and Netlify both meter it) — look at your plan's limits before a busy period.
 - **How to see it working:** open a page on your phone or in browser dev tools, Network tab, filter "img": picture requests should start with
   \`/_next/image?url=\` and be a few tens of KB. The size saving was only simulated here, on a synthetic picture; measure a real page.
+
+## Admin area — redesigned
+
+The admin menu used to be 32 links in one column. It is now nine sections you can fold away, built around three ideas:
+
+- **Find things:** a *Find a page* box at the top of the menu (try "refunds", "accounts", "suspend", "qr") — Enter goes to the first match.
+  The section you are in is open and the page you are on is highlighted, with a trail ("Admin › Stays & experiences › Bookings & refunds") above it.
+  On a phone the menu is one button that names where you are.
+- **See what needs you:** a small number appears beside anything waiting for a person (enquiries, reviews, partner applications, field notes,
+  sponsor leads, failed emails — and refunds to send, for admins only), and a folded section shows the total inside it. The **Overview** now
+  opens with *Needs attention* (only what is waiting), then quick actions, then totals grouped like the menu.
+- **Accounts — Admin → People & access → Accounts** (admins and super admins): summary tiles (all accounts, suspended, invite pending, email not
+  verified) that filter the list, role and name/email filters, page numbers so every account is reachable, a status badge on every row, and
+  **Suspend… / Reinstate straight from the list**. The list offers those buttons only where the server would allow them (never on your own
+  account; an admin can't act on another admin or a super admin), and the server still enforces the same rules. Suspending asks for a reason,
+  signs the person out and stops them signing in; it appears in the Activity log.
+- **Who sees what is unchanged:** editors and content managers can use the admin area but see no Accounts, Activity log or Bookings & refunds,
+  and the refunds number is not even looked up for them.
+- **A page added later must be added to the menu:** a test (\`admin_nav_test\`) fails if any page under \`app/admin\` isn't under a menu entry. The
+  menu lives in \`lib/admin-nav.ts\`.
+- **Not changed:** the individual admin pages (lists and forms) are as they were; only the menu, breadcrumb, overview and accounts list changed.
