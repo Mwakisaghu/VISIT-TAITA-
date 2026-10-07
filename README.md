@@ -1307,3 +1307,22 @@ The shop's payment code used to believe whatever reached its public callback URL
   \`lib/booking-payments.ts\`.
 - **Before relying on it, make one real M-Pesa and one real card payment of a few shillings** — the confirmation calls have only been tested
   against stand-ins.
+
+## Faster pictures
+
+Nearly every picture on the site was marked \`unoptimized\`, which switches Next's image optimiser off: every visitor was sent the full stored
+file (up to 2400 px wide) even for a 96 px thumbnail. That flag was probably there because pictures used to come from any website a host
+pasted, and the optimiser only handles hosts you have approved in \`next.config.js\`. Your own uploads are now on an approved host, so:
+
+- **Pictures on an approved host are optimised**: your storage (\`S3_PUBLIC_URL\`), Unsplash, and files in \`/public\`. Each visitor gets a
+  copy resized for their screen (the cards already declare how wide they appear), cached for 30 days.
+- **Everything else is left exactly as it was** (a pasted link to some other website would fail to load through the optimiser).
+  The rule is in \`lib/image-src.ts\` and is kept identical to \`next.config.js\` by a test.
+- **Map popups** get a 384 px copy instead of the full picture.
+- **Not changed:** the 80 px cart thumbnail (the cart is a client component and can't use the server-side rule), the admin upload previews,
+  and the stored originals (they stay at up to 2400 px; the optimiser resizes from them).
+- **\`S3_PUBLIC_URL\` must be set when the site is BUILT**, not only when it runs, because \`next.config.js\` reads it at build time. If it is
+  missing at build time, uploaded pictures are simply shown as before (nothing breaks, you just don't get the saving).
+- **Check your host's image-optimisation allowance** (Vercel and Netlify both meter it) — look at your plan's limits before a busy period.
+- **How to see it working:** open a page on your phone or in browser dev tools, Network tab, filter "img": picture requests should start with
+  \`/_next/image?url=\` and be a few tens of KB. The size saving was only simulated here, on a synthetic picture; measure a real page.
