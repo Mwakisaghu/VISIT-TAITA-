@@ -1,7 +1,7 @@
 // The admin menu, as data. Pure functions only (no database, no React), so the grouping, the permissions and the "which page am I on"
 // logic can be tested on their own — including a test that fails if someone adds an admin page and forgets to put it in the menu.
 
-export type BadgeKey = "partners" | "products" | "stayEnquiries" | "experienceEnquiries" | "reviews" | "creators" | "fieldNotes" | "emails" | "sponsorLeads" | "refunds";
+export type BadgeKey = "partners" | "products" | "stayEnquiries" | "experienceEnquiries" | "reviews" | "creators" | "fieldNotes" | "emails" | "sponsorLeads" | "refunds" | "payouts";
 export type NavItem = {
   href: string;
   label: string;
@@ -33,6 +33,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/experiences", label: "Experiences", keywords: ["tours", "activities", "hikes"] },
       { href: "/admin/experiences/enquiries", label: "Experience enquiries", badge: "experienceEnquiries", keywords: ["messages", "leads"] },
       { href: "/admin/bookings", label: "Bookings & refunds", badge: "refunds", managers: true, keywords: ["reservations", "payments", "money"] },
+      { href: "/admin/payouts", label: "Host payouts", badge: "payouts", managers: true, keywords: ["money", "commission", "earnings", "mpesa", "pay hosts"] },
       { href: "/admin/partners", label: "Partner applications", badge: "partners", keywords: ["hosts", "applications", "approve"] },
     ],
   },
@@ -133,6 +134,7 @@ export const badgeText = (n: number) => (n > 99 ? "99+" : String(n));
 /** What the overview's "Needs attention" list says for each kind of waiting item. */
 export const ATTENTION: Array<{ key: BadgeKey; text: (n: number) => string; href: string; managers?: boolean }> = [
   { key: "refunds", text: (n) => `${n} refund${n === 1 ? "" : "s"} to send`, href: "/admin/bookings/refunds", managers: true },
+  { key: "payouts", text: (n) => `${n} host payout${n === 1 ? "" : "s"} to send`, href: "/admin/payouts", managers: true },
   { key: "partners", text: (n) => `${n} partner application${n === 1 ? "" : "s"} to review`, href: "/admin/partners" },
   { key: "products", text: (n) => `${n} seller product${n === 1 ? "" : "s"} to approve`, href: "/admin/shop/products" },
   { key: "stayEnquiries", text: (n) => `${n} new stay enquir${n === 1 ? "y" : "ies"}`, href: "/admin/accommodations/enquiries" },
