@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { sendVerificationEmail } from "@/lib/account-verification";
+import { clientIpFrom } from "@/lib/login-throttle";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/rate-limit";
 import { LEGAL_VERSION } from "@/lib/site-info";
 
 const registerSchema = z.object({
@@ -14,6 +16,13 @@ const registerSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  // Sign-up costs us a password hash and an email, so one connection can't do it without limit. (Generous, because many phones
+  // share one address on mobile networks. In memory per server instance: it slows scripted abuse; it is not a hard cap.)
+  const ip = clientIpFrom(Object.fromEntries(request.headers.entries()));
+  if (!rateLimit(`register:${ip}`, 15, 60 * 60 * 1000)) {
+    return NextResponse.json({ error: "Too many sign-up attempts from this connection. Please try again in an hour." }, { status: 429 });
+  }
+
   const body = await request.json().catch(() => null);
   const parsed = registerSchema.safeParse(body);
 
