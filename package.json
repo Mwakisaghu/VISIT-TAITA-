@@ -14,7 +14,9 @@
     "pesapal:register-ipn": "tsx scripts/register-pesapal-ipn.ts",
     "dev:turbo": "next dev --turbo",
     "email:test": "tsx scripts/send-test-email.ts",
-    "points:backfill": "tsx scripts/backfill-points-ledger.ts"
+    "points:backfill": "tsx scripts/backfill-points-ledger.ts",
+    "check:repo": "node scripts/check-repo.mjs",
+    "prepare": "node scripts/check-repo.mjs --install-hooks"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

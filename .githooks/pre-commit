@@ -1,0 +1,8 @@
+#!/bin/sh
+# Stops a commit that contains merge-conflict markers, secrets, or files that must never be committed.
+# Installed automatically by `npm install` (core.hooksPath -> .githooks). To skip it once (not recommended): git commit --no-verify
+node scripts/check-repo.mjs --staged || {
+  echo ""
+  echo "Commit blocked by scripts/check-repo.mjs (see above). Fix it and commit again."
+  exit 1
+}

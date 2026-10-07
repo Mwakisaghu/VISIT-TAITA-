@@ -1,0 +1,22 @@
+name: CI
+
+# Runs on every pull request and every push to main. A red tick here means: do not merge.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Conflict markers, secrets, unsafe server-action exports, undocumented settings, schema/migration drift, .gitignore gaps.
+      - run: node scripts/check-repo.mjs
+      # Catches syntax errors and type mistakes anywhere in the site.
+      - run: npx tsc --noEmit
