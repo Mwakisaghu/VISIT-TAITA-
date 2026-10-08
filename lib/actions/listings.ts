@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { parseGuideFields } from "@/lib/field-guide";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -67,8 +68,12 @@ export async function saveAccommodation(id: string | null, formData: FormData) {
     featured: formData.get("featured") === "on",
   });
 
+  const guide = parseGuideFields(formData, "stay");
+  if (!guide.ok) throw new Error(guide.error);
+
   const data = {
     ...parsed,
+    ...guide.values,
     priceFrom: parsed.priceFrom ?? null,
     contactPhone: parsed.contactPhone || null,
     contactEmail: parsed.contactEmail || null,
@@ -140,8 +145,12 @@ export async function saveExperience(id: string | null, formData: FormData) {
     featured: formData.get("featured") === "on",
   });
 
+  const guide = parseGuideFields(formData, "experience");
+  if (!guide.ok) throw new Error(guide.error);
+
   const data = {
     ...parsed,
+    ...guide.values,
     priceFrom: parsed.priceFrom ?? null,
     duration: parsed.duration || null,
     groupSizeMax: parsed.groupSizeMax ?? null,
@@ -240,8 +249,12 @@ export async function savePartnerAccommodation(id: string | null, formData: Form
     featured: formData.get("featured") === "on",
   });
 
+  const guide = parseGuideFields(formData, "stay");
+  if (!guide.ok) throw new Error(guide.error);
+
   const data = {
     ...parsed,
+    ...guide.values,
     priceFrom: parsed.priceFrom ?? null,
     contactPhone: parsed.contactPhone || null,
     contactEmail: parsed.contactEmail || null,
@@ -311,8 +324,12 @@ export async function savePartnerExperience(id: string | null, formData: FormDat
     featured: formData.get("featured") === "on",
   });
 
+  const guide = parseGuideFields(formData, "experience");
+  if (!guide.ok) throw new Error(guide.error);
+
   const data = {
     ...parsed,
+    ...guide.values,
     priceFrom: parsed.priceFrom ?? null,
     duration: parsed.duration || null,
     groupSizeMax: parsed.groupSizeMax ?? null,

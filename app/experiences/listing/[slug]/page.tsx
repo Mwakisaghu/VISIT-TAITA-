@@ -10,6 +10,9 @@ import { experienceCategoryLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
 import { canOptimize } from "@/lib/image-src";
+import PersonChip from "@/components/field/PersonChip";
+import AltitudeRibbon from "@/components/field/AltitudeRibbon";
+import { LEVEL_LABEL, climbLabel } from "@/lib/field-guide";
 
 export async function generateStaticParams() {
   const experiences = await prisma.experience.findMany({ select: { slug: true } });
@@ -41,6 +44,8 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
   const facts = [
     experience.duration ? { label: "Duration", value: experience.duration } : null,
     experience.groupSizeMax ? { label: "Max group size", value: `${experience.groupSizeMax} people` } : null,
+    experience.difficulty ? { label: "How hard", value: LEVEL_LABEL[experience.difficulty] } : null,
+    experience.elevationGainM != null ? { label: "Total climb", value: climbLabel(experience.elevationGainM) } : null,
   ].filter(Boolean) as { label: string; value: string }[];
 
   const bookingUrl = safeHttpUrl(experience.externalBookingUrl);
@@ -90,10 +95,24 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
               <div className="mt-10 flex flex-wrap gap-4">
                 {facts.map((f) => (
                   <div key={f.label} className="rounded-sm border border-stone/10 px-5 py-4">
-                    <p className="font-body text-xs text-stone/50">{f.label}</p>
+                    <p className="font-body text-xs text-stone/70">{f.label}</p>
                     <p className="font-display text-lg text-stone">{f.value}</p>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {experience.hostName && (
+              <div className="mt-10 rounded-[2px] border border-stone/15 p-6">
+                <PersonChip name={experience.hostName} role={experience.hostRole} verb="Led by" />
+                {experience.hostQuote && <p className="mt-4 max-w-prose font-display text-xl leading-snug text-stone">&ldquo;{experience.hostQuote}&rdquo;</p>}
+              </div>
+            )}
+
+            {experience.altitudeM != null && (
+              <div className="mt-10">
+                <p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-rust-deep">Where it sits</p>
+                <div className="mt-3 max-w-xl"><AltitudeRibbon altitudeM={experience.altitudeM} /></div>
               </div>
             )}
 
@@ -108,11 +127,11 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
           <aside>
             <div className="sticky top-24 flex flex-col gap-6 rounded-sm border border-stone/10 p-6">
               <div>
-                <p className="font-body text-xs text-stone/50">From</p>
+                <p className="font-body text-xs text-stone/70">From</p>
                 <p className="font-display text-3xl text-stone">
                   {experience.priceFrom ? formatPrice(experience.priceFrom) : "Contact for pricing"}
                 </p>
-                {experience.priceFrom && <p className="font-body text-xs text-stone/50">per person</p>}
+                {experience.priceFrom && <p className="font-body text-xs text-stone/70">per person</p>}
               </div>
 
               {bookable && (
@@ -131,7 +150,7 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
 
               <div className="border-t border-stone/10 pt-6">
                 <p className="font-display text-lg text-stone">Send an enquiry</p>
-                <p className="mt-1 font-body text-xs text-stone/50">
+                <p className="mt-1 font-body text-xs text-stone/70">
                   Goes straight to whoever runs {experience.name} — no account needed.
                 </p>
                 <div className="mt-4">
@@ -141,7 +160,7 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
 
               {hasDirectContact && (
                 <div className="border-t border-stone/10 pt-6">
-                  <p className="font-body text-xs text-stone/50">Or contact directly</p>
+                  <p className="font-body text-xs text-stone/70">Or contact directly</p>
                   <div className="mt-3 flex flex-col gap-2">
                     {experience.contactPhone && (
                       <a

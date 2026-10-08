@@ -1,6 +1,7 @@
 import type { Accommodation } from "@prisma/client";
 import { saveAccommodation } from "@/lib/actions/listings";
 import ImageField from "@/components/uploads/ImageField";
+import GuideFields from "@/components/field/GuideFields";
 
 const types = ["HOTEL", "LODGE", "GUESTHOUSE", "HOMESTAY", "CAMPSITE"];
 
@@ -26,6 +27,8 @@ export default function AccommodationForm({ accommodation }: { accommodation?: A
       <Field label="Region">
         <input name="region" defaultValue={accommodation?.region} required className="input" />
       </Field>
+
+      <GuideFields kind="stay" defaults={accommodation} />
 
       <Field label="Description">
         <textarea
