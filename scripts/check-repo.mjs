@@ -106,6 +106,25 @@ export function looksReal(kind, line, match) {
   add("No secrets or personal details in tracked files", [...new Set(out)]);
 }
 
+// 3b ------------------------------------------------------------------- rate limits must be awaited
+// The shared limiter is asynchronous. A call without 'await' returns a promise, which is always "truthy", so the limit would silently do nothing.
+{
+  const out = []; const SELF = new Set(["lib/rate-limit.ts", "lib/rate-limit-store.ts", "lib/login-throttle.ts"]);
+  const CALL = /(?<![.\w$])(checkRateLimit|isLoginBlocked|recordLoginFailure|clearLoginFailures)\(/g;
+  for (const f of files) {
+    if (!/^(app|lib|components)\/.*\.tsx?$/.test(f) || SELF.has(f)) continue;
+    read(f).split("\n").forEach((line, i) => {
+      const code = line.replace(/\/\/.*$/, ""); // comments may mention the names
+      if (/(?<![.\w$])rateLimit\(/.test(code)) out.push(`${f}:${i + 1}  rateLimit() was replaced by the shared limiter: use  await checkRateLimit(...)`);
+      for (const m of code.matchAll(CALL)) {
+        const before = code.slice(0, m.index);
+        if (!/await\s*\(?\s*$/.test(before) && !/function\s*$/.test(before)) out.push(`${f}:${i + 1}  ${m[1]}() must be awaited`);
+      }
+    });
+  }
+  add("Every rate-limit check is awaited (a forgotten await silently lets everything through)", out);
+}
+
 // 4..7 are full-repository checks (skipped by the quick commit hook)
 if (!STAGED) {
   // 4 -------------------------------------------------------------------- "use server" files export only async functions

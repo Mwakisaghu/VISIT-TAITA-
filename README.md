@@ -566,8 +566,8 @@ pitch page, a lead pipeline, and logo placement on the pages sponsors care about
 - Linked from the footer and included in `sitemap.ts`.
 
 ### Lead form protections
-Honeypot field; 5 submissions per IP per 10 minutes (best-effort, in-memory — resets on restart and
-isn't shared across instances); 3 per email per hour (database-backed); website must be http(s);
+Honeypot field; 5 submissions per IP per 10 minutes and 3 per email per hour (both held in the shared rate-limit counters, so
+they hold across every server); website must be http(s);
 the chosen package must exist and be published.
 
 ### Admin CMS (`/admin/sponsors/...`)
@@ -691,8 +691,8 @@ the code the visitor shows them, and sees whether it is valid, already used, or 
 ### Limits worth knowing
 - GPS coordinates come from the visitor's browser and can be faked by a determined person — it's friction, not
   proof. The QR plaque is the stronger signal; rotate a code if it leaks.
-- Check-in and redemption rate limits are in-memory (best-effort; they reset on restart and aren't shared across
-  server instances). Double-awards and double-spends are prevented by the database, not by these limits.
+- Check-in and redemption rate limits use the shared counters (see "Rate limits"). Double-awards and double-spends are
+  prevented by the database itself, not by these limits.
 - Vouchers are marked used by the reward's own partner at `/partner/vouchers` (or by an admin).
 
 ### Data model additions
@@ -1061,8 +1061,8 @@ locked out for good. Both are fixed on one token system, plus a few related hard
 - **Links are stored only as a hash**, so a copy of the database can't be used to verify an address or take over an account.
 - **Sign-in is harder to attack.** Failed sign-ins are counted per email+address and per address (8 and 40 per 15 minutes); over the
   limit, sign-in is refused even with the right password. A wrong email now takes as long to reject as a wrong password. *The
-  counting is held in memory, so on a serverless host each running copy counts separately: it makes guessing much slower but is not
-  a hard guarantee — a shared store (Redis/Upstash) would make it exact.*
+  counting is shared through the database (see "Rate limits"), so it holds across every server; if the database can't be reached each
+  server counts for itself until it is back.*
 - **Local development:** if email isn't configured and you're not in production, the verification/reset link is printed in the
   server console so you can still try the flow.
 - **Hardening found on the way:** the newsletter sign-up logic took the visitor's IP as an *argument* from a server-action file;
@@ -1368,8 +1368,7 @@ database address and password in `.env.example`. These checks exist so that cann
   `Referrer-Policy: strict-origin-when-cross-origin`; `Permissions-Policy` (camera, microphone, payment and USB off; location allowed only for this site,
   for Passport check-in); `Strict-Transport-Security` (180 days, HTTPS only). There is **no Content-Security-Policy yet** — it needs a careful
   rollout and a wrong one breaks pages.
-- **Sign-up is rate limited** (15 attempts an hour per connection). Like every limit in the app it is held in memory on each server instance, so on
-  serverless hosting it slows scripted abuse rather than capping it; a shared store (Redis/Upstash) would make it exact.
+- **Sign-up is rate limited** (15 attempts an hour per connection). Like every limit in the app it is counted in the database (see "Rate limits"), so it holds across every server.
 - **Set `CRON_SECRET`** (see `.env.example`) and schedule `/api/cron/emails` — without it nothing scheduled runs.
 
 ## Host payouts
@@ -1424,3 +1423,24 @@ Tickets** (admins and super admins). Every event is one of three kinds:
 - **Not included:** paying through this site by M-Pesa/card (so we could confirm payments automatically), ticket transfers between people, waiting lists,
   tickets with different prices (VIP and so on) for one event, and attendee lists as a download. The `/api/cron/emails` job (already needing `CRON_SECRET`)
   also releases expired reservations.
+
+## Rate limits
+
+Anything people could abuse by repeating it (signing up, password guesses, the contact and enquiry forms, uploads, booking and ticket requests, and so on) is rate
+limited, and the limits are **shared across every server** that runs the site: a limit of 10 means 10 in total, not 10 per server. (They used to be counted in each
+server's memory, which on serverless hosting made them much weaker than they looked.)
+
+- **How:** one table in the same database, `RateLimitBucket`: a counter per limited thing and when its window ends, updated by a single atomic statement, so two servers
+  counting at the same instant can't lose a hit. The database's own clock decides when a window ends. Nothing new to buy or run.
+- **No personal data in it:** what is counted (an email plus an address, say) is **hashed** before it is stored, so the table never holds an email or an IP address.
+  The scheduled job (`/api/cron/emails`) deletes counters a day after they end.
+- **In code:** `if (!(await checkRateLimit(\`contact:${ip}\`, 5, 60 * 60 * 1000))) return tooMany;` — **always await it**. A call without `await` would silently let everything
+  through, so the repository check (and the commit hook) refuses unawaited calls and the old `rateLimit()` name.
+- **Fixed windows:** a window starts at the first hit and ends after its length, then counting starts again. (The old limiter slid; a fixed window can allow up to twice the
+  limit across a boundary — fine for slowing abuse, not for anything billing-like.)
+- **If the database can't be reached:** each server counts for itself (the old behaviour) and says so once in the log. Nobody is locked out and protection doesn't
+  disappear; it just stops being shared until the database is back.
+- **Cost:** one small database query per limited action. Once a key is over its limit a server remembers that until the window ends, so a flood of refused requests costs
+  no further database work.
+- **Still not covered:** one person guessing one account from many different addresses at once (the password-hashing cost is the defence there), and anything that must be a
+  hard cap on money — those belong in the database rules themselves (for example the payment and ticket protections), not in a rate limit.
