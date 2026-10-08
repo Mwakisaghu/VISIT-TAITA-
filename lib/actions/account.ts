@@ -93,6 +93,8 @@ export async function deleteMyAccount(password: string): Promise<AccountResult> 
 
       // 6a. Their bookings are kept as payment records, but their name, email, phone and note are removed from them.
       await tx.booking.updateMany({ where: { userId: user.id }, data: { guestName: "Former guest", guestEmail: "", guestPhone: "", note: null } });
+      // Their event tickets are kept as attendance records for the organisers, but their name, phone and the M-Pesa code they entered are removed.
+      await tx.ticket.updateMany({ where: { userId: user.id }, data: { holderName: "Former attendee", holderPhone: "", claimedReference: null } });
 
       // 6. The administrative record keeps WHAT was done, but their email address is removed from it.
       await tx.adminAuditLog.updateMany({ where: { targetUserId: user.id }, data: { targetEmail: null } });

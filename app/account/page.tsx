@@ -142,6 +142,13 @@ export default async function AccountPage() {
       </section>
 
       <section className="mt-12 border-t border-stone/10 pt-10">
+        <h2 className="font-display text-2xl text-stone">My tickets</h2>
+        <p className="mt-3 max-w-prose font-body text-stone/70">
+          Tickets for events, with their QR codes. <Link href="/account/tickets" className="text-rust underline">See my tickets</Link>.
+        </p>
+      </section>
+
+      <section className="mt-12 border-t border-stone/10 pt-10">
         <h2 className="font-display text-2xl text-stone">Download my data</h2>
         <p className="mt-3 max-w-prose font-body text-stone/70">
           Get a copy of the personal data linked to your account — your details, Passport, reviews, enquiries, orders and any creator profile — as a file you can keep.

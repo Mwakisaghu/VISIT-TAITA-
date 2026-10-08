@@ -1395,3 +1395,32 @@ paid by M-Pesa. Admin: **Stays & experiences -> Host payouts** (admins and super
   the Terms of Use; have a lawyer write them); shop **sellers** (this covers experience hosts only); and money that has to be taken *back* from a host
   after they were paid (it cannot happen through normal cancellations, which stop once an experience has happened, but an exceptional refund would be
   settled by hand).
+
+## Event tickets
+
+Events can issue tickets, each with its own unique number for that event (like `SAG-0042`). Set it up under **Admin -> Places & content -> Events ->
+Tickets** (admins and super admins). Every event is one of three kinds:
+
+- **No tickets** — the event is just listed (as before).
+- **Free tickets** — for events you run with a partner who doesn't charge. A ticket is issued the moment someone asks; it's still worth having so the
+  organisers know who's coming and how many.
+- **Paid tickets** — **payment goes to the organiser, not through this site**, using details you enter for that event: a Paybill and account, a Till, a
+  phone number, a bank account, or other instructions (each event can differ), plus the name that shows when paying so guests can check it. The guest
+  reserves, is shown exactly how to pay (the account can include the ticket number, `{TICKET}`, so the organiser can match payments), pays, and can type in
+  their M-Pesa code. **The organiser or an admin then confirms the payment**, and only then is the ticket valid. A reservation not confirmed in time
+  (48 hours by default) is released; the organiser can still confirm a late one if seats remain.
+- **Why confirmation is manual:** we can't see money arriving in someone else's account. So confirm only after you've seen it. **One M-Pesa code can
+  confirm only one reservation** (enforced by the database, even if two people confirm at the same instant). Refunds, if any, are the organiser's to make.
+- **The organiser:** name a partner's account email on the event. They get **Partner -> Events**: the attendee list, payment confirmation, cancellation and the
+  door. They cannot change prices or payment details, and see only their own events.
+- **The door:** every valid ticket has a QR code on its page. Staff (the organiser or an admin, signed in) scan it with a phone camera, check the name shown, and
+  press **Admit**; or type the ticket number. A ticket can be admitted **once**; a second try says "already used". Opening a scan page admits nobody by
+  itself. The QR carries a separate random token, so a ticket number (which is easy to guess) can't be turned into a working QR.
+- **Limits you set per event:** number of tickets (or unlimited), most per person (default 4), when sales close (default: when the event starts), how long unpaid
+  reservations are held. Seats and numbers are handed out atomically, so two people can't take the last seat or the same number.
+- **Your guests' data:** names and phone numbers are visible only to that event's organiser and admins; deleting an account removes the name, phone and payment
+  code from its tickets (and is refused while they hold tickets for an event still to come). The Terms of Use and the privacy policy mention tickets; **have
+  them reviewed**, especially what organisers may do with attendee details.
+- **Not included:** paying through this site by M-Pesa/card (so we could confirm payments automatically), ticket transfers between people, waiting lists,
+  tickets with different prices (VIP and so on) for one event, and attendee lists as a download. The `/api/cron/emails` job (already needing `CRON_SECRET`)
+  also releases expired reservations.
