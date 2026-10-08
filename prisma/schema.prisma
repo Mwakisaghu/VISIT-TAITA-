@@ -110,6 +110,7 @@ model Destination {
   image     String
   latitude  Float?
   longitude Float?
+  altitudeM Int? // metres above sea level (places show where they sit between the plains and the hills)
   status    ContentStatus    @default(DRAFT)
   featured  Boolean          @default(false)
   isDemo    Boolean          @default(true)
@@ -896,6 +897,13 @@ model Accommodation {
   image              String
   priceFrom          Int? // whole KES, per night — optional ("contact for rates")
   amenities          String[]          @default([])
+
+  // ---- Field Guide (all optional)
+  altitudeM Int?
+  hostName  String?
+  hostRole  String?
+  hostQuote String?
+  moods     String[] @default([]) // how it feels: quiet, view, family, hikers-base, market
   contactPhone       String?
   contactEmail       String?
   externalBookingUrl String? // optional link to the partner's own booking engine
@@ -960,6 +968,14 @@ model Experience {
   image              String
   priceFrom          Int? // whole KES, per person — optional
   duration           String? // free text, e.g. "3 hours", "Full day"
+
+  // ---- Field Guide (all optional): how high, how hard, and who leads it
+  altitudeM      Int? // metres above sea level
+  difficulty     Difficulty?
+  elevationGainM Int? // total climb, in metres
+  hostName       String? // the guide or host a visitor will meet
+  hostRole       String? // "Guide", "Cook"…
+  hostQuote      String? // a line in their own words
   groupSizeMax       Int?
 
   // ---- Online booking (off until the host has set a price and added dates). priceFrom above is the price per person. ----
@@ -1656,4 +1672,10 @@ model RateLimitBucket {
   resetsAt DateTime
 
   @@index([resetsAt])
+}
+
+enum Difficulty {
+  EASY
+  MODERATE
+  HARD
 }
