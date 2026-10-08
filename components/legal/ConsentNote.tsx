@@ -15,7 +15,7 @@ const TEXT: Record<ConsentKind, string> = {
 
 /** A short, plain-language notice of what happens to the details in a form, with a link to the Privacy Policy. */
 export default function ConsentNote({ kind, tone = "dark" }: { kind: ConsentKind; tone?: "dark" | "light" }) {
-  const color = tone === "light" ? "text-parchment/60" : "text-stone/50";
+  const color = tone === "light" ? "text-parchment/80" : "text-stone/70";
   const link = tone === "light" ? "underline hover:text-ochre" : "underline hover:text-rust";
   return (
     <p data-consent={kind} className={`font-body text-xs leading-relaxed ${color}`}>

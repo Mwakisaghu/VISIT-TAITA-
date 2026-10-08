@@ -28,7 +28,7 @@ export default function Newsletter() {
   return (
     <section id="newsletter" className="bg-canopy px-6 py-20 text-parchment">
       <div className="mx-auto max-w-xl text-center">
-        <h2 className="font-display text-3xl sm:text-4xl">Taita is calling.</h2>
+        <h2 className="font-display text-3xl sm:text-4xl">A letter from Taita.</h2>
         <p className="mt-3 font-body text-parchment/80">
           Stories, events and new experiences from Taita, in your inbox once a
           month. No noise.

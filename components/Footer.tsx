@@ -141,30 +141,30 @@ export default function Footer() {
             )}
             {info.phone && <li>{info.phone}</li>}
             {info.address && <li className="max-w-[16rem] leading-relaxed">{info.address}</li>}
-            {!hasContact && <li className="max-w-[16rem] text-parchment/50">Taita Taveta, Kenya</li>}
+            {!hasContact && <li className="max-w-[16rem] text-parchment/70">Taita Taveta, Kenya</li>}
           </Column>
         </div>
 
         <div className="mt-14 border-t border-parchment/10 pt-6">
-          <p className="font-body text-xs leading-relaxed text-parchment/45">
-            <span className="text-parchment/60">The Taita worlds · </span>
+          <p className="font-body text-xs leading-relaxed text-parchment/70">
+            <span className="text-parchment/85">The Taita worlds · </span>
             {worlds.join(" · ")}
           </p>
-          <div className="mt-5 flex flex-col gap-3 font-body text-xs text-parchment/55 md:flex-row md:items-center md:justify-between">
+          <div className="mt-5 flex flex-col gap-3 font-body text-xs text-parchment/75 md:flex-row md:items-center md:justify-between">
             <p>
               © {new Date().getFullYear()} {BRAND.name}™. Preview build — not yet live.
             </p>
             <nav aria-label="Legal and about" className="flex flex-wrap gap-x-5 gap-y-1">
-              <Link href="/about" className={linkClass}>
+              <Link href="/about" className={`${linkClass} inline-block py-2`}>
                 About
               </Link>
-              <Link href="/privacy" className={linkClass}>
+              <Link href="/privacy" className={`${linkClass} inline-block py-2`}>
                 Privacy
               </Link>
-              <Link href="/terms" className={linkClass}>
+              <Link href="/terms" className={`${linkClass} inline-block py-2`}>
                 Terms
               </Link>
-              <Link href="/contact" className={linkClass}>
+              <Link href="/contact" className={`${linkClass} inline-block py-2`}>
                 Contact
               </Link>
               <span>Taita Taveta, Kenya</span>
