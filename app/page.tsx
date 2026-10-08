@@ -1,186 +1,44 @@
-import Link from "next/link";
-import Hero from "@/components/Hero";
-import SectionHeading from "@/components/SectionHeading";
-import StoryCard from "@/components/StoryCard";
-import EventStrip from "@/components/EventStrip";
+import ClosingSection from "@/components/home/ClosingSection";
+import EventsSection from "@/components/home/EventsSection";
+import ExperiencesSection from "@/components/home/ExperiencesSection";
+import FindYourTaita from "@/components/home/FindYourTaita";
+import HomeHero from "@/components/home/HomeHero";
+import PassportSection from "@/components/home/PassportSection";
+import StayLocalSection from "@/components/home/StayLocalSection";
+import StoriesSection from "@/components/home/StoriesSection";
+import ThisIsTaita from "@/components/home/ThisIsTaita";
 import Newsletter from "@/components/Newsletter";
-import DemoNotice from "@/components/DemoNotice";
-import ProductCard from "@/components/marketplace/ProductCard";
-import { discoverCategories } from "@/lib/data";
-import { prisma } from "@/lib/prisma";
 import SponsorStrip from "@/components/sponsors/SponsorStrip";
+import { loadHome } from "@/lib/home-data";
+import { homeMedia } from "@/lib/home-media";
 
-// Public, non-personalized content — safe to cache and revalidate rather
-// than hitting Postgres on every single request.
+// Public, non-personalized content — safe to cache and revalidate rather than hitting Postgres on every single request.
 export const revalidate = 60;
 
+/**
+ * The homepage is a journey, in order: ARRIVE (hero) -> DISCOVER (find your Taita) -> UNDERSTAND (this is Taita) -> EXPLORE (experiences) ->
+ * CONNECT (stories) -> PARTICIPATE (passport) -> JOIN (events) -> SUPPORT (stay local) -> RETURN (the closing call).
+ * Every database-driven part has a designed empty state, and a failure in one never blanks the page.
+ */
 export default async function HomePage() {
-  const [stories, events, products] = await Promise.all([
-    prisma.story.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-      take: 3,
-    }),
-    prisma.event.findMany({
-      where: { status: "PUBLISHED", eventDate: { gte: new Date() } },
-      orderBy: { eventDate: "asc" },
-      take: 3,
-    }),
-    prisma.product.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
-      take: 4,
-    }),
-  ]);
-
-  const hasDemoStories = stories.some((s) => s.isDemo);
+  const media = homeMedia();
+  const data = await loadHome();
+  // The sponsor strip fetches for itself; if it fails, the rest of the page still renders.
+  let sponsors: React.ReactNode = null;
+  try { sponsors = await SponsorStrip({ program: "HOME" }); } catch (e) { console.error("[home] sponsor strip could not load:", (e as Error).message); }
 
   return (
     <>
-      <Hero />
-
-      {/* DISCOVER TAITA */}
-      <section className="px-6 py-20">
-        <div className="mx-auto max-w-6xl">
-          <SectionHeading
-            title="Discover Taita"
-            description="Six ways into the same place. Start wherever pulls you in."
-          />
-          <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3">
-            {discoverCategories.map((cat) => (
-              <Link
-                key={cat.key}
-                href={`/discover/${cat.key}`}
-                className="focus-ring group block"
-              >
-                <div className="flex h-32 items-end rounded-sm bg-stone p-4 transition-colors group-hover:bg-canopy sm:h-40">
-                  <p className="font-display text-2xl text-parchment">{cat.label}</p>
-                </div>
-                <p className="mt-2 font-body text-sm text-stone/60">{cat.description}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TAITA STORIES */}
-      {stories.length > 0 && (
-        <section className="bg-parchment-dim/40 px-6 py-20">
-          <div className="mx-auto max-w-6xl">
-            <div className="flex items-end justify-between gap-6">
-              <SectionHeading
-                title="Taita Stories"
-                description="The people, culture and places behind the postcard."
-              />
-              <Link
-                href="/stories"
-                className="focus-ring hidden shrink-0 rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust sm:inline-block"
-              >
-                All stories
-              </Link>
-            </div>
-
-            <div className="mt-10 grid gap-10 md:grid-cols-3">
-              <div className="md:col-span-2">
-                <StoryCard story={stories[0]} size="large" />
-              </div>
-              <div className="flex flex-col gap-10">
-                {stories.slice(1).map((story) => (
-                  <StoryCard key={story.slug} story={story} />
-                ))}
-              </div>
-            </div>
-            {hasDemoStories && (
-              <DemoNotice>replace with verified stories before launch.</DemoNotice>
-            )}
-          </div>
-        </section>
-      )}
-
-      {/* THIS WEEK IN TAITA */}
-      {events.length > 0 && (
-        <section className="px-6 py-20">
-          <div className="mx-auto max-w-3xl">
-            <SectionHeading title="This week in Taita" />
-            <div className="mt-8">
-              {events.map((event) => (
-                <EventStrip key={event.slug} event={event} />
-              ))}
-            </div>
-            <Link
-              href="/events"
-              className="focus-ring mt-6 inline-block font-body text-sm text-rust hover:text-rust-deep"
-            >
-              See everything on
-            </Link>
-          </div>
-        </section>
-      )}
-
-      {/* TAITA CUP teaser */}
-      <section className="bg-canopy px-6 py-20 text-parchment">
-        <div className="mx-auto max-w-6xl">
-          <p className="font-display text-3xl sm:text-4xl">
-            Come for the football.
-            <br />
-            Stay for Taita.
-          </p>
-          <p className="mt-4 max-w-md font-body text-parchment/80">
-            Taita Cup brings teams, travel packages and match-day festivities
-            to the hills every season.
-          </p>
-          <Link
-            href="/events/taita-cup"
-            className="focus-ring mt-6 inline-block rounded-full border border-parchment/40 px-6 py-3 font-body text-sm text-parchment hover:border-ochre hover:text-ochre"
-          >
-            Standings & fixtures
-          </Link>
-        </div>
-      </section>
-
-      {/* TAITA MADE */}
-      {products.length > 0 && (
-        <section className="px-6 py-20">
-          <div className="mx-auto max-w-6xl">
-            <div className="flex items-end justify-between gap-6">
-              <SectionHeading
-                title="Taita Made"
-                description="Clothing, art, crafts and food, made by people who call Taita home."
-              />
-              <Link
-                href="/shop"
-                className="focus-ring hidden shrink-0 rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust sm:inline-block"
-              >
-                Visit the shop
-              </Link>
-            </div>
-            <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
-              {products.map((p) => (
-                <ProductCard key={p.slug} product={p} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* PASSPORT teaser */}
-      <section id="passport" className="px-6 py-20">
-        <div className="mx-auto max-w-6xl">
-          <SectionHeading
-            title="The Taita Passport"
-            description="Track what you've done, collect badges, and earn your way to Taita Legend status."
-          />
-          <Link
-            href="/register"
-            className="focus-ring mt-6 inline-block rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment hover:bg-rust-deep"
-          >
-            Start your Passport
-          </Link>
-        </div>
-      </section>
-
-      <SponsorStrip program="HOME" />
-
+      <HomeHero media={media} />
+      <FindYourTaita tiles={data.tiles} />
+      <ThisIsTaita people={data.people} land={data.land} stories={data.storiesPic} />
+      <ExperiencesSection items={data.experiences} />
+      <StoriesSection stories={data.stories} />
+      <PassportSection />
+      <EventsSection events={data.events} />
+      <StayLocalSection local={data.local} />
+      {sponsors}
+      <ClosingSection image={media.closingImage} />
       <Newsletter />
     </>
   );
