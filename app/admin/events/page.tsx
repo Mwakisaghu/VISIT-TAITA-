@@ -32,6 +32,12 @@ export default async function AdminEventsPage() {
             </div>
             <div className="flex items-center gap-3">
               <Link
+                href={`/admin/events/${e.id}/tickets`}
+                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+              >
+                Tickets{e.ticketing !== "OFF" ? ` (${e.ticketsTaken})` : ""}
+              </Link>
+              <Link
                 href={`/admin/events/${e.id}`}
                 className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
               >
