@@ -19,7 +19,7 @@ import {
   validateCampaign,
 } from "@/lib/newsletter";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { readSiteInfo } from "@/lib/site-info";
 
 export type NewsletterAdminResult = { success?: true; id?: string; message?: string; error?: string };
@@ -116,7 +116,7 @@ export async function sendTestNewsletter(formData: FormData): Promise<Newsletter
     const to = admin.email;
     if (!to) return { error: "Your account has no email address to send the test to." };
     if (!emailConfigured()) return { error: "Email isn't configured (RESEND_API_KEY / EMAIL_FROM), so nothing can be sent." };
-    if (!rateLimit(`newsletter-test:${admin.id}`, 10, 60 * 60 * 1000)) return { error: "Too many test sends — please wait a little." };
+    if (!await checkRateLimit(`newsletter-test:${admin.id}`, 10, 60 * 60 * 1000)) return { error: "Too many test sends — please wait a little." };
 
     const subject = normalizeSubject(String(formData.get("subject") ?? ""));
     const body = normalizeBody(String(formData.get("body") ?? ""));

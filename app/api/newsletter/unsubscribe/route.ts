@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { unsubscribeWithToken } from "@/lib/actions/newsletter";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +15,7 @@ function clientIp(request: Request) {
  */
 export async function POST(request: Request) {
   const ip = clientIp(request);
-  if (ip && !rateLimit(`unsubscribe:${ip}`, 60, 60 * 60 * 1000)) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  if (ip && !await checkRateLimit(`unsubscribe:${ip}`, 60, 60 * 60 * 1000)) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
 
   const token = new URL(request.url).searchParams.get("token") ?? "";
   const result = await unsubscribeWithToken(token);

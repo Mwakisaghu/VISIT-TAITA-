@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notifyVoucherRedeemed } from "@/lib/notifications";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { isRedeemable } from "@/lib/rewards";
 import { generateVoucherCode } from "@/lib/voucher-code";
 
@@ -38,7 +38,7 @@ export async function redeemReward(rewardId: string): Promise<RedeemResult> {
   if (!session?.user) return { error: "Please sign in to redeem rewards." };
   const userId = session.user.id;
 
-  if (!rateLimit(`redeem:${userId}`, 5, 60 * 1000)) {
+  if (!await checkRateLimit(`redeem:${userId}`, 5, 60 * 1000)) {
     return { error: "Too many attempts — please wait a minute and try again." };
   }
 

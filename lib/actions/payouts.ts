@@ -6,7 +6,7 @@ import { notifyPayoutSent } from "@/lib/payout-emails";
 import { createPayouts, recordPayout, saveSettings } from "@/lib/payout-ops";
 import { kes, maskPhone, normalizePayoutPhone, validateSettings } from "@/lib/payout";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type PayoutResult = { ok: true; message: string } | { ok: false; error: string };
 const denied = { ok: false as const, error: "Admin access required." };
@@ -18,7 +18,7 @@ const audit = (actor: { id: string; email: string }, action: string, host: { id:
 export async function savePayoutPhone(raw: string): Promise<PayoutResult> {
   const me = await currentBookingUser();
   if (!me || !(me.role === "PARTNER" || me.isAdmin)) return { ok: false, error: "Only hosts can set a payout number." };
-  if (!rateLimit(`payout-phone:${me.id}`, 10, 60 * 60 * 1000)) return { ok: false, error: "You've changed this a lot of times — please try again in an hour." };
+  if (!await checkRateLimit(`payout-phone:${me.id}`, 10, 60 * 60 * 1000)) return { ok: false, error: "You've changed this a lot of times — please try again in an hour." };
   const phone = normalizePayoutPhone(raw);
   if (!phone) return { ok: false, error: "That isn't a Safaricom number we can pay by M-Pesa. Use a number like 0712 345 678 (or 0112 345 678)." };
   const before = await prisma.user.findUnique({ where: { id: me.id }, select: { payoutPhone: true } });
@@ -44,7 +44,7 @@ export async function savePayoutSettingsAction(commissionPercent: string, holdDa
 export async function preparePayouts(hostId: string | null): Promise<PayoutResult> {
   const me = await currentBookingUser();
   if (!me?.isAdmin) return denied;
-  if (!rateLimit(`payout-prepare:${me.id}`, 30, 60 * 60 * 1000)) return { ok: false, error: "That was a lot of requests — please wait a few minutes." };
+  if (!await checkRateLimit(`payout-prepare:${me.id}`, 30, 60 * 60 * 1000)) return { ok: false, error: "That was a lot of requests — please wait a few minutes." };
   const r = await createPayouts(prisma, { hostId: hostId ?? undefined, now: new Date(), actorId: me.id });
   for (const c of r.created) await audit(me, "payout.prepare", null, `${kes(c.amount)} for ${c.hostName} (${c.bookingCount} booking${c.bookingCount === 1 ? "" : "s"})`);
   refresh();

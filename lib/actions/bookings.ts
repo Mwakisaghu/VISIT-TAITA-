@@ -7,7 +7,7 @@ import { currentBookingUser } from "@/lib/booking-auth";
 import { notifyBooking } from "@/lib/booking-emails";
 import { cleanPhone, startCardPayment, startMpesaPayment, syncBookingPayments } from "@/lib/booking-payments";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const HOUR = 60 * 60 * 1000;
 export type BookingActionResult = { ok: true; id?: string; message?: string; url?: string } | { ok: false; error: string };
@@ -18,7 +18,7 @@ export async function createBookingAction(formData: FormData): Promise<BookingAc
   const user = await currentBookingUser();
   if (!user) return signIn;
   if (!user.emailVerifiedAt) return { ok: false, error: "Please verify your email address first — we email the booking details there. You can resend the link from your account page." };
-  if (!rateLimit(`book:${user.id}`, 10, HOUR)) return { ok: false, error: "You've tried to book a lot of times in the last hour — please try again later." };
+  if (!await checkRateLimit(`book:${user.id}`, 10, HOUR)) return { ok: false, error: "You've tried to book a lot of times in the last hour — please try again later." };
 
   const phone = cleanPhone(formData.get("phone"));
   if (!phone) return { ok: false, error: "Enter a phone number the host can reach you on, like 0712 345 678." };
@@ -37,7 +37,7 @@ export async function createBookingAction(formData: FormData): Promise<BookingAc
 export async function payWithMpesa(bookingId: string, phone: string): Promise<BookingActionResult> {
   const user = await currentBookingUser();
   if (!user) return signIn;
-  if (!rateLimit(`pay:${bookingId}`, 8, HOUR)) return { ok: false, error: "Too many payment attempts. Please wait a while and try again." };
+  if (!await checkRateLimit(`pay:${bookingId}`, 8, HOUR)) return { ok: false, error: "Too many payment attempts. Please wait a while and try again." };
   const r = await startMpesaPayment(String(bookingId), user.id, phone);
   if (!r.ok) return r;
   revalidatePath(`/bookings/${bookingId}`);
@@ -47,7 +47,7 @@ export async function payWithMpesa(bookingId: string, phone: string): Promise<Bo
 export async function payWithCard(bookingId: string): Promise<BookingActionResult> {
   const user = await currentBookingUser();
   if (!user) return signIn;
-  if (!rateLimit(`pay:${bookingId}`, 8, HOUR)) return { ok: false, error: "Too many payment attempts. Please wait a while and try again." };
+  if (!await checkRateLimit(`pay:${bookingId}`, 8, HOUR)) return { ok: false, error: "Too many payment attempts. Please wait a while and try again." };
   const r = await startCardPayment(String(bookingId), user.id);
   return r.ok ? { ok: true, url: r.url } : r;
 }

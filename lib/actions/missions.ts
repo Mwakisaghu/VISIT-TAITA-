@@ -11,7 +11,7 @@ import {
   missionAvailability,
 } from "@/lib/missions";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type MissionResult = { success?: true; error?: string };
 
@@ -76,7 +76,7 @@ export async function claimMission(missionId: string): Promise<MissionResult> {
   if (!session?.user) return { error: "Please sign in." };
   const userId = session.user.id;
 
-  if (!rateLimit(`mission-claim:${userId}`, 20, 60 * 60 * 1000)) {
+  if (!await checkRateLimit(`mission-claim:${userId}`, 20, 60 * 60 * 1000)) {
     return { error: "Too many attempts — please try again later." };
   }
 

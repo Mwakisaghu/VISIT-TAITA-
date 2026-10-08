@@ -14,7 +14,7 @@ import {
 } from "@/lib/creators";
 import { notifyCreatorApplication } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { requireVerifiedEmail } from "@/lib/verified-email";
 
 export type CreatorApplyResult = { success?: true; error?: string };
@@ -33,7 +33,7 @@ export async function submitCreatorApplication(formData: FormData): Promise<Crea
   const emailCheck = await requireVerifiedEmail(userId, session.user.role);
   if (!emailCheck.ok) return { error: emailCheck.error };
 
-  if (!rateLimit(`creator-apply:${userId}`, 3, 24 * 60 * 60 * 1000)) {
+  if (!await checkRateLimit(`creator-apply:${userId}`, 3, 24 * 60 * 60 * 1000)) {
     return { error: "You've applied several times today — please try again tomorrow." };
   }
 

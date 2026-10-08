@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { CONTACT_LIMITS as L, CONTACT_TOPICS, topicLabel } from "@/lib/contact";
 import { parseRecipients, sendEmail } from "@/lib/email";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { readSiteInfo } from "@/lib/site-info";
 
 export type ContactResult = { success?: true; error?: string };
@@ -39,8 +39,8 @@ export async function submitContactMessage(formData: FormData): Promise<ContactR
 
   const forwarded = headers().get("x-forwarded-for") ?? "";
   const ip = forwarded.split(",")[0].trim() || headers().get("x-real-ip") || "";
-  if (ip && !rateLimit(`contact:ip:${ip}`, 5, HOUR_MS)) return { error: "Too many messages — please try again a little later." };
-  if (!rateLimit(`contact:email:${email}`, 3, HOUR_MS)) return { error: "You've sent several messages already — please wait a little before sending another." };
+  if (ip && !await checkRateLimit(`contact:ip:${ip}`, 5, HOUR_MS)) return { error: "Too many messages — please try again a little later." };
+  if (!await checkRateLimit(`contact:email:${email}`, 3, HOUR_MS)) return { error: "You've sent several messages already — please wait a little before sending another." };
 
   const info = readSiteInfo();
   const team = parseRecipients(process.env.NOTIFY_EMAIL);

@@ -7,7 +7,7 @@ import { admit, cancelTickets, claimPayment, confirmPayment, reserveTickets, sav
 import { parseEatLocal } from "@/lib/booking";
 import { validateTicketSettings } from "@/lib/ticket";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type TicketResult = { ok: true; message: string; id?: string } | { ok: false; error: string };
 const signIn = { ok: false as const, error: "Please sign in to get tickets." };
@@ -28,7 +28,7 @@ const noAccess = { ok: false as const, error: "You don't have access to this eve
 export async function reserveTicketsAction(eventId: string, quantity: number, name: string, phone: string): Promise<TicketResult> {
   const me = await currentBookingUser(); if (!me) return signIn;
   if (!me.emailVerifiedAt) return { ok: false, error: "Please verify your email address first — we send your tickets there. You can resend the link from your account." };
-  if (!rateLimit(`tickets:${me.id}`, 10, 60 * 60 * 1000)) return { ok: false, error: "You've made a lot of requests — please try again in an hour." };
+  if (!await checkRateLimit(`tickets:${me.id}`, 10, 60 * 60 * 1000)) return { ok: false, error: "You've made a lot of requests — please try again in an hour." };
   const r = await reserveTickets(prisma, { eventId, userId: me.id, name, phone, quantity, now: new Date() });
   if (!r.ok) return r;
   const ev = await prisma.event.findUniqueOrThrow({ where: { id: eventId } });
@@ -42,7 +42,7 @@ export async function reserveTicketsAction(eventId: string, quantity: number, na
 /** The guest tells us which M-Pesa code they paid with. */
 export async function claimPaymentAction(groupId: string, code: string): Promise<TicketResult> {
   const me = await currentBookingUser(); if (!me) return signIn;
-  if (!rateLimit(`ticket-claim:${me.id}`, 20, 60 * 60 * 1000)) return { ok: false, error: "That was a lot of attempts — please try again later." };
+  if (!await checkRateLimit(`ticket-claim:${me.id}`, 20, 60 * 60 * 1000)) return { ok: false, error: "That was a lot of attempts — please try again later." };
   const r = await claimPayment(prisma, { groupId, userId: me.id, code, now: new Date() });
   if (!r.ok) return r;
   refresh();
@@ -112,7 +112,7 @@ export type DoorResult = { ok: true; admission: Admission } | { ok: false; error
 /** The door: admit one person by QR token or by ticket number. */
 export async function admitAction(eventId: string, query: { secret?: string; number?: string }): Promise<DoorResult> {
   const s = await staffFor(eventId); if (!s) return { ok: false, error: "You don't have access to this event's door." };
-  if (!rateLimit(`door:${s.user.id}`, 600, 60 * 60 * 1000)) return { ok: false, error: "Too many scans — please wait a moment." };
+  if (!await checkRateLimit(`door:${s.user.id}`, 600, 60 * 60 * 1000)) return { ok: false, error: "Too many scans — please wait a moment." };
   const admission = await admit(prisma, { eventId, secret: query.secret, number: query.number, actorId: s.user.id, now: new Date() });
   if (admission.result === "ADMITTED") refresh(eventId);
   return { ok: true, admission };

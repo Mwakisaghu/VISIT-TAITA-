@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { ADMIN_ROLES, authOptions } from "@/lib/auth";
 import { isEnquiryStatus } from "@/lib/partner-enquiries-data";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type PartnerEnquiryResult = { success?: true; error?: string };
 
@@ -27,7 +27,7 @@ export async function setEnquiryStatus(kind: string, enquiryId: string, status: 
   const isAdmin = ADMIN_ROLES.includes(role);
   if (!isAdmin && role !== "PARTNER") return { error: "Partner access required." };
 
-  if (!rateLimit(`enquiry-status:${userId}`, 60, 60 * 1000)) return { error: "Too many changes — please wait a minute." };
+  if (!await checkRateLimit(`enquiry-status:${userId}`, 60, 60 * 1000)) return { error: "Too many changes — please wait a minute." };
 
   if (kind !== "stay" && kind !== "experience") return { error: "Invalid enquiry." };
   if (!isEnquiryStatus(String(status))) return { error: "Invalid status." };

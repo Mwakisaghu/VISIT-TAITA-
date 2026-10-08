@@ -5,6 +5,7 @@ import { purgeExpiredTokens } from "@/lib/account-tokens";
 import { purgeStaleSubscribers } from "@/lib/newsletter-maintenance";
 import { processBookingsDue } from "@/lib/booking-jobs";
 import { processTicketsDue } from "@/lib/ticket-jobs";
+import { purgeExpiredRateLimits } from "@/lib/rate-limit";
 import { prisma } from "@/lib/prisma";
 import { purgeOrphanUploads } from "@/lib/uploads/cleanup";
 import { getStorage } from "@/lib/uploads/storage";
@@ -66,7 +67,9 @@ export async function GET(req: Request) {
     }
     // Event tickets: release paid reservations nobody confirmed in time. (Never throws.)
     const tickets = await processTicketsDue();
-    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads }, bookings, tickets });
+    // Shared rate-limit counters that ended more than a day ago. (Never throws.)
+    const rateLimits = { purged: await purgeExpiredRateLimits() };
+    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads }, bookings, tickets, rateLimits });
   } catch (err) {
     console.error("[cron/emails] failed", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
