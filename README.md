@@ -1444,3 +1444,23 @@ server's memory, which on serverless hosting made them much weaker than they loo
   no further database work.
 - **Still not covered:** one person guessing one account from many different addresses at once (the password-hashing cost is the defence there), and anything that must be a
   hard cap on money — those belong in the database rules themselves (for example the payment and ticket protections), not in a rate limit.
+
+## The homepage
+
+The homepage is a journey, top to bottom: **arrive** (the hero), **discover** (Find your Taita), **understand** (This is Taita), **explore** (experiences),
+**connect** (stories), **participate** (the passport), **join** (this week in Taita), **support** (stay local) and **return** ("Taita is calling"). The code is in
+\`components/home/\`, the page is \`app/page.tsx\`, and the navigation is \`components/Nav.tsx\` (it floats over the hero and turns solid as you scroll; Admin, Partner and Crew
+live in the account menu rather than the main bar).
+
+- **Pictures come from your real content.** The six doors, the three editorial panels, the experience cards, the stories and the Stay local tiles use the pictures
+  already attached to published destinations, stays, experiences, stories and products. Upload good photographs there and the homepage improves with no code change.
+  Where a picture is missing the section shows a tonal gradient instead of a broken image.
+- **The hero** uses the licensed photograph the site already had, with a landscape drawn in code behind it. To change it, see \`.env.example\` (\`HOME_HERO_IMAGE\`,
+  \`HOME_CLOSING_IMAGE\`, and the optional silent film \`HOME_HERO_VIDEO\`) and \`public/home/README.md\` for sizes. A "Watch the story" button appears only when
+  \`HOME_STORY_URL\` is set; until then the button says "Read the stories". Nothing on the page is invented: events, stories and experiences appear only if they exist, and each
+  section has a calm empty state.
+- **A failing database never blanks the page.** Every block of data is fetched on its own and falls back to its empty state (the sponsor strip too).
+- **Motion** is CSS plus two small helpers (reveal on scroll, a gentle parallax), using only opacity and transform, so it never moves the layout (measured layout shift: 0).
+  It stops completely for visitors who ask their device to reduce motion, and the optional film never plays for them, on a data-saver connection, or on a slow one.
+- **Measured** in a browser against a production build: no accessibility violations (colour contrast, labels, headings) at desktop or phone size, including with the menus open;
+  about 130 KB of JavaScript. Please re-check with your real photographs, which will be heavier than the stand-ins used for the measurements.

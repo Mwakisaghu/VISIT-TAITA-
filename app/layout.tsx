@@ -75,7 +75,7 @@ export default function RootLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(organization) }} />
         <Providers>
           <Nav />
-          <main>{children}</main>
+          <main id="main">{children}</main>
           <Footer />
         </Providers>
       </body>
