@@ -4,6 +4,7 @@ import { processDueEmails, purgeOldEmails } from "@/lib/email-outbox";
 import { purgeExpiredTokens } from "@/lib/account-tokens";
 import { purgeStaleSubscribers } from "@/lib/newsletter-maintenance";
 import { processBookingsDue } from "@/lib/booking-jobs";
+import { processTicketsDue } from "@/lib/ticket-jobs";
 import { prisma } from "@/lib/prisma";
 import { purgeOrphanUploads } from "@/lib/uploads/cleanup";
 import { getStorage } from "@/lib/uploads/storage";
@@ -63,7 +64,9 @@ export async function GET(req: Request) {
     } catch (err) {
       console.error("[cron/emails] bookings job failed", err);
     }
-    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads }, bookings });
+    // Event tickets: release paid reservations nobody confirmed in time. (Never throws.)
+    const tickets = await processTicketsDue();
+    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads }, bookings, tickets });
   } catch (err) {
     console.error("[cron/emails] failed", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

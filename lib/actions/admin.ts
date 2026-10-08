@@ -188,6 +188,9 @@ export async function saveEvent(id: string | null, formData: FormData) {
 
 export async function deleteEvent(id: string) {
   await requireAdmin();
+  if ((await prisma.ticket.count({ where: { eventId: id } })) > 0) {
+    throw new Error("This event has tickets, so it can't be deleted — people hold them. Cancel the tickets or turn ticketing off and unpublish the event instead.");
+  }
   await prisma.event.delete({ where: { id } });
   revalidatePath("/admin/events");
   revalidatePath("/events");

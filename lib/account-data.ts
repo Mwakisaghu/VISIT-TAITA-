@@ -12,7 +12,7 @@ export async function getDeletionBlockers(user: { id: string; role: string }): P
     reasons.push("Staff accounts are removed by another administrator, so the site is never left without one. Please ask one of them.");
   }
 
-  const [stays, experiences, products, rewards, openOrders, upcomingBookings, owedRefunds] = await Promise.all([
+  const [stays, experiences, products, rewards, openOrders, upcomingBookings, owedRefunds, upcomingTickets] = await Promise.all([
     prisma.accommodation.count({ where: { ownerId: user.id } }),
     prisma.experience.count({ where: { ownerId: user.id } }),
     prisma.product.count({ where: { sellerId: user.id } }),
@@ -22,6 +22,7 @@ export async function getDeletionBlockers(user: { id: string; role: string }): P
     }),
     prisma.booking.count({ where: { userId: user.id, status: { in: ["REQUESTED", "AWAITING_PAYMENT", "CONFIRMED"] }, session: { startsAt: { gt: new Date() } } } }),
     prisma.bookingRefund.count({ where: { booking: { userId: user.id }, status: { in: ["PENDING", "FAILED"] } } }),
+    prisma.ticket.count({ where: { userId: user.id, status: { in: ["PENDING_PAYMENT", "VALID"] }, event: { eventDate: { gt: new Date() } } } }),
   ]);
 
   if (stays + experiences + products + rewards > 0) {
@@ -35,6 +36,9 @@ export async function getDeletionBlockers(user: { id: string; role: string }): P
   }
   if (owedRefunds > 0) {
     reasons.push("We are still sending you a refund for a booking. You can delete your account once it has reached you.");
+  }
+  if (upcomingTickets > 0) {
+    reasons.push("You have tickets for an event that hasn't happened yet. You can delete your account after the event, or once you have cancelled them.");
   }
   return reasons;
 }
@@ -52,7 +56,7 @@ export async function buildAccountExport(userId: string) {
   });
   if (!user) return null;
 
-  const [visits, points, badges, vouchers, reviews, stayEnq, expEnq, orders, creator, applications, claims, notes, newsletter, stays, experiences, products, rewards, uploads, adminRecords, bookings] =
+  const [visits, points, badges, vouchers, reviews, stayEnq, expEnq, orders, creator, applications, claims, notes, newsletter, stays, experiences, products, rewards, uploads, adminRecords, bookings, tickets] =
     await Promise.all([
       prisma.visit.findMany({ where: { userId }, orderBy: { visitedAt: "asc" }, select: { visitedAt: true, method: true, lastVerifiedAt: true, destination: { select: { name: true } } } }),
       prisma.pointsEntry.findMany({ where: { userId }, orderBy: { createdAt: "asc" }, select: { points: true, reason: true, note: true, createdAt: true } }),
@@ -95,6 +99,7 @@ export async function buildAccountExport(userId: string) {
       prisma.uploadedImage.findMany({ where: { uploaderId: userId }, orderBy: { createdAt: "asc" }, select: { url: true, purpose: true, createdAt: true } }),
       prisma.adminAuditLog.findMany({ where: { targetUserId: userId }, orderBy: { createdAt: "asc" }, select: { action: true, detail: true, createdAt: true } }),
       prisma.booking.findMany({ where: { userId }, orderBy: { createdAt: "asc" }, include: { session: { select: { startsAt: true } }, experience: { select: { name: true } } } }),
+      prisma.ticket.findMany({ where: { userId }, orderBy: { createdAt: "asc" }, include: { event: { select: { name: true, eventDate: true } } } }),
     ]);
 
   return {
@@ -140,6 +145,7 @@ export async function buildAccountExport(userId: string) {
     managed: { stays: stays.map((x) => x.name), experiences: experiences.map((x) => x.name), products: products.map((x) => x.name), rewards: rewards.map((x) => x.name) },
     uploads: uploads.map((u) => ({ url: u.url, kind: u.purpose, uploadedAt: u.createdAt })),
     bookings: bookings.map((b) => ({ reference: b.reference, experience: b.experience.name, startsAt: b.session.startsAt, guests: b.guests, status: b.status, totalAmount: b.totalAmount, paidAmount: b.paidAmount, refundedAmount: b.refundedAmount, note: b.note, bookedAt: b.createdAt })),
+    tickets: tickets.map((t) => ({ event: t.event.name, eventDate: t.event.eventDate, number: t.number, status: t.status, holderName: t.holderName, holderPhone: t.holderPhone, price: t.price, claimedPaymentCode: t.claimedReference, bookedAt: t.createdAt })),
     administrativeActions: adminRecords.map((r) => ({ action: r.action, detail: r.detail, at: r.createdAt })),
     notIncluded: [
       "Your password — we only store a one-way hash of it, which cannot be turned back into your password.",

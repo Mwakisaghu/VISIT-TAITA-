@@ -16,6 +16,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # Prisma's own validation: catches what the repo check can't (for example two enums with the same name).
+      - run: npx prisma validate
+        env:
+          DATABASE_URL: "postgresql://user:pass@localhost:5432/db"
       # Conflict markers, secrets, unsafe server-action exports, undocumented settings, schema/migration drift, .gitignore gaps.
       - run: node scripts/check-repo.mjs
       # Catches syntax errors and type mistakes anywhere in the site.

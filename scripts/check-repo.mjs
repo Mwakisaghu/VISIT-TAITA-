@@ -151,6 +151,8 @@ export function migrationProblems() {
   const sp = path.join(ROOT, "prisma/schema.prisma");
   if (!fs.existsSync(sp)) return [];
   const schema = fs.readFileSync(sp, "utf8").replace(/\/\/[^\n]*/g, "");
+  const dupes = []; // Prisma refuses two models/enums with one name; the plain parsing below would silently let the second overwrite the first
+  { const seen = new Set(); for (const m of schema.matchAll(/^(?:model|enum) (\w+) \{/gm)) { if (seen.has(m[1])) dupes.push(`${m[1]} is defined more than once in the schema (two models or enums can't share a name)`); seen.add(m[1]); } }
   const enums = {};
   for (const m of schema.matchAll(/^enum (\w+) \{([\s\S]*?)^\}/gm)) enums[m[1]] = [...m[2].matchAll(/^\s*([A-Za-z0-9_]+)\s*(?:@map\([^)]*\))?\s*$/gm)].map((x) => x[1]);
   const SC = new Set(["String", "Int", "Float", "Boolean", "DateTime", "Json", "Decimal", "BigInt", "Bytes"]);
@@ -172,11 +174,11 @@ export function migrationProblems() {
     const sql = fs.readFileSync(path.join(dir, mig, "migration.sql"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/--[^\n]*/g, "");
     for (const st of sql.split(/;\s*\n/).map((s) => s.trim()).filter(Boolean)) {
       let m;
-      if ((m = /^CREATE TYPE\s+"(\w+)"\s+AS ENUM\s*\(([\s\S]*)\)/.exec(st))) { dbEnum[m[1]] = [...m[2].matchAll(/'([^']*)'/g)].map((x) => x[1]); continue; }
+      if ((m = /^CREATE TYPE\s+"(\w+)"\s+AS ENUM\s*\(([\s\S]*)\)/.exec(st))) { if (dbEnum[m[1]]) dupes.push(`enum ${m[1]} is created by more than one migration`); dbEnum[m[1]] = [...m[2].matchAll(/'([^']*)'/g)].map((x) => x[1]); continue; }
       if ((m = /^ALTER TYPE\s+"(\w+)"\s+ADD VALUE\s+(?:IF NOT EXISTS\s+)?'([^']*)'/.exec(st))) { (dbEnum[m[1]] ||= []).push(m[2]); continue; }
       if ((m = /^ALTER TYPE\s+"(\w+)"\s+RENAME TO\s+"(\w+)"/.exec(st)) && dbEnum[m[1]]) { dbEnum[m[2]] = dbEnum[m[1]]; delete dbEnum[m[1]]; continue; }
       if ((m = /^DROP TYPE\s+(?:IF EXISTS\s+)?"(\w+)"/.exec(st))) { delete dbEnum[m[1]]; continue; }
-      if ((m = /^CREATE TABLE\s+(?:IF NOT EXISTS\s+)?"(\w+)"\s*\(([\s\S]*)\)\s*$/.exec(st))) { db[m[1]] = new Set(m[2].split("\n").map((l) => /^\s*"(\w+)"\s+["A-Za-z]/.exec(l)?.[1]).filter(Boolean)); continue; }
+      if ((m = /^CREATE TABLE\s+(?:IF NOT EXISTS\s+)?"(\w+)"\s*\(([\s\S]*)\)\s*$/.exec(st))) { if (db[m[1]]) dupes.push(`table ${m[1]} is created by more than one migration`); db[m[1]] = new Set(m[2].split("\n").map((l) => /^\s*"(\w+)"\s+["A-Za-z]/.exec(l)?.[1]).filter(Boolean)); continue; }
       if ((m = /^DROP TABLE\s+(?:IF EXISTS\s+)?"(\w+)"/.exec(st))) { delete db[m[1]]; continue; }
       if ((m = /^ALTER TABLE\s+"(\w+)"\s+RENAME TO\s+"(\w+)"/.exec(st)) && db[m[1]]) { db[m[2]] = db[m[1]]; delete db[m[1]]; continue; }
       if ((m = /^ALTER TABLE\s+(?:ONLY\s+)?"(\w+)"\s+([\s\S]*)/.exec(st)) && db[m[1]]) {
@@ -199,7 +201,7 @@ export function migrationProblems() {
     for (const v of dbEnum[e]) if (!vals.includes(v)) out.push(`enum value ${e}.${v} is in a migration but not in the schema`);
   }
   for (const e of Object.keys(dbEnum)) if (!enums[e]) out.push(`enum ${e} is created by a migration but not in the schema`);
-  return out;
+  return [...dupes, ...out];
 }
 
 // --history: informational scan of every added line in every commit ----------------------------------------------------
