@@ -1,6 +1,7 @@
 import type { Experience } from "@prisma/client";
 import { saveExperience } from "@/lib/actions/listings";
 import ImageField from "@/components/uploads/ImageField";
+import GuideFields from "@/components/field/GuideFields";
 
 const categories = ["WILDLIFE", "CULTURE", "ADVENTURE", "FOOD", "WELLNESS"];
 
@@ -26,6 +27,8 @@ export default function ExperienceForm({ experience }: { experience?: Experience
       <Field label="Region">
         <input name="region" defaultValue={experience?.region} required className="input" />
       </Field>
+
+      <GuideFields kind="experience" defaults={experience} />
 
       <Field label="Description">
         <textarea

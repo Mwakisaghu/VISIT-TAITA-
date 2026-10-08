@@ -52,14 +52,14 @@ export default async function ReviewsSection({
         {/* SUMMARY */}
         <div>
           {summary.count === 0 ? (
-            <p className="font-body text-stone/60">No reviews yet — be the first to share your experience.</p>
+            <p className="font-body text-stone/70">No reviews yet — be the first to share your experience.</p>
           ) : (
             <>
               <div className="flex items-end gap-3">
                 <p className="font-display text-5xl text-stone">{summary.average?.toFixed(1)}</p>
                 <div className="pb-1">
                   <StarRating rating={summary.average ?? 0} className="text-lg" />
-                  <p className="font-body text-sm text-stone/60">
+                  <p className="font-body text-sm text-stone/70">
                     {summary.count} review{summary.count === 1 ? "" : "s"}
                   </p>
                 </div>
@@ -99,7 +99,7 @@ export default async function ReviewsSection({
                   </div>
                   {r.title && <p className="mt-2 font-display text-lg text-stone">{r.title}</p>}
                   <p className="mt-2 whitespace-pre-line font-body text-stone/80">{r.body}</p>
-                  <p className="mt-3 font-body text-xs text-stone/50">
+                  <p className="mt-3 font-body text-xs text-stone/70">
                     {holderLabel(r.user.name)} · {formatDate(r.createdAt)}
                   </p>
                 </article>

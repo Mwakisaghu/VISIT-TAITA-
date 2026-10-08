@@ -2,6 +2,7 @@ import type { Destination } from "@prisma/client";
 import Link from "next/link";
 import { saveDestination } from "@/lib/actions/admin";
 import ImageField from "@/components/uploads/ImageField";
+import GuideFields from "@/components/field/GuideFields";
 
 const categories = ["WILD", "CULTURE", "ADVENTURE", "FOOD", "SPORT", "PEOPLE"];
 
@@ -62,6 +63,8 @@ export default function DestinationForm({ destination }: { destination?: Destina
           />
         </Field>
       </div>
+
+      <GuideFields kind="place" defaults={destination} />
 
       <Field label="GPS check-in radius (metres)">
         <input

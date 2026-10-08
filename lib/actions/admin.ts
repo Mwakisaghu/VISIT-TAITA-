@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { parseGuideFields } from "@/lib/field-guide";
 import { generateCheckinToken } from "@/lib/passport";
 
 async function requireAdmin() {
@@ -62,16 +63,20 @@ export async function saveDestination(id: string | null, formData: FormData) {
     throw new Error("Enter both latitude and longitude, or leave both blank.");
   }
 
+  const place = parseGuideFields(formData, "place");
+  if (!place.ok) throw new Error(place.error);
+
   if (id) {
     // Blank coordinates mean "no coordinates" — clear them instead of silently keeping the old values.
     await prisma.destination.update({
       where: { id },
-      data: { ...parsed, latitude: parsed.latitude ?? null, longitude: parsed.longitude ?? null },
+      data: { ...parsed, ...place.values, latitude: parsed.latitude ?? null, longitude: parsed.longitude ?? null },
     });
   } else {
     await prisma.destination.create({
       data: {
         ...parsed,
+        ...place.values,
         slug: `${slugify(parsed.name)}-${Math.random().toString(36).slice(2, 6)}`,
         isDemo: false,
         createdById: user.id,

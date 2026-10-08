@@ -26,7 +26,7 @@ export default function BookingPanel(p: {
   const plan = selected ? planPayments({ mode: p.paymentMode, totalAmount: total, depositPercent: p.depositPercent, balanceDueDays: p.balanceDueDays, startsAt: new Date(selected.startsAt), now: new Date() }) : null;
   const request = p.paymentMode === "AFTER_CONFIRMATION";
 
-  if (p.sessions.length === 0) return <p className="font-body text-sm text-stone/60">No dates are open for booking right now. You can still ask the host a question below.</p>;
+  if (p.sessions.length === 0) return <p className="font-body text-sm text-stone/70">No dates are open for booking right now. You can still ask the host a question below.</p>;
   if (!p.signedIn) return <p className="font-body text-sm text-stone/70"><Link href={p.loginHref} className="text-rust underline">Sign in</Link> to book. Prices start at {kes(p.unitPrice)} per person.</p>;
   if (!p.verified) return <p className="font-body text-sm text-stone/70">Please verify your email address before booking — we send your booking details there. You can resend the link from <Link href="/account" className="text-rust underline">your account</Link>.</p>;
 
@@ -56,7 +56,7 @@ export default function BookingPanel(p: {
             <input type="radio" name="sessionId" value={s.id} checked={s.id === sessionId} onChange={() => setSessionId(s.id)} className="mt-1" />
             <span>
               {formatEat(new Date(s.startsAt))}
-              <span className="block text-xs text-stone/50">{s.seatsLeft} seat{s.seatsLeft === 1 ? "" : "s"} left{s.note ? ` · ${s.note}` : ""}</span>
+              <span className="block text-xs text-stone/70">{s.seatsLeft} seat{s.seatsLeft === 1 ? "" : "s"} left{s.note ? ` · ${s.note}` : ""}</span>
             </span>
           </label>
         ))}
@@ -80,7 +80,7 @@ export default function BookingPanel(p: {
 
       <div className="rounded-sm border border-stone/10 bg-stone/5 p-3 font-body text-sm text-stone/80">
         <p>{kes(p.unitPrice)} × {g} guest{g === 1 ? "" : "s"} = <strong>{kes(total)}</strong></p>
-        <p className="mt-1 text-stone/60">{paymentModeSummary(p.paymentMode, p.depositPercent, p.balanceDueDays)}</p>
+        <p className="mt-1 text-stone/70">{paymentModeSummary(p.paymentMode, p.depositPercent, p.balanceDueDays)}</p>
         {plan?.collapsedToFull && <p className="mt-1 text-rust">This date is close, so the full price is due now.</p>}
         {plan && !request && <p className="mt-1">Due now: <strong>{kes(plan.dueNow)}</strong>{plan.balanceDueAt && <> · balance {kes(total - plan.dueNow)} due {formatEat(plan.balanceDueAt)}</>}</p>}
       </div>

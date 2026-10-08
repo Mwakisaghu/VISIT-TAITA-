@@ -47,11 +47,11 @@ export default function ExperienceEnquiryForm({ experienceId }: { experienceId: 
       {referral && <input type="hidden" name="from" value={referral} />}
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/50">Preferred date</span>
+          <span className="font-body text-xs text-stone/70">Preferred date</span>
           <input name="preferredDate" type="date" className="input" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/50">Party size</span>
+          <span className="font-body text-xs text-stone/70">Party size</span>
           <input name="partySize" type="number" min={1} className="input" />
         </label>
       </div>
