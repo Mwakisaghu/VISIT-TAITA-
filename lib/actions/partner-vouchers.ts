@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type VoucherActionResult = { success?: true; error?: string };
 
@@ -24,7 +24,7 @@ export async function markVoucherUsed(redemptionId: string): Promise<VoucherActi
   const isAdmin = ADMIN_ROLES.includes(role);
   if (!isAdmin && !PARTNER_ROLES.includes(role)) return { error: "Partner access required." };
 
-  if (!rateLimit(`voucher-use:${userId}`, 30, 60 * 1000)) {
+  if (!await checkRateLimit(`voucher-use:${userId}`, 30, 60 * 1000)) {
     return { error: "Too many attempts — please wait a minute." };
   }
 

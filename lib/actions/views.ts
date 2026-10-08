@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { ADMIN_ROLES, authOptions } from "@/lib/auth";
 import { VIEWS_PER_ITEM_PER_DAY, isBotUserAgent, startOfUtcDay } from "@/lib/impact";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -38,7 +38,7 @@ export async function recordView(kind: string, targetId: string): Promise<void> 
     const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "unknown";
     // Behind a proxy that hides the address, everyone shares one key — allow a generous cap instead of a tiny one.
     const limit = ip === "unknown" ? 200 : VIEWS_PER_ITEM_PER_DAY;
-    if (!rateLimit(`view:${ip}:${kind}:${id}`, limit, DAY_MS)) return;
+    if (!await checkRateLimit(`view:${ip}:${kind}:${id}`, limit, DAY_MS)) return;
 
     const isPublic =
       kind === "NOTE"

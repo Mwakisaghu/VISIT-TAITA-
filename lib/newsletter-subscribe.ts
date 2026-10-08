@@ -4,7 +4,7 @@ import { checkinBaseUrl } from "@/lib/checkin-url";
 import { sendEmail } from "@/lib/email";
 import { confirmUrl, confirmationText, unsubscribeApiUrl } from "@/lib/newsletter";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Deliberately NOT a "use server" file. Server actions are public endpoints, so a function that takes the visitor's address
 // as an argument would let a caller invent one to dodge the per-visitor limit. Only the sign-up API route calls this, and it
@@ -32,8 +32,8 @@ export async function subscribeToNewsletter(rawEmail: string, ip: string | null)
   const email = parsed.data;
 
   // Anyone can submit anyone's address, so this is rate-limited by both the sender and the address.
-  if (ip && !rateLimit(`newsletter:ip:${ip}`, 10, HOUR_MS)) return { ok: false, error: "Too many attempts — please try again later.", status: 429 };
-  if (!rateLimit(`newsletter:email:${email}`, 3, HOUR_MS)) return { ok: true }; // quietly: don't let the address be mail-bombed with confirmations
+  if (ip && !await checkRateLimit(`newsletter:ip:${ip}`, 10, HOUR_MS)) return { ok: false, error: "Too many attempts — please try again later.", status: 429 };
+  if (!await checkRateLimit(`newsletter:email:${email}`, 3, HOUR_MS)) return { ok: true }; // quietly: don't let the address be mail-bombed with confirmations
 
   const base = checkinBaseUrl();
   if (!base) return { ok: false, error: "Newsletter sign-up isn't available yet.", status: 503 };

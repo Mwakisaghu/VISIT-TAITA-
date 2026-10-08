@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { redemptionStatusLabel } from "@/lib/rewards";
 import { holderLabel, normalizeVoucherCode } from "@/lib/voucher-lookup";
 import MarkUsedButton from "@/components/partners/MarkUsedButton";
@@ -27,7 +27,7 @@ export default async function PartnerVouchersPage({
 
   const typed = (searchParams.code ?? "").trim();
   const code = normalizeVoucherCode(typed);
-  const limited = typed !== "" && code !== null && !rateLimit(`voucher-lookup:${userId}`, 30, 60 * 1000);
+  const limited = typed !== "" && code !== null && !await checkRateLimit(`voucher-lookup:${userId}`, 30, 60 * 1000);
 
   const found =
     code && !limited

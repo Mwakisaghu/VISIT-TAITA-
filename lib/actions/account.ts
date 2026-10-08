@@ -8,7 +8,7 @@ import { authOptions } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
 import { cancelPendingCampaignEmails } from "@/lib/newsletter-maintenance";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { deleteUnusedUploads } from "@/lib/uploads/cleanup";
 import { getStorage } from "@/lib/uploads/storage";
 
@@ -38,7 +38,7 @@ export async function deleteMyAccount(password: string): Promise<AccountResult> 
   if (!session?.user) return { error: "Please sign in." };
   const userId = session.user.id;
 
-  if (!rateLimit(`delete-account:${userId}`, 5, HOUR_MS)) {
+  if (!await checkRateLimit(`delete-account:${userId}`, 5, HOUR_MS)) {
     return { error: "Too many attempts — please try again later." };
   }
 

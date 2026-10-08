@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { headers } from "next/headers";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { SEARCH_LIMITS, parseQuery, type Segment } from "@/lib/search";
 import { SEARCH_TYPES, isSearchType, searchSite, type SearchResult } from "@/lib/search-data";
 
@@ -52,7 +52,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
   let result: SearchResult | null = null;
   let limited = false;
   if (parsed) {
-    if (!rateLimit(`search:${clientIp()}`, 60, 60 * 1000)) limited = true;
+    if (!await checkRateLimit(`search:${clientIp()}`, 60, 60 * 1000)) limited = true;
     else result = await searchSite(parsed, only);
   }
   const onlyLabel = only ? SEARCH_TYPES.find((t) => t.key === only)!.label : null;

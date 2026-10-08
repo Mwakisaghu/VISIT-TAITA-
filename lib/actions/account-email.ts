@@ -12,7 +12,7 @@ import { authOptions } from "@/lib/auth";
 import { checkinBaseUrl } from "@/lib/checkin-url";
 import { sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type AccountEmailResult = { ok: true; already?: boolean } | { ok: false; error: string };
 
@@ -30,7 +30,7 @@ function clientIp(): string {
 
 /** Confirms an address from the emailed link. Single use; only the newest link works. */
 export async function verifyEmail(token: string): Promise<AccountEmailResult> {
-  if (!rateLimit(`verify-email:${clientIp()}`, 60, HOUR_MS)) return { ok: false, error: "Too many attempts — please try again later." };
+  if (!await checkRateLimit(`verify-email:${clientIp()}`, 60, HOUR_MS)) return { ok: false, error: "Too many attempts — please try again later." };
 
   const found = await findUsableToken(prisma, token, "VERIFY_EMAIL");
   if (!found) return { ok: false, error: INVALID_VERIFY };
@@ -56,7 +56,7 @@ export async function resendVerification(): Promise<AccountEmailResult> {
   if (!user) return { ok: false, error: "This account no longer exists." };
   if (user.emailVerifiedAt) return { ok: true, already: true };
 
-  if (!rateLimit(`verify-resend:${userId}`, 3, HOUR_MS)) return { ok: false, error: "You've asked for several emails already — please check your inbox (and spam folder), or try again in a little while." };
+  if (!await checkRateLimit(`verify-resend:${userId}`, 3, HOUR_MS)) return { ok: false, error: "You've asked for several emails already — please check your inbox (and spam folder), or try again in a little while." };
   if ((await sendVerificationEmail(userId)) === "skipped") return { ok: false, error: "Email verification isn't available yet." };
   return { ok: true };
 }
@@ -70,8 +70,8 @@ export async function requestPasswordReset(rawEmail: string): Promise<AccountEma
   if (!parsed.success) return { ok: false, error: "Enter a valid email address." };
   const email = parsed.data;
 
-  if (!rateLimit(`reset:ip:${clientIp()}`, 10, HOUR_MS)) return { ok: false, error: "Too many requests — please try again later." };
-  if (!rateLimit(`reset:email:${email}`, 3, HOUR_MS)) return { ok: true }; // quietly: don't let one address be mail-bombed
+  if (!await checkRateLimit(`reset:ip:${clientIp()}`, 10, HOUR_MS)) return { ok: false, error: "Too many requests — please try again later." };
+  if (!await checkRateLimit(`reset:email:${email}`, 3, HOUR_MS)) return { ok: true }; // quietly: don't let one address be mail-bombed
   if (!checkinBaseUrl()) return { ok: false, error: "Password reset isn't available yet." };
 
   try {
@@ -89,7 +89,7 @@ export async function requestPasswordReset(rawEmail: string): Promise<AccountEma
  * emails the owner that the password changed.
  */
 export async function resetPassword(token: string, newPassword: string): Promise<AccountEmailResult> {
-  if (!rateLimit(`reset-submit:${clientIp()}`, 20, HOUR_MS)) return { ok: false, error: "Too many attempts — please try again later." };
+  if (!await checkRateLimit(`reset-submit:${clientIp()}`, 20, HOUR_MS)) return { ok: false, error: "Too many attempts — please try again later." };
 
   if (typeof newPassword !== "string" || newPassword.length < 8 || newPassword.length > 72) {
     return { ok: false, error: "Choose a password of 8 to 72 characters." };

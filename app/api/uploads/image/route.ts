@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { processImage } from "@/lib/uploads/process";
 import { MAX_UPLOAD_BYTES, POLICIES, canUpload, isPurpose, uploadsPerHour } from "@/lib/uploads/policy";
 import { getStorage } from "@/lib/uploads/storage";
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
   const purpose = new URL(request.url).searchParams.get("purpose");
   if (!isPurpose(purpose)) return json({ error: "Unknown upload type." }, 400);
   if (!canUpload(role, purpose)) return json({ error: "Your account can't upload this kind of picture." }, 403);
-  if (!rateLimit(`upload:${userId}`, uploadsPerHour(role), 60 * 60 * 1000)) return json({ error: "You've uploaded a lot of pictures in the last hour — please try again later." }, 429);
+  if (!await checkRateLimit(`upload:${userId}`, uploadsPerHour(role), 60 * 60 * 1000)) return json({ error: "You've uploaded a lot of pictures in the last hour — please try again later." }, 429);
 
   const storage = getStorage();
   if (!storage.driver) return json({ error: storage.reason }, 503);

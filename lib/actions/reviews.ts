@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { notifyNewReview } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { requireVerifiedEmail } from "@/lib/verified-email";
 import {
   REVIEW_MAX_BODY,
@@ -119,7 +119,7 @@ export async function submitReview(
 
   if (!isReviewKind(kind)) return { error: "This listing isn't available for reviews." };
 
-  if (!rateLimit(`review:${userId}`, 5, 60 * 60 * 1000)) {
+  if (!await checkRateLimit(`review:${userId}`, 5, 60 * 60 * 1000)) {
     return { error: "You've submitted several reviews recently — please try again later." };
   }
 

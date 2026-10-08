@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { sendPasswordResetEmail, sendStaffInviteEmail, sendVerificationEmail } from "@/lib/account-verification";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { currentManager, type ManagerActor } from "@/lib/user-admin-server";
 import { checkActOn, checkReinstate, checkRoleChange, checkSuspend, isPendingInvite, roleLabel, validateInvite } from "@/lib/user-admin";
 
@@ -29,7 +29,7 @@ const isConflict = (e: unknown) => (e as { code?: string })?.code === "P2034"; /
 export async function inviteStaff(formData: FormData): Promise<UsersAdminResult> {
   const actor = await currentManager();
   if (!actor) return NOT_ALLOWED;
-  if (!rateLimit(`invite-staff:${actor.id}`, 20, HOUR)) return { error: "You've sent a lot of invitations in the last hour — please try again later." };
+  if (!await checkRateLimit(`invite-staff:${actor.id}`, 20, HOUR)) return { error: "You've sent a lot of invitations in the last hour — please try again later." };
 
   const v = validateInvite({ actor, name: formData.get("name"), email: formData.get("email"), role: formData.get("role") });
   if (!v.ok) return { error: v.error };
@@ -64,7 +64,7 @@ export async function inviteStaff(formData: FormData): Promise<UsersAdminResult>
 export async function changeRole(userId: string, newRole: string): Promise<UsersAdminResult> {
   const actor = await currentManager();
   if (!actor) return NOT_ALLOWED;
-  if (!rateLimit(`user-admin:${actor.id}`, 60, HOUR)) return { error: "Too many changes in the last hour — please try again later." };
+  if (!await checkRateLimit(`user-admin:${actor.id}`, 60, HOUR)) return { error: "Too many changes in the last hour — please try again later." };
   try {
     return await prisma.$transaction(async (tx) => {
       const target = await tx.user.findUnique({ where: { id: String(userId) }, select: targetFields });
@@ -89,7 +89,7 @@ export async function changeRole(userId: string, newRole: string): Promise<Users
 export async function suspendUser(userId: string, reason: string): Promise<UsersAdminResult> {
   const actor = await currentManager();
   if (!actor) return NOT_ALLOWED;
-  if (!rateLimit(`user-admin:${actor.id}`, 60, HOUR)) return { error: "Too many changes in the last hour — please try again later." };
+  if (!await checkRateLimit(`user-admin:${actor.id}`, 60, HOUR)) return { error: "Too many changes in the last hour — please try again later." };
   const why = typeof reason === "string" ? reason.trim().replace(/\s+/g, " ") : "";
   if (why.length < 3 || why.length > 200) return { error: "Give a short reason (3–200 characters) — other admins will see it." };
   try {
@@ -151,7 +151,7 @@ export async function sendPasswordLink(userId: string): Promise<UsersAdminResult
   const verdict = checkActOn(actor, target);
   if (!verdict.ok) return { error: verdict.error };
   if (target.suspendedAt) return { error: "This account is suspended. Reinstate it first." };
-  if (!rateLimit(`password-link:${target.id}`, 3, HOUR)) return { error: "A link was already sent to this person a few times in the last hour — please wait." };
+  if (!await checkRateLimit(`password-link:${target.id}`, 3, HOUR)) return { error: "A link was already sent to this person a few times in the last hour — please wait." };
   const pending = isPendingInvite(target);
   let outcome: string;
   try {
@@ -175,7 +175,7 @@ export async function sendVerificationLink(userId: string): Promise<UsersAdminRe
   if (!verdict.ok) return { error: verdict.error };
   if (target.emailVerifiedAt) return { error: "This email address is already verified." };
   if (target.suspendedAt) return { error: "This account is suspended. Reinstate it first." };
-  if (!rateLimit(`verify-link:${target.id}`, 3, HOUR)) return { error: "A link was already sent to this person a few times in the last hour — please wait." };
+  if (!await checkRateLimit(`verify-link:${target.id}`, 3, HOUR)) return { error: "A link was already sent to this person a few times in the last hour — please wait." };
   let outcome: string;
   try {
     outcome = await sendVerificationEmail(target.id);

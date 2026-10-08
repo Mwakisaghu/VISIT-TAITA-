@@ -6,7 +6,7 @@ import { acceptRequest, cancelSession, endBooking } from "@/lib/booking-ops";
 import { currentBookingUser, type BookingUser } from "@/lib/booking-auth";
 import { notifyBooking } from "@/lib/booking-emails";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type HostResult = { ok: true; message?: string } | { ok: false; error: string };
 const no = (error: string): HostResult => ({ ok: false, error });
@@ -51,7 +51,7 @@ export async function saveBookingSettings(experienceId: string, formData: FormDa
 export async function addSessions(experienceId: string, formData: FormData): Promise<HostResult> {
   const user = await hostUser(); if (!user) return no("Partner access required.");
   const e = await ownedExperience(user, experienceId); if (!e) return no("Experience not found.");
-  if (!rateLimit(`sessions:${user.id}`, 40, HOUR)) return no("You've added a lot of dates in the last hour — please try again later.");
+  if (!await checkRateLimit(`sessions:${user.id}`, 40, HOUR)) return no("You've added a lot of dates in the last hour — please try again later.");
 
   const first = parseEatLocal(formData.get("date"), formData.get("time"));
   if (!first) return no("Choose a real date and time (East Africa Time).");

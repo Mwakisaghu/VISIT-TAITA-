@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import {
   CHECKIN_POINTS,
   MAX_GPS_ACCURACY_M,
@@ -175,7 +175,7 @@ export async function checkInWithToken(token: string): Promise<CheckinResult> {
   if (!session?.user) return { error: "Please sign in to check in." };
   const userId = session.user.id;
 
-  if (!rateLimit(`checkin:${userId}`, 10, 10 * 60 * 1000)) return RATE_LIMITED;
+  if (!await checkRateLimit(`checkin:${userId}`, 10, 10 * 60 * 1000)) return RATE_LIMITED;
 
   const value = String(token ?? "").trim();
   if (value.length < 8 || value.length > 100) return { error: "This check-in code isn't valid." };
@@ -206,7 +206,7 @@ export async function checkInWithLocation(
   if (!session?.user) return { error: "Please sign in to check in." };
   const userId = session.user.id;
 
-  if (!rateLimit(`checkin:${userId}`, 10, 10 * 60 * 1000)) return RATE_LIMITED;
+  if (!await checkRateLimit(`checkin:${userId}`, 10, 10 * 60 * 1000)) return RATE_LIMITED;
 
   const valid =
     Number.isFinite(latitude) &&

@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { notifySponsorLead } from "@/lib/notifications";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { safeHttpUrl } from "@/lib/url";
 
 type SponsorLeadResult = { success?: true; error?: string };
@@ -67,7 +67,7 @@ export async function submitSponsorLead(formData: FormData): Promise<SponsorLead
   const data = parsed.data;
 
   const ip = clientIp();
-  if (ip && !rateLimit(`sponsor-lead:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
+  if (ip && !await checkRateLimit(`sponsor-lead:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
 
   const email = data.email.toLowerCase();
   const recentFromEmail = await prisma.sponsorLead.count({

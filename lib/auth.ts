@@ -34,17 +34,17 @@ export const authOptions: NextAuthOptions = {
         const ip = clientIpFrom(req?.headers as Record<string, unknown> | undefined);
 
         // Too many recent failures: refuse outright — even with the right password, so a guesser can't tell when they hit it.
-        if (isLoginBlocked(email, ip)) throw new Error("TooManyAttempts");
+        if (await isLoginBlocked(email, ip)) throw new Error("TooManyAttempts");
 
         const user = await prisma.user.findUnique({ where: { email } });
 
         // Always compare against SOMETHING, so an unknown email takes as long to reject as a wrong password.
         const valid = await bcrypt.compare(credentials.password, user ? user.passwordHash : await getDummyHash());
         if (!user || !valid) {
-          recordLoginFailure(email, ip);
+          await recordLoginFailure(email, ip);
           return null;
         }
-        clearLoginFailures(email, ip);
+        await clearLoginFailures(email, ip);
 
         // A suspended account is refused only AFTER the password is right, so this message can't be used to find out which addresses have accounts.
         if (user.suspendedAt) throw new Error("AccountSuspended");

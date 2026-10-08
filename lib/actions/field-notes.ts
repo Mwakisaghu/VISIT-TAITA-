@@ -9,7 +9,7 @@ import { getVerification } from "@/lib/field-notes-data";
 import { disclosureLine } from "@/lib/missions";
 import { notifyFieldNoteSubmitted } from "@/lib/notifications";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type FieldNoteResult = { success?: true; error?: string };
 
@@ -35,7 +35,7 @@ export async function submitFieldNote(missionId: string, formData: FormData): Pr
   if (!session?.user) return { error: "Please sign in." };
   const userId = session.user.id;
 
-  if (!rateLimit(`field-note:${userId}`, 10, 60 * 60 * 1000)) {
+  if (!await checkRateLimit(`field-note:${userId}`, 10, 60 * 60 * 1000)) {
     return { error: "You've submitted several times recently — please try again later." };
   }
 

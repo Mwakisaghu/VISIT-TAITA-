@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { parseReferral } from "@/lib/referral";
 import { prisma } from "@/lib/prisma";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { notifyAccommodationEnquiry, notifyExperienceEnquiry } from "@/lib/notifications";
 
 type EnquiryResult = { success?: true; error?: string };
@@ -103,7 +103,7 @@ export async function submitAccommodationEnquiry(
   }
 
   const ip = clientIp();
-  if (ip && !rateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
+  if (ip && !await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
   const recentFromEmail = await prisma.accommodationEnquiry.count({
     where: { email: data.email.toLowerCase(), createdAt: { gte: new Date(Date.now() - HOUR_MS) } },
   });
@@ -177,7 +177,7 @@ export async function submitExperienceEnquiry(
   }
 
   const ip = clientIp();
-  if (ip && !rateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
+  if (ip && !await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
   const recentFromEmail = await prisma.experienceEnquiry.count({
     where: { email: data.email.toLowerCase(), createdAt: { gte: new Date(Date.now() - HOUR_MS) } },
   });

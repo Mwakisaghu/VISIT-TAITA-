@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { buildAccountExport } from "@/lib/account-data";
 import { authOptions } from "@/lib/auth";
-import { rateLimit } from "@/lib/rate-limit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 // Personal data: never cached, never shared between users.
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ error: "Please sign in." }, { status: 401, headers: { "Cache-Control": "no-store" } });
 
-  if (!rateLimit(`account-export:${session.user.id}`, 5, 60 * 60 * 1000)) {
+  if (!await checkRateLimit(`account-export:${session.user.id}`, 5, 60 * 60 * 1000)) {
     return NextResponse.json({ error: "Too many downloads — please try again later." }, { status: 429, headers: { "Cache-Control": "no-store" } });
   }
 
