@@ -54,6 +54,8 @@ model User {
   // Where a host's payouts are sent (an M-Pesa number, 2547… or 2541…). Set by the host.
   payoutPhone       String?
   hostPayouts       HostPayout[]    @relation("HostPayouts")
+  eventsOrganised   Event[]         @relation("EventsOrganised")
+  tickets           Ticket[]
   points       Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -181,6 +183,28 @@ model Event {
   blurb     String
   status    ContentStatus @default(DRAFT)
   isDemo    Boolean       @default(true)
+
+  // ---- Ticketing (OFF = no tickets: the event is just listed) ----
+  ticketing        TicketMode @default(OFF)
+  organiserId      String? // a partner collaborating on this event: sees the attendees, confirms payments, admits people at the door
+  organiser        User?      @relation("EventsOrganised", fields: [organiserId], references: [id], onDelete: SetNull)
+  ticketPrefix     String?    @unique // e.g. "SAG": ticket numbers read SAG-0001, SAG-0002 …
+  ticketCapacity   Int? // empty = unlimited
+  ticketsPerPerson Int        @default(4)
+  ticketsCloseAt   DateTime? // empty = sales close when the event starts
+  ticketHoldHours  Int        @default(48) // a paid reservation not confirmed in this time is released
+  ticketPrice      Int        @default(0) // KES per ticket (PAID events)
+  // How guests pay a PAID event. Payment goes to the ORGANISER, not through this site, so these instructions are shown to the guest and the
+  // organiser (or an admin) confirms that the money arrived.
+  payMethod        PayMethod?
+  payTo            String? // paybill / till number, phone number, or bank details
+  payAccount       String? // account number or a template; {TICKET} becomes the ticket number
+  payeeName        String? // the name that appears when paying, so a guest can check it
+  payNotes         String?
+  ticketSeq        Int        @default(0) // numbers handed out so far (never goes down)
+  ticketsTaken     Int        @default(0) // tickets that currently count against the capacity
+  tickets          Ticket[]
+  ticketPayments   TicketPayment[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
@@ -1549,4 +1573,77 @@ model HostPayout {
 
   @@index([hostId, status])
   @@index([status, createdAt])
+}
+
+// ---- Event tickets ----
+
+enum TicketMode {
+  OFF
+  FREE
+  PAID
+}
+
+enum PayMethod {
+  PAYBILL
+  TILL
+  SEND_MONEY
+  BANK
+  OTHER
+}
+
+enum EventTicketStatus {
+  PENDING_PAYMENT // reserved, waiting for the guest to pay and the organiser to confirm; seats are held
+  VALID // free, or paid and confirmed: lets one person in
+  USED // admitted at the door (once)
+  CANCELLED
+  EXPIRED // a paid reservation that wasn't confirmed in time (seats released)
+}
+
+/// One row per CONFIRMED reservation. The unique keys are what make "one M-Pesa code can confirm only one reservation" true even when two
+/// people confirm at the same instant: the database refuses the second row, whatever the timing.
+model TicketPayment {
+  id            String   @id @default(cuid())
+  eventId       String
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  groupId       String
+  reference     String // the M-Pesa code the organiser confirmed this reservation with
+  amount        Int // what the reservation cost
+  confirmedById String?
+  createdAt     DateTime @default(now())
+
+  @@unique([eventId, reference])
+  @@unique([eventId, groupId])
+}
+
+model Ticket {
+  id               String       @id @default(cuid())
+  eventId          String
+  event            Event        @relation(fields: [eventId], references: [id], onDelete: Restrict)
+  userId           String?
+  user             User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+  groupId          String // tickets reserved together (one payment covers the group)
+  number           String // SAG-0042: unique within the event, read out and typed at the door
+  secret           String       @unique // random: what the QR code carries, so a number can't be guessed into a working ticket
+  holderName       String
+  holderPhone      String
+  status           EventTicketStatus
+  price            Int // what this ticket cost when it was reserved
+  expiresAt        DateTime? // when an unconfirmed paid reservation is released
+  claimedReference String? // the M-Pesa code the guest says they paid with (helps the organiser match it; not proof)
+  claimedAt        DateTime?
+  paymentReference String? // the code the organiser confirmed the payment with
+  confirmedAt      DateTime?
+  confirmedById    String?
+  usedAt           DateTime?
+  usedById         String?
+  cancelledAt      DateTime?
+  cancelledBy      String? // GUEST | ORGANISER | ADMIN | SYSTEM
+  cancelReason     String?
+  createdAt        DateTime     @default(now())
+
+  @@unique([eventId, number])
+  @@index([eventId, status])
+  @@index([userId])
+  @@index([groupId])
+  @@index([status, expiresAt])
 }
