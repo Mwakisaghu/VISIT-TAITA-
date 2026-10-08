@@ -1647,3 +1647,13 @@ model Ticket {
   @@index([groupId])
   @@index([status, expiresAt])
 }
+
+/// Shared counters for rate limiting, so a limit holds across EVERY running copy of the site (the old in-memory counters were per copy).
+/// The key is a hash of what is being limited (an email plus an address, say), so no email or address is stored here; rows expire within hours.
+model RateLimitBucket {
+  key      String   @id
+  count    Int
+  resetsAt DateTime
+
+  @@index([resetsAt])
+}
