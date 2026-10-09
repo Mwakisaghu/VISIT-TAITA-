@@ -119,3 +119,26 @@ export function parseGuideFields(form: FormLike, kind: GuideKind): { ok: true; v
   }
   return { ok: true, values };
 }
+
+// ---- Filters on the stays list ---------------------------------------------------------------------------------------------------
+export const STAY_TYPES = { hotel: "HOTEL", lodge: "LODGE", guesthouse: "GUESTHOUSE", homestay: "HOMESTAY", campsite: "CAMPSITE" } as const;
+export const ZONES: Zone[] = ["PLAINS", "FOOTHILLS", "HIGHLANDS"];
+export type StayFilters = { type: (typeof STAY_TYPES)[keyof typeof STAY_TYPES] | null; mood: string | null; zone: Zone | null };
+export function parseStayFilters(sp: Record<string, string | string[] | undefined>): StayFilters {
+  const t = one(sp.type).toLowerCase(), m = one(sp.mood).toLowerCase(), z = one(sp.zone).toUpperCase();
+  return { type: (STAY_TYPES as Record<string, StayFilters["type"]>)[t] ?? null, mood: MOOD_KEYS.includes(m) ? m : null, zone: (ZONES as string[]).includes(z) ? (z as Zone) : null };
+}
+/** The altitude range (in metres, from inclusive, to exclusive) that a zone covers, as a database filter. */
+export function zoneRange(zone: Zone): { gte?: number; lt?: number } {
+  if (zone === "PLAINS") return { lt: ZONE_BOUNDS.foothillsFrom };
+  if (zone === "FOOTHILLS") return { gte: ZONE_BOUNDS.foothillsFrom, lt: ZONE_BOUNDS.highlandsFrom };
+  return { gte: ZONE_BOUNDS.highlandsFrom };
+}
+/** The address of the stays list with one filter changed. Choosing the filter that is already on turns it off. */
+export function stayFilterHref(f: StayFilters, change: Partial<{ type: string | null; mood: string | null; zone: string | null }>): string {
+  const cur = { type: f.type ? f.type.toLowerCase() : null, mood: f.mood, zone: f.zone ? f.zone.toLowerCase() : null };
+  const next: Record<string, string | null> = { ...cur, ...change };
+  for (const k of ["type", "mood", "zone"] as const) if (k in change && change[k] === cur[k]) next[k] = null;
+  const q = new URLSearchParams(); for (const k of ["type", "mood", "zone"]) if (next[k]) q.set(k, next[k] as string);
+  const s = q.toString(); return s ? `/stay?${s}` : "/stay";
+}
