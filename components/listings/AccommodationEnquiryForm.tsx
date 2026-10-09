@@ -47,16 +47,16 @@ export default function AccommodationEnquiryForm({ accommodationId }: { accommod
       {referral && <input type="hidden" name="from" value={referral} />}
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/50">Check-in</span>
+          <span className="font-body text-xs text-stone/70">Check-in</span>
           <input name="checkIn" type="date" className="input" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/50">Check-out</span>
+          <span className="font-body text-xs text-stone/70">Check-out</span>
           <input name="checkOut" type="date" className="input" />
         </label>
       </div>
       <label className="flex flex-col gap-1">
-        <span className="font-body text-xs text-stone/50">Guests</span>
+        <span className="font-body text-xs text-stone/70">Guests</span>
         <input name="guests" type="number" min={1} className="input" />
       </label>
       <input name="name" required placeholder="Your name" className="input" />
