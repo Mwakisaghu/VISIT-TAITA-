@@ -15,13 +15,17 @@ export const revalidate = 120;
 const has = { latitude: { not: null }, longitude: { not: null } } as const;
 
 export default async function MapPage() {
-  const [places, stays, experiences] = await Promise.all([
+  const [places, stays, experiences, wants, beens] = await Promise.all([
     prisma.destination.findMany({ where: { status: "PUBLISHED", ...has }, orderBy: { name: "asc" }, select: { id: true, slug: true, name: true, region: true, image: true, latitude: true, longitude: true, altitudeM: true, category: true, blurb: true, isDemo: true } }),
     prisma.accommodation.findMany({ where: { status: "PUBLISHED", ...has }, orderBy: { name: "asc" }, select: { id: true, slug: true, name: true, region: true, image: true, latitude: true, longitude: true, altitudeM: true, type: true, description: true, hostName: true, isDemo: true } }),
     prisma.experience.findMany({ where: { status: "PUBLISHED", ...has }, orderBy: { name: "asc" }, select: { id: true, slug: true, name: true, region: true, image: true, latitude: true, longitude: true, altitudeM: true, category: true, description: true, hostName: true, isDemo: true } }),
+    prisma.placeWish.groupBy({ by: ["destinationId"], _count: { _all: true } }),
+    prisma.visit.groupBy({ by: ["destinationId"], _count: { _all: true } }),
   ]);
+  // Anonymous counts only: how many people want to go, and how many have been. No names, ever.
+  const wantBy = new Map(wants.map((w) => [w.destinationId, w._count._all])), beenBy = new Map(beens.map((b) => [b.destinationId, b._count._all]));
   // The list shows a thumbnail 80 px wide: send a small copy, not the full-size file.
-  const items = buildItems(places, stays, experiences).map((i) => ({ ...i, image: optimizedUrl(i.image, 384) }));
+  const items = buildItems(places, stays, experiences).map((i) => ({ ...i, image: optimizedUrl(i.image, 384), ...(i.kind === "place" ? { want: wantBy.get(i.id.slice(2)) ?? 0, been: beenBy.get(i.id.slice(2)) ?? 0 } : {}) }));
   const hasDemo = [...places, ...stays, ...experiences].some((x) => x.isDemo);
 
   return (

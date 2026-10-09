@@ -7,6 +7,7 @@ import { toggleVisit } from "@/lib/actions/passport";
 import { CHECKIN_POINTS } from "@/lib/passport";
 import SectionHeading from "@/components/SectionHeading";
 import LocationCheckinButton from "@/components/passport/LocationCheckinButton";
+import WishList from "@/components/stamps/WishList";
 
 export const metadata = { title: "Your Passport" };
 
@@ -14,7 +15,7 @@ export default async function PassportPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 
-  const [user, destinations, allBadges] = await Promise.all([
+  const [user, destinations, allBadges, wishRows] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       include: { badges: { include: { badge: true } }, visits: true },
@@ -24,6 +25,11 @@ export default async function PassportPage() {
       orderBy: { name: "asc" },
     }),
     prisma.badge.findMany(),
+    prisma.placeWish.findMany({
+      where: { userId: session.user.id, destination: { status: "PUBLISHED" } },
+      orderBy: { createdAt: "desc" },
+      select: { destination: { select: { id: true, name: true, slug: true, region: true, altitudeM: true } } },
+    }),
   ]);
 
   if (!user) redirect("/login");
@@ -68,6 +74,8 @@ export default async function PassportPage() {
             })}
           </div>
         </div>
+
+        <WishList wishes={wishRows.map((w) => w.destination)} />
 
         {/* CHECK-INS */}
         <div className="mt-16">
