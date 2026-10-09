@@ -1,84 +1,29 @@
 import { PrismaClient } from "@prisma/client";
+import { PLACES, SAMPLE_GEO } from "./data/taita-places";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 // Same sample/demo content as the Phase 1 scaffold's lib/data.ts — real
 // place names, placeholder descriptions. Replace before launch.
-const destinations = [
-  {
-    slug: "ngangao-forest",
-    name: "Ngangao Forest",
-    category: "WILD" as const,
-    region: "Dawida Hills",
-    blurb:
-      "One of the last indigenous cloud forests of the Taita Hills, thick with mist, birdsong and species found nowhere else on Earth.",
-    image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200",
-    latitude: -3.383,
-    longitude: 38.35,
-    featured: true,
-  },
-  {
-    slug: "lake-chala",
-    name: "Lake Chala",
-    category: "WILD" as const,
-    region: "Kenya–Tanzania border",
-    blurb:
-      "A crater lake shared with Tanzania, its still turquoise water ringed by steep volcanic walls and quiet enough to hear your own footsteps.",
-    image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1200",
-    latitude: -3.317,
-    longitude: 37.7,
-    featured: false,
-  },
-  {
-    slug: "wundanyi-town",
-    name: "Wundanyi",
-    category: "CULTURE" as const,
-    region: "Taita Hills",
-    blurb:
-      "The hill town at the heart of Taita life — markets, mist and a view over the plains that stretches all the way to Tsavo.",
-    image: "https://images.unsplash.com/photo-1466442929976-97f336a657be?q=80&w=1200",
-    latitude: -3.398,
-    longitude: 38.36,
-    featured: false,
-  },
-  {
-    slug: "sagalla-hill",
-    name: "Sagalla Hill",
-    category: "ADVENTURE" as const,
-    region: "Voi",
-    blurb:
-      "A steep trail rewarding early risers with a sunrise over Tsavo's red earth and, on a clear day, a glimpse of Kilimanjaro.",
-    image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1200",
-    latitude: -3.45,
-    longitude: 38.55,
-    featured: true,
-  },
-  {
-    slug: "taita-hills-sanctuary",
-    name: "Taita Hills Wildlife Sanctuary",
-    category: "WILD" as const,
-    region: "Voi",
-    blurb:
-      "A private conservancy bordering Tsavo where elephant, buffalo and rare Hirola roam under the shadow of the hills.",
-    image: "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=1200",
-    latitude: -3.43,
-    longitude: 38.5,
-    featured: false,
-  },
-  {
-    slug: "dawida-kitchens",
-    name: "Dawida Kitchens",
-    category: "FOOD" as const,
-    region: "Wundanyi",
-    blurb:
-      "Home kitchens serving mukimo, matumbo and hill-grown bananas the way they've been cooked in Taita for generations.",
-    image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200",
-    latitude: -3.396,
-    longitude: 38.362,
-    featured: false,
-  },
-];
+// Real places, positions and altitudes researched from public sources (see docs/place-data-sources.md and prisma/data/taita-places.json).
+// The pictures are generic stand-ins; replace them with real photographs.
+const STAND_IN_IMAGES: Record<string, string> = {
+  "ngangao-forest": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200",
+  "lake-chala": "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?q=80&w=1200",
+  "wundanyi-town": "https://images.unsplash.com/photo-1466442929976-97f336a657be?q=80&w=1200",
+  "sagalla-hill": "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1200",
+  "taita-hills-sanctuary": "https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?q=80&w=1200",
+  "dawida-kitchens": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200"
+};
+const IMAGE_FOR_CATEGORY: Record<string, string> = { WILD: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200", ADVENTURE: "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1200", CULTURE: "https://images.unsplash.com/photo-1466442929976-97f336a657be?q=80&w=1200", FOOD: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=1200", SPORT: "https://images.unsplash.com/photo-1466442929976-97f336a657be?q=80&w=1200", PEOPLE: "https://images.unsplash.com/photo-1466442929976-97f336a657be?q=80&w=1200" };
+const FEATURED = new Set(["ngangao-forest", "sagalla-hill", "mount-kasigau", "lake-chala"]);
+const destinations = PLACES.map((p) => ({
+  slug: p.slug, name: p.name, category: p.category, region: p.region, blurb: p.blurb,
+  image: STAND_IN_IMAGES[p.slug] ?? IMAGE_FOR_CATEGORY[p.category],
+  latitude: p.latitude, longitude: p.longitude, altitudeM: p.altitudeM, featured: FEATURED.has(p.slug),
+}));
+
 
 const stories = [
   {
@@ -774,7 +719,7 @@ async function main() {
     await prisma.accommodation.upsert({
       where: { slug: a.slug },
       update: {}, // preserve operator edits on re-seed; seed only creates missing rows
-      create: { ...a, status: "PUBLISHED", isDemo: true, ownerId: admin.id },
+      create: { ...a, ...(SAMPLE_GEO[a.name] ?? {}), status: "PUBLISHED", isDemo: true, ownerId: admin.id },
     });
   }
 
@@ -782,7 +727,7 @@ async function main() {
     await prisma.experience.upsert({
       where: { slug: x.slug },
       update: {}, // preserve operator edits on re-seed; seed only creates missing rows
-      create: { ...x, status: "PUBLISHED", isDemo: true, ownerId: admin.id },
+      create: { ...x, ...(SAMPLE_GEO[x.name] ?? {}), status: "PUBLISHED", isDemo: true, ownerId: admin.id },
     });
   }
 

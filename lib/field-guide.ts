@@ -90,7 +90,7 @@ export function filterHref(f: ExperienceFilters, change: Partial<{ type: string 
 // ---- Entering the facts (admin and partner forms) -------------------------------------------------------------------------------
 type FormLike = { get(name: string): unknown; getAll(name: string): unknown[] };
 export type GuideKind = "experience" | "stay" | "place";
-export type GuideValues = { altitudeM: number | null; difficulty?: Level | null; elevationGainM?: number | null; hostName?: string | null; hostRole?: string | null; hostQuote?: string | null; moods?: string[] };
+export type GuideValues = { altitudeM: number | null; difficulty?: Level | null; elevationGainM?: number | null; hostName?: string | null; hostRole?: string | null; hostQuote?: string | null; moods?: string[]; latitude?: number | null; longitude?: number | null };
 const text = (v: unknown, max: number): string => (typeof v === "string" ? v.replace(/[\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max) : "");
 const wholeOrNull = (v: unknown, min: number, max: number, what: string): { ok: true; n: number | null } | { ok: false; error: string } => {
   // Forgiving about how people write a height: "1420", "1,420", "1 420", "1420 m", "1420 metres". Not "1e3", "0x10", "+5", "1.420" or "1420.5".
@@ -101,6 +101,20 @@ const wholeOrNull = (v: unknown, min: number, max: number, what: string): { ok: 
   return { ok: true, n };
 };
 
+export const KENYA_BOUNDS = { latMin: -4.7, latMax: 5.1, lngMin: 33.9, lngMax: 41.95 } as const;
+const DECIMAL = /^-?\d{1,3}(\.\d+)?$/;
+/** A position on the map: both numbers or neither, plain decimals with a dot, inside Kenya, and not swapped (latitude first). */
+export function parseCoordinates(latRaw: unknown, lngRaw: unknown): { ok: true; latitude: number | null; longitude: number | null } | { ok: false; error: string } {
+  const la = typeof latRaw === "string" ? latRaw.trim() : "", lo = typeof lngRaw === "string" ? lngRaw.trim() : "";
+  if (la === "" && lo === "") return { ok: true, latitude: null, longitude: null };
+  if (la === "" || lo === "") return { ok: false, error: "Fill in both latitude and longitude, or leave both empty." };
+  if (!DECIMAL.test(la) || !DECIMAL.test(lo)) return { ok: false, error: `Latitude and longitude must be plain decimal numbers such as -3.398 and 38.360 (with a dot, not a comma). You entered "${la.slice(0, 20)}" and "${lo.slice(0, 20)}".` };
+  const a = Number(la), b = Number(lo); const B = KENYA_BOUNDS;
+  const inKenya = (x: number, y: number) => x >= B.latMin && x <= B.latMax && y >= B.lngMin && y <= B.lngMax;
+  if (!inKenya(a, b)) return { ok: false, error: inKenya(b, a) ? "These look swapped: latitude comes first (Taita is about -3.4) and longitude second (about 38.4)." : "That position is outside Kenya. Taita Taveta is around latitude -3.4 and longitude 38.4." };
+  return { ok: true, latitude: a, longitude: b };
+}
+
 export function parseGuideFields(form: FormLike, kind: GuideKind): { ok: true; values: GuideValues } | { ok: false; error: string } {
   const alt = wholeOrNull(form.get("altitudeM"), 0, MAX_ALTITUDE_M, "Altitude"); if (!alt.ok) return alt;
   const values: GuideValues = { altitudeM: alt.n };
@@ -109,6 +123,8 @@ export function parseGuideFields(form: FormLike, kind: GuideKind): { ok: true; v
   if (hostName && hostName.length < 2) return { ok: false, error: "The guide or host's name must be at least 2 letters." };
   // A role or a quote is only meaningful with a person to show, so without a name they are not saved (the form says so).
   values.hostName = hostName || null; values.hostRole = hostName ? hostRole || null : null; values.hostQuote = hostName ? hostQuote || null : null;
+  const geo = parseCoordinates(form.get("latitude"), form.get("longitude")); if (!geo.ok) return geo;
+  values.latitude = geo.latitude; values.longitude = geo.longitude;
   if (kind === "experience") {
     const climb = wholeOrNull(form.get("elevationGainM"), 0, 5000, "The climb"); if (!climb.ok) return climb;
     const d = text(form.get("difficulty"), 12).toUpperCase();
