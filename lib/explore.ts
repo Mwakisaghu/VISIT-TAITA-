@@ -7,6 +7,8 @@ export type Item = {
   latitude: number; longitude: number; altitudeM: number | null;
   /** For places: the world (wild, culture, adventure, food, sport, people). For stays and experiences: their type or category, in lower case. */
   world: string; href: string; host: string | null;
+  /** For places: how many people have saved it, and how many have been (anonymous counts only). */
+  want?: number; been?: number;
 };
 export type LayerKey = "places" | "stays" | "experiences";
 export const LAYERS: { key: LayerKey; label: string; kind: Kind }[] = [{ key: "places", label: "Places", kind: "place" }, { key: "stays", label: "Stays", kind: "stay" }, { key: "experiences", label: "Experiences", kind: "experience" }];
