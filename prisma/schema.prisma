@@ -906,6 +906,8 @@ model Accommodation {
 
   // ---- Field Guide (all optional)
   altitudeM Int?
+  latitude  Float? // where it is on the map (optional)
+  longitude Float?
   hostName  String?
   hostRole  String?
   hostQuote String?
@@ -977,6 +979,8 @@ model Experience {
 
   // ---- Field Guide (all optional): how high, how hard, and who leads it
   altitudeM      Int? // metres above sea level
+  latitude  Float? // where it is on the map (optional)
+  longitude Float?
   difficulty     Difficulty?
   elevationGainM Int? // total climb, in metres
   hostName       String? // the guide or host a visitor will meet
