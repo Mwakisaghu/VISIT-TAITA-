@@ -61,6 +61,7 @@ model User {
   updatedAt    DateTime @updatedAt
 
   visits      Visit[]
+  wishes    PlaceWish[]
   badges      UserBadge[]
   storiesWritten     Story[]       @relation("StoryAuthor")
   destinationsAdded  Destination[] @relation("DestinationCreatedBy")
@@ -127,6 +128,7 @@ model Destination {
   checkinRadiusM Int     @default(300)
 
   visits   Visit[]
+  wishes    PlaceWish[]
   missions Mission[]
 
   @@index([category, status])
@@ -1688,4 +1690,17 @@ enum Difficulty {
   EASY
   MODERATE
   HARD
+}
+
+// "Want to go": a place someone has saved to visit. One per person per place.
+model PlaceWish {
+  id            String      @id @default(cuid())
+  userId        String
+  destinationId String
+  createdAt     DateTime    @default(now())
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, destinationId])
+  @@index([destinationId])
 }
