@@ -17,7 +17,7 @@ export default function GuideFields({ kind, defaults }: { kind: "experience" | "
       </p>
       <label className={label}>
         <span className={hint}>Altitude in metres above sea level</span>
-        <input name="altitudeM" inputMode="numeric" defaultValue={d.altitudeM ?? ""} placeholder={`e.g. 1420 (0 to ${MAX_ALTITUDE_M.toLocaleString("en")})`} className="input" />
+        <input name="altitudeM" type="number" inputMode="numeric" min={0} max={MAX_ALTITUDE_M} step={1} defaultValue={d.altitudeM ?? ""} placeholder={`e.g. 1420 (0 to ${MAX_ALTITUDE_M.toLocaleString("en")})`} className="input" />
       </label>
       {kind === "experience" && (
         <div className="grid gap-5 sm:grid-cols-2">
@@ -30,7 +30,7 @@ export default function GuideFields({ kind, defaults }: { kind: "experience" | "
           </label>
           <label className={label}>
             <span className={hint}>Total climb in metres</span>
-            <input name="elevationGainM" inputMode="numeric" defaultValue={d.elevationGainM ?? ""} placeholder="e.g. 350" className="input" />
+            <input name="elevationGainM" type="number" inputMode="numeric" min={0} max={5000} step={1} defaultValue={d.elevationGainM ?? ""} placeholder="e.g. 350" className="input" />
           </label>
         </div>
       )}
@@ -39,7 +39,7 @@ export default function GuideFields({ kind, defaults }: { kind: "experience" | "
           <div className="grid gap-5 sm:grid-cols-2">
             <label className={label}>
               <span className={hint}>{kind === "experience" ? "Guide's name" : "Host's name"}</span>
-              <input name="hostName" maxLength={80} defaultValue={d.hostName ?? ""} className="input" />
+              <input name="hostName" minLength={2} maxLength={80} defaultValue={d.hostName ?? ""} className="input" />
             </label>
             <label className={label}>
               <span className={hint}>Their role</span>
@@ -50,7 +50,7 @@ export default function GuideFields({ kind, defaults }: { kind: "experience" | "
             <span className={hint}>A line in their own words (optional)</span>
             <textarea name="hostQuote" rows={2} maxLength={240} defaultValue={d.hostQuote ?? ""} className="input" />
           </label>
-          <p className={hint}>Only name someone who has agreed to be named.</p>
+          <p className={hint}>Only name someone who has agreed to be named. A role or a quote is saved only together with a name.</p>
         </>
       )}
       {kind === "stay" && (

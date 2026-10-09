@@ -93,10 +93,11 @@ export type GuideKind = "experience" | "stay" | "place";
 export type GuideValues = { altitudeM: number | null; difficulty?: Level | null; elevationGainM?: number | null; hostName?: string | null; hostRole?: string | null; hostQuote?: string | null; moods?: string[] };
 const text = (v: unknown, max: number): string => (typeof v === "string" ? v.replace(/[\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim().slice(0, max) : "");
 const wholeOrNull = (v: unknown, min: number, max: number, what: string): { ok: true; n: number | null } | { ok: false; error: string } => {
-  const s = typeof v === "string" ? v.trim() : ""; if (s === "") return { ok: true, n: null };
-  // Plain digits, optionally with proper thousands commas ("1,420"). Not "1e3", "0x10", "+5" or "1,4,2".
-  const n = /^(\d+|\d{1,3}(,\d{3})+)$/.test(s) ? Number(s.replace(/,/g, "")) : NaN;
-  if (!Number.isInteger(n) || n < min || n > max) return { ok: false, error: `${what} must be a whole number of metres between ${min.toLocaleString("en")} and ${max.toLocaleString("en")} (or left empty).` };
+  // Forgiving about how people write a height: "1420", "1,420", "1 420", "1420 m", "1420 metres". Not "1e3", "0x10", "+5", "1.420" or "1420.5".
+  const raw = typeof v === "string" ? v.trim() : ""; if (raw === "") return { ok: true, n: null };
+  const s = raw.replace(/(?<=\d)\s*(m|metres|meters|masl)\.?$/i, "").trim();
+  const n = /^(\d+|\d{1,3}([, \u00a0]\d{3})+)$/.test(s) ? Number(s.replace(/[, \u00a0]/g, "")) : NaN;
+  if (!Number.isInteger(n) || n < min || n > max) return { ok: false, error: `${what} must be a whole number of metres between ${min.toLocaleString("en")} and ${max.toLocaleString("en")} (or left empty). You entered "${raw.slice(0, 20)}".` };
   return { ok: true, n };
 };
 
@@ -106,8 +107,8 @@ export function parseGuideFields(form: FormLike, kind: GuideKind): { ok: true; v
   if (kind === "place") return { ok: true, values };
   const hostName = text(form.get("hostName"), 80), hostRole = text(form.get("hostRole"), 40), hostQuote = text(form.get("hostQuote"), 240);
   if (hostName && hostName.length < 2) return { ok: false, error: "The guide or host's name must be at least 2 letters." };
-  if (!hostName && (hostRole || hostQuote)) return { ok: false, error: "Add the guide or host's name too: a role or a quote needs a person." };
-  values.hostName = hostName || null; values.hostRole = hostRole || null; values.hostQuote = hostQuote || null;
+  // A role or a quote is only meaningful with a person to show, so without a name they are not saved (the form says so).
+  values.hostName = hostName || null; values.hostRole = hostName ? hostRole || null : null; values.hostQuote = hostName ? hostQuote || null : null;
   if (kind === "experience") {
     const climb = wholeOrNull(form.get("elevationGainM"), 0, 5000, "The climb"); if (!climb.ok) return climb;
     const d = text(form.get("difficulty"), 12).toUpperCase();
