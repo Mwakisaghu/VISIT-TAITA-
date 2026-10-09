@@ -1,6 +1,6 @@
 import { LEVELS, LEVEL_LABEL, MOODS, MAX_ALTITUDE_M } from "@/lib/field-guide";
 
-type Defaults = { altitudeM?: number | null; difficulty?: string | null; elevationGainM?: number | null; hostName?: string | null; hostRole?: string | null; hostQuote?: string | null; moods?: string[] | null };
+type Defaults = { altitudeM?: number | null; difficulty?: string | null; elevationGainM?: number | null; hostName?: string | null; hostRole?: string | null; hostQuote?: string | null; moods?: string[] | null; latitude?: number | null; longitude?: number | null };
 
 const label = "flex flex-col gap-1";
 const hint = "font-body text-sm text-stone/70";
@@ -19,6 +19,21 @@ export default function GuideFields({ kind, defaults }: { kind: "experience" | "
         <span className={hint}>Altitude in metres above sea level</span>
         <input name="altitudeM" type="number" inputMode="numeric" min={0} max={MAX_ALTITUDE_M} step={1} defaultValue={d.altitudeM ?? ""} placeholder={`e.g. 1420 (0 to ${MAX_ALTITUDE_M.toLocaleString("en")})`} className="input" />
       </label>
+      {kind !== "place" && (
+        <>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className={label}>
+              <span className={hint}>Latitude on the map (optional, e.g. -3.398)</span>
+              <input name="latitude" type="number" step="any" min={-4.7} max={5.1} defaultValue={d.latitude ?? ""} className="input" />
+            </label>
+            <label className={label}>
+              <span className={hint}>Longitude (optional, e.g. 38.360)</span>
+              <input name="longitude" type="number" step="any" min={33.9} max={41.95} defaultValue={d.longitude ?? ""} className="input" />
+            </label>
+          </div>
+          <p className={hint}>In Google Maps, right-click the spot and click the two numbers to copy them. Latitude comes first. Fill in both or neither.</p>
+        </>
+      )}
       {kind === "experience" && (
         <div className="grid gap-5 sm:grid-cols-2">
           <label className={label}>

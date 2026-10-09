@@ -1,0 +1,230 @@
+{
+  "_about": "Researched positions and altitudes for Taita Taveta. See docs/place-data-sources.md. 'sourced' = from a published source; 'approximate' = an estimate to verify on site.",
+  "places": [
+    {
+      "slug": "wundanyi-town",
+      "name": "Wundanyi",
+      "category": "CULTURE",
+      "region": "Taita Hills",
+      "blurb": "The hill town at the heart of Taita life: terraced slopes, a busy market, and the starting point for the Ngangao forest and Wesu Rock.",
+      "latitude": -3.39833,
+      "longitude": 38.36028,
+      "altitudeM": 1408,
+      "position": "sourced",
+      "altitude": "approximate",
+      "note": "Altitude from a weather service's terrain model (about 1,408 m); a surveyed figure would be better."
+    },
+    {
+      "slug": "voi-town",
+      "name": "Voi",
+      "category": "CULTURE",
+      "region": "Voi",
+      "blurb": "The county's largest town and gateway to Tsavo East: a railway town, a meat and produce market for the hills, and lodges on its edges.",
+      "latitude": -3.39056,
+      "longitude": 38.57694,
+      "altitudeM": 580,
+      "position": "sourced",
+      "altitude": "sourced"
+    },
+    {
+      "slug": "mwatate-town",
+      "name": "Mwatate",
+      "category": "CULTURE",
+      "region": "Mwatate",
+      "blurb": "The county's administrative seat, once the district headquarters, set between the hills and the sisal estates of the plains.",
+      "latitude": -3.50472,
+      "longitude": 38.37778,
+      "altitudeM": 844,
+      "position": "sourced",
+      "altitude": "sourced"
+    },
+    {
+      "slug": "lake-chala",
+      "name": "Lake Chala",
+      "category": "WILD",
+      "region": "Taveta, on the Tanzania border",
+      "blurb": "A deep crater lake shared with Tanzania, fed from Kilimanjaro's forests below ground. The rim path gives long views across the plains.",
+      "latitude": -3.317,
+      "longitude": 37.7,
+      "altitudeM": 880,
+      "position": "sourced",
+      "altitude": "sourced",
+      "note": "Crocodiles live in the lake: walk the rim, don't swim."
+    },
+    {
+      "slug": "lake-jipe",
+      "name": "Lake Jipe",
+      "category": "WILD",
+      "region": "Taveta, on the Tanzania border",
+      "blurb": "A shallow lake at the south-western end of Tsavo West, shared with Tanzania, with fishing villages, hippos and a lot of birds.",
+      "latitude": -3.45,
+      "longitude": 37.73,
+      "altitudeM": null,
+      "position": "sourced",
+      "altitude": "none",
+      "note": "No reliable altitude found yet: left empty."
+    },
+    {
+      "slug": "mbololo-forest",
+      "name": "Mbololo Forest",
+      "category": "WILD",
+      "region": "Taita Hills",
+      "blurb": "One of the largest and best-kept cloud forests on the Taita Hills, home to birds found nowhere else on Earth.",
+      "latitude": -3.3167,
+      "longitude": 38.45,
+      "altitudeM": 1550,
+      "position": "sourced",
+      "altitude": "approximate",
+      "note": "The forest spans 1,400–1,700 m; 1,550 m is the middle of that range."
+    },
+    {
+      "slug": "ngangao-forest",
+      "name": "Ngangao Forest",
+      "category": "WILD",
+      "region": "Dawida Hills",
+      "blurb": "A misty indigenous cloud forest about 10 km from Wundanyi, easy to reach and walk, with a basic forest camp beside it.",
+      "latitude": -3.36,
+      "longitude": 38.35,
+      "altitudeM": 2149,
+      "position": "approximate",
+      "altitude": "sourced",
+      "note": "2,149 m is the peak above the forest. The position is estimated from 'about 10 km from Wundanyi'; please verify on site."
+    },
+    {
+      "slug": "taita-hills-sanctuary",
+      "name": "Taita Hills Wildlife Sanctuary",
+      "category": "WILD",
+      "region": "Voi",
+      "blurb": "A privately run sanctuary of about 110 square kilometres beside Tsavo West, with elephants, big cats and the endemic Taita birds.",
+      "latitude": -3.43,
+      "longitude": 38.5,
+      "altitudeM": 1200,
+      "position": "approximate",
+      "altitude": "sourced",
+      "note": "1,200 m is the sanctuary's own figure. The position is an estimate; please verify on site."
+    },
+    {
+      "slug": "mount-kasigau",
+      "name": "Mount Kasigau",
+      "category": "ADVENTURE",
+      "region": "Kasigau",
+      "blurb": "An isolated, steep-sided mountain rising from the plains to a cloud-forest summit, with a hiking route and community-guided camps.",
+      "latitude": -3.8333,
+      "longitude": 38.6667,
+      "altitudeM": 1641,
+      "position": "sourced",
+      "altitude": "sourced",
+      "note": "Rises from about 550 m; cloud forest above about 1,250 m."
+    },
+    {
+      "slug": "vuria-peak",
+      "name": "Vuria Peak",
+      "category": "ADVENTURE",
+      "region": "Taita Hills",
+      "blurb": "The highest point in the Taita Hills and in the county, reached on a stiff walk through forest and farmland.",
+      "latitude": -3.41,
+      "longitude": 38.33,
+      "altitudeM": 2228,
+      "position": "approximate",
+      "altitude": "sourced",
+      "note": "Sources disagree: 2,208 m (local constituency, University of Helsinki station), 2,228 m (Wikipedia, BirdLife, Kenya Tourism Board), 2,257 m (a field-course GPS reading). The position is estimated from the range's centre."
+    },
+    {
+      "slug": "sagalla-hill",
+      "name": "Sagalla Hill",
+      "category": "ADVENTURE",
+      "region": "Voi",
+      "blurb": "A steep hill directly south of Voi, rewarding early starts with a sunrise over Tsavo's red earth and, on a clear day, a glimpse of Kilimanjaro.",
+      "latitude": -3.47,
+      "longitude": 38.58,
+      "altitudeM": 1450,
+      "position": "approximate",
+      "altitude": "sourced",
+      "note": "1,450 m is the peak height. The position is estimated from 'directly south of Voi'; please verify on site."
+    },
+    {
+      "slug": "teita-sisal-estate",
+      "name": "Teita Sisal Estate",
+      "category": "PEOPLE",
+      "region": "Mwatate",
+      "blurb": "One of the largest sisal estates in the world, near Mwatate: rows of spiky green on the plains, and the families whose lives follow the harvest.",
+      "latitude": -3.49,
+      "longitude": 38.39,
+      "altitudeM": 850,
+      "position": "approximate",
+      "altitude": "approximate",
+      "note": "Described as 'near Mwatate'; the position and altitude are estimates.",
+      "sample": true
+    },
+    {
+      "slug": "dawida-kitchens",
+      "name": "Dawida Kitchens",
+      "category": "FOOD",
+      "region": "Wundanyi",
+      "blurb": "Home cooks around Wundanyi opening their kitchens for the dishes of the hills.",
+      "latitude": -3.396,
+      "longitude": 38.362,
+      "altitudeM": 1410,
+      "position": "approximate",
+      "altitude": "approximate",
+      "note": "A sample listing placed in Wundanyi's centre.",
+      "sample": true
+    },
+    {
+      "slug": "wundanyi-grounds",
+      "name": "Wundanyi Grounds",
+      "category": "SPORT",
+      "region": "Wundanyi",
+      "blurb": "The town's football ground, where the hills turn up on a Saturday.",
+      "latitude": -3.402,
+      "longitude": 38.358,
+      "altitudeM": 1400,
+      "position": "approximate",
+      "altitude": "approximate",
+      "note": "A sample listing placed near Wundanyi's centre.",
+      "sample": true
+    }
+  ],
+  "sampleGeo": {
+    "Dawida Hill Lodge": {
+      "latitude": -3.385,
+      "longitude": 38.345,
+      "altitudeM": 1520
+    },
+    "Voi Gateway Hotel": {
+      "latitude": -3.392,
+      "longitude": 38.575,
+      "altitudeM": 580
+    },
+    "Tsavo Fringe Tented Camp": {
+      "latitude": -3.44,
+      "longitude": 38.46,
+      "altitudeM": 800
+    },
+    "Mama Atsango's Homestay": {
+      "latitude": -3.372,
+      "longitude": 38.372,
+      "altitudeM": 1480
+    },
+    "Sagalla Sunrise Hike": {
+      "latitude": -3.47,
+      "longitude": 38.58,
+      "altitudeM": 1100
+    },
+    "Ngangao Forest Canopy Walk": {
+      "latitude": -3.36,
+      "longitude": 38.35,
+      "altitudeM": 1900
+    },
+    "Wundanyi Market & Food Tour": {
+      "latitude": -3.398,
+      "longitude": 38.36,
+      "altitudeM": 1408
+    },
+    "Taita Drumming & Dance Circle": {
+      "latitude": -3.399,
+      "longitude": 38.361,
+      "altitudeM": 1410
+    }
+  }
+}
