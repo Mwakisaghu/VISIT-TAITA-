@@ -125,12 +125,18 @@ export async function saveStory(id: string | null, formData: FormData) {
     featured: formData.get("featured") === "on",
   });
 
+  // The place the story is about is optional; an id that is not a real place is ignored.
+  const placeId = String(formData.get("destinationId") ?? "").trim();
+  const place = placeId ? await prisma.destination.findUnique({ where: { id: placeId }, select: { id: true } }) : null;
+  const destinationId = place?.id ?? null;
+
   if (id) {
-    await prisma.story.update({ where: { id }, data: parsed });
+    await prisma.story.update({ where: { id }, data: { ...parsed, destinationId } });
   } else {
     await prisma.story.create({
       data: {
         ...parsed,
+        destinationId,
         slug: `${slugify(parsed.title)}-${Math.random().toString(36).slice(2, 6)}`,
         isDemo: false,
         authorId: user.id,

@@ -26,7 +26,7 @@ export default function StoryCard({ story, size = "regular" }: { story: Story; s
         {story.title}
       </p>
       <p className="mt-2 font-body text-sm text-stone/70">{story.excerpt}</p>
-      <p className="mt-2 font-body text-xs text-stone/50">{story.readingTime}</p>
+      <p className="mt-2 font-body text-xs text-stone/70">{story.readingTime}</p>
     </Link>
   );
 }
