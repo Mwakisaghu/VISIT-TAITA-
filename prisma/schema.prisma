@@ -111,6 +111,7 @@ model Destination {
   latitude  Float?
   longitude Float?
   altitudeM Int? // metres above sea level (places show where they sit between the plains and the hills)
+  stories   Story[]
   status    ContentStatus    @default(DRAFT)
   featured  Boolean          @default(false)
   isDemo    Boolean          @default(true)
@@ -161,7 +162,12 @@ model Story {
   authorId String?
   author   User?   @relation("StoryAuthor", fields: [authorId], references: [id], onDelete: SetNull)
 
+  // The place this story is about (optional): shown as "Where this happened", and used to suggest where to stay and what to do nearby.
+  destinationId String?
+  destination   Destination? @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+
   @@index([category, status])
+  @@index([destinationId])
 }
 
 // ---------------------------------------------------------------------------
