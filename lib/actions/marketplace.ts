@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { IMAGE_REF_MESSAGE, isImageRef } from "@/lib/image-ref";
 import { prisma } from "@/lib/prisma";
+import { parseProvenance } from "@/lib/makers";
 import { parseOptionLabel, parseOptionList, resolveOption } from "@/lib/product-options";
 
 async function requireAdmin() {
@@ -72,7 +73,11 @@ export async function saveProduct(id: string | null, formData: FormData) {
   if ("error" in optionList) throw new Error(optionList.error);
   const optionLabel = parseOptionLabel(formData.get("optionLabel"));
   if ("error" in optionLabel) throw new Error(optionLabel.error);
-  const data = { ...parsed, options: optionList.options, optionLabel: optionLabel.label };
+  const prov = parseProvenance(formData);
+  if (!prov.ok) throw new Error(prov.error);
+  // The maker must be a real one; an id that is not is ignored. An empty choice clears it.
+  const maker = prov.values.makerId ? await prisma.maker.findUnique({ where: { id: prov.values.makerId }, select: { id: true } }) : null;
+  const data = { ...parsed, options: optionList.options, optionLabel: optionLabel.label, ...prov.values, makerId: maker?.id ?? null };
 
   if (id) {
     await prisma.product.update({ where: { id }, data });
