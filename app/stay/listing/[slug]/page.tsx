@@ -8,6 +8,12 @@ import { accommodationTypeLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
 import { canOptimize } from "@/lib/image-src";
+import HostCard from "@/components/field/HostCard";
+import Tag from "@/components/field/Tag";
+import AltitudeRibbon from "@/components/field/AltitudeRibbon";
+import NearbyExperiences from "@/components/stay/NearbyExperiences";
+import { getNearbyExperiences } from "@/lib/stay-data";
+import { MOODS } from "@/lib/field-guide";
 
 export async function generateStaticParams() {
   const accommodations = await prisma.accommodation.findMany({ select: { slug: true } });
@@ -38,6 +44,7 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
 
   const bookingUrl = safeHttpUrl(accommodation.externalBookingUrl);
   const hasDirectContact = accommodation.contactPhone || accommodation.contactEmail || bookingUrl;
+  const nearby = await getNearbyExperiences(accommodation.region, new Date());
 
   return (
     <div>
@@ -71,6 +78,18 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
               {accommodation.description}
             </p>
 
+            {(accommodation.moods ?? []).length > 0 && (
+              <ul aria-label="How it feels" className="mt-8 flex flex-wrap gap-2">
+                {(accommodation.moods ?? []).flatMap((k) => { const m = MOODS.find((x) => x.key === k); return m ? [<li key={k}><Tag tone="rust">{m.label}</Tag></li>] : []; })}
+              </ul>
+            )}
+
+            {accommodation.hostName && (
+              <div className="mt-10">
+                <HostCard name={accommodation.hostName} role={accommodation.hostRole} quote={accommodation.hostQuote} />
+              </div>
+            )}
+
             {accommodation.amenities.length > 0 && (
               <div className="mt-10">
                 <p className="font-display text-xl text-stone">Amenities</p>
@@ -87,6 +106,15 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
               </div>
             )}
 
+            {accommodation.altitudeM != null && (
+              <div className="mt-10">
+                <p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-rust-deep">Where it sits</p>
+                <div className="mt-3 max-w-xl"><AltitudeRibbon altitudeM={accommodation.altitudeM} /></div>
+              </div>
+            )}
+
+            <NearbyExperiences items={nearby} region={accommodation.region} now={new Date()} />
+
             {accommodation.isDemo && (
               <div className="mt-10">
                 <DemoNotice>sample listing — rates, amenities and availability aren&apos;t verified.</DemoNotice>
@@ -98,16 +126,16 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
           <aside>
             <div className="sticky top-24 flex flex-col gap-6 rounded-sm border border-stone/10 p-6">
               <div>
-                <p className="font-body text-xs text-stone/50">From</p>
+                <p className="font-body text-xs text-stone/70">From</p>
                 <p className="font-display text-3xl text-stone">
                   {accommodation.priceFrom ? formatPrice(accommodation.priceFrom) : "Contact for rates"}
                 </p>
-                {accommodation.priceFrom && <p className="font-body text-xs text-stone/50">per night</p>}
+                {accommodation.priceFrom && <p className="font-body text-xs text-stone/70">per night</p>}
               </div>
 
               <div className="border-t border-stone/10 pt-6">
                 <p className="font-display text-lg text-stone">Send an enquiry</p>
-                <p className="mt-1 font-body text-xs text-stone/50">
+                <p className="mt-1 font-body text-xs text-stone/70">
                   Goes straight to {accommodation.name} — no account needed.
                 </p>
                 <div className="mt-4">
@@ -117,7 +145,7 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
 
               {hasDirectContact && (
                 <div className="border-t border-stone/10 pt-6">
-                  <p className="font-body text-xs text-stone/50">Or contact directly</p>
+                  <p className="font-body text-xs text-stone/70">Or contact directly</p>
                   <div className="mt-3 flex flex-col gap-2">
                     {accommodation.contactPhone && (
                       <a
