@@ -13,6 +13,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   FOOD: "Food",
   SPORT: "Sport",
   PEOPLE: "People",
+  PLACES: "Places",
   CLOTHING: "Clothing",
   ART: "Art",
   CRAFTS: "Crafts",
