@@ -8,7 +8,7 @@ import Logo from "@/components/brand/Logo";
 import { BagIcon, CloseIcon, MenuIcon, PassportIcon, SearchIcon, UserIcon } from "@/components/home/icons";
 import { useCart } from "@/components/marketplace/CartProvider";
 
-// The six ways into the site. ("Explore" is the map.) Everything else (Shop, Search, the account) is reachable but kept quiet.
+// The seven ways into the site. ("Explore" is the map.) Everything else (Shop, Search, the account) is reachable but kept quiet.
 const PRIMARY = [
   { href: "/discover", label: "Discover" },
   { href: "/map", label: "Explore" },
@@ -16,6 +16,7 @@ const PRIMARY = [
   { href: "/experiences", label: "Experiences" },
   { href: "/stories", label: "Stories" },
   { href: "/events", label: "Events" },
+  { href: "/plan", label: "Plan" },
 ];
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];

@@ -10,6 +10,7 @@ export const STATIC_PAGES: StaticPage[] = [
   { title: "Experiences", href: "/experiences", description: "Guided hikes, food tours and cultural circles.", keywords: ["tours", "guides", "activities", "hike", "tour"] },
   { title: "Stories", href: "/stories", description: "People, culture and nature, told by the people who know them.", keywords: ["articles", "read", "blog"] },
   { title: "Events", href: "/events", description: "The Taita Cup, Taita Week and everything in between.", keywords: ["festival", "calendar", "whats on", "what's on"] },
+  { title: "Build your Taita day", href: "/plan", description: "Pick a day, add a hike, an event and a stay, and see whether it all fits.", keywords: ["plan", "planner", "itinerary", "trip", "day", "schedule", "weekend", "route", "build"] },
   { title: "Taita Cup", href: "/events/taita-cup", description: "Come for the football. Stay for Taita.", keywords: ["football", "soccer", "tournament", "teams", "cup"] },
   { title: "Taita Week", href: "/events/taita-week", description: "A week of music, food, culture and the outdoors.", keywords: ["festival", "music", "culture", "week"] },
   { title: "Taita Made shop", href: "/shop", description: "Local products and crafts, bought from the makers.", keywords: ["buy", "products", "crafts", "gifts", "marketplace", "store"] },

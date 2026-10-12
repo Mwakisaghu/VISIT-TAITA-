@@ -4,6 +4,7 @@ import ExperiencesSection from "@/components/home/ExperiencesSection";
 import FindYourTaita from "@/components/home/FindYourTaita";
 import HomeHero from "@/components/home/HomeHero";
 import PassportSection from "@/components/home/PassportSection";
+import PlanSection from "@/components/home/PlanSection";
 import StayLocalSection from "@/components/home/StayLocalSection";
 import StoriesSection from "@/components/home/StoriesSection";
 import ThisIsTaita from "@/components/home/ThisIsTaita";
@@ -33,6 +34,7 @@ export default async function HomePage() {
       <FindYourTaita tiles={data.tiles} />
       <ThisIsTaita people={data.people} land={data.land} stories={data.storiesPic} />
       <ExperiencesSection items={data.experiences} />
+      <PlanSection />
       <StoriesSection stories={data.stories} />
       <PassportSection />
       <EventsSection events={data.events} />
