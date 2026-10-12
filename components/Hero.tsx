@@ -15,7 +15,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-t from-stone via-stone/20 to-transparent" />
 
       <div className="relative mx-auto w-full max-w-6xl px-6 pb-16">
-        <h1 className="font-display text-5xl leading-[0.95] text-parchment sm:text-7xl">
+        <h1 className="font-display text-4xl leading-[0.95] text-parchment sm:text-5xl">
           More than
           <br />a place.
         </h1>

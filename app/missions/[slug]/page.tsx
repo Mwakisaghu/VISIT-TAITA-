@@ -66,7 +66,7 @@ export default async function MissionPage({ params }: { params: { slug: string }
         </Link>
 
         <p className="mt-6 font-body text-sm text-rust">{mission.campaign ?? "Mission"}</p>
-        <h1 className="mt-1 font-display text-4xl text-stone sm:text-5xl">{mission.title}</h1>
+        <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">{mission.title}</h1>
         <p className="mt-4 max-w-prose font-body text-lg text-stone/75">{mission.summary}</p>
         {badge && <p className="mt-4 w-fit rounded-full bg-ochre/20 px-4 py-1 font-body text-sm text-stone">{badge}</p>}
 

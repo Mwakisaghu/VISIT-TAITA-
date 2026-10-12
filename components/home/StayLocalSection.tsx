@@ -19,7 +19,7 @@ export default function StayLocalSection({ local }: { local: Record<LocalKey, Pi
         <Reveal innerClassName="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
             <p className={`${eyebrow} text-ochre`}>Stay local</p>
-            <h2 id="local-title" className={`${display} mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)] leading-[1.05]`}>Support local.<br />Experience more.</h2>
+            <h2 id="local-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>Support local.<br />Experience more.</h2>
           </div>
           <p className="max-w-md font-body leading-relaxed text-parchment/75 lg:col-span-5">Meet the people making Taita. Real people, real businesses, real stories — real Taita.</p>
         </Reveal>

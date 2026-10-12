@@ -16,7 +16,7 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
         <Reveal innerClassName="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
             <p className={`${eyebrow} text-rust-deep`}>Taita stories</p>
-            <h2 id="stories-title" className={`${display} mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)] leading-[1.05]`}>Real people.<br />Extraordinary stories.</h2>
+            <h2 id="stories-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>Real people.<br />Extraordinary stories.</h2>
           </div>
           <div className="lg:col-span-6 lg:pl-10">
             <p className="font-display text-2xl italic leading-snug text-stone/80 md:text-3xl">&ldquo;Before the tourists arrive, the hills already have a story.&rdquo;</p>
@@ -31,7 +31,7 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-stone/95 via-stone/30 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-parchment md:p-10">
                   <p className="font-body text-[0.68rem] font-bold uppercase tracking-[0.26em] text-ochre">{categoryName(lead.category)}</p>
-                  <h3 className={`${display} mt-3 max-w-xl text-3xl leading-tight md:text-5xl`}>{lead.title}</h3>
+                  <h3 className={`${display} mt-3 max-w-xl text-3xl leading-tight md:text-4xl`}>{lead.title}</h3>
                   <p className="mt-4 hidden max-w-lg font-body leading-relaxed text-parchment/80 md:block">{lead.excerpt}</p>
                   <span className="mt-6 inline-flex items-center gap-2 font-body text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-ochre">Read the story <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
                 </div>

@@ -18,7 +18,7 @@ export default function EventRow({ event: e, now, siteUrl }: { event: Row; now: 
   return (
     <article className="grid grid-cols-[4.5rem_1fr] gap-x-5 gap-y-4 border-t border-stone/20 py-7 sm:grid-cols-[6.5rem_1fr_auto] sm:items-center sm:gap-x-8">
       <time dateTime={e.eventDate.toISOString()} className="block">
-        <span className="block font-display text-[3.4rem] font-medium leading-[0.9] text-rust-deep sm:text-[4rem]">{d.day}</span>
+        <span className="block font-display text-[2.38rem] font-medium leading-[0.9] text-rust-deep sm:text-[2.8rem]">{d.day}</span>
         <span className="mt-2 block font-body text-[0.65rem] font-bold uppercase tracking-[0.18em] text-stone/80">{d.weekday} · {d.month}</span>
       </time>
       <div>

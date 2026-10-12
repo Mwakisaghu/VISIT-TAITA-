@@ -39,7 +39,7 @@ export default async function TeamPage({ params }: { params: { slug: string } })
     <div className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
         <p className="font-body text-sm text-rust">{team.town}</p>
-        <h1 className="mt-1 font-display text-4xl text-stone">
+        <h1 className="mt-1 font-display text-3xl text-stone">
           <span className="mr-2">{team.crest}</span>
           {team.name}
         </h1>

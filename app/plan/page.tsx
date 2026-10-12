@@ -22,7 +22,7 @@ export default async function PlanPage() {
         <div className="mx-auto max-w-6xl">
           <p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-rust-deep">Plan</p>
           <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
-            <h1 className="max-w-3xl font-display text-[clamp(2.6rem,6vw,4.5rem)] font-medium leading-[1.04] tracking-tight text-stone">Build your Taita day.</h1>
+            <h1 className="max-w-3xl font-display text-[clamp(1.924rem,4.44vw,3.33rem)] font-medium leading-[1.04] tracking-tight text-stone">Build your Taita day.</h1>
             <p className="max-w-xs font-body text-base text-stone/80">Pick a day, add what you would like to do, and see whether it fits. Nothing is booked until you book it.</p>
           </div>
         </div>

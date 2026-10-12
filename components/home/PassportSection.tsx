@@ -25,7 +25,7 @@ export default function PassportSection() {
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-ochre">
               <MountainIcon className="h-9 w-9" />
               <p className="mt-5 font-body text-[0.6rem] font-semibold uppercase tracking-[0.5em]">Visit</p>
-              <p className={`${display} mt-1 text-5xl uppercase tracking-[0.12em]`}>Taita</p>
+              <p className={`${display} mt-1 text-4xl uppercase tracking-[0.12em]`}>Taita</p>
               <p className="mt-6 font-body text-[0.65rem] font-semibold uppercase tracking-[0.45em]">Passport</p>
             </div>
           </div>
@@ -33,7 +33,7 @@ export default function PassportSection() {
 
         <Reveal delay={120}>
           <p className={`${eyebrow} text-ochre`}>Your Taita passport</p>
-          <h2 id="passport-title" className={`${display} mt-6 text-[clamp(2.4rem,4.8vw,4.2rem)] leading-[1.02]`}>Don&apos;t just visit Taita.<br />Experience it.</h2>
+          <h2 id="passport-title" className={`${display} mt-6 text-[clamp(1.776rem,3.552vw,3.108rem)] leading-[1.02]`}>Don&apos;t just visit Taita.<br />Experience it.</h2>
           <p className="mt-6 font-body text-lg leading-relaxed text-parchment/80">Discover places.<br />Check in.<br />Collect points.<br />Unlock rewards.</p>
 
           <ul className="mt-10 grid max-w-md grid-cols-3 gap-x-4 gap-y-7" aria-label="Six ways to earn stamps">

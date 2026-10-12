@@ -34,7 +34,7 @@ export default async function EventsPage({ searchParams }: { searchParams?: Prom
       <section className="bg-parchment px-6 pb-8 pt-16 sm:pt-20">
         <div className="mx-auto max-w-6xl">
           <p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-rust-deep">Events in Taita</p>
-          <h1 className="mt-4 font-display text-[clamp(2.8rem,7vw,5rem)] font-medium leading-[1.02] tracking-tight text-stone">What&apos;s on.</h1>
+          <h1 className="mt-4 font-display text-[clamp(2.072rem,5.18vw,3.7rem)] font-medium leading-[1.02] tracking-tight text-stone">What&apos;s on.</h1>
           <div className="mt-8"><EventFilters filters={filters} /></div>
         </div>
       </section>

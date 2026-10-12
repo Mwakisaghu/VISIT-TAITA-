@@ -20,7 +20,7 @@ export default function StoryCover({ story: s, large = false }: { story: Story &
           <Tag tone="light">{s.readingTime}</Tag>
           {s.destination && <Tag tone="light">{s.destination.name}</Tag>}
         </div>
-        <h2 className={`mt-4 font-display font-medium leading-[1.1] tracking-tight ${large ? "max-w-3xl text-[clamp(2rem,5vw,3.5rem)]" : "text-[1.75rem]"}`}>{s.title}</h2>
+        <h2 className={`mt-4 font-display font-medium leading-[1.1] tracking-tight ${large ? "max-w-3xl text-[clamp(1.6rem,4vw,2.8rem)]" : "text-[1.75rem]"}`}>{s.title}</h2>
         {(large || shape !== "tall") && <p className={`mt-3 font-body text-parchment/90 ${large ? "max-w-xl text-base" : "line-clamp-2 text-sm"}`}>{s.excerpt}</p>}
       </div>
     </Link>

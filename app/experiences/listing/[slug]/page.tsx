@@ -78,7 +78,7 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
             <p className="font-body text-sm text-ochre">
               {experienceCategoryLabel(experience.category)} · {experience.region}
             </p>
-            <h1 className="mt-2 font-display text-4xl text-parchment sm:text-5xl">{experience.name}</h1>
+            <h1 className="mt-2 font-display text-3xl text-parchment sm:text-4xl">{experience.name}</h1>
           </div>
         </div>
       </div>

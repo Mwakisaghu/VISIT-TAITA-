@@ -43,7 +43,7 @@ export default async function TaitaWeekPage() {
       <section className="bg-rust px-6 py-20 text-parchment">
         <div className="mx-auto max-w-6xl">
           <p className="font-body text-sm text-parchment/70">Taita Week</p>
-          <h1 className="mt-2 font-display text-4xl sm:text-5xl">
+          <h1 className="mt-2 font-display text-3xl sm:text-4xl">
             A week-long festival
             <br />
             of everything Taita.

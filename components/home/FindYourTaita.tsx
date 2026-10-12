@@ -22,7 +22,7 @@ export default function FindYourTaita({ tiles }: { tiles: Record<TileKey, Pic> }
         <Reveal innerClassName="flex flex-wrap items-end justify-between gap-x-12 gap-y-6">
           <div>
             <p className={`${eyebrow} text-rust-deep`}>Find your Taita</p>
-            <h2 id="find-title" className={`${display} mt-5 text-[clamp(2.2rem,4.6vw,3.8rem)] leading-[1.05]`}>What are you looking for?</h2>
+            <h2 id="find-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>What are you looking for?</h2>
           </div>
           <div className="max-w-sm">
             <p className="font-body leading-relaxed text-stone/70">From wildlife and adventure to culture and local flavours — discover what moves you.</p>

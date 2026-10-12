@@ -61,7 +61,7 @@ export default async function StoryPage({ params }: Ctx) {
       <div className="mx-auto max-w-6xl">
         <Link href="/stories" className="focus-ring font-body text-sm text-stone/70 hover:text-rust-deep">← All stories</Link>
         <div className="mt-6 flex flex-wrap gap-2"><Tag tone="rust">{categoryLabel(story.category)}</Tag><Tag>{story.readingTime}</Tag></div>
-        <h1 className="mt-5 max-w-4xl font-display text-[clamp(2.4rem,6vw,4.25rem)] font-medium leading-[1.05] tracking-tight text-stone">{story.title}</h1>
+        <h1 className="mt-5 max-w-4xl font-display text-[clamp(1.776rem,4.44vw,3.145rem)] font-medium leading-[1.05] tracking-tight text-stone">{story.title}</h1>
         {byline && (
           <p className="mt-4 font-body text-sm text-stone/80">
             By{" "}

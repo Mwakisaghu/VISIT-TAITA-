@@ -18,7 +18,7 @@ export default function ContactPage() {
       <div className="mx-auto grid max-w-5xl gap-14 lg:grid-cols-[1fr_1.2fr]">
         <div>
           <p className="font-body text-sm text-rust">Visit Taita</p>
-          <h1 className="mt-1 font-display text-4xl text-stone sm:text-5xl">Contact us</h1>
+          <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">Contact us</h1>
           <p className="mt-4 max-w-prose font-body text-lg text-stone/70">
             A question, an idea, a correction or a privacy request — write to us and a real person will reply.
           </p>

@@ -45,7 +45,7 @@ export default async function DiscoverCategoryPage({ params, searchParams }: Ctx
           <Link href="/discover" className="focus-ring font-body text-sm text-stone/70 hover:text-rust-deep">← All worlds</Link>
           <p className="mt-6 font-body text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-rust-deep">Discover</p>
           <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
-            <h1 className="font-display text-[clamp(2.8rem,7vw,5rem)] font-medium leading-[1.02] tracking-tight text-stone">{cat.label}</h1>
+            <h1 className="font-display text-[clamp(2.072rem,5.18vw,3.7rem)] font-medium leading-[1.02] tracking-tight text-stone">{cat.label}</h1>
             <p className="max-w-xs font-body text-base text-stone/80">{cat.description}</p>
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4"><ZoneLinks base={base} current={zone} /><Link href={`/map?world=${cat.key}${zone ? `&zone=${zone.toLowerCase()}` : ""}`} className="focus-ring inline-flex min-h-[44px] items-center font-body text-sm font-semibold text-rust-deep underline underline-offset-4">See these on the map<span aria-hidden="true">&nbsp;→</span></Link></div>

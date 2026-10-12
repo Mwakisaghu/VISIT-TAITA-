@@ -15,7 +15,7 @@ export default function EventsSection({ events }: { events: EventItem[] }) {
         <Reveal innerClassName="flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className={`${eyebrow} text-rust-deep`}>This week in Taita</p>
-            <h2 id="events-title" className={`${display} mt-5 text-[clamp(2rem,4vw,3.3rem)] leading-[1.08]`}>Events · Experiences ·<br className="sm:hidden" /> Places · Stories</h2>
+            <h2 id="events-title" className={`${display} mt-5 text-[clamp(1.6rem,3.2vw,2.64rem)] leading-[1.08]`}>Events · Experiences ·<br className="sm:hidden" /> Places · Stories</h2>
           </div>
           <Link href="/events" className={`${textLink} text-stone hover:text-rust`}>View all events <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
         </Reveal>
@@ -27,7 +27,7 @@ export default function EventsSection({ events }: { events: EventItem[] }) {
                 <Reveal delay={i * 110}>
                   <Link href={`/events/${e.slug}`} className="focus-ring group block border-t border-stone/25 pt-6">
                     <div className="flex items-baseline gap-4">
-                      <span className={`${display} text-6xl leading-none text-rust md:text-7xl`}>{part(e.eventDate, { day: "numeric" })}</span>
+                      <span className={`${display} text-4xl leading-none text-rust md:text-5xl`}>{part(e.eventDate, { day: "numeric" })}</span>
                       <span className="font-body text-xs font-bold uppercase tracking-[0.24em] text-stone/70">{part(e.eventDate, { month: "short" })}<br />{part(e.eventDate, { weekday: "short" })}</span>
                     </div>
                     <p className="mt-6 font-body text-[0.68rem] font-bold uppercase tracking-[0.24em] text-rust-deep">{programLabel(e.program)}</p>
@@ -50,7 +50,7 @@ export default function EventsSection({ events }: { events: EventItem[] }) {
         <Reveal className="mt-20">
           <Link href="/events/taita-cup" className="focus-ring group relative block overflow-hidden rounded-[2px] bg-canopy px-8 py-12 text-parchment md:px-14 md:py-16">
             <p className={`${eyebrow} text-ochre-light`}>Taita Cup</p>
-            <p className={`${display} mt-4 text-[clamp(1.9rem,3.6vw,3rem)] leading-[1.08]`}>Come for the football.<br />Stay for Taita.</p>
+            <p className={`${display} mt-4 text-[clamp(1.52rem,2.88vw,2.4rem)] leading-[1.08]`}>Come for the football.<br />Stay for Taita.</p>
             <p className="mt-4 max-w-md font-body text-parchment/80">Teams, travel packages and match-day festivities come to the hills every season.</p>
             <span className="mt-7 inline-flex items-center gap-2 font-body text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-ochre-light">Standings &amp; fixtures <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
           </Link>

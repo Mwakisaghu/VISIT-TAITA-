@@ -14,7 +14,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="px-6 py-24">
       <div className="mx-auto max-w-lg">
         <p className="font-body text-sm text-rust">Visit Taita</p>
-        <h1 className="mt-1 font-display text-4xl text-stone">Unsubscribe</h1>
+        <h1 className="mt-1 font-display text-3xl text-stone">Unsubscribe</h1>
         <div className="mt-6">{children}</div>
         <p className="mt-10 font-body text-xs text-stone/50">
           <Link href="/privacy" className="underline hover:text-rust">

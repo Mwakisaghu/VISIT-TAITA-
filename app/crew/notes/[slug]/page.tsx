@@ -82,7 +82,7 @@ export default async function FieldNotePage({ params }: { params: { slug: string
   return (
     <Shell>
       <p className="mt-6 font-body text-sm text-rust">{mission.campaign ?? "Mission"}</p>
-      <h1 className="mt-1 font-display text-4xl text-stone">{mission.title}</h1>
+      <h1 className="mt-1 font-display text-3xl text-stone">{mission.title}</h1>
       <p className="mt-2 font-body text-stone/60">📍 {mission.destination.name}</p>
 
       {note && (

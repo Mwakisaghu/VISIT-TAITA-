@@ -63,7 +63,7 @@ export default async function FieldNotePublicPage({ params }: { params: { slug: 
         </Link>
 
         <p className="mt-6 font-body text-sm text-rust">{note.mission.campaign ?? "Field Note"}</p>
-        <h1 className="mt-1 font-display text-4xl text-stone sm:text-5xl">{note.title}</h1>
+        <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">{note.title}</h1>
         <p className="mt-3 font-body text-stone/70">
           By{" "}
           {creatorPublic ? (
