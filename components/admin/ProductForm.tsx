@@ -1,6 +1,7 @@
 import type { Product } from "@prisma/client";
 import { saveProduct } from "@/lib/actions/marketplace";
 import ImageField from "@/components/uploads/ImageField";
+import ProvenanceFields from "@/components/admin/ProvenanceFields";
 
 const categories = [
   "CLOTHING",
@@ -68,6 +69,8 @@ export default function ProductForm({ product }: { product?: Product }) {
       <Field label="Option label">
         <input name="optionLabel" defaultValue={product?.optionLabel ?? "Size"} maxLength={20} className="input" />
       </Field>
+
+      <ProvenanceFields product={product} />
 
       <Field label="Inventory">
         <input

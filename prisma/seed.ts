@@ -1,5 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type ProductCategory } from "@prisma/client";
 import { PLACES, SAMPLE_GEO } from "./data/taita-places";
+import MAKERS from "./data/taita-makers.json";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -659,6 +660,30 @@ async function main() {
       update: { ...p, status: "PUBLISHED", sellerId: admin.id },
       create: { ...p, status: "PUBLISHED", isDemo: true, sellerId: admin.id },
     });
+  }
+
+  // --- Makers: sample people and groups. The crafts are researched (docs/maker-data-sources.md); the names are invented, so no real person is named. ---
+  const makerIdBySlug = new Map<string, string>();
+  for (const m of MAKERS.makers) {
+    const { workshopExperience, ...data } = m;
+    const exp = workshopExperience ? await prisma.experience.findFirst({ where: { name: workshopExperience }, select: { id: true } }) : null;
+    const row = await prisma.maker.upsert({
+      where: { slug: m.slug },
+      update: {}, // keep any edits made in the admin area
+      create: { ...data, status: "PUBLISHED", isDemo: true, consentGivenAt: new Date(), experienceId: exp?.id ?? null },
+    });
+    makerIdBySlug.set(m.slug, row.id);
+  }
+  const imageOf = (slug: string) => products.find((p) => p.slug === slug)?.image ?? "";
+  for (const { imageFrom, maker, ...p } of MAKERS.newProducts) {
+    await prisma.product.upsert({
+      where: { slug: p.slug },
+      update: {},
+      create: { ...p, category: p.category as ProductCategory, image: imageOf(imageFrom), status: "PUBLISHED", isDemo: true, sellerId: admin.id, makerId: makerIdBySlug.get(maker) ?? null },
+    });
+  }
+  for (const [slug, v] of Object.entries(MAKERS.provenance)) {
+    await prisma.product.updateMany({ where: { slug, makerId: null }, data: { makerId: makerIdBySlug.get(v.maker) ?? null, madeInHours: v.madeInHours, material: v.material, howMade: v.howMade } });
   }
 
   const existingApplicationCount = await prisma.partnerApplication.count();

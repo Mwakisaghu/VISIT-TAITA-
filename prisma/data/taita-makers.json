@@ -1,0 +1,173 @@
+{
+  "_about": "Sample makers and products. The craft traditions, materials and process are based on published sources (see docs/maker-data-sources.md). The people and groups, their names, quotes and prices are INVENTED samples: no real person is named. Positions are approximate (placed in or near each town).",
+  "makers": [
+    {
+      "slug": "maua-weavers-circle",
+      "name": "Maua Weavers' Circle",
+      "isGroup": true,
+      "craft": "Sisal basket weaving (vidasi)",
+      "village": "Wundanyi",
+      "latitude": -3.4005,
+      "longitude": 38.3585,
+      "altitudeM": 1408,
+      "featured": true,
+      "story": "The circle meets under the same tree most mornings to weave vidasi, the sisal baskets of the Taita hills. The craft came to them from their mothers and grandmothers, who once gave a basket as a wedding gift. Each basket starts at the centre of its base and grows outward, coil by coil, from sisal that has been dried, rolled into twine by hand and dyed with plant colours. The women say no two baskets are the same, because each design is the weaver's own.",
+      "quote": "We start from the middle, and the basket tells us where to go.",
+      "workshopExperience": "Wundanyi Market & Food Tour"
+    },
+    {
+      "slug": "mwatate-bead-sisters",
+      "name": "Mwatate Bead Sisters",
+      "isGroup": true,
+      "craft": "Beadwork",
+      "village": "Mwatate",
+      "latitude": -3.5035,
+      "longitude": 38.3795,
+      "altitudeM": 844,
+      "featured": false,
+      "story": "Ten years ago five women began threading glass beads together on market days. Today the group makes collars, cuffs and bracelets in colours that follow the old patterns, and teaches the younger girls in the village on Saturdays. Pieces are made to order as well as for the monthly craft market, so a cuff can carry a family's own colours.",
+      "quote": null,
+      "workshopExperience": null
+    },
+    {
+      "slug": "dawida-hive-cooperative",
+      "name": "Dawida Hive Co-operative",
+      "isGroup": true,
+      "craft": "Honey and beekeeping",
+      "village": "Ngangao",
+      "latitude": -3.3635,
+      "longitude": 38.3525,
+      "altitudeM": 1750,
+      "featured": false,
+      "story": "The co-operative keeps hives along the edge of the Ngangao forest and plants flowering trees nearby so the bees have food through the dry months. Members trained together in looking after their colonies and keeping track of each harvest. The honey is strained by hand and jarred in the village, not blended with honey from anywhere else.",
+      "quote": "The forest feeds the bees, and the bees feed us.",
+      "workshopExperience": null
+    },
+    {
+      "slug": "rehema-mwangeka-leather",
+      "name": "Rehema Mwangeka",
+      "isGroup": false,
+      "craft": "Leather sandals and belts",
+      "village": "Mwatate",
+      "latitude": -3.4985,
+      "longitude": 38.3745,
+      "altitudeM": 844,
+      "featured": false,
+      "story": "Rehema learned to cut and stitch leather from her uncle and has run her own bench in Mwatate for eleven years. She cuts every pair to the customer's foot, stitches the straps by hand and finishes the soles herself. Orders take a week because each pair is made one at a time.",
+      "quote": "A good sandal should feel like it was always yours.",
+      "workshopExperience": null
+    },
+    {
+      "slug": "voi-gem-bench",
+      "name": "Daniel Mwakera's Gem Bench",
+      "isGroup": false,
+      "craft": "Gem cutting and silver setting (tsavorite)",
+      "village": "Voi",
+      "latitude": -3.3915,
+      "longitude": 38.5755,
+      "altitudeM": 580,
+      "featured": false,
+      "story": "Tsavorite, the vivid green garnet first identified in the Tsavo region in 1967, is Kenya's own gemstone and is found in Taita Taveta. Daniel cuts and polishes small stones at his bench in Voi and sets them in silver by hand. Each piece is made from a single stone, so the green is never quite the same twice.",
+      "quote": null,
+      "workshopExperience": null
+    }
+  ],
+  "newProducts": [
+    {
+      "slug": "vidasi-lidded-basket",
+      "name": "Vidasi Lidded Basket",
+      "description": "A lidded storage basket in the Taita vidasi style: coiled sisal, plant-dyed in earth tones, with a woven lid that fits snugly.",
+      "price": 3200,
+      "imageFrom": "wundanyi-woven-basket",
+      "category": "CRAFTS",
+      "sku": "TM-CRAFT-010",
+      "inventory": 6,
+      "featured": true,
+      "maker": "maua-weavers-circle"
+    },
+    {
+      "slug": "beaded-cuff-bracelet",
+      "name": "Beaded Cuff Bracelet",
+      "description": "A wide beaded cuff in red, white and blue glass beads on a leather backing, finished with a press stud.",
+      "price": 900,
+      "imageFrom": "wundanyi-woven-basket",
+      "category": "CRAFTS",
+      "sku": "TM-CRAFT-011",
+      "inventory": 14,
+      "featured": false,
+      "maker": "mwatate-bead-sisters"
+    },
+    {
+      "slug": "handmade-leather-sandals",
+      "name": "Handmade Leather Sandals",
+      "description": "Open leather sandals cut to your foot size, with hand-stitched straps and a stitched leather sole. Please choose your size.",
+      "price": 2600,
+      "imageFrom": "hand-carved-taita-walking-stick",
+      "category": "CLOTHING",
+      "sku": "TM-CLOTH-010",
+      "inventory": 9,
+      "featured": false,
+      "maker": "rehema-mwangeka-leather",
+      "options": [
+        "38",
+        "39",
+        "40",
+        "41",
+        "42",
+        "43",
+        "44"
+      ],
+      "optionLabel": "Size"
+    },
+    {
+      "slug": "tsavorite-silver-earrings",
+      "name": "Tsavorite Silver Stud Earrings",
+      "description": "A pair of small tsavorite studs from the Taita Taveta workings, set in hand-finished silver. Each stone is different; the green is vivid and clean.",
+      "price": 28000,
+      "imageFrom": "taita-hills-print",
+      "category": "COLLECTIBLES",
+      "sku": "TM-COLL-010",
+      "inventory": 3,
+      "featured": false,
+      "maker": "voi-gem-bench"
+    }
+  ],
+  "provenance": {
+    "wundanyi-woven-basket": {
+      "maker": "maua-weavers-circle",
+      "madeInHours": 14,
+      "material": "Locally grown sisal, hand-twisted and plant-dyed",
+      "howMade": "The weavers dry the sisal leaves in the sun, then separate the fibres and roll them into twine by hand, one strand at a time.\n\nWeaving starts at the centre of the base. The coil is stitched round and round, with colour added where the pattern calls for it.\n\nWhen the sides reach the right height the rim is bound off and the basket is left to settle before it is sold."
+    },
+    "vidasi-lidded-basket": {
+      "maker": "maua-weavers-circle",
+      "madeInHours": 22,
+      "material": "Locally grown sisal, hand-twisted and plant-dyed",
+      "howMade": "The sisal is dried, separated and rolled into twine by hand, then dyed in plant colours and dried again.\n\nThe base is woven first, from the centre outward, then the walls are built up in a coil. The lid is woven separately to the same pattern.\n\nThe lid is fitted to the basket and the rim is bound so that it closes snugly."
+    },
+    "beaded-cuff-bracelet": {
+      "maker": "mwatate-bead-sisters",
+      "madeInHours": 5,
+      "material": "Glass beads on leather backing",
+      "howMade": "The pattern is laid out on a strip of leather and the beads are sorted by colour.\n\nBeads are threaded row by row and stitched down, following the pattern.\n\nThe edges are bound and a press stud is fitted."
+    },
+    "dawida-honey-500g": {
+      "maker": "dawida-hive-cooperative",
+      "madeInHours": null,
+      "material": "Raw honey from forest-edge hives",
+      "howMade": "Hives hang along the forest edge, near flowering trees the co-operative has planted.\n\nThe comb is harvested by hand and the honey is strained through cloth, not heated.\n\nIt is jarred in the village and labelled by harvest."
+    },
+    "handmade-leather-sandals": {
+      "maker": "rehema-mwangeka-leather",
+      "madeInHours": 8,
+      "material": "Vegetable-tanned leather, waxed thread",
+      "howMade": "The sole and straps are cut from a pattern drawn around the customer's foot.\n\nThe straps are stitched by hand with waxed thread and fixed to the sole.\n\nThe edges are burnished and the sandals are oiled for water resistance."
+    },
+    "tsavorite-silver-earrings": {
+      "maker": "voi-gem-bench",
+      "madeInHours": 12,
+      "material": "Tsavorite (Taita Taveta) in hand-finished silver",
+      "howMade": "A small rough stone is chosen for its colour and cut to a simple round shape.\n\nIt is polished by hand until the facets are clean.\n\nThe silver setting is made to fit the stone and finished by hand."
+    }
+  }
+}

@@ -6,6 +6,8 @@ import AddToCartButton from "@/components/marketplace/AddToCartButton";
 import { categoryLabel, formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { canOptimize } from "@/lib/image-src";
+import ProductProvenance from "@/components/shop/ProductProvenance";
+import { PUBLIC_MAKER } from "@/lib/makers";
 
 export async function generateStaticParams() {
   const products = await prisma.product.findMany({ select: { slug: true } });
@@ -31,6 +33,8 @@ export const revalidate = 30;
 export default async function ProductPage({ params }: { params: { slug: string } }) {
   const product = await prisma.product.findUnique({ where: { slug: params.slug } });
   if (!product || product.status !== "PUBLISHED") notFound();
+  // The maker is shown only if they are published AND have consented: the check is part of the lookup.
+  const maker = product.makerId ? await prisma.maker.findFirst({ where: { id: product.makerId, ...PUBLIC_MAKER }, select: { slug: true, name: true, craft: true, village: true } }) : null;
 
   return (
     <div className="px-6 py-16">
@@ -54,7 +58,9 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
           <p className="mt-6 max-w-prose font-body text-stone/80">{product.description}</p>
 
-          <div className="mt-4 flex gap-4 font-body text-xs text-stone/50">
+          <ProductProvenance product={product} maker={maker} />
+
+          <div className="mt-4 flex gap-4 font-body text-xs text-stone/70">
             {product.offersShipping && <span>Ships</span>}
             {product.offersPickup && <span>Local pickup available</span>}
           </div>
