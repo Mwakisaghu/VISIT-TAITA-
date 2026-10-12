@@ -56,7 +56,7 @@ export default async function ReviewsSection({
           ) : (
             <>
               <div className="flex items-end gap-3">
-                <p className="font-display text-5xl text-stone">{summary.average?.toFixed(1)}</p>
+                <p className="font-display text-4xl text-stone">{summary.average?.toFixed(1)}</p>
                 <div className="pb-1">
                   <StarRating rating={summary.average ?? 0} className="text-lg" />
                   <p className="font-body text-sm text-stone/70">

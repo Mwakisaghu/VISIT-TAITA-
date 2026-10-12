@@ -75,7 +75,7 @@ export default async function CreatorProfilePage({ params }: { params: { slug: s
               {trackLabel(creator.track)}
               {creator.location ? ` · ${creator.location}` : ""}
             </p>
-            <h1 className="mt-1 font-display text-4xl text-stone sm:text-5xl">{creator.displayName}</h1>
+            <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">{creator.displayName}</h1>
           </div>
         </div>
 

@@ -51,7 +51,7 @@ export default async function RewardsPage() {
           ← Your Passport
         </Link>
         <p className="mt-6 font-body text-sm text-rust">Taita Passport</p>
-        <h1 className="mt-1 font-display text-4xl text-stone">Rewards</h1>
+        <h1 className="mt-1 font-display text-3xl text-stone">Rewards</h1>
         <p className="mt-2 font-body text-stone/70">
           You have <strong className="text-stone">{user.points} points</strong> to spend. Earn more by checking in
           around Taita.

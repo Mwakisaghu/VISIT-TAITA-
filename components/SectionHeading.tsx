@@ -12,7 +12,7 @@ export default function SectionHeading({
       <div
         className={`h-1 w-12 bg-rust ${align === "center" ? "mx-auto" : ""}`}
       />
-      <h2 className="mt-4 font-display text-3xl text-stone sm:text-4xl">
+      <h2 className="mt-4 font-display text-3xl text-stone sm:text-3xl">
         {title}
       </h2>
       {description && (

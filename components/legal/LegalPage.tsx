@@ -39,7 +39,7 @@ export default function LegalPage({
     <div className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
         <p className="font-body text-sm text-rust">Visit Taita</p>
-        <h1 className="mt-1 font-display text-4xl text-stone sm:text-5xl">{title}</h1>
+        <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">{title}</h1>
         <p className="mt-3 font-body text-sm text-stone/50">
           Version {LEGAL_VERSION}
           {info.reviewedOn ? ` · Legally reviewed ${formatLegalDate(info.reviewedOn)}` : ""}

@@ -22,7 +22,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <Link href="/creators" className="font-body text-sm text-stone/60 hover:text-rust">
           ← The Field Crew
         </Link>
-        <h1 className="mt-6 font-display text-4xl text-stone sm:text-5xl">Join the Field Crew</h1>
+        <h1 className="mt-6 font-display text-3xl text-stone sm:text-4xl">Join the Field Crew</h1>
         {children}
       </div>
     </div>

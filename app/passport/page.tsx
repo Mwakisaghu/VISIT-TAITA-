@@ -42,7 +42,7 @@ export default async function PassportPage() {
     <div className="px-6 py-16">
       <div className="mx-auto max-w-4xl">
         <p className="font-body text-sm text-rust">Taita Passport</p>
-        <h1 className="mt-1 font-display text-4xl text-stone">{user.name}</h1>
+        <h1 className="mt-1 font-display text-3xl text-stone">{user.name}</h1>
         <p className="mt-2 font-body text-stone/70">
           {user.points} points · {checkedInCount} check-ins · {user.badges.length} of {allBadges.length} badges
         </p>

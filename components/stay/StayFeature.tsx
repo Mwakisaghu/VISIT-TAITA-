@@ -19,7 +19,7 @@ export default function StayFeature({ stay: a }: { stay: Accommodation }) {
           <Tag tone="fill">{accommodationTypeLabel(a.type)}</Tag>
           {a.altitudeM != null && <Tag>{altitudeLabel(a.altitudeM)}</Tag>}
         </div>
-        <h2 className="mt-5 font-display text-4xl font-medium leading-[1.06] tracking-tight text-stone">{a.name}</h2>
+        <h2 className="mt-5 font-display text-3xl font-medium leading-[1.06] tracking-tight text-stone">{a.name}</h2>
         <p className="mt-1 font-body text-sm text-stone/75">{a.region}</p>
         {a.hostName && (
           <div className="mt-6">

@@ -43,7 +43,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams?: Pr
         <div className="mx-auto max-w-6xl">
           <p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-ochre-light">Discover Taita</p>
           <div className="mt-4 flex flex-wrap items-end justify-between gap-8">
-            <h1 className="max-w-3xl font-display text-[clamp(2.8rem,7vw,5.25rem)] font-medium leading-[1.02] tracking-tight">Six worlds.<br />One hill country.</h1>
+            <h1 className="max-w-3xl font-display text-[clamp(2.072rem,5.18vw,3.885rem)] font-medium leading-[1.02] tracking-tight">Six worlds.<br />One hill country.</h1>
             <div className="max-w-sm">
               <p className="font-body text-base text-parchment/85">Every place here belongs to a world. Start with the one that pulls you, or let Taita choose for you.</p>
               <div className="mt-5 flex flex-wrap gap-3">
@@ -60,8 +60,8 @@ export default async function DiscoverPage({ searchParams }: { searchParams?: Pr
         <section key={cat.key} aria-labelledby={`world-${cat.key}`} className={`px-6 py-16 sm:py-20 ${theme.section}`}>
           <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[18rem_1fr] lg:gap-14">
             <div>
-              <p className={`font-display text-[6rem] font-medium leading-[0.85] ${theme.num}`} aria-hidden="true">{String(n).padStart(2, "0")}</p>
-              <h2 id={`world-${cat.key}`} className="mt-3 font-display text-[clamp(2.4rem,5vw,3.5rem)] font-medium leading-none tracking-tight">{cat.label}</h2>
+              <p className={`font-display text-[3rem] font-medium leading-[0.85] sm:text-[4.2rem] ${theme.num}`} aria-hidden="true">{String(n).padStart(2, "0")}</p>
+              <h2 id={`world-${cat.key}`} className="mt-3 font-display text-[clamp(1.92rem,4vw,2.8rem)] font-medium leading-none tracking-tight">{cat.label}</h2>
               <p className={`mt-4 max-w-xs font-body text-base ${theme.sub}`}>{cat.description}</p>
               <Link href={`/discover/${cat.key}${zone ? `?zone=${zone.toLowerCase()}` : ""}`} className={`focus-ring mt-6 inline-flex min-h-[44px] items-center rounded-[2px] border px-5 font-body text-[0.72rem] font-bold uppercase tracking-[0.18em] ${theme.link}`}>All {items.length} {items.length === 1 ? "place" : "places"}<span className="sr-only"> in {cat.label}</span></Link>
             </div>

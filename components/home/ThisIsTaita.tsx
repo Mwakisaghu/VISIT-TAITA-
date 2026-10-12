@@ -19,7 +19,7 @@ export default function ThisIsTaita({ people, land, stories }: { people: Pic; la
       <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-12">
         <Reveal className="self-start lg:sticky lg:top-32 lg:col-span-4">
           <p className={`${eyebrow} text-ochre`}>This is Taita</p>
-          <h2 id="this-title" className={`${display} mt-6 text-[clamp(2.6rem,5vw,4.4rem)] leading-[1]`}>There is more here<br className="hidden sm:block" /> than you expect.</h2>
+          <h2 id="this-title" className={`${display} mt-6 text-[clamp(1.924rem,3.7vw,3.256rem)] leading-[1]`}>There is more here<br className="hidden sm:block" /> than you expect.</h2>
           <p className="mt-7 max-w-sm font-body leading-relaxed text-parchment/75">From the people who call it home, to the landscapes that take your breath away — Taita is a place of extraordinary stories, culture and natural beauty.</p>
           <Link href="/stories" className={`${textLink} mt-9 text-ochre hover:text-parchment`}>Explore the stories <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
         </Reveal>
@@ -34,7 +34,7 @@ export default function ThisIsTaita({ people, land, stories }: { people: Pic; la
                 <div className="absolute inset-0 bg-gradient-to-t from-stone/90 via-stone/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 md:p-8">
                   <p className="font-body text-[0.72rem] font-bold uppercase tracking-[0.24em] text-ochre">0{i + 1}</p>
-                  <h3 className={`${display} mt-2 text-3xl uppercase md:text-4xl`}>{p.label}</h3>
+                  <h3 className={`${display} mt-2 text-3xl uppercase md:text-3xl`}>{p.label}</h3>
                   <p className="mt-2 max-w-xs font-body text-sm leading-relaxed text-parchment/80">{p.sub}</p>
                 </div>
               </Link>

@@ -17,7 +17,7 @@ function Shell({ children }: { children: React.ReactNode }) {
     <div className="px-6 py-16">
       <div className="mx-auto max-w-5xl">
         <p className="font-body text-sm text-rust">Taita Field Crew</p>
-        <h1 className="mt-1 font-display text-4xl text-stone">Your crew page</h1>
+        <h1 className="mt-1 font-display text-3xl text-stone">Your crew page</h1>
         {children}
       </div>
     </div>

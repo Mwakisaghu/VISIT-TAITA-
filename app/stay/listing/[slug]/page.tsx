@@ -65,7 +65,7 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
             <p className="font-body text-sm text-ochre">
               {accommodationTypeLabel(accommodation.type)} · {accommodation.region}
             </p>
-            <h1 className="mt-2 font-display text-4xl text-parchment sm:text-5xl">{accommodation.name}</h1>
+            <h1 className="mt-2 font-display text-3xl text-parchment sm:text-4xl">{accommodation.name}</h1>
           </div>
         </div>
       </div>

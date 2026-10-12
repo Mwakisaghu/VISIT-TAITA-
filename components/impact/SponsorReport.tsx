@@ -27,7 +27,7 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-stone/15 pb-6">
         <div>
           <p className="font-body text-sm text-rust">Taita Field Crew · Impact report</p>
-          <h1 className="mt-1 font-display text-4xl text-stone">{data.sponsor.name}</h1>
+          <h1 className="mt-1 font-display text-3xl text-stone">{data.sponsor.name}</h1>
           <p className="mt-1 font-body text-sm text-stone/60">Prepared {formatDeadline(data.generatedAt)}</p>
         </div>
         {logo && (

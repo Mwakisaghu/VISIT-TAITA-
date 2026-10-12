@@ -34,7 +34,7 @@ export default async function MissionsPage() {
       <section className="bg-stone px-6 py-20 text-parchment sm:py-28">
         <div className="mx-auto max-w-6xl">
           <p className="font-body text-sm tracking-wide text-ochre">Taita Field Crew</p>
-          <h1 className="mt-3 font-display text-4xl sm:text-6xl">
+          <h1 className="mt-3 font-display text-3xl sm:text-5xl">
             Missions.
             <br />
             Go there. Show us.

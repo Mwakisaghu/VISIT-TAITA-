@@ -36,7 +36,7 @@ export default async function SharedPlanPage({ params }: Ctx) {
     <div className="px-6 py-14 sm:py-16">
       <div className="mx-auto max-w-3xl">
         <p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-rust-deep">A Taita day · {dayLabel(plan.day)} · {plan.partySize} {plan.partySize === 1 ? "person" : "people"}</p>
-        <h1 className="mt-3 font-display text-[clamp(2.2rem,5vw,3.5rem)] font-medium leading-[1.05] tracking-tight text-stone">{plan.title}</h1>
+        <h1 className="mt-3 font-display text-[clamp(1.76rem,4vw,2.8rem)] font-medium leading-[1.05] tracking-tight text-stone">{plan.title}</h1>
         {past && <p role="status" className="mt-4 rounded-[2px] border border-stone/20 bg-[#F4EDDC] p-4 font-body text-sm text-stone">This day has passed.</p>}
 
         <ol className="mt-10 border-l-2 border-stone/20">

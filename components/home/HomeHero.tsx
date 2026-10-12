@@ -23,7 +23,7 @@ export default function HomeHero({ media }: { media: HomeMedia }) {
 
       <div className="relative mx-auto w-full max-w-7xl px-6 pb-24 pt-44 md:pb-32">
         <p className={`${eyebrow} text-ochre`}>Taita Taveta · Kenya</p>
-        <h1 id="home-title" className={`${display} mt-6 text-[clamp(3.5rem,10.5vw,9.5rem)] uppercase leading-[0.88] [text-shadow:0_2px_40px_rgba(0,0,0,0.35)]`}>
+        <h1 id="home-title" className={`${display} mt-6 text-[clamp(2.1rem,6.3vw,5.7rem)] uppercase leading-[0.88] [text-shadow:0_2px_40px_rgba(0,0,0,0.35)]`}>
           More than<br />a place.
         </h1>
         <p className="mt-8 font-body text-xl font-medium text-parchment md:text-2xl">Wild. Cultural. Unexpected.</p>

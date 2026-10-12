@@ -16,7 +16,7 @@ export default function PlanSection() {
       <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
         <Reveal>
           <p className={`${eyebrow} text-ochre`}>Plan</p>
-          <h2 id="plan-title" className={`${display} mt-6 text-[clamp(2.4rem,4.8vw,4.2rem)] leading-[1.02]`}>Build your<br />Taita day.</h2>
+          <h2 id="plan-title" className={`${display} mt-6 text-[clamp(1.776rem,3.552vw,3.108rem)] leading-[1.02]`}>Build your<br />Taita day.</h2>
           <p className="mt-6 max-w-md font-body text-lg leading-relaxed text-parchment/80">Pick a day. Add a hike, a match and somewhere to sleep. See whether it all fits, then share it with whoever is coming.</p>
           <div className="mt-9 flex flex-wrap items-center gap-5">
             <Link href="/plan" className="focus-ring inline-flex min-h-[48px] items-center rounded-[2px] bg-rust px-7 font-body text-[0.75rem] font-bold uppercase tracking-[0.2em] text-parchment transition-colors hover:bg-rust-deep">Start planning</Link>

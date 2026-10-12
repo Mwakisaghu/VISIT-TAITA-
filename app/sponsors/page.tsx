@@ -48,7 +48,7 @@ export default async function SponsorsPage() {
         <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-gradient-to-l from-canopy/40 to-transparent sm:block" />
         <div className="relative mx-auto max-w-6xl">
           <p className="font-body text-sm tracking-wide text-ochre">Partner with Taita</p>
-          <h1 className="mt-4 font-display text-5xl leading-[0.95] sm:text-7xl">
+          <h1 className="mt-4 font-display text-4xl leading-[0.95] sm:text-5xl">
             More than
             <br />a logo.
           </h1>

@@ -139,7 +139,7 @@ export default function Nav() {
             <nav aria-label="Main">
               <ul>
                 {PRIMARY.map((l) => (
-                  <li key={l.href} className="border-b border-parchment/10"><Link href={l.href} onClick={close} aria-current={current(l.href)} className="focus-ring block rounded-sm py-4 font-display text-4xl font-medium tracking-tight transition-colors hover:text-ochre aria-[current=page]:text-ochre">{l.label}</Link></li>
+                  <li key={l.href} className="border-b border-parchment/10"><Link href={l.href} onClick={close} aria-current={current(l.href)} className="focus-ring block rounded-sm py-3.5 font-display text-2xl font-medium tracking-tight transition-colors hover:text-ochre aria-[current=page]:text-ochre">{l.label}</Link></li>
                 ))}
               </ul>
             </nav>
