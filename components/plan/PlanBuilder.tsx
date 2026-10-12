@@ -5,6 +5,7 @@ import Link from "next/link";
 import { savePlan } from "@/lib/actions/plan";
 import { MAX_NOTE, MAX_PARTY, MAX_STOPS, MAX_TITLE, checkPlan, dayLabel, estimateTotal, keyOf, orderStops, parseTime, timeLabel, validatePlanInput, type Stop, type StopInfo, type StopKind } from "@/lib/plan";
 import { formatPrice } from "@/lib/format";
+import ScrollFade from "@/components/ui/ScrollFade";
 
 type Catalogue = {
   day: string;
@@ -94,9 +95,9 @@ export default function PlanBuilder({ defaultDay, minDay, maxDay }: { defaultDay
         {notice && <p role="status" className="mt-4 font-body text-sm text-stone">{notice}</p>}
 
         <h2 className="mt-10 font-display text-3xl text-stone">What would you like to do?</h2>
-        <div role="group" aria-label="Kind of stop" className="no-scrollbar -mx-1 mt-4 flex gap-2 overflow-x-auto px-1">
+        <ScrollFade as="div" role="group" aria-label="Kind of stop" className="no-scrollbar -mx-1 mt-4 flex gap-2 overflow-x-auto px-1">
           {TABS.map((t) => <button key={t.kind} type="button" aria-pressed={tab === t.kind} onClick={() => setTab(t.kind)} className={`${chip} ${tab === t.kind ? on : off}`}>{t.label}</button>)}
-        </div>
+        </ScrollFade>
         <div className="mt-5 min-h-[8rem]" aria-live="polite">
           {loading && <p className="font-body text-sm text-stone/75">Loading what is on that day…</p>}
           {loadError && <p role="alert" className="font-body text-sm font-semibold text-rust-deep">{loadError}</p>}

@@ -9,6 +9,7 @@ import { shopCategories } from "@/lib/data";
 import { altitudeLabel } from "@/lib/field-guide";
 import { PUBLIC_MAKER, isPublicMaker } from "@/lib/makers";
 import { prisma } from "@/lib/prisma";
+import ScrollFade from "@/components/ui/ScrollFade";
 
 export const metadata: Metadata = {
   title: "Taita Made",
@@ -42,11 +43,11 @@ export default async function ShopPage() {
             <h1 className="max-w-3xl font-display text-[clamp(1.924rem,4.44vw,3.33rem)] font-medium leading-[1.04] tracking-tight text-stone">Meet the people behind what you take home.</h1>
             <p className="max-w-xs font-body text-base text-stone/80">Every piece shows who made it, where, from what, and how long it took.</p>
           </div>
-          <nav aria-label="Shop by kind" className="no-scrollbar -mx-6 mt-9 flex gap-2.5 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+          <ScrollFade as="nav" aria-label="Shop by kind" className="no-scrollbar -mx-6 mt-9 flex gap-2.5 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
             {shopCategories.map((cat) => (
               <Link key={cat.key} href={`/shop/${cat.key}`} className="focus-ring inline-flex min-h-[44px] shrink-0 items-center rounded-[2px] border border-stone/30 px-4 font-body text-[0.8rem] font-semibold text-stone hover:border-stone">{cat.label}</Link>
             ))}
-          </nav>
+          </ScrollFade>
         </div>
       </section>
 
@@ -75,7 +76,7 @@ export default async function ShopPage() {
         <section aria-labelledby="makers-title" className="px-6 pb-4 pt-6">
           <div className="mx-auto max-w-6xl">
             <h2 id="makers-title" className="font-display text-3xl text-stone">Meet the makers</h2>
-            <ul className="no-scrollbar -mx-6 mt-6 flex gap-4 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+            <ScrollFade as="ul" className="no-scrollbar -mx-6 mt-6 flex gap-4 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 lg:grid-cols-4">
               {others.map((m) => (
                 <li key={m.slug} className="w-64 flex-none sm:w-auto">
                   <Link href={`/shop/makers/${m.slug}`} className="focus-ring flex h-full flex-col rounded-[2px] border border-stone/15 p-5 hover:border-stone/40">
@@ -86,7 +87,7 @@ export default async function ShopPage() {
                   </Link>
                 </li>
               ))}
-            </ul>
+            </ScrollFade>
           </div>
         </section>
       )}
