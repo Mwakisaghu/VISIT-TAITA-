@@ -49,6 +49,7 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
             <p className="max-w-xs font-body text-base text-stone/80">Every experience shows its next dates, who leads it, and how hard the climb is before you book.</p>
           </div>
           <div className="mt-9"><ExperienceFilters filters={filters} /></div>
+          <p className="mt-6 font-body text-sm text-stone/85">Want to line a few of these up with a stay and an event? <Link href="/plan" className="focus-ring font-semibold text-rust-deep underline underline-offset-4">Build your Taita day</Link>.</p>
         </div>
       </section>
 
