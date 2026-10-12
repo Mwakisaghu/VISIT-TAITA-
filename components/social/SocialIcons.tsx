@@ -19,3 +19,38 @@ export function WhatsAppIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+export function FacebookIcon({ className }: { className?: string }) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M14.3 21v-7.6h2.6l.4-3h-3V8.7c0-.9.3-1.5 1.6-1.5h1.6V4.6c-.3 0-1.2-.1-2.4-.1-2.4 0-3.9 1.4-3.9 4v2.3H8.5v3h2.7V21" />
+    </svg>
+  );
+}
+
+export function YouTubeIcon({ className }: { className?: string }) {
+  return (
+    <svg {...base} className={className}>
+      <rect x="2.8" y="5.6" width="18.4" height="12.8" rx="4" />
+      <path d="M10 9.4v5.2l4.6-2.6z" />
+    </svg>
+  );
+}
+
+export function XIcon({ className }: { className?: string }) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4.6 4h3.9l10.9 16h-3.9z" />
+      <path d="M19.4 4l-6.3 7.1M4.6 20l6.3-7.1" />
+    </svg>
+  );
+}
+
+export function TikTokIcon({ className }: { className?: string }) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M14.2 3.5v10.8a3.7 3.7 0 1 1-3.7-3.7" />
+      <path d="M14.2 3.5c.3 2.3 1.8 3.8 4.1 4" />
+    </svg>
+  );
+}

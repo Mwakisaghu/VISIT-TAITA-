@@ -14,6 +14,7 @@ import { discoverCategories } from "@/lib/data";
 import { DEFAULT_LAYERS, LAYERS, TAITA_BOUNDS, WORLDS, boundsOf, filterItems, parseView, pinOf, usableSize, viewQuery, zoneCounts, type Item, type LayerKey, type View } from "@/lib/explore";
 import { ZONES, ZONE_LABEL, altitudeLabel, type Zone } from "@/lib/field-guide";
 import { countLabel, stateFor } from "@/lib/stamps";
+import ScrollFade from "@/components/ui/ScrollFade";
 
 const chip = "focus-ring inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-[2px] border px-3.5 font-body text-[0.8rem] font-semibold transition-colors";
 const on = "border-stone bg-stone text-parchment", off = "border-stone/30 text-stone hover:border-stone";
@@ -87,14 +88,14 @@ export default function ExploreMap({ items }: { items: Item[] }) {
                 <label key={l.key} className="flex min-h-[44px] items-center gap-2 font-body text-sm text-stone"><input type="checkbox" checked={view.layers.includes(l.key)} onChange={() => toggleLayer(l.key)} /> {l.label}</label>
               ))}
             </div>
-            <div role="group" aria-label="World" className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
+            <ScrollFade as="div" role="group" aria-label="World" className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
               <button type="button" aria-pressed={!view.world} onClick={() => setView((v) => ({ ...v, world: null }))} className={`${chip} ${!view.world ? on : off}`}>All worlds</button>
               {WORLDS.map((w) => <button key={w} type="button" aria-pressed={view.world === w} onClick={() => setView((v) => ({ ...v, world: v.world === w ? null : w }))} className={`${chip} ${view.world === w ? on : off}`}>{worldLabel(w)}</button>)}
-            </div>
-            <div role="group" aria-label="How high" className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
+            </ScrollFade>
+            <ScrollFade as="div" role="group" aria-label="How high" className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
               <button type="button" aria-pressed={!view.zone} onClick={() => setView((v) => ({ ...v, zone: null }))} className={`${chip} ${!view.zone ? on : off}`}>Any height</button>
               {ZONES.map((z: Zone) => <button key={z} type="button" aria-pressed={view.zone === z} onClick={() => setView((v) => ({ ...v, zone: v.zone === z ? null : z }))} className={`${chip} ${view.zone === z ? on : off}`}>{ZONE_LABEL[z]} <span className="text-stone/70" aria-hidden="true">{counts[z]}</span><span className="sr-only">, {counts[z]} shown</span></button>)}
-            </div>
+            </ScrollFade>
             <p role="status" className={label}>{visible.length} {visible.length === 1 ? "item" : "items"} in view</p>
           </div>
 

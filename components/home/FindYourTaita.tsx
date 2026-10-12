@@ -30,19 +30,19 @@ export default function FindYourTaita({ tiles }: { tiles: Record<TileKey, Pic> }
           </div>
         </Reveal>
 
-        <ul className="no-scrollbar -mx-6 mt-14 flex snap-x snap-mandatory gap-3 overflow-x-auto px-6 pb-2 lg:mx-0 lg:grid lg:grid-cols-6 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-12" aria-label="Ways into Taita">
+        <ul className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-6 lg:pb-12" aria-label="Ways into Taita">
           {TILES.map((t, i) => (
-            <li key={t.key} className={`w-[64%] shrink-0 snap-start sm:w-[40%] lg:w-auto ${i % 2 ? "lg:mt-10" : ""}`}>
+            <li key={t.key} className={i % 2 ? "lg:mt-10" : ""}>
               <Reveal delay={i * 70}>
                 <Link href={t.href} className={`focus-ring group relative flex aspect-[3/4.4] flex-col justify-end overflow-hidden rounded-[2px] bg-gradient-to-b ${t.tone}`}>
                   <div className="absolute inset-0 transition-transform duration-[900ms] ease-out group-hover:scale-[1.07] motion-reduce:transition-none motion-reduce:group-hover:scale-100">
-                    <Photo src={tiles[t.key].src} alt="" sizes="(min-width:1024px) 16vw, (min-width:640px) 40vw, 64vw" />
+                    <Photo src={tiles[t.key].src} alt="" sizes="(min-width:1024px) 16vw, (min-width:640px) 33vw, 50vw" />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-stone/95 via-stone/25 to-transparent transition-colors duration-500 group-hover:from-canopy-deep/95" />
-                  <div className="relative p-5 text-parchment transition-transform duration-500 group-hover:-translate-y-1.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+                  <div className="relative p-4 text-parchment sm:p-5 transition-transform duration-500 group-hover:-translate-y-1.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
                     <t.Icon className="h-6 w-6 text-ochre" />
                     <p className="mt-3 font-body text-[0.82rem] font-bold uppercase tracking-[0.16em]">{t.label}</p>
-                    <p className="mt-1.5 font-body text-xs leading-snug text-parchment/80">{t.sub}</p>
+                    <p className="mt-1.5 line-clamp-2 font-body text-xs leading-snug text-parchment/80">{t.sub}</p>
                     <ArrowIcon className="mt-3 h-4 w-4 -translate-x-2 text-ochre opacity-0 transition-all duration-500 group-hover:translate-x-0 group-hover:opacity-100 max-lg:translate-x-0 max-lg:opacity-100" />
                   </div>
                 </Link>

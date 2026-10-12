@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { eventFilterHref, type EventFilters as Filters } from "@/lib/events-view";
+import ScrollFade from "@/components/ui/ScrollFade";
 
 const chip = "focus-ring inline-flex min-h-[44px] shrink-0 items-center rounded-[2px] border px-4 font-body text-[0.8rem] font-semibold transition-colors";
 const on = "border-stone bg-stone text-parchment";
@@ -19,17 +20,17 @@ export default function EventFilters({ filters }: { filters: Filters }) {
   );
   return (
     <nav aria-label="Filter events" className="flex flex-col gap-3">
-      <div className={row}>
+      <ScrollFade as="div" className={row}>
         <span className={label}>When</span>
         <Chip href={eventFilterHref(filters, { when: null })} active={!filters.when}>Upcoming</Chip>
         {WHEN.map(([k, l]) => <Chip key={k} href={eventFilterHref(filters, { when: k })} active={filters.when === k}>{l}</Chip>)}
-      </div>
-      <div className={row}>
+      </ScrollFade>
+      <ScrollFade as="div" className={row}>
         <span className={label}>Series</span>
         {SERIES.map(([k, l]) => <Chip key={k} href={eventFilterHref(filters, { series: k })} active={cur(k)}>{l}</Chip>)}
         <Chip href={eventFilterHref(filters, { free: true })} active={filters.free}>Free tickets only</Chip>
         {any && <Link href="/events" className="focus-ring ml-2 shrink-0 whitespace-nowrap font-body text-[0.8rem] font-semibold text-rust-deep underline underline-offset-4">Clear filters</Link>}
-      </div>
+      </ScrollFade>
     </nav>
   );
 }

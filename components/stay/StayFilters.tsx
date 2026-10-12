@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MOODS, ZONES, ZONE_LABEL, stayFilterHref, type StayFilters as Filters } from "@/lib/field-guide";
 import { accommodationTypes } from "@/lib/data";
+import ScrollFade from "@/components/ui/ScrollFade";
 
 const chip = "focus-ring inline-flex min-h-[44px] shrink-0 items-center rounded-[2px] border px-4 font-body text-[0.8rem] font-semibold transition-colors";
 const on = "border-stone bg-stone text-parchment";
@@ -16,19 +17,19 @@ export default function StayFilters({ filters }: { filters: Filters }) {
   );
   return (
     <nav aria-label="Filter stays" className="flex flex-col gap-3">
-      <div className={row}>
+      <ScrollFade as="div" className={row}>
         <span className={label}>I want it</span>
         {MOODS.map((m) => <Chip key={m.key} href={stayFilterHref(filters, { mood: m.key })} active={filters.mood === m.key}>{m.label}</Chip>)}
-      </div>
-      <div className={row}>
+      </ScrollFade>
+      <ScrollFade as="div" className={row}>
         <span className={label}>Kind</span>
         {accommodationTypes.map((t) => <Chip key={t.key} href={stayFilterHref(filters, { type: t.key })} active={filters.type === t.key.toUpperCase()}>{t.label}</Chip>)}
-      </div>
-      <div className={row}>
+      </ScrollFade>
+      <ScrollFade as="div" className={row}>
         <span className={label}>How high</span>
         {ZONES.map((z) => <Chip key={z} href={stayFilterHref(filters, { zone: z.toLowerCase() })} active={filters.zone === z}>{ZONE_LABEL[z]}</Chip>)}
         {any && <Link href="/stay" className="focus-ring ml-2 shrink-0 whitespace-nowrap font-body text-[0.8rem] font-semibold text-rust-deep underline underline-offset-4">Clear filters</Link>}
-      </div>
+      </ScrollFade>
     </nav>
   );
 }

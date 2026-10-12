@@ -8,14 +8,14 @@ import Logo from "@/components/brand/Logo";
 import { BagIcon, CloseIcon, MenuIcon, PassportIcon, SearchIcon, UserIcon } from "@/components/home/icons";
 import { useCart } from "@/components/marketplace/CartProvider";
 
-// The seven ways into the site. ("Explore" is the map.) Everything else (Shop, Search, the account) is reachable but kept quiet.
+// The seven ways into the site. (The map is reached from Discover, the footer and the menu.) Everything else (Shop, Search, the account) is reachable but kept quiet.
 const PRIMARY = [
   { href: "/discover", label: "Discover" },
-  { href: "/map", label: "Explore" },
   { href: "/stay", label: "Stay" },
   { href: "/experiences", label: "Experiences" },
   { href: "/stories", label: "Stories" },
   { href: "/events", label: "Events" },
+  { href: "/shop", label: "Shop" },
   { href: "/plan", label: "Plan" },
 ];
 
@@ -145,7 +145,7 @@ export default function Nav() {
             </nav>
             <ul className="mt-8 grid grid-cols-2 gap-x-6">
               <li><Link href="/passport" onClick={close} className={menuLink}>Passport</Link></li>
-              <li><Link href="/shop" onClick={close} className={menuLink}>Shop</Link></li>
+              <li><Link href="/map" onClick={close} className={menuLink}>Map</Link></li>
               <li><Link href="/search" onClick={close} className={menuLink}>Search</Link></li>
               {signedIn ? (<><li><Link href="/account" onClick={close} className={menuLink}>My account</Link></li>
                 {isPartner && <li><Link href="/partner" onClick={close} className={menuLink}>Partner area</Link></li>}
