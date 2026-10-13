@@ -13,6 +13,7 @@ import { canOptimize } from "@/lib/image-src";
 import { prisma } from "@/lib/prisma";
 import { getStoryLoop } from "@/lib/story-data";
 import { parseStoryBody } from "@/lib/stories-view";
+import StoryCredits from "@/components/stories/StoryCredits";
 
 type Ctx = { params: Promise<{ slug: string }> | { slug: string } };
 
@@ -85,6 +86,7 @@ export default async function StoryPage({ params }: Ctx) {
                 </p>
               )}
             </div>
+            <StoryCredits credits={story.credits} />
             {story.isDemo && <div className="mt-8"><DemoNotice>placeholder article body, not a published story.</DemoNotice></div>}
           </div>
 
