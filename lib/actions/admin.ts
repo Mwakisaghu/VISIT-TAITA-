@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { normalizeCredits } from "@/lib/story-credits";
 import { parseGuideFields } from "@/lib/field-guide";
 import { generateCheckinToken } from "@/lib/passport";
 
@@ -124,6 +125,8 @@ export async function saveStory(id: string | null, formData: FormData) {
     status: formData.get("status"),
     featured: formData.get("featured") === "on",
   });
+  const credits = normalizeCredits(String(formData.get("credits") ?? ""));
+  if (!credits.ok) throw new Error(credits.error);
 
   // The place the story is about is optional; an id that is not a real place is ignored.
   const placeId = String(formData.get("destinationId") ?? "").trim();
@@ -131,11 +134,12 @@ export async function saveStory(id: string | null, formData: FormData) {
   const destinationId = place?.id ?? null;
 
   if (id) {
-    await prisma.story.update({ where: { id }, data: { ...parsed, destinationId } });
+    await prisma.story.update({ where: { id }, data: { ...parsed, credits: credits.value, destinationId } });
   } else {
     await prisma.story.create({
       data: {
         ...parsed,
+        credits: credits.value,
         destinationId,
         slug: `${slugify(parsed.title)}-${Math.random().toString(36).slice(2, 6)}`,
         isDemo: false,

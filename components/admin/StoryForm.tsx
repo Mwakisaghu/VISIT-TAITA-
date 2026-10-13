@@ -42,6 +42,11 @@ export default function StoryForm({ story, destinations = [] }: { story?: Story;
         <span className="font-body text-sm text-stone/70">Leave a blank line between paragraphs. Start a paragraph with &gt; to make it a pull quote.</span>
       </Field>
 
+      <Field label="Sources and credits">
+        <textarea name="credits" defaultValue={story?.credits ?? ""} rows={5} className="input" />
+        <span className="font-body text-sm text-stone/70">One per line: Title | Author or publisher | https://link (the author and the link are optional). Up to 8. Credit whoever the facts or words came from.</span>
+      </Field>
+
       <Field label="Reading time">
         <input
           name="readingTime"
