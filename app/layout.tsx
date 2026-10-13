@@ -10,6 +10,10 @@ import { readSiteInfo } from "@/lib/site-info";
 import { readSocial } from "@/lib/social";
 import { jsonLdString, organizationJsonLd } from "@/lib/structured-data";
 import Concierge from "@/components/concierge/Concierge";
+import { LocaleProvider } from "@/lib/i18n/client";
+import { LOCALE_INFO } from "@/lib/i18n/config";
+import { getLocale } from "@/lib/i18n/server";
+import LanguageBanner from "@/components/i18n/LanguageBanner";
 
 // The picture WhatsApp, Instagram, Facebook and X show when a link to the site is shared.
 const OG_IMAGE = { url: "/brand/og-default.png", width: 1200, height: 630, alt: `${BRAND.name} — ${BRAND.tagline}` };
@@ -58,6 +62,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const locale = getLocale();
   const social = readSocial();
   const info = readSiteInfo();
   const siteUrl = getSiteUrl();
@@ -71,14 +76,17 @@ export default function RootLayout({
   });
 
   return (
-    <html lang="en" className={`${fraunces.variable} ${manrope.variable}`}>
+    <html lang={LOCALE_INFO[locale].htmlLang} className={`${fraunces.variable} ${manrope.variable}`}>
       <body className="font-body">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(organization) }} />
         <Providers>
+          <LocaleProvider locale={locale}>
           <Nav />
           <main id="main">{children}</main>
           <Footer />
           <Concierge />
+            <LanguageBanner />
+          </LocaleProvider>
         </Providers>
       </body>
     </html>

@@ -1,4 +1,5 @@
 import { addDays, dayStart, todayIn } from "@/lib/plan";
+import { T } from "@/lib/i18n/mark";
 
 // "Taita Guide": when to offer help, and what to offer. Pure functions: no browser, no clock of their own.
 // The rule behind all of it: be useful, be rare, be easy to close.
@@ -79,26 +80,26 @@ export function pickVariant(path: string, ai: boolean): Variant {
 export const variantOrder = (first: Variant, ai: boolean): Variant[] => [first, ...VARIANTS.filter((v) => v !== first && (v !== "ask" || ai))].filter((v) => v !== "ask" || ai);
 
 export const COPY: Record<Variant, { tab: string; title: string; body: string }> = {
-  plan: { tab: "Plan my day", title: "Before you go: let Taita plan a day for you.", body: "Tell us how high you want to be. We will line up a hike, a match and somewhere to sleep from what is on." },
-  maker: { tab: "Meet a maker", title: "Take a piece of Taita home.", body: "Everything in the shop has a person behind it. Start with this month's maker." },
-  surprise: { tab: "Surprise me", title: "Not sure where to start? Let Taita choose.", body: "One place, picked for you, shown on the map with how high it sits." },
-  ask: { tab: "Ask Taita", title: "Ask the guide.", body: "Ask about places, stories, stays and events. It reads this site's own pages." },
+  plan: { tab: T("Plan my day"), title: T("Before you go: let Taita plan a day for you."), body: T("Tell us how high you want to be. We will line up a hike, a match and somewhere to sleep from what is on.") },
+  maker: { tab: T("Meet a maker"), title: T("Take a piece of Taita home."), body: T("Everything in the shop has a person behind it. Start with this month's maker.") },
+  surprise: { tab: T("Surprise me"), title: T("Not sure where to start? Let Taita choose."), body: T("One place, picked for you, shown on the map with how high it sits.") },
+  ask: { tab: T("Ask Taita"), title: T("Ask the guide."), body: T("Ask about places, stories, stays and events. It reads this site's own pages.") },
 };
 
 /** "How high": the idea at the heart of the Field Guide. */
 export const ZONE_CHOICES = [
-  { zone: "HIGHLANDS", label: "Highlands", feel: "Misty, cool, quiet: cloud forest above 1,400 m." },
-  { zone: "FOOTHILLS", label: "Foothills", feel: "Green terraces and markets, 900 to 1,400 m." },
-  { zone: "PLAINS", label: "Plains", feel: "Big skies and wildlife, below 900 m." },
+  { zone: "HIGHLANDS", label: T("Highlands"), feel: T("Misty, cool, quiet: cloud forest above 1,400 m.") },
+  { zone: "FOOTHILLS", label: T("Foothills"), feel: T("Green terraces and markets, 900 to 1,400 m.") },
+  { zone: "PLAINS", label: T("Plains"), feel: T("Big skies and wildlife, below 900 m.") },
 ] as const;
 
 const WEEKDAY = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 export const weekdayOf = (day: string): string => WEEKDAY[new Date(dayStart(day).getTime() + 3 * HOUR).getUTCDay()];
 /** Up to three days to choose from: tomorrow, the next Saturday and the one after (no repeats). */
 export function dayChoices(now: Date): { label: string; day: string }[] {
-  const today = todayIn(now); const out: { label: string; day: string }[] = [{ label: "Tomorrow", day: addDays(today, 1) }];
+  const today = todayIn(now); const out: { label: string; day: string }[] = [{ label: T("Tomorrow"), day: addDays(today, 1) }];
   let sat = addDays(today, 1); for (let i = 0; i < 7 && weekdayOf(sat) !== "Saturday"; i++) sat = addDays(sat, 1);
-  if (sat !== out[0].day) out.push({ label: "This Saturday", day: sat });
-  out.push({ label: sat === out[0].day ? "Next Saturday" : "The Saturday after", day: addDays(sat, 7) });
+  if (sat !== out[0].day) out.push({ label: T("This Saturday"), day: sat });
+  out.push({ label: sat === out[0].day ? T("Next Saturday") : T("The Saturday after"), day: addDays(sat, 7) });
   return out;
 }

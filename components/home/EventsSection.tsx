@@ -5,6 +5,8 @@ import { ArrowIcon } from "@/components/home/icons";
 import { display, eyebrow, textLink } from "@/components/home/ui";
 import { programLabel } from "@/lib/format";
 import type { EventItem } from "@/lib/home-data";
+import { lp, tr } from "@/lib/i18n/server";
+import { T } from "@/lib/i18n/mark";
 
 const part = (d: Date, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Nairobi", ...o }).format(d);
 
@@ -14,10 +16,10 @@ export default function EventsSection({ events }: { events: EventItem[] }) {
       <div className="mx-auto max-w-7xl">
         <Reveal innerClassName="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className={`${eyebrow} text-rust-deep`}>This week in Taita</p>
-            <h2 id="events-title" className={`${display} mt-5 text-[clamp(1.6rem,3.2vw,2.64rem)] leading-[1.08]`}>Events · Experiences ·<br className="sm:hidden" /> Places · Stories</h2>
+            <p className={`${eyebrow} text-rust-deep`}>{tr("This week in Taita")}</p>
+            <h2 id="events-title" className={`${display} mt-5 text-[clamp(1.6rem,3.2vw,2.64rem)] leading-[1.08]`}>{tr("Events · Experiences ·")}<br className="sm:hidden" />{" "}{tr("Places · Stories")}</h2>
           </div>
-          <Link href="/events" className={`${textLink} text-stone hover:text-rust`}>View all events <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+          <Link href={lp("/events")} className={`${textLink} text-stone hover:text-rust`}>{tr("View all events")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
         </Reveal>
 
         {events.length > 0 ? (
@@ -41,18 +43,18 @@ export default function EventsSection({ events }: { events: EventItem[] }) {
           </ul>
         ) : (
           <Reveal className="mt-14 border-t border-stone/25 pt-8">
-            <p className="max-w-lg font-body text-lg leading-relaxed text-stone/75">Nothing is on the calendar just yet. When something is planned, it appears here first.</p>
-            <Link href="/events" className={`${textLink} mt-6 text-stone hover:text-rust`}>See what&apos;s coming <ArrowIcon className="h-4 w-4" /></Link>
+            <p className="max-w-lg font-body text-lg leading-relaxed text-stone/75">{tr("Nothing is on the calendar just yet. When something is planned, it appears here first.")}</p>
+            <Link href={lp("/events")} className={`${textLink} mt-6 text-stone hover:text-rust`}>{tr("See what's coming")}{" "}<ArrowIcon className="h-4 w-4" /></Link>
           </Reveal>
         )}
-        {events.some((e) => e.isDemo) && <DemoNotice>replace with real events before launch.</DemoNotice>}
+        {events.some((e) => e.isDemo) && <DemoNotice>{tr("replace with real events before launch.")}</DemoNotice>}
 
         <Reveal className="mt-20">
-          <Link href="/events/taita-cup" className="focus-ring group relative block overflow-hidden rounded-[2px] bg-canopy px-8 py-12 text-parchment md:px-14 md:py-16">
-            <p className={`${eyebrow} text-ochre-light`}>Taita Cup</p>
-            <p className={`${display} mt-4 text-[clamp(1.52rem,2.88vw,2.4rem)] leading-[1.08]`}>Come for the football.<br />Stay for Taita.</p>
-            <p className="mt-4 max-w-md font-body text-parchment/80">Teams, travel packages and match-day festivities come to the hills every season.</p>
-            <span className="mt-7 inline-flex items-center gap-2 font-body text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-ochre-light">Standings &amp; fixtures <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+          <Link href={lp("/events/taita-cup")} className="focus-ring group relative block overflow-hidden rounded-[2px] bg-canopy px-8 py-12 text-parchment md:px-14 md:py-16">
+            <p className={`${eyebrow} text-ochre-light`}>{tr("Taita Cup")}</p>
+            <p className={`${display} mt-4 text-[clamp(1.52rem,2.88vw,2.4rem)] leading-[1.08]`}>{tr("Come for the football.")}<br />{tr("Stay for Taita.")}</p>
+            <p className="mt-4 max-w-md font-body text-parchment/80">{tr("Teams, travel packages and match-day festivities come to the hills every season.")}</p>
+            <span className="mt-7 inline-flex items-center gap-2 font-body text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-ochre-light">{tr("Standings & fixtures")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
           </Link>
         </Reveal>
       </div>

@@ -26,5 +26,8 @@ export function fadeMask(e: Edges): string | undefined {
 }
 
 /** What a screen reader hears. While the row scrolls: the current card ("Experiences: 2 of 4"). When everything already fits there is no "current" card: just how many there are. */
-export const railStatus = (index: number, total: number, name: string, overflow = true): string =>
-  total <= 0 ? name : overflow ? `${name}: ${Math.min(Math.max(index, 0), total - 1) + 1} of ${total}` : `${name}: ${total} ${total === 1 ? "item" : "items"}`;
+export const railStatus = (index: number, total: number, name: string, overflow = true, tr?: (text: string, vars?: Record<string, string | number>) => string): string => {
+  if (total <= 0) return name; const n = Math.min(Math.max(index, 0), total - 1) + 1;
+  if (tr) return overflow ? tr("{name}: {n} of {total}", { name, n, total }) : (total === 1 ? tr("{name}: {total} item", { name, total }) : tr("{name}: {total} items", { name, total }));
+  return overflow ? `${name}: ${n} of ${total}` : `${name}: ${total} ${total === 1 ? "item" : "items"}`;
+};

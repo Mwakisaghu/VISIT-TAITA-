@@ -7,16 +7,20 @@ import { useSession, signOut } from "next-auth/react";
 import Logo from "@/components/brand/Logo";
 import { BagIcon, CloseIcon, MenuIcon, PassportIcon, SearchIcon, UserIcon } from "@/components/home/icons";
 import { useCart } from "@/components/marketplace/CartProvider";
+import LanguageSwitcher, { LanguageLinks } from "@/components/i18n/LanguageSwitcher";
+import { splitLocale } from "@/lib/i18n/config";
+import { useI18n } from "@/lib/i18n/client";
+import { T } from "@/lib/i18n/mark";
 
 // The seven ways into the site. (The map is reached from Discover, the footer and the menu.) Everything else (Shop, Search, the account) is reachable but kept quiet.
 const PRIMARY = [
-  { href: "/discover", label: "Discover" },
-  { href: "/stay", label: "Stay" },
-  { href: "/experiences", label: "Experiences" },
-  { href: "/stories", label: "Stories" },
-  { href: "/events", label: "Events" },
-  { href: "/shop", label: "Shop" },
-  { href: "/plan", label: "Plan" },
+  { href: "/discover", label: T("Discover") },
+  { href: "/stay", label: T("Stay") },
+  { href: "/experiences", label: T("Experiences") },
+  { href: "/stories", label: T("Stories") },
+  { href: "/events", label: T("Events") },
+  { href: "/shop", label: T("Shop") },
+  { href: "/plan", label: T("Plan") },
 ];
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
@@ -28,7 +32,8 @@ const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1
  * Admin, Partner and Crew links live in the account menu rather than the main bar. On a phone the menu opens full screen.
  */
 export default function Nav() {
-  const pathname = usePathname() || "/";
+  const { tr, lp } = useI18n();
+  const pathname = splitLocale(usePathname() || "/").rest.split(/[?#]/)[0] || "/";
   const isHome = pathname === "/";
   const { data: session, status } = useSession();
   const { count } = useCart();
@@ -87,73 +92,75 @@ export default function Nav() {
   return (
     <>
     <header className={`${bar} z-50 text-parchment transition-[background-color,box-shadow] duration-500 print:hidden`}>
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-sm focus:bg-parchment focus:px-4 focus:py-2 focus:text-stone">Skip to content</a>
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-sm focus:bg-parchment focus:px-4 focus:py-2 focus:text-stone">{tr("Skip to content")}</a>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-3.5">
-        <Link href="/" aria-label="Visit Taita — home" className="focus-ring shrink-0 rounded-sm"><Logo decorative className="h-11 w-auto text-parchment" /></Link>
+        <Link href={lp("/")} aria-label={tr("Visit Taita — home")} className="focus-ring shrink-0 rounded-sm"><Logo decorative className="h-11 w-auto text-parchment" /></Link>
 
-        <nav aria-label="Main" className="hidden items-center gap-9 lg:flex">
-          {PRIMARY.map((l) => (<Link key={l.href} href={l.href} aria-current={current(l.href)} className={linkCls}>{l.label}</Link>))}
+        <nav aria-label={tr("Main")} className="hidden items-center gap-9 lg:flex">
+          {PRIMARY.map((l) => (<Link key={l.href} href={lp(l.href)} aria-current={current(l.href)} className={linkCls}>{tr(l.label)}</Link>))}
         </nav>
 
         <div className="flex items-center gap-1">
-          <Link href="/search" aria-label="Search" className={iconBtn}><SearchIcon className="h-5 w-5" /></Link>
-          <Link href="/passport" className="focus-ring hidden h-11 items-center gap-2 rounded-full px-3 font-body text-[0.8rem] font-medium transition-colors hover:text-ochre md:flex"><PassportIcon className="h-5 w-5" />Passport</Link>
-          <Link href="/shop/cart" aria-label={count > 0 ? `Cart, ${count} item${count === 1 ? "" : "s"}` : "Cart"} className={iconBtn}>
+          <LanguageSwitcher className="hidden md:block" />
+          <Link href={lp("/search")} aria-label={tr("Search")} className={iconBtn}><SearchIcon className="h-5 w-5" /></Link>
+          <Link href={lp("/passport")} className="focus-ring hidden h-11 items-center gap-2 rounded-full px-3 font-body text-[0.8rem] font-medium transition-colors hover:text-ochre md:flex"><PassportIcon className="h-5 w-5" />{tr("Passport")}</Link>
+          <Link href={lp("/shop/cart")} aria-label={count > 0 ? (count === 1 ? tr("Cart, {count} item", { count }) : tr("Cart, {count} items", { count })) : tr("Cart")} className={iconBtn}>
             <BagIcon className="h-5 w-5" />
             {count > 0 && <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-rust px-1 font-body text-[0.6rem] font-bold leading-none text-parchment">{count}</span>}
           </Link>
 
           <div ref={accountRef} className="relative hidden lg:block">
-            <button ref={accountBtnRef} type="button" onClick={() => setAccount((v) => !v)} aria-expanded={account} aria-controls="account-menu" aria-label="Account" className={`${iconBtn} border border-parchment/30 hover:border-ochre`}><UserIcon className="h-5 w-5" /></button>
+            <button ref={accountBtnRef} type="button" onClick={() => setAccount((v) => !v)} aria-expanded={account} aria-controls="account-menu" aria-label={tr("Account")} className={`${iconBtn} border border-parchment/30 hover:border-ochre`}><UserIcon className="h-5 w-5" /></button>
             {account && (
               <div id="account-menu" className="absolute right-0 mt-3 w-60 rounded-[2px] border border-parchment/15 bg-stone p-3 shadow-2xl">
                 {signedIn ? (
                   <>
                     <p className="truncate px-1 pb-2 font-body text-xs text-parchment/55">{session?.user?.email}</p>
-                    <Link href="/account" className={menuLink}>My account</Link>
-                    <Link href="/passport" className={menuLink}>Passport</Link>
-                    <Link href="/account/tickets" className={menuLink}>My tickets</Link>
-                    <Link href="/account/bookings" className={menuLink}>My bookings</Link>
-                    {isPartner && <Link href="/partner" className={menuLink}>Partner area</Link>}
-                    {isCreator && <Link href="/crew" className={menuLink}>Crew</Link>}
-                    {isAdmin && <Link href="/admin" className={menuLink}>Admin</Link>}
-                    <button type="button" onClick={() => signOut({ callbackUrl: "/" })} className="focus-ring mt-1 w-full rounded-sm border-t border-parchment/10 pt-3 text-left font-body text-sm text-ochre">Sign out</button>
+                    <Link href={lp("/account")} className={menuLink}>{tr("My account")}</Link>
+                    <Link href={lp("/passport")} className={menuLink}>{tr("Passport")}</Link>
+                    <Link href={lp("/account/tickets")} className={menuLink}>{tr("My tickets")}</Link>
+                    <Link href={lp("/account/bookings")} className={menuLink}>{tr("My bookings")}</Link>
+                    {isPartner && <Link href={lp("/partner")} className={menuLink}>{tr("Partner area")}</Link>}
+                    {isCreator && <Link href={lp("/crew")} className={menuLink}>{tr("Crew")}</Link>}
+                    {isAdmin && <Link href={lp("/admin")} className={menuLink}>{tr("Admin")}</Link>}
+                    <button type="button" onClick={() => signOut({ callbackUrl: "/" })} className="focus-ring mt-1 w-full rounded-sm border-t border-parchment/10 pt-3 text-left font-body text-sm text-ochre">{tr("Sign out")}</button>
                   </>
                 ) : (
                   <>
-                    <Link href="/login" className={menuLink}>Sign in</Link>
-                    <Link href="/register" className={menuLink}>Create an account</Link>
+                    <Link href={lp("/login")} className={menuLink}>{tr("Sign in")}</Link>
+                    <Link href={lp("/register")} className={menuLink}>{tr("Create an account")}</Link>
                   </>
                 )}
               </div>
             )}
           </div>
 
-          <button ref={toggleRef} type="button" onClick={() => setMenu((v) => !v)} aria-expanded={menu} aria-controls="mobile-menu" aria-label={menu ? "Close menu" : "Open menu"} className={`${iconBtn} lg:hidden`}>{menu ? <CloseIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}</button>
+          <button ref={toggleRef} type="button" onClick={() => setMenu((v) => !v)} aria-expanded={menu} aria-controls="mobile-menu" aria-label={menu ? tr("Close menu") : tr("Open menu")} className={`${iconBtn} lg:hidden`}>{menu ? <CloseIcon className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}</button>
         </div>
       </div>
 
     </header>
         {menu && (
           <div ref={overlayRef} id="mobile-menu" className="fixed inset-0 z-40 overflow-y-auto bg-stone px-6 pb-12 pt-28 text-parchment lg:hidden print:hidden">
-            <nav aria-label="Main">
+            <nav aria-label={tr("Main")}>
               <ul>
                 {PRIMARY.map((l) => (
-                  <li key={l.href} className="border-b border-parchment/10"><Link href={l.href} onClick={close} aria-current={current(l.href)} className="focus-ring block rounded-sm py-3.5 font-display text-2xl font-medium tracking-tight transition-colors hover:text-ochre aria-[current=page]:text-ochre">{l.label}</Link></li>
+                  <li key={l.href} className="border-b border-parchment/10"><Link href={lp(l.href)} onClick={close} aria-current={current(l.href)} className="focus-ring block rounded-sm py-3.5 font-display text-2xl font-medium tracking-tight transition-colors hover:text-ochre aria-[current=page]:text-ochre">{tr(l.label)}</Link></li>
                 ))}
               </ul>
             </nav>
             <ul className="mt-8 grid grid-cols-2 gap-x-6">
-              <li><Link href="/passport" onClick={close} className={menuLink}>Passport</Link></li>
-              <li><Link href="/map" onClick={close} className={menuLink}>Map</Link></li>
-              <li><Link href="/search" onClick={close} className={menuLink}>Search</Link></li>
-              {signedIn ? (<><li><Link href="/account" onClick={close} className={menuLink}>My account</Link></li>
-                {isPartner && <li><Link href="/partner" onClick={close} className={menuLink}>Partner area</Link></li>}
-                {isCreator && <li><Link href="/crew" onClick={close} className={menuLink}>Crew</Link></li>}
-                {isAdmin && <li><Link href="/admin" onClick={close} className={menuLink}>Admin</Link></li>}
-                <li><button type="button" onClick={() => { close(); signOut({ callbackUrl: "/" }); }} className="focus-ring py-2.5 font-body text-sm text-ochre">Sign out</button></li></>
-              ) : (<><li><Link href="/login" onClick={close} className={menuLink}>Sign in</Link></li><li><Link href="/register" onClick={close} className={menuLink}>Create an account</Link></li></>)}
+              <li><Link href={lp("/passport")} onClick={close} className={menuLink}>{tr("Passport")}</Link></li>
+              <li><Link href={lp("/map")} onClick={close} className={menuLink}>{tr("Map")}</Link></li>
+              <li><Link href={lp("/search")} onClick={close} className={menuLink}>{tr("Search")}</Link></li>
+              {signedIn ? (<><li><Link href={lp("/account")} onClick={close} className={menuLink}>{tr("My account")}</Link></li>
+                {isPartner && <li><Link href={lp("/partner")} onClick={close} className={menuLink}>{tr("Partner area")}</Link></li>}
+                {isCreator && <li><Link href={lp("/crew")} onClick={close} className={menuLink}>{tr("Crew")}</Link></li>}
+                {isAdmin && <li><Link href={lp("/admin")} onClick={close} className={menuLink}>{tr("Admin")}</Link></li>}
+                <li><button type="button" onClick={() => { close(); signOut({ callbackUrl: "/" }); }} className="focus-ring py-2.5 font-body text-sm text-ochre">{tr("Sign out")}</button></li></>
+              ) : (<><li><Link href={lp("/login")} onClick={close} className={menuLink}>{tr("Sign in")}</Link></li><li><Link href={lp("/register")} onClick={close} className={menuLink}>{tr("Create an account")}</Link></li></>)}
             </ul>
+          <div className="mt-2 border-t border-parchment/15 pt-4"><p className="font-body text-[0.65rem] font-bold uppercase tracking-[0.22em] text-parchment/70">{tr("Language")}</p><LanguageLinks onPick={close} className="mt-1 text-parchment" /></div>
           </div>
         )}
     </>

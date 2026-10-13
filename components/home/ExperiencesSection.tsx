@@ -6,14 +6,16 @@ import { ArrowIcon } from "@/components/home/icons";
 import { display, eyebrow, textLink } from "@/components/home/ui";
 import { experienceCategoryLabel } from "@/lib/format";
 import type { ExperienceItem } from "@/lib/home-data";
+import { lp, tr } from "@/lib/i18n/server";
+import { T } from "@/lib/i18n/mark";
 
 // When no experiences are published yet, the rail still invites people in: each card opens the area it names.
 const INVITES = [
-  { name: "Wildlife", note: "Slow mornings, wide skies.", href: "/experiences", tone: "from-[#2f5a40] to-stone" },
-  { name: "Adventure", note: "Trails, summits and waterfalls.", href: "/discover/adventure", tone: "from-[#7a5a34] to-stone" },
-  { name: "Culture", note: "Heritage, craft and belief.", href: "/discover/culture", tone: "from-[#a4502a] to-stone" },
-  { name: "Food", note: "What's cooked, grown and shared.", href: "/discover/food", tone: "from-[#8a6a3c] to-stone" },
-  { name: "Sport", note: "Where Taita plays.", href: "/discover/sport", tone: "from-[#3c7050] to-stone" },
+  { name: T("Wildlife"), note: T("Slow mornings, wide skies."), href: "/experiences", tone: "from-[#2f5a40] to-stone" },
+  { name: T("Adventure"), note: T("Trails, summits and waterfalls."), href: "/discover/adventure", tone: "from-[#7a5a34] to-stone" },
+  { name: T("Culture"), note: T("Heritage, craft and belief."), href: "/discover/culture", tone: "from-[#a4502a] to-stone" },
+  { name: T("Food"), note: T("What's cooked, grown and shared."), href: "/discover/food", tone: "from-[#8a6a3c] to-stone" },
+  { name: T("Sport"), note: T("Where Taita plays."), href: "/discover/sport", tone: "from-[#3c7050] to-stone" },
 ];
 
 const card = "focus-ring group relative block aspect-[3/4] w-[74%] shrink-0 snap-start overflow-hidden rounded-[2px] bg-gradient-to-b sm:w-[44%] lg:w-[23.4%]";
@@ -24,14 +26,14 @@ export default function ExperiencesSection({ items }: { items: ExperienceItem[] 
       <div className="mx-auto max-w-7xl">
         <Reveal innerClassName="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className={`${eyebrow} text-rust-deep`}>Explore Taita</p>
-            <h2 id="exp-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>Experiences for<br className="hidden sm:block" /> every kind of explorer.</h2>
+            <p className={`${eyebrow} text-rust-deep`}>{tr("Explore Taita")}</p>
+            <h2 id="exp-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>{tr("Experiences for")}<br className="hidden sm:block" />{" "}{tr("every kind of explorer.")}</h2>
           </div>
-          <Link href="/experiences" className={`${textLink} text-stone hover:text-rust`}>View all experiences <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+          <Link href={lp("/experiences")} className={`${textLink} text-stone hover:text-rust`}>{tr("View all experiences")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
         </Reveal>
 
         <div className="mt-12">
-          <HorizontalRail label="Experiences">
+          <HorizontalRail label={tr("Experiences")}>
             {items.length > 0
               ? items.map((x) => (
                   <Link key={x.slug} href={`/experiences/listing/${x.slug}`} className={`${card} from-canopy-deep to-stone`}>
@@ -42,17 +44,17 @@ export default function ExperiencesSection({ items }: { items: ExperienceItem[] 
                     <div className="absolute inset-x-0 bottom-0 p-6 text-parchment">
                       <h3 className={`${display} text-2xl leading-tight md:text-[1.7rem]`}>{x.name}</h3>
                       <p className="mt-2 font-body text-sm text-parchment/75">{x.region}</p>
-                      <span className="mt-4 inline-flex items-center gap-2 font-body text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-ochre opacity-100 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">Discover <ArrowIcon className="h-3.5 w-3.5" /></span>
+                      <span className="mt-4 inline-flex items-center gap-2 font-body text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-ochre opacity-100 transition-opacity duration-500 md:opacity-0 md:group-hover:opacity-100 md:group-focus-visible:opacity-100">{tr("Discover")}{" "}<ArrowIcon className="h-3.5 w-3.5" /></span>
                     </div>
                   </Link>
                 ))
               : INVITES.map((x) => (
-                  <Link key={x.name} href={x.href} className={`${card} ${x.tone}`}>
+                  <Link key={x.name} href={lp(x.href)} className={`${card} ${x.tone}`}>
                     <div className="absolute inset-0 bg-gradient-to-t from-stone/80 via-transparent to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-6 text-parchment">
-                      <h3 className={`${display} text-3xl uppercase`}>{x.name}</h3>
-                      <p className="mt-2 font-body text-sm text-parchment/75">{x.note}</p>
-                      <span className="mt-4 inline-flex items-center gap-2 font-body text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-ochre">Explore <ArrowIcon className="h-3.5 w-3.5" /></span>
+                      <h3 className={`${display} text-3xl uppercase`}>{tr(x.name)}</h3>
+                      <p className="mt-2 font-body text-sm text-parchment/75">{tr(x.note)}</p>
+                      <span className="mt-4 inline-flex items-center gap-2 font-body text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-ochre">{tr("Explore")}{" "}<ArrowIcon className="h-3.5 w-3.5" /></span>
                     </div>
                   </Link>
                 ))}

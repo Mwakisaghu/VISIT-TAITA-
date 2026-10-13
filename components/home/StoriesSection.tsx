@@ -5,6 +5,8 @@ import Reveal from "@/components/home/Reveal";
 import { ArrowIcon } from "@/components/home/icons";
 import { display, eyebrow, textLink } from "@/components/home/ui";
 import type { StoryItem } from "@/lib/home-data";
+import { lp, tr } from "@/lib/i18n/server";
+import { T } from "@/lib/i18n/mark";
 
 const categoryName = (c: string) => c.charAt(0) + c.slice(1).toLowerCase();
 
@@ -15,11 +17,11 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
       <div className="mx-auto max-w-7xl">
         <Reveal innerClassName="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
-            <p className={`${eyebrow} text-rust-deep`}>Taita stories</p>
-            <h2 id="stories-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>Real people.<br />Extraordinary stories.</h2>
+            <p className={`${eyebrow} text-rust-deep`}>{tr("Taita stories")}</p>
+            <h2 id="stories-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>{tr("Real people.")}<br />{tr("Extraordinary stories.")}</h2>
           </div>
           <div className="lg:col-span-6 lg:pl-10">
-            <p className="font-display text-2xl italic leading-snug text-stone/80 md:text-3xl">&ldquo;Before the tourists arrive, the hills already have a story.&rdquo;</p>
+            <p className="font-display text-2xl italic leading-snug text-stone/80 md:text-3xl">{tr("“Before the tourists arrive, the hills already have a story.”")}</p>
           </div>
         </Reveal>
 
@@ -33,7 +35,7 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
                   <p className="font-body text-[0.68rem] font-bold uppercase tracking-[0.26em] text-ochre">{categoryName(lead.category)}</p>
                   <h3 className={`${display} mt-3 max-w-xl text-3xl leading-tight md:text-4xl`}>{lead.title}</h3>
                   <p className="mt-4 hidden max-w-lg font-body leading-relaxed text-parchment/80 md:block">{lead.excerpt}</p>
-                  <span className="mt-6 inline-flex items-center gap-2 font-body text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-ochre">Read the story <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+                  <span className="mt-6 inline-flex items-center gap-2 font-body text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-ochre">{tr("Read the story")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
                 </div>
               </Link>
             </Reveal>
@@ -51,19 +53,19 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
                   </Link>
                 </Reveal>
               ))}
-              <Link href="/stories" className={`${textLink} self-start text-stone hover:text-rust`}>All stories <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+              <Link href={lp("/stories")} className={`${textLink} self-start text-stone hover:text-rust`}>{tr("All stories")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
             </div>
           </div>
         ) : (
           <Reveal className="mt-14 border-t border-stone/20 pt-8">
-            <p className="max-w-xl font-body text-lg leading-relaxed text-stone/75">The first stories are being gathered: the people, the places and the things that never make it onto a postcard.</p>
+            <p className="max-w-xl font-body text-lg leading-relaxed text-stone/75">{tr("The first stories are being gathered: the people, the places and the things that never make it onto a postcard.")}</p>
             <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
-              <Link href="/notes" className={`${textLink} text-stone hover:text-rust`}>Read the field notes <ArrowIcon className="h-4 w-4" /></Link>
-              <Link href="/creators" className={`${textLink} text-stone hover:text-rust`}>Join the Field Crew <ArrowIcon className="h-4 w-4" /></Link>
+              <Link href={lp("/notes")} className={`${textLink} text-stone hover:text-rust`}>{tr("Read the field notes")}{" "}<ArrowIcon className="h-4 w-4" /></Link>
+              <Link href={lp("/creators")} className={`${textLink} text-stone hover:text-rust`}>{tr("Join the Field Crew")}{" "}<ArrowIcon className="h-4 w-4" /></Link>
             </div>
           </Reveal>
         )}
-        {stories.some((s) => s.isDemo) && <DemoNotice>replace with verified stories before launch.</DemoNotice>}
+        {stories.some((s) => s.isDemo) && <DemoNotice>{tr("replace with verified stories before launch.")}</DemoNotice>}
       </div>
     </section>
   );
