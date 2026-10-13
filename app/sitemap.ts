@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/site-url";
 import { discoverCategories, shopCategories, accommodationTypes, experienceCategories } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
+import { hreflangLinks } from "@/lib/i18n/config";
 
 const base = getSiteUrl();
 
@@ -38,8 +39,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
   ]);
 
+  // The homepage exists in four languages: each one is listed, and each says where the others are.
+  const homeLanguages = Object.fromEntries(hreflangLinks("/", base, ["sw", "fr", "de"]).map((l) => [l.hreflang, l.href]));
+  const homeEntries = ["", "/sw", "/fr", "/de"].map((path) => ({ url: `${base}${path}`, lastModified: new Date(), alternates: { languages: homeLanguages } }));
+
   const staticRoutes = [
-    "",
     "/discover",
     "/stories",
     "/events",
@@ -125,6 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   return [
+    ...homeEntries,
     ...staticRoutes,
     ...categoryRoutes,
     ...shopCategoryRoutes,

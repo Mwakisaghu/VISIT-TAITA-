@@ -12,6 +12,10 @@ import Newsletter from "@/components/Newsletter";
 import SponsorStrip from "@/components/sponsors/SponsorStrip";
 import { loadHome } from "@/lib/home-data";
 import { homeMedia } from "@/lib/home-media";
+import type { Metadata } from "next";
+import { hreflangLinks, localizePath } from "@/lib/i18n/config";
+import { getLocale } from "@/lib/i18n/server";
+import { getSiteUrl } from "@/lib/site-url";
 
 // Public, non-personalized content — safe to cache and revalidate rather than hitting Postgres on every single request.
 export const revalidate = 60;
@@ -21,6 +25,13 @@ export const revalidate = 60;
  * CONNECT (stories) -> PARTICIPATE (passport) -> JOIN (events) -> SUPPORT (stay local) -> RETURN (the closing call).
  * Every database-driven part has a designed empty state, and a failure in one never blanks the page.
  */
+/** Which language this page is in, and the other languages it really exists in (so search engines list each one, and send people to the right one). */
+export function generateMetadata(): Metadata {
+  const locale = getLocale(); const site = getSiteUrl(); const links = hreflangLinks("/", site, ["sw", "fr", "de"]);
+  const own = site.replace(/\/+$/, "") + (localizePath("/", locale) === "/" ? "" : localizePath("/", locale));
+  return { alternates: { canonical: own || site, languages: Object.fromEntries(links.map((l) => [l.hreflang, l.href])) } };
+}
+
 export default async function HomePage() {
   const media = homeMedia();
   const data = await loadHome();

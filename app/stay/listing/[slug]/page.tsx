@@ -14,6 +14,7 @@ import AltitudeRibbon from "@/components/field/AltitudeRibbon";
 import NearbyExperiences from "@/components/stay/NearbyExperiences";
 import { getNearbyExperiences } from "@/lib/stay-data";
 import { MOODS } from "@/lib/field-guide";
+import ShareBar from "@/components/share/ShareBar";
 
 export async function generateStaticParams() {
   const accommodations = await prisma.accommodation.findMany({ select: { slug: true } });
@@ -66,6 +67,7 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
               {accommodationTypeLabel(accommodation.type)} · {accommodation.region}
             </p>
             <h1 className="mt-2 font-display text-3xl text-parchment sm:text-4xl">{accommodation.name}</h1>
+        <ShareBar className="mt-5" />
           </div>
         </div>
       </div>

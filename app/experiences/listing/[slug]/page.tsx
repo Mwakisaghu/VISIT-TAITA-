@@ -13,6 +13,7 @@ import { canOptimize } from "@/lib/image-src";
 import PersonChip from "@/components/field/PersonChip";
 import AltitudeRibbon from "@/components/field/AltitudeRibbon";
 import { LEVEL_LABEL, climbLabel } from "@/lib/field-guide";
+import ShareBar from "@/components/share/ShareBar";
 
 export async function generateStaticParams() {
   const experiences = await prisma.experience.findMany({ select: { slug: true } });
@@ -79,6 +80,7 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
               {experienceCategoryLabel(experience.category)} · {experience.region}
             </p>
             <h1 className="mt-2 font-display text-3xl text-parchment sm:text-4xl">{experience.name}</h1>
+        <ShareBar className="mt-5" />
           </div>
         </div>
       </div>

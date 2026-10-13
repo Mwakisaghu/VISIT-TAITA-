@@ -9,6 +9,7 @@ import MakerProductCard from "@/components/shop/MakerProductCard";
 import { altitudeLabel } from "@/lib/field-guide";
 import { PUBLIC_MAKER } from "@/lib/makers";
 import { prisma } from "@/lib/prisma";
+import ShareBar from "@/components/share/ShareBar";
 
 type Ctx = { params: Promise<{ slug: string }> | { slug: string } };
 
@@ -33,7 +34,7 @@ export default async function MakerPage({ params }: Ctx) {
     <div className="px-6 py-14 sm:py-16">
       <div className="mx-auto max-w-6xl">
         <Link href="/shop" className="focus-ring font-body text-sm text-stone/70 hover:text-rust-deep">← Taita Made</Link>
-        <div className="mt-8 flex flex-wrap items-center gap-6"><MakerMark name={m.name} size="lg" /><div><p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-rust-deep">{m.isGroup ? "A group of makers" : "Maker"}</p><h1 className="mt-1 font-display text-[clamp(1.76rem,4vw,2.8rem)] font-medium leading-[1.05] tracking-tight text-stone">{m.name}</h1><p className="mt-1 font-body text-base text-stone/80">{m.craft} · {m.village}</p></div></div>
+        <div className="mt-8 flex flex-wrap items-center gap-6"><MakerMark name={m.name} size="lg" /><div><p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-rust-deep">{m.isGroup ? "A group of makers" : "Maker"}</p><h1 className="mt-1 font-display text-[clamp(1.76rem,4vw,2.8rem)] font-medium leading-[1.05] tracking-tight text-stone">{m.name}</h1><p className="mt-1 font-body text-base text-stone/80">{m.craft} · {m.village}</p><ShareBar className="mt-4" /></div></div>
 
         <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_21rem]">
           <div className="max-w-prose">
