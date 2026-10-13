@@ -8,6 +8,7 @@ import { initials, linkLabel, specialtyLabel, trackLabel } from "@/lib/creators"
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
 import { canOptimize } from "@/lib/image-src";
+import { shareMeta } from "@/lib/share-meta";
 
 // Same for every visitor, so it stays cached.
 export const revalidate = 60;
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return {
     title: `${creator.displayName} — Taita Field Crew`,
     description: creator.bio.slice(0, 160),
+    ...shareMeta(`${creator.displayName} — Taita Field Crew`, creator.bio.slice(0, 160)),
   };
 }
 

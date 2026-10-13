@@ -5,6 +5,7 @@ import ProductCard from "@/components/marketplace/ProductCard";
 import { shopCategories } from "@/lib/data";
 import { slugToCategory } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export function generateStaticParams() {
   return shopCategories.map((c) => ({ category: c.key }));
@@ -13,7 +14,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { category: string } }): Metadata {
   const cat = shopCategories.find((c) => c.key === params.category);
   if (!cat) return {};
-  return { title: cat.label };
+  return { title: cat.label, ...shareMeta(cat.label, "Made in Taita, by people who call it home.") };
 }
 
 export const revalidate = 30;

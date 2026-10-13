@@ -10,7 +10,7 @@ import { lp, tr } from "@/lib/i18n/server";
 import { T } from "@/lib/i18n/mark";
 
 export default function HomeHero({ media }: { media: HomeMedia }) {
-  const alt = media.heroImage === DEFAULT_HERO_IMAGE ? "Sunrise over the Taita Hills, seen from a ridge trail" : "The landscape of Taita Taveta";
+  const alt = media.heroImage === DEFAULT_HERO_IMAGE ? "Early light over a ridge landscape" : "The landscape of Taita Taveta";
   return (
     <section aria-labelledby="home-title" className="grain relative isolate flex min-h-[100svh] items-end overflow-hidden bg-stone text-parchment">
       <Parallax speed={0.2} className="absolute -inset-y-[10%] inset-x-0 -z-10">

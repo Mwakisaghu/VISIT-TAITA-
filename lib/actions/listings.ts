@@ -7,6 +7,7 @@ import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { parseGuideFields } from "@/lib/field-guide";
+import { imageUrl } from "@/lib/image-policy";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -40,7 +41,7 @@ const accommodationSchema = z.object({
   type: z.enum(["HOTEL", "LODGE", "GUESTHOUSE", "HOMESTAY", "CAMPSITE"]),
   region: z.string().min(2),
   description: z.string().min(10),
-  image: z.string().url(),
+  image: imageUrl,
   priceFrom: z.coerce.number().int().positive().optional(),
   amenities: z.array(z.string()).default([]),
   contactPhone: z.string().optional().or(z.literal("")),
@@ -114,7 +115,7 @@ const experienceSchema = z.object({
   category: z.enum(["WILDLIFE", "CULTURE", "ADVENTURE", "FOOD", "WELLNESS"]),
   region: z.string().min(2),
   description: z.string().min(10),
-  image: z.string().url(),
+  image: imageUrl,
   priceFrom: z.coerce.number().int().positive().optional(),
   duration: z.string().optional().or(z.literal("")),
   groupSizeMax: z.coerce.number().int().positive().optional(),

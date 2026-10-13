@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import NoteCard from "@/components/field-notes/NoteCard";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Field Notes",
   description: "Evidence from the ground: reports from the Taita Field Crew, each tied to a verified visit.",
+  ...shareMeta("Field Notes", "Evidence from the ground: reports from the Taita Field Crew, each tied to a verified visit."),
 };
 
 // Same for every visitor, so it stays cached.

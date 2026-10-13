@@ -7,10 +7,12 @@ import DemoNotice from "@/components/DemoNotice";
 import { getStandings } from "@/lib/cup";
 import { prisma } from "@/lib/prisma";
 import SponsorStrip from "@/components/sponsors/SponsorStrip";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Taita Cup",
   description: "Teams, fixtures, results and standings for the Taita Cup.",
+  ...shareMeta("Taita Cup", "Teams, fixtures, results and standings for the Taita Cup."),
 };
 
 export const revalidate = 60;

@@ -8,6 +8,7 @@ import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SPONSOR_LEAD_STATUSES } from "@/lib/sponsors";
 import { safeHttpUrl } from "@/lib/url";
+import { logoUrl } from "@/lib/image-policy";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -107,7 +108,7 @@ export async function deletePackage(id: string) {
 
 const sponsorSchema = z.object({
   name: z.string().min(2).max(120),
-  logo: httpUrl,
+  logo: logoUrl,
   website: httpUrl.optional().or(z.literal("")),
   packageId: z.string().optional().or(z.literal("")),
   programs: z.array(z.enum(["TAITA_CUP", "TAITA_WEEK", "TAITA_SOUND"])).default([]),

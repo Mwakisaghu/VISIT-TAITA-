@@ -16,9 +16,5 @@ export function planContent(have, content) {
   return out;
 }
 
-/** The picture to give a new item: the one named (if it exists), otherwise any existing one, otherwise none (the item is then skipped, never given a broken picture). */
-export function pickImage(named, byKey, fallback) {
-  const v = named != null && byKey && Object.prototype.hasOwnProperty.call(byKey, named) ? byKey[named] : null;
-  const s = typeof v === "string" && v.trim() ? v : typeof fallback === "string" && fallback.trim() ? fallback : null;
-  return s;
-}
+/** What every new item is given for a picture: the site's own "a picture is coming soon" placeholder. Never another item's picture (that is how a photo nobody owns spreads), never a stock photo. */
+export const PLACEHOLDER_IMAGE = "/placeholders/taita-placeholder.svg";

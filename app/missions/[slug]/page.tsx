@@ -12,6 +12,7 @@ import { disclosureLine, formatDeadline, missionAvailability, spotsLeft } from "
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
 import { canOptimize } from "@/lib/image-src";
+import { shareMeta } from "@/lib/share-meta";
 
 // Same for every visitor, so it stays cached. The visitor's own claim state loads on the client.
 export const revalidate = 60;
@@ -33,7 +34,7 @@ async function loadMission(slug: string) {
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const mission = await loadMission(params.slug);
   if (!mission) return {};
-  return { title: `${mission.title} — Field Crew mission`, description: mission.summary };
+  { const _t = `${mission.title} — Field Crew mission`; const _d = mission.summary; return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
 }
 
 export default async function MissionPage({ params }: { params: { slug: string } }) {

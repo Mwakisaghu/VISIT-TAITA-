@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import MissionCard from "@/components/missions/MissionCard";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Field Crew missions",
   description: "Briefs for the people who tell Taita's story — each tied to a real place, with the evidence a note should show.",
+  ...shareMeta("Field Crew missions", "Briefs for the people who tell Taita's story — each tied to a real place, with the evidence a note should show."),
 };
 
 // Same for every visitor, so it stays cached.

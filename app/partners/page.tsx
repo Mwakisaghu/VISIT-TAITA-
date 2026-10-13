@@ -4,10 +4,12 @@ import SectionHeading from "@/components/SectionHeading";
 import PartnerCard from "@/components/partners/PartnerCard";
 import { partnerTypeLabel } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Partner with Visit Taita",
   description: "Accommodation, experiences, food, transport, events and more — join Visit Taita as a partner.",
+  ...shareMeta("Partner with Visit Taita", "Accommodation, experiences, food, transport, events and more — join Visit Taita as a partner."),
 };
 
 const partnerTypes = [

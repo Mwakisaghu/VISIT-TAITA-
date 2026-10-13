@@ -5,10 +5,12 @@ import EventFilters from "@/components/events/EventFilters";
 import EventRow from "@/components/events/EventRow";
 import { eventWhere, groupEvents, parseEventFilters } from "@/lib/events-view";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Events",
   description: "Taita Cup, Taita Week and Taita Sound — what's on in Taita Taveta, Kenya.",
+  ...shareMeta("Events", "Taita Cup, Taita Week and Taita Sound — what's on in Taita Taveta, Kenya."),
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;

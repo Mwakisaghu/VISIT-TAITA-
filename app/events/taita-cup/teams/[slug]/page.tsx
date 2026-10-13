@@ -4,6 +4,7 @@ import SectionHeading from "@/components/SectionHeading";
 import FixtureRow from "@/components/cup/FixtureRow";
 import DemoNotice from "@/components/DemoNotice";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export async function generateStaticParams() {
   const teams = await prisma.sportTeam.findMany({ select: { slug: true } });
@@ -17,7 +18,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const team = await prisma.sportTeam.findUnique({ where: { slug: params.slug } });
   if (!team) return {};
-  return { title: team.name };
+  return { title: team.name, ...shareMeta(team.name, `${team.name}, a Taita Cup team.`) };
 }
 
 export const revalidate = 60;

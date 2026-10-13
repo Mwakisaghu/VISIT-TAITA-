@@ -6,10 +6,12 @@ import ZoneLinks from "@/components/discover/ZoneLinks";
 import { discoverCategories } from "@/lib/data";
 import { ZONES, zoneRange, type Zone } from "@/lib/field-guide";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Discover Taita",
   description: "Wild, culture, adventure, food, sport and people: six worlds in one hill country, in Taita Taveta, Kenya.",
+  ...shareMeta("Discover Taita", "Wild, culture, adventure, food, sport and people: six worlds in one hill country, in Taita Taveta, Kenya."),
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;

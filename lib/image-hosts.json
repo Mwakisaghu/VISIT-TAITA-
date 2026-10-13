@@ -1,0 +1,14 @@
+{
+  "_about": "Which picture hosts the site refuses, warns about or accepts. Shared by the site (lib/image-policy.ts) and the audit tool (scripts/audit-content.mjs) so they can never disagree.",
+  "blocked": {
+    "tripadvisor.com": "TripAdvisor", "tripadvisor.co.uk": "TripAdvisor", "tacdn.com": "TripAdvisor", "tripcdn.com": "TripAdvisor",
+    "googleusercontent.com": "Google", "ggpht.com": "Google", "gstatic.com": "Google", "googleapis.com": "Google",
+    "fbcdn.net": "Facebook", "facebook.com": "Facebook", "cdninstagram.com": "Instagram", "instagram.com": "Instagram",
+    "pinimg.com": "Pinterest", "pinterest.com": "Pinterest", "twimg.com": "X (Twitter)",
+    "bstatic.com": "Booking.com", "booking.com": "Booking.com", "trvl-media.com": "Expedia", "expedia.com": "Expedia", "muscache.com": "Airbnb", "airbnb.com": "Airbnb",
+    "gettyimages.com": "Getty Images", "shutterstock.com": "Shutterstock", "istockphoto.com": "iStock", "alamy.com": "Alamy", "adobestock.com": "Adobe Stock", "dreamstime.com": "Dreamstime"
+  },
+  "placeholders": ["placehold.co", "placeholder.com", "via.placeholder.com", "dummyimage.com", "picsum.photos", "lorempixel.com", "placekitten.com", "fakeimg.pl"],
+  "stock": ["images.unsplash.com", "unsplash.com", "images.pexels.com", "pexels.com", "pixabay.com", "cdn.pixabay.com"],
+  "ownPlaceholderPath": "/placeholders/"
+}

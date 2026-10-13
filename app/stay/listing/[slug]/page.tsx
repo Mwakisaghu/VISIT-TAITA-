@@ -44,7 +44,8 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
   if (!accommodation || accommodation.status !== "PUBLISHED") notFound();
 
   const bookingUrl = safeHttpUrl(accommodation.externalBookingUrl);
-  const hasDirectContact = accommodation.contactPhone || accommodation.contactEmail || bookingUrl;
+  // Sample listings never show direct contact details: they are placeholders, and a placeholder phone number can ring a real stranger.
+  const hasDirectContact = !accommodation.isDemo && (accommodation.contactPhone || accommodation.contactEmail || bookingUrl);
   const nearby = await getNearbyExperiences(accommodation.region, new Date());
 
   return (

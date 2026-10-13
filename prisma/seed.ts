@@ -694,32 +694,31 @@ async function main() {
     const row = await prisma.destination.upsert({
       where: { slug: p.slug },
       update: {},
-      create: { ...data, category: p.category as DiscoverCategory, image: IMAGE_FOR_CATEGORY[p.category] ?? Object.values(IMAGE_FOR_CATEGORY)[0], status: "PUBLISHED", isDemo: false, createdById: admin.id },
+      create: { ...data, category: p.category as DiscoverCategory, image: "/placeholders/taita-placeholder.svg", status: "PUBLISHED", isDemo: false, createdById: admin.id },
     });
     placeIdBySlug.set(p.slug, row.id);
   }
-  const storyImage = (slug: string) => stories.find((x) => x.slug === slug)?.image ?? stories[0].image;
-  for (const { destination, imageFrom, ...st } of CONTENT.stories) {
+  for (const { destination, ...st } of CONTENT.stories) {
     const place = placeIdBySlug.get(destination) ?? (await prisma.destination.findUnique({ where: { slug: destination }, select: { id: true } }))?.id ?? null;
     await prisma.story.upsert({
       where: { slug: st.slug },
       update: {},
-      create: { ...st, category: st.category as StoryCategory, image: storyImage(imageFrom), destinationId: place, status: "PUBLISHED", isDemo: false, authorId: admin.id },
+      create: { ...st, category: st.category as StoryCategory, image: "/placeholders/taita-placeholder.svg", destinationId: place, status: "PUBLISHED", isDemo: false, authorId: admin.id },
     });
   }
   for (const { note: _n, ...stay } of CONTENT.stays) {
     await prisma.accommodation.upsert({
       where: { slug: stay.slug },
       update: {},
-      create: { ...stay, type: stay.type as AccommodationType, image: accommodations[0].image, status: "DRAFT", isDemo: false },
+      create: { ...stay, type: stay.type as AccommodationType, image: "/placeholders/taita-placeholder.svg", status: "DRAFT", isDemo: false },
     });
   }
-  for (const { imageFrom, maker, ...p } of CONTENT.products) {
+  for (const { maker, ...p } of CONTENT.products) {
     const owner = maker ? await prisma.maker.findUnique({ where: { slug: maker }, select: { id: true } }) : null;
     await prisma.product.upsert({
       where: { slug: p.slug },
       update: {},
-      create: { ...p, category: p.category as ProductCategory, image: imageOf(imageFrom), status: "PUBLISHED", isDemo: true, sellerId: admin.id, makerId: owner?.id ?? null },
+      create: { ...p, category: p.category as ProductCategory, image: "/placeholders/taita-placeholder.svg", status: "PUBLISHED", isDemo: true, sellerId: admin.id, makerId: owner?.id ?? null },
     });
   }
 

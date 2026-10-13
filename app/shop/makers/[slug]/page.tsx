@@ -10,6 +10,7 @@ import { altitudeLabel } from "@/lib/field-guide";
 import { PUBLIC_MAKER } from "@/lib/makers";
 import { prisma } from "@/lib/prisma";
 import ShareBar from "@/components/share/ShareBar";
+import { shareMeta } from "@/lib/share-meta";
 
 type Ctx = { params: Promise<{ slug: string }> | { slug: string } };
 
@@ -19,7 +20,7 @@ const find = (slug: string) => prisma.maker.findFirst({ where: { slug, ...PUBLIC
 // `params` is read with `await` so this page is correct on today's Next.js and on the next one (where it becomes a promise).
 export async function generateMetadata({ params }: Ctx): Promise<Metadata> {
   const { slug } = await params; const m = await find(slug);
-  return m ? { title: `${m.name}, ${m.craft}`, description: m.story.slice(0, 160) } : {};
+  return m ? { title: `${m.name}, ${m.craft}`, description: m.story.slice(0, 160), ...shareMeta(`${m.name}, ${m.craft}`, m.story.slice(0, 160), m.image ? { url: m.image } : undefined) } : {};
 }
 
 export const revalidate = 30;

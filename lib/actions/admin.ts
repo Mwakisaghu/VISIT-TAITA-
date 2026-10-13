@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { normalizeCredits } from "@/lib/story-credits";
 import { parseGuideFields } from "@/lib/field-guide";
 import { generateCheckinToken } from "@/lib/passport";
+import { imageUrl } from "@/lib/image-policy";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -35,7 +36,7 @@ const destinationSchema = z.object({
   category: z.enum(["WILD", "CULTURE", "ADVENTURE", "FOOD", "SPORT", "PEOPLE"]),
   region: z.string().min(2),
   blurb: z.string().min(10),
-  image: z.string().url(),
+  image: imageUrl,
   latitude: z.coerce.number().min(-90).max(90).optional(),
   longitude: z.coerce.number().min(-180).max(180).optional(),
   checkinRadiusM: z.coerce.number().int().min(50).max(5000).optional(),
@@ -108,7 +109,7 @@ const storySchema = z.object({
   excerpt: z.string().min(10),
   body: z.string().default(""),
   readingTime: z.string().min(2),
-  image: z.string().url(),
+  image: imageUrl,
   status: z.enum(["DRAFT", "PUBLISHED"]),
   featured: z.coerce.boolean(),
 });

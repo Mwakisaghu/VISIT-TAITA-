@@ -3,10 +3,12 @@ import Link from "next/link";
 import ContactForm from "@/components/legal/ContactForm";
 import { orPlaceholder, readSiteInfo } from "@/lib/site-info";
 import { readSocial } from "@/lib/social";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Contact us",
   description: "Get in touch with the Visit Taita team.",
+  ...shareMeta("Contact us", "Get in touch with the Visit Taita team."),
 };
 export const revalidate = 3600;
 

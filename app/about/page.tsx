@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "About Visit Taita",
   description: "Visit Taita is a destination, culture and community platform for Taita Taveta, Kenya. More than a place.",
+  ...shareMeta("About Visit Taita", "Visit Taita is a destination, culture and community platform for Taita Taveta, Kenya. More than a place."),
 };
 export const revalidate = 3600;
 

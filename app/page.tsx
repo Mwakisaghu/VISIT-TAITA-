@@ -16,6 +16,7 @@ import type { Metadata } from "next";
 import { hreflangLinks, localizePath } from "@/lib/i18n/config";
 import { getLocale } from "@/lib/i18n/server";
 import { getSiteUrl } from "@/lib/site-url";
+import EssentialsStrip from "@/components/home/EssentialsStrip";
 
 // Public, non-personalized content — safe to cache and revalidate rather than hitting Postgres on every single request.
 export const revalidate = 60;
@@ -46,10 +47,11 @@ export default async function HomePage() {
       <ThisIsTaita people={data.people} land={data.land} stories={data.storiesPic} />
       <ExperiencesSection items={data.experiences} />
       <PlanSection />
+      <EssentialsStrip />
       <StoriesSection stories={data.stories} />
-      <PassportSection />
       <EventsSection events={data.events} />
       <StayLocalSection local={data.local} />
+      <PassportSection />
       {sponsors}
       <ClosingSection image={media.closingImage} />
       <Newsletter />
