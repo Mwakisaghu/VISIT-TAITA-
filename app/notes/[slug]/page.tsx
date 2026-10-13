@@ -10,6 +10,7 @@ import { linkLabel, trackLabel } from "@/lib/creators";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
 import { canOptimize } from "@/lib/image-src";
+import { shareMeta } from "@/lib/share-meta";
 
 // Same for every visitor, so it stays cached.
 export const revalidate = 60;
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const note = await loadNote(params.slug);
   if (!note) return {};
   const lead = note.answers[0] ?? note.body ?? "";
-  return { title: `${note.title} — Field Note`, description: lead.slice(0, 160) };
+  { const _t = `${note.title} — Field Note`; const _d = lead.slice(0, 160); return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
 }
 
 export default async function FieldNotePublicPage({ params }: { params: { slug: string } }) {

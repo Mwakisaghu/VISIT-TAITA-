@@ -7,6 +7,7 @@ import { experienceCategories } from "@/lib/data";
 import { slugToCategory } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { getRatingSummaries } from "@/lib/reviews-data";
+import { shareMeta } from "@/lib/share-meta";
 
 export function generateStaticParams() {
   return experienceCategories.map((c) => ({ category: c.key }));
@@ -15,7 +16,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { category: string } }): Metadata {
   const c = experienceCategories.find((x) => x.key === params.category);
   if (!c) return {};
-  return { title: c.label, description: c.description };
+  { const _t = c.label; const _d = c.description; return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
 }
 
 export const revalidate = 60;

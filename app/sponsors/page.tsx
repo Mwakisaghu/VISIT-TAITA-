@@ -9,11 +9,13 @@ import { formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
 import { canOptimize } from "@/lib/image-src";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Sponsor Taita",
   description:
     "Partner with Visit Taita — sponsorship packages for Taita Cup, Taita Week, Taita Wild, Taita Made and more.",
+  ...shareMeta("Sponsor Taita", "Partner with Visit Taita — sponsorship packages for Taita Cup, Taita Week, Taita Wild, Taita Made and more."),
 };
 
 export const revalidate = 60;

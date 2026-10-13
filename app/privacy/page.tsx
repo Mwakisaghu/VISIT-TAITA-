@@ -2,10 +2,12 @@ import type { Metadata } from "next";
 import LegalPage from "@/components/legal/LegalPage";
 import { privacySections } from "@/lib/legal-text";
 import { readSiteInfo } from "@/lib/site-info";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "What personal data Visit Taita collects, why, who sees it, and the choices you have.",
+  ...shareMeta("Privacy Policy", "What personal data Visit Taita collects, why, who sees it, and the choices you have."),
 };
 export const revalidate = 3600;
 

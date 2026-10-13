@@ -3,10 +3,12 @@ import Link from "next/link";
 import CreatorCard from "@/components/creators/CreatorCard";
 import { prisma } from "@/lib/prisma";
 import { TRACK_BLURBS, TRACK_LABELS } from "@/lib/creators";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "The Taita Field Crew",
   description: "The storytellers, photographers and filmmakers telling the story of Taita Taveta.",
+  ...shareMeta("The Taita Field Crew", "The storytellers, photographers and filmmakers telling the story of Taita Taveta."),
 };
 
 // Same for every visitor, so it stays cached.

@@ -48,13 +48,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [OG_IMAGE],
   },
-  twitter: {
-    card: "summary_large_image",
-    images: [OG_IMAGE.url],
-    title: "Visit Taita — More Than a Place",
-    description:
-      "Discover the wild, culture, people and sport that make Taita Taveta different.",
-  },
+  twitter: { card: "summary_large_image" }, // the title, description and picture come from the page's own openGraph tags
 };
 
 export default function RootLayout({

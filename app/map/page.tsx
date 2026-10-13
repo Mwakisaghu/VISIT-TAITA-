@@ -5,10 +5,12 @@ import MapLoader from "@/components/map/MapLoader";
 import { buildItems } from "@/lib/explore";
 import { optimizedUrl } from "@/lib/image-src";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Explore the map",
   description: "Every mapped place, stay and experience in Taita Taveta, Kenya, with how high each one sits between the plains and the hills.",
+  ...shareMeta("Explore the map", "Every mapped place, stay and experience in Taita Taveta, Kenya, with how high each one sits between the plains and the hills."),
 };
 
 export const revalidate = 120;

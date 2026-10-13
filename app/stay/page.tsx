@@ -8,10 +8,12 @@ import StayFilters from "@/components/stay/StayFilters";
 import { parseStayFilters, zoneRange } from "@/lib/field-guide";
 import { prisma } from "@/lib/prisma";
 import { getRatingSummaries } from "@/lib/reviews-data";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Stay in Taita",
   description: "Lodges, hotels, guesthouses, homestays and campsites across Taita Taveta, Kenya, each with a host you can name.",
+  ...shareMeta("Stay in Taita", "Lodges, hotels, guesthouses, homestays and campsites across Taita Taveta, Kenya, each with a host you can name."),
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;

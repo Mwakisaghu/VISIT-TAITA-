@@ -5,10 +5,12 @@ import DemoNotice from "@/components/DemoNotice";
 import { formatSessionDay } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import SponsorStrip from "@/components/sponsors/SponsorStrip";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Taita Week",
   description: "The full Taita Week festival programme — music, food, culture, sport and more.",
+  ...shareMeta("Taita Week", "The full Taita Week festival programme — music, food, culture, sport and more."),
 };
 
 export const revalidate = 60;

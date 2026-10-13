@@ -10,10 +10,12 @@ import { altitudeLabel } from "@/lib/field-guide";
 import { PUBLIC_MAKER, isPublicMaker } from "@/lib/makers";
 import { prisma } from "@/lib/prisma";
 import ScrollFade from "@/components/ui/ScrollFade";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Taita Made",
   description: "Baskets, bead-work, leather, honey, gems and more, made in Taita Taveta by people you can meet.",
+  ...shareMeta("Taita Made", "Baskets, bead-work, leather, honey, gems and more, made in Taita Taveta by people you can meet."),
 };
 
 // Shorter window than other content pages: inventory counts shown here can go stale faster. Actual stock is always re-checked server-side at checkout.

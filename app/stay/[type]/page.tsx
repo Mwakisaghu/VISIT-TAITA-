@@ -7,6 +7,7 @@ import { accommodationTypes } from "@/lib/data";
 import { slugToCategory } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { getRatingSummaries } from "@/lib/reviews-data";
+import { shareMeta } from "@/lib/share-meta";
 
 export function generateStaticParams() {
   return accommodationTypes.map((t) => ({ type: t.key }));
@@ -15,7 +16,7 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { type: string } }): Metadata {
   const t = accommodationTypes.find((x) => x.key === params.type);
   if (!t) return {};
-  return { title: t.label, description: t.description };
+  { const _t = t.label; const _d = t.description; return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
 }
 
 export const revalidate = 60;

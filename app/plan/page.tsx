@@ -6,10 +6,12 @@ import { deletePlan } from "@/lib/actions/plan";
 import { authOptions } from "@/lib/auth";
 import { addDays, dayLabel, todayIn } from "@/lib/plan";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Build your Taita day",
   description: "Pick a day, add a hike, a market, a match and a place to stay, and see whether the day works.",
+  ...shareMeta("Build your Taita day", "Pick a day, add a hike, a market, a match and a place to stay, and see whether the day works."),
 };
 export const dynamic = "force-dynamic";
 

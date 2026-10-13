@@ -8,6 +8,7 @@ import { discoverCategories } from "@/lib/data";
 import { ZONES, zoneRange, type Zone } from "@/lib/field-guide";
 import { slugToCategory } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 type Ctx = { params: Promise<{ category: string }> | { category: string }; searchParams?: Promise<Record<string, string | string[] | undefined>> | Record<string, string | string[] | undefined> };
 
@@ -20,7 +21,7 @@ export async function generateMetadata({ params }: Pick<Ctx, "params">): Promise
   const { category } = await params;
   const cat = discoverCategories.find((c) => c.key === category);
   if (!cat) return {};
-  return { title: `${cat.label} in Taita`, description: cat.description };
+  { const _t = `${cat.label} in Taita`; const _d = cat.description; return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
 }
 
 export default async function DiscoverCategoryPage({ params, searchParams }: Ctx) {

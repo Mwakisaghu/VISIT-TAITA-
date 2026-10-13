@@ -7,10 +7,12 @@ import ExperienceFilters from "@/components/experiences/ExperienceFilters";
 import { parseExperienceFilters, weekendWindow } from "@/lib/field-guide";
 import { prisma } from "@/lib/prisma";
 import { getRatingSummaries } from "@/lib/reviews-data";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Experiences",
   description: "Guided hikes, forest walks, food tours and cultural workshops across Taita Taveta, Kenya, led by the people who know them best.",
+  ...shareMeta("Experiences", "Guided hikes, forest walks, food tours and cultural workshops across Taita Taveta, Kenya, led by the people who know them best."),
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
