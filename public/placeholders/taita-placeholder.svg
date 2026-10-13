@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="A picture is coming soon">
+  <rect width="1200" height="800" fill="#EAE2CC"/>
+  <g fill="none" stroke="#C4B79A" stroke-width="2">
+    <path d="M-20 560 C 160 470 300 540 470 470 S 760 330 900 400 S 1120 330 1240 360"/>
+    <path d="M-20 600 C 170 520 310 590 480 520 S 770 390 910 450 S 1120 390 1240 420"/>
+    <path d="M-20 640 C 180 570 320 640 490 570 S 780 450 920 500 S 1120 450 1240 480"/>
+    <path d="M-20 680 C 190 620 330 690 500 620 S 790 510 930 550 S 1120 510 1240 540"/>
+    <path d="M-20 720 C 200 670 340 740 510 670 S 800 570 940 600 S 1120 570 1240 600"/>
+  </g>
+  <g fill="none" stroke="#A8553A" stroke-width="3" opacity="0.55">
+    <path d="M-20 520 C 150 420 290 500 460 420 S 750 270 890 350 S 1110 280 1240 310"/>
+  </g>
+  <circle cx="930" cy="190" r="34" fill="#D9A441" opacity="0.7"/>
+</svg>

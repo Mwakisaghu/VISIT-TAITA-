@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { imageUrl } from "@/lib/image-policy";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -30,7 +31,7 @@ function slugify(input: string) {
 const venueSchema = z.object({
   name: z.string().min(2),
   location: z.string().min(2),
-  image: z.string().url(),
+  image: imageUrl,
 });
 
 export async function saveFestivalVenue(id: string | null, formData: FormData) {

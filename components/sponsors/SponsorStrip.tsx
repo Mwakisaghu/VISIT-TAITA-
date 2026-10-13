@@ -4,6 +4,7 @@ import DemoNotice from "@/components/DemoNotice";
 import { prisma } from "@/lib/prisma";
 import { safeHttpUrl } from "@/lib/url";
 import { canOptimize } from "@/lib/image-src";
+import { imageIssue } from "@/lib/image-policy";
 
 type StripProgram = "TAITA_CUP" | "TAITA_WEEK" | "TAITA_SOUND" | "HOME";
 
@@ -34,7 +35,7 @@ export default async function SponsorStrip({ program }: { program: StripProgram 
     <section className="border-t border-stone/10 bg-parchment-dim/40 px-6 py-10" aria-label="Partners">
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <p className="font-body text-sm text-stone/60">{LABELS[program]}</p>
+          <p className="font-body text-sm text-stone/80">{LABELS[program]}</p>
           <Link
             href="/sponsors"
             className="focus-ring font-body text-sm text-stone/70 transition-colors hover:text-rust"
@@ -46,7 +47,9 @@ export default async function SponsorStrip({ program }: { program: StripProgram 
         <ul className="mt-6 flex flex-wrap items-center gap-x-10 gap-y-6">
           {sponsors.map((s) => {
             const href = safeHttpUrl(s.website);
-            const logo = (
+            // A logo that is not really a picture (a web page, a placeholder, a hotlinked photo) would show as a broken image: show the name instead.
+            const usable = imageIssue(s.logo, "logo") === null;
+            const logo = usable ? (
               <span className="relative block h-12 w-32">
                 <Image
                   src={s.logo}
@@ -57,6 +60,8 @@ export default async function SponsorStrip({ program }: { program: StripProgram 
                   className="object-contain grayscale transition duration-300 group-hover:grayscale-0"
                 />
               </span>
+            ) : (
+              <span className="block font-display text-xl text-stone/80 transition-colors group-hover:text-rust-deep">{s.name}</span>
             );
             return (
               <li key={s.id}>
