@@ -9,6 +9,7 @@ import { getSiteUrl } from "@/lib/site-url";
 import { readSiteInfo } from "@/lib/site-info";
 import { readSocial } from "@/lib/social";
 import { jsonLdString, organizationJsonLd } from "@/lib/structured-data";
+import Concierge from "@/components/concierge/Concierge";
 
 // The picture WhatsApp, Instagram, Facebook and X show when a link to the site is shared.
 const OG_IMAGE = { url: "/brand/og-default.png", width: 1200, height: 630, alt: `${BRAND.name} — ${BRAND.tagline}` };
@@ -77,6 +78,7 @@ export default function RootLayout({
           <Nav />
           <main id="main">{children}</main>
           <Footer />
+          <Concierge />
         </Providers>
       </body>
     </html>
