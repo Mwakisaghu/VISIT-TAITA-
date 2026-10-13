@@ -154,6 +154,7 @@ model Story {
   category    StoryCategory
   excerpt     String
   body        String        @default("")
+  credits       String? // sources and credits, one per line: Title | Author | https://link
   readingTime String
   image       String
   status      ContentStatus @default(DRAFT)
