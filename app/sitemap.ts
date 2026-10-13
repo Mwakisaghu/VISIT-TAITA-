@@ -43,6 +43,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const homeLanguages = Object.fromEntries(hreflangLinks("/", base, ["sw", "fr", "de"]).map((l) => [l.hreflang, l.href]));
   const homeEntries = ["", "/sw", "/fr", "/de"].map((path) => ({ url: `${base}${path}`, lastModified: new Date(), alternates: { languages: homeLanguages } }));
 
+  const essentialsLanguages = Object.fromEntries(hreflangLinks("/essentials", base, ["sw", "fr", "de"]).map((l) => [l.hreflang, l.href]));
+  const essentialsEntries = ["/essentials", "/sw/essentials", "/fr/essentials", "/de/essentials"].map((path) => ({ url: `${base}${path}`, lastModified: new Date(), alternates: { languages: essentialsLanguages } }));
+
   const staticRoutes = [
     "/discover",
     "/stories",
@@ -130,6 +133,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...homeEntries,
+    ...essentialsEntries,
     ...staticRoutes,
     ...categoryRoutes,
     ...shopCategoryRoutes,

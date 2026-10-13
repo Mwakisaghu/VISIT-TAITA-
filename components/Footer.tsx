@@ -9,7 +9,6 @@ import { LanguageLinks } from "@/components/i18n/LanguageSwitcher";
 import { T } from "@/lib/i18n/mark";
 import { lp, tr } from "@/lib/i18n/server";
 
-const worlds = ["Taita Stories", "Taita Sport", "Taita Made", "Taita Wild", "Taita Trails", "Taita Sounds", "Taita Week", "Taita Passport"];
 
 // Grouped by what a visitor is trying to do, not by who owns the page.
 const explore = [
@@ -17,7 +16,7 @@ const explore = [
   { href: "/experiences", label: T("Experiences") }, { href: "/events", label: T("Events") }, { href: "/stories", label: T("Stories") },
 ];
 const planJoin = [
-  { href: "/plan", label: T("Plan your day") }, { href: "/shop", label: T("Shop · Taita Made") }, { href: "/passport", label: T("Taita Passport") },
+  { href: "/plan", label: T("Plan your day") }, { href: "/essentials", label: T("Visitor essentials") }, { href: "/shop", label: T("Shop · Taita Made") }, { href: "/passport", label: T("Taita Passport") },
   { href: "/notes", label: T("Field Notes") }, { href: "/creators", label: T("Field Crew") }, { href: "/missions", label: T("Missions") },
 ];
 const workWithUs = [{ href: "/partners", label: T("Become a partner") }, { href: "/sponsors", label: T("Sponsorship") }, { href: "/contact", label: T("Contact the team") }];
@@ -63,7 +62,6 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 border-t border-parchment/10 pt-6">
-          <p className="hidden font-body text-xs leading-relaxed text-parchment/70 sm:block"><span className="text-parchment/85">{tr("The Taita worlds")} · </span>{worlds.join(" · ")}</p>
           <div className="flex flex-col gap-3 font-body text-xs text-parchment/75 sm:mt-5 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} {BRAND.name}™. {tr("Preview build — not yet live.")}</p>
             <nav aria-label={tr("Legal and about")} className="flex flex-wrap gap-x-6 gap-y-1">

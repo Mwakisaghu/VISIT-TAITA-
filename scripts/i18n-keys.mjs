@@ -5,7 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export const SOURCES = ["components/home", "components/Nav.tsx", "components/Footer.tsx", "components/i18n", "components/concierge", "components/share", "lib/concierge.ts", "lib/scroll-rail.ts"];
+export const SOURCES = ["components/home", "components/Nav.tsx", "components/Footer.tsx", "components/i18n", "components/concierge", "components/share", "lib/concierge.ts", "lib/scroll-rail.ts", "app/essentials", "components/stories/StoryCredits.tsx"];
 export const EXTRA = ["More than a place.", "A destination culture, told by the people who live it."]; // brand lines that are passed in as values
 function files(p) { if (!fs.existsSync(p)) return []; const st = fs.statSync(p); if (st.isFile()) return [p]; return fs.readdirSync(p).flatMap((n) => files(path.join(p, n))).filter((f) => /\.(tsx|ts)$/.test(f)); }
 export function collect(root = ".") {
