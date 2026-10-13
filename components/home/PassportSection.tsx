@@ -3,10 +3,12 @@ import PassportCta from "@/components/home/PassportCta";
 import Reveal from "@/components/home/Reveal";
 import { BallIcon, CompassIcon, ForkIcon, MountainIcon, PawIcon, PeopleIcon } from "@/components/home/icons";
 import { display, eyebrow } from "@/components/home/ui";
+import { lp, tr } from "@/lib/i18n/server";
+import { T } from "@/lib/i18n/mark";
 
 const STAMPS: Array<{ label: string; Icon: ComponentType<{ className?: string }> }> = [
-  { label: "Tsavo", Icon: PawIcon }, { label: "Taita Hills", Icon: MountainIcon }, { label: "Culture", Icon: PeopleIcon },
-  { label: "Food", Icon: ForkIcon }, { label: "Adventure", Icon: CompassIcon }, { label: "Sport", Icon: BallIcon },
+  { label: T("Tsavo"), Icon: PawIcon }, { label: T("Taita Hills"), Icon: MountainIcon }, { label: T("Culture"), Icon: PeopleIcon },
+  { label: T("Food"), Icon: ForkIcon }, { label: T("Adventure"), Icon: CompassIcon }, { label: T("Sport"), Icon: BallIcon },
 ];
 
 // Faint contour lines, like a survey map: they sit behind the passport and say "this is about places".
@@ -24,27 +26,27 @@ export default function PassportSection() {
             <span className="absolute inset-3 rounded-[3px] border border-ochre/40" />
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-ochre">
               <MountainIcon className="h-9 w-9" />
-              <p className="mt-5 font-body text-[0.6rem] font-semibold uppercase tracking-[0.5em]">Visit</p>
-              <p className={`${display} mt-1 text-4xl uppercase tracking-[0.12em]`}>Taita</p>
-              <p className="mt-6 font-body text-[0.65rem] font-semibold uppercase tracking-[0.45em]">Passport</p>
+              <p className="mt-5 font-body text-[0.6rem] font-semibold uppercase tracking-[0.5em]">{tr("Visit")}</p>
+              <p className={`${display} mt-1 text-4xl uppercase tracking-[0.12em]`}>{tr("Taita")}</p>
+              <p className="mt-6 font-body text-[0.65rem] font-semibold uppercase tracking-[0.45em]">{tr("Passport")}</p>
             </div>
           </div>
         </Reveal>
 
         <Reveal delay={120}>
-          <p className={`${eyebrow} text-ochre`}>Your Taita passport</p>
-          <h2 id="passport-title" className={`${display} mt-6 text-[clamp(1.776rem,3.552vw,3.108rem)] leading-[1.02]`}>Don&apos;t just visit Taita.<br />Experience it.</h2>
-          <p className="mt-6 font-body text-lg leading-relaxed text-parchment/80">Discover places.<br />Check in.<br />Collect points.<br />Unlock rewards.</p>
+          <p className={`${eyebrow} text-ochre`}>{tr("Your Taita passport")}</p>
+          <h2 id="passport-title" className={`${display} mt-6 text-[clamp(1.776rem,3.552vw,3.108rem)] leading-[1.02]`}>{tr("Don't just visit Taita.")}<br />{tr("Experience it.")}</h2>
+          <p className="mt-6 font-body text-lg leading-relaxed text-parchment/80">{tr("Discover places.")}<br />{tr("Check in.")}<br />{tr("Collect points.")}<br />{tr("Unlock rewards.")}</p>
 
-          <ul className="mt-10 grid max-w-md grid-cols-3 gap-x-4 gap-y-7" aria-label="Six ways to earn stamps">
+          <ul className="mt-10 grid max-w-md grid-cols-3 gap-x-4 gap-y-7" aria-label={tr("Six ways to earn stamps")}>
             {STAMPS.map(({ label, Icon }) => (
-              <li key={label} className="flex flex-col items-center gap-3 text-center">
+              <li key={tr(label)} className="flex flex-col items-center gap-3 text-center">
                 <span className="flex h-16 w-16 items-center justify-center rounded-full border border-dashed border-ochre/60 text-ochre"><Icon className="h-7 w-7" /></span>
                 <span className="font-body text-xs text-parchment/80">{label}</span>
               </li>
             ))}
           </ul>
-          <p className="mt-8 font-body text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-parchment/55">Your first stamp is waiting.</p>
+          <p className="mt-8 font-body text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-parchment/55">{tr("Your first stamp is waiting.")}</p>
           <div className="mt-8"><PassportCta /></div>
         </Reveal>
       </div>

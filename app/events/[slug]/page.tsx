@@ -11,6 +11,7 @@ import Tag from "@/components/field/Tag";
 import PersonChip from "@/components/field/PersonChip";
 import EventFacts from "@/components/events/EventFacts";
 import ShareLinks from "@/components/events/ShareLinks";
+import ShareBar from "@/components/share/ShareBar";
 
 export const dynamic = "force-dynamic"; // seats left and sign-in state are live
 
@@ -34,6 +35,7 @@ export default async function EventPage({ params }: { params: { slug: string } }
       <Link href="/events" className="font-body text-sm text-stone/70 hover:text-rust">← All events</Link>
       <div className="mt-6"><Tag tone="rust">{programLabel(e.program)}</Tag></div>
       <h1 className="mt-4 font-display text-[clamp(1.92rem,4.8vw,3rem)] font-medium leading-[1.05] tracking-tight text-stone">{e.name}</h1>
+        <ShareBar className="mt-5" />
       <div className="mt-8"><EventFacts event={e} now={now} /></div>
       <div className="mt-3"><ShareLinks slug={e.slug} name={e.name} date={e.eventDate} location={e.location} siteUrl={process.env.NEXT_PUBLIC_APP_URL} /></div>
       <p className="mt-8 max-w-prose whitespace-pre-line font-body text-lg leading-relaxed text-stone/85">{e.blurb}</p>
