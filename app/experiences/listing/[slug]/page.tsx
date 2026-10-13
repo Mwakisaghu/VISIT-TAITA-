@@ -58,7 +58,8 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
         .filter((s) => s.capacity - s.seatsTaken > 0).slice(0, 12)
     : [];
   const viewer = bookable ? await currentBookingUser() : null;
-  const hasDirectContact = experience.contactPhone || experience.contactEmail || bookingUrl;
+  // Sample listings never show direct contact details: they are placeholders, and a placeholder phone number can ring a real stranger.
+  const hasDirectContact = !experience.isDemo && (experience.contactPhone || experience.contactEmail || bookingUrl);
 
   return (
     <div>

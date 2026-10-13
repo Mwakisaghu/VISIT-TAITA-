@@ -12,12 +12,13 @@ import PersonChip from "@/components/field/PersonChip";
 import EventFacts from "@/components/events/EventFacts";
 import ShareLinks from "@/components/events/ShareLinks";
 import ShareBar from "@/components/share/ShareBar";
+import { shareMeta } from "@/lib/share-meta";
 
 export const dynamic = "force-dynamic"; // seats left and sign-in state are live
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const e = await prisma.event.findUnique({ where: { slug: params.slug }, select: { name: true, blurb: true, status: true } });
-  return e && e.status === "PUBLISHED" ? { title: e.name, description: e.blurb } : { title: "Event" };
+  return e && e.status === "PUBLISHED" ? { title: e.name, description: e.blurb, ...shareMeta(e.name, e.blurb) } : { title: "Event" };
 }
 
 export default async function EventPage({ params }: { params: { slug: string } }) {

@@ -2,13 +2,21 @@
 
 // ---- The body ---------------------------------------------------------------------------------------------------------------------
 // Editors write plain text. A blank line starts a new paragraph. A paragraph whose lines start with ">" becomes a pull quote.
-export type Block = { type: "p" | "quote"; text: string };
+// A pull quote may end with a credit line starting with a dash ("> — Name, Where"). The credit is kept apart from the quote, and quotation marks the editor typed
+// around the quote are removed, because the page adds its own.
+export type Block = { type: "p"; text: string } | { type: "quote"; text: string; cite?: string };
+const OPEN = /^["\u201c\u201e\u00ab]\s*/, CLOSE = /\s*["\u201d\u201c\u00bb]$/;
+export const stripQuoteMarks = (t: string): string => { const x = t.trim(); return OPEN.test(x) && CLOSE.test(x) && x.length >= 2 ? x.replace(OPEN, "").replace(CLOSE, "").trim() : x; };
 const MAX_BLOCKS = 400;
 export function parseStoryBody(body: string): Block[] {
   const blocks: Block[] = [];
   for (const chunk of (body ?? "").replace(/\r\n?/g, "\n").split(/\n\s*\n/)) {
     const lines = chunk.split("\n").map((l) => l.trim()).filter(Boolean); if (lines.length === 0) continue;
-    if (lines.every((l) => l.startsWith(">"))) { const text = lines.map((l) => l.replace(/^>\s?/, "")).join(" ").trim(); if (text) blocks.push({ type: "quote", text }); }
+    if (lines.every((l) => l.startsWith(">"))) {
+      const inner = lines.map((l) => l.replace(/^>\s?/, "").trim()).filter(Boolean); let cite: string | undefined;
+      const last = inner[inner.length - 1]; const m = inner.length > 1 ? /^(?:\u2014|\u2013|--)\s*(.+)$/.exec(last) : null; if (m) { cite = m[1].trim().slice(0, 200); inner.pop(); }
+      const text = stripQuoteMarks(inner.join(" ")); if (text) blocks.push(cite ? { type: "quote", text, cite } : { type: "quote", text });
+    }
     else blocks.push({ type: "p", text: lines.join("\n") });
     if (blocks.length >= MAX_BLOCKS) break;
   }

@@ -102,7 +102,8 @@ export default async function StoryPage({ params }: Ctx) {
           </aside>
         </div>
 
-        <GoThereRow place={story.destination} stay={loop.stay} experience={loop.experience} now={now} />
+        {/* the place itself is shown in "Where this happened" above, so it is not repeated here */}
+        <GoThereRow place={null} stay={loop.stay} experience={loop.experience} now={now} />
 
         {related.length > 0 && (
           <div className="mt-16 border-t border-stone/10 pt-10">

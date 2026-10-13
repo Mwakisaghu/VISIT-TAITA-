@@ -5,10 +5,12 @@ import StoryCover from "@/components/stories/StoryCover";
 import StoryFilters from "@/components/stories/StoryFilters";
 import { parseStoryFilters } from "@/lib/stories-view";
 import { prisma } from "@/lib/prisma";
+import { shareMeta } from "@/lib/share-meta";
 
 export const metadata: Metadata = {
   title: "Taita Stories",
   description: "People, places, culture, sport and adventure from Taita Taveta, told by the people who live there.",
+  ...shareMeta("Taita Stories", "People, places, culture, sport and adventure from Taita Taveta, told by the people who live there."),
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;
