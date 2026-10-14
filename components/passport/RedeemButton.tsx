@@ -38,7 +38,7 @@ export default function RedeemButton({
       <div role="status" className="rounded-sm border border-canopy/30 bg-canopy/10 p-4">
         <p className="font-body text-sm text-canopy">Redeemed! Your voucher code is</p>
         <p className="mt-1 font-display text-2xl tracking-wider text-stone">{result.code}</p>
-        <p className="mt-2 font-body text-xs text-stone/60">
+        <p className="mt-2 font-body text-xs text-stone/80">
           It&apos;s saved under &quot;Your vouchers&quot; above, with how to use it. {result.newBalance} points left.
         </p>
       </div>
@@ -50,7 +50,7 @@ export default function RedeemButton({
       <button
         type="button"
         disabled
-        className="w-full cursor-not-allowed rounded-full border border-stone/15 px-5 py-2.5 font-body text-sm text-stone/40"
+        className="w-full cursor-not-allowed rounded-full border border-stone/15 px-5 py-2.5 font-body text-sm text-stone/80"
       >
         {pointsCost - balance} more points needed
       </button>

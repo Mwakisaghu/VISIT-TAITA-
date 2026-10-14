@@ -21,24 +21,24 @@ export default function ContactPage() {
         <div>
           <p className="font-body text-sm text-rust">Visit Taita</p>
           <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">Contact us</h1>
-          <p className="mt-4 max-w-prose font-body text-lg text-stone/70">
+          <p className="mt-4 max-w-prose font-body text-lg text-stone/80">
             A question, an idea, a correction or a privacy request — write to us and a real person will reply.
           </p>
 
           <dl className="mt-8 flex flex-col gap-4 font-body">
             <div>
-              <dt className="text-xs text-stone/50">Email</dt>
+              <dt className="text-xs text-stone/80">Email</dt>
               <dd className="text-stone">{orPlaceholder(info.contactEmail)}</dd>
             </div>
             {info.phone && (
               <div>
-                <dt className="text-xs text-stone/50">Phone</dt>
+                <dt className="text-xs text-stone/80">Phone</dt>
                 <dd className="text-stone">{info.phone}</dd>
               </div>
             )}
             {social.whatsapp && (
               <div>
-                <dt className="text-xs text-stone/50">WhatsApp</dt>
+                <dt className="text-xs text-stone/80">WhatsApp</dt>
                 <dd>
                   <a href={social.whatsapp.link()} target="_blank" rel="noopener noreferrer" className="text-stone underline hover:text-rust">
                     {social.whatsapp.display}
@@ -48,7 +48,7 @@ export default function ContactPage() {
             )}
             {social.instagram && (
               <div>
-                <dt className="text-xs text-stone/50">Instagram</dt>
+                <dt className="text-xs text-stone/80">Instagram</dt>
                 <dd>
                   <a href={social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-stone underline hover:text-rust">
                     @{social.instagram.handle}
@@ -57,12 +57,12 @@ export default function ContactPage() {
               </div>
             )}
             <div>
-              <dt className="text-xs text-stone/50">Address</dt>
+              <dt className="text-xs text-stone/80">Address</dt>
               <dd className="text-stone">{orPlaceholder(info.address)}</dd>
             </div>
           </dl>
 
-          <p className="mt-8 max-w-prose font-body text-sm text-stone/60">
+          <p className="mt-8 max-w-prose font-body text-sm text-stone/80">
             Hosting a stay or an experience? <Link href="/partners" className="underline hover:text-rust">Become a partner</Link>. Interested in sponsoring?{" "}
             <Link href="/sponsors" className="underline hover:text-rust">See sponsorship packages</Link>. Want your data? Sign in and use your{" "}
             <Link href="/account" className="underline hover:text-rust">account page</Link>.

@@ -27,7 +27,7 @@ export default function FindYourTaita({ tiles }: { tiles: Record<TileKey, Pic> }
             <h2 id="find-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>{tr("What are you looking for?")}</h2>
           </div>
           <div className="max-w-sm">
-            <p className="font-body leading-relaxed text-stone/70">{tr("From wildlife and adventure to culture and local flavours — discover what moves you.")}</p>
+            <p className="font-body leading-relaxed text-stone/80">{tr("From wildlife and adventure to culture and local flavours — discover what moves you.")}</p>
             <Link href={lp("/discover")} className={`${textLink} mt-5 text-stone hover:text-rust`}>{tr("Explore all")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
           </div>
         </Reveal>

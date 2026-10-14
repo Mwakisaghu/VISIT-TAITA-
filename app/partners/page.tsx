@@ -50,7 +50,7 @@ export default async function PartnersPage() {
           {partnerTypes.map((t) => (
             <span
               key={t}
-              className="rounded-full border border-stone/20 px-3 py-1 font-body text-xs text-stone/70"
+              className="rounded-full border border-stone/20 px-3 py-1 font-body text-xs text-stone/80"
             >
               {partnerTypeLabel(t)}
             </span>
@@ -64,7 +64,7 @@ export default async function PartnersPage() {
           Apply to partner
         </Link>
 
-        <p className="mt-6 font-body text-sm text-stone/50">
+        <p className="mt-6 font-body text-sm text-stone/80">
           Already applied?{" "}
           <Link href="/partners/apply" className="text-rust hover:text-rust-deep">
             Check your application status

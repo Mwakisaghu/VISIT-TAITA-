@@ -21,7 +21,7 @@ export default async function VerifyPage({ params }: { params: { secret: string 
       <p className="font-body text-xs text-rust">Ticket check</p>
       <h1 className="mt-1 font-display text-3xl text-stone">{t.number}</h1>
       <p className="mt-2 font-body text-stone">{t.holderName}</p>
-      <p className="font-body text-sm text-stone/60">{t.event.name} · {formatEat(t.event.eventDate)}</p>
+      <p className="font-body text-sm text-stone/80">{t.event.name} · {formatEat(t.event.eventDate)}</p>
       <p className="mt-4 font-body text-sm text-stone/80">Status: <strong>{STATUS_LABEL[t.status as TicketStatusKey]}</strong>{t.status === "USED" && t.usedAt ? ` (${formatEat(t.usedAt)})` : ""}</p>
       <div className="mt-6"><AdmitButton eventId={t.event.id} secret={params.secret} /></div>
     </div>

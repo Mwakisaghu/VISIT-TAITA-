@@ -22,9 +22,9 @@ export default async function QrLinkPage({ params }: { params: { id: string } })
 
   return (
     <div>
-      <Link href="/admin/qr" className="font-body text-sm text-stone/60 hover:text-rust">← All QR links</Link>
+      <Link href="/admin/qr" className="font-body text-sm text-stone/80 hover:text-rust">← All QR links</Link>
       <h1 className="mt-3 font-display text-3xl text-stone">{link.label}</h1>
-      <p className="mt-1 font-body text-sm text-stone/60">/go/{link.slug} → {link.target} · {link.clicks} scan{link.clicks === 1 ? "" : "s"}</p>
+      <p className="mt-1 font-body text-sm text-stone/80">/go/{link.slug} → {link.target} · {link.clicks} scan{link.clicks === 1 ? "" : "s"}</p>
 
       {!link.active && <p className="mt-4 max-w-xl rounded-sm border border-ochre/50 bg-ochre/10 p-4 font-body text-sm text-stone">This link is <strong>switched off</strong>: anyone scanning a printed code is sent to the home page.</p>}
 
@@ -38,7 +38,7 @@ export default async function QrLinkPage({ params }: { params: { id: string } })
         <section className="mt-8 grid gap-8 md:grid-cols-[18rem_1fr]">
           <div>
             <div className="w-full max-w-[18rem] rounded-sm border border-stone/15 bg-white p-2 [&>svg]:h-full [&>svg]:w-full" role="img" aria-label={`QR code for ${url}`} dangerouslySetInnerHTML={{ __html: svg }} />
-            <p className="mt-2 break-all font-body text-xs text-stone/50">Encodes: {url}</p>
+            <p className="mt-2 break-all font-body text-xs text-stone/80">Encodes: {url}</p>
           </div>
           <div className="font-body text-sm text-stone/80">
             <h2 className="font-display text-xl text-stone">Download</h2>
@@ -60,15 +60,15 @@ export default async function QrLinkPage({ params }: { params: { id: string } })
       )}
 
       <h2 className="mt-12 font-display text-xl text-stone">Change this link</h2>
-      <p className="mt-1 max-w-xl font-body text-sm text-stone/60">Changing where it goes takes effect immediately for every code already printed. The short address itself can&apos;t be changed.</p>
+      <p className="mt-1 max-w-xl font-body text-sm text-stone/80">Changing where it goes takes effect immediately for every code already printed. The short address itself can&apos;t be changed.</p>
       <div className="mt-4"><ShortLinkForm link={{ id: link.id, slug: link.slug, label: link.label, target: link.target, active: link.active }} /></div>
 
       <h2 className="mt-12 font-display text-xl text-stone">Scans, last 30 days</h2>
-      <p className="mt-1 font-body text-xs text-stone/50">Counted per day (East Africa Time). No one&apos;s address or device is recorded, and link-preview robots aren&apos;t counted.</p>
+      <p className="mt-1 font-body text-xs text-stone/80">Counted per day (East Africa Time). No one&apos;s address or device is recorded, and link-preview robots aren&apos;t counted.</p>
       <table className="mt-3 w-full max-w-sm text-left font-body text-sm">
         <tbody className="divide-y divide-stone/10">
           {days.map((d) => <tr key={d.day.toISOString()}><td className="py-2">{d.day.toISOString().slice(0, 10)}{d.day.getTime() === today ? " (today)" : ""}</td><td>{d.count}</td></tr>)}
-          {days.length === 0 && <tr><td className="py-3 text-stone/50">No scans yet.</td></tr>}
+          {days.length === 0 && <tr><td className="py-3 text-stone/80">No scans yet.</td></tr>}
         </tbody>
       </table>
     </div>

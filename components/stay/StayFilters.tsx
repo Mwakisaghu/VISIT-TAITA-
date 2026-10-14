@@ -7,7 +7,7 @@ const chip = "focus-ring inline-flex min-h-[44px] shrink-0 items-center rounded-
 const on = "border-stone bg-stone text-parchment";
 const off = "border-stone/30 text-stone hover:border-stone";
 const row = "no-scrollbar -mx-6 flex items-center gap-2.5 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0";
-const label = "mr-1 shrink-0 font-body text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-stone/70";
+const label = "mr-1 shrink-0 font-body text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-stone/80";
 
 /** Choose by how a stay feels, what kind it is, and how high it sits. Plain links: they work without scripts and every combination has its own address. */
 export default function StayFilters({ filters }: { filters: Filters }) {

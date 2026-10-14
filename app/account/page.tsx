@@ -34,7 +34,7 @@ export default async function AccountPage() {
   if (!session?.user) {
     return (
       <Shell>
-        <p className="mt-4 font-body text-stone/70">Sign in to manage your account and your data.</p>
+        <p className="mt-4 font-body text-stone/80">Sign in to manage your account and your data.</p>
         <Link href="/login?next=%2Faccount" className="focus-ring mt-6 inline-block rounded-full bg-rust px-7 py-3 font-body text-sm text-parchment hover:bg-rust-deep">
           Sign in
         </Link>
@@ -49,7 +49,7 @@ export default async function AccountPage() {
   if (!user) {
     return (
       <Shell>
-        <p className="mt-4 font-body text-stone/70">This account no longer exists.</p>
+        <p className="mt-4 font-body text-stone/80">This account no longer exists.</p>
       </Shell>
     );
   }
@@ -65,25 +65,25 @@ export default async function AccountPage() {
         <h2 className="font-display text-2xl text-stone">Your details</h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="font-body text-xs text-stone/50">Name</dt>
+            <dt className="font-body text-xs text-stone/80">Name</dt>
             <dd className="font-body text-stone">{user.name}</dd>
           </div>
           <div>
-            <dt className="font-body text-xs text-stone/50">Email</dt>
+            <dt className="font-body text-xs text-stone/80">Email</dt>
             <dd className="font-body text-stone">{user.email}</dd>
           </div>
           <div>
-            <dt className="font-body text-xs text-stone/50">Member since</dt>
+            <dt className="font-body text-xs text-stone/80">Member since</dt>
             <dd className="font-body text-stone">{formatDate(user.createdAt)}</dd>
           </div>
           <div>
-            <dt className="font-body text-xs text-stone/50">Terms accepted</dt>
+            <dt className="font-body text-xs text-stone/80">Terms accepted</dt>
             <dd className="font-body text-stone">
               {user.termsAcceptedAt ? `${formatDate(user.termsAcceptedAt)} (version ${user.termsVersion ?? "—"})` : "Before we recorded this"}
             </dd>
           </div>
         </dl>
-        <p className="mt-4 font-body text-sm text-stone/60">
+        <p className="mt-4 font-body text-sm text-stone/80">
           To correct your details, <Link href="/contact" className="underline hover:text-rust">contact us</Link>.
         </p>
       </section>
@@ -91,10 +91,10 @@ export default async function AccountPage() {
       <section className="mt-12 border-t border-stone/10 pt-10">
         <h2 className="font-display text-2xl text-stone">Email address</h2>
         {user.emailVerifiedAt ? (
-          <p className="mt-3 font-body text-stone/70">Verified on {formatDate(user.emailVerifiedAt)}.</p>
+          <p className="mt-3 font-body text-stone/80">Verified on {formatDate(user.emailVerifiedAt)}.</p>
         ) : (
           <>
-            <p className="mt-3 max-w-prose font-body text-stone/70">
+            <p className="mt-3 max-w-prose font-body text-stone/80">
               Your email address isn&apos;t verified yet. We sent a link to <strong>{user.email}</strong> when you registered — click it to verify. Until then you can&apos;t write reviews or apply to the Field Crew.
             </p>
             <div className="mt-4">
@@ -108,21 +108,21 @@ export default async function AccountPage() {
         <h2 className="font-display text-2xl text-stone">Newsletter</h2>
         {subscriber && subscriber.status === "ACTIVE" && subscriber.confirmedAt ? (
           <>
-            <p className="mt-3 font-body text-stone/70">You&apos;re subscribed (since {formatDate(subscriber.confirmedAt)}).</p>
+            <p className="mt-3 font-body text-stone/80">You&apos;re subscribed (since {formatDate(subscriber.confirmedAt)}).</p>
             <div className="mt-4">
               <UnsubscribeButton />
             </div>
           </>
         ) : subscriber && subscriber.status === "PENDING" ? (
           <>
-            <p className="mt-3 max-w-prose font-body text-stone/70">We&apos;ve emailed you a link to confirm your address. Click it to start receiving the letter.</p>
+            <p className="mt-3 max-w-prose font-body text-stone/80">We&apos;ve emailed you a link to confirm your address. Click it to start receiving the letter.</p>
             <div className="mt-4">
               <UnsubscribeButton />
             </div>
           </>
         ) : subscriber && subscriber.status === "ACTIVE" ? (
           <>
-            <p className="mt-3 max-w-prose font-body text-stone/70">
+            <p className="mt-3 max-w-prose font-body text-stone/80">
               You signed up before we asked people to confirm, so we won&apos;t email you until you do. Sign up again from the bottom of any page and we&apos;ll send you a confirmation link.
             </p>
             <div className="mt-4">
@@ -130,27 +130,27 @@ export default async function AccountPage() {
             </div>
           </>
         ) : (
-          <p className="mt-3 font-body text-stone/70">You&apos;re not subscribed to our newsletter.</p>
+          <p className="mt-3 font-body text-stone/80">You&apos;re not subscribed to our newsletter.</p>
         )}
       </section>
 
       <section className="mt-12 border-t border-stone/10 pt-10">
         <h2 className="font-display text-2xl text-stone">My bookings</h2>
-        <p className="mt-3 max-w-prose font-body text-stone/70">
+        <p className="mt-3 max-w-prose font-body text-stone/80">
           Experiences you have booked, what you paid, and any refunds. <Link href="/account/bookings" className="text-rust underline">See my bookings</Link>.
         </p>
       </section>
 
       <section className="mt-12 border-t border-stone/10 pt-10">
         <h2 className="font-display text-2xl text-stone">My tickets</h2>
-        <p className="mt-3 max-w-prose font-body text-stone/70">
+        <p className="mt-3 max-w-prose font-body text-stone/80">
           Tickets for events, with their QR codes. <Link href="/account/tickets" className="text-rust underline">See my tickets</Link>.
         </p>
       </section>
 
       <section className="mt-12 border-t border-stone/10 pt-10">
         <h2 className="font-display text-2xl text-stone">Download my data</h2>
-        <p className="mt-3 max-w-prose font-body text-stone/70">
+        <p className="mt-3 max-w-prose font-body text-stone/80">
           Get a copy of the personal data linked to your account — your details, Passport, reviews, enquiries, orders and any creator profile — as a file you can keep.
           It does not include your password (we only store a one-way hash) or our internal notes.
         </p>
@@ -165,11 +165,11 @@ export default async function AccountPage() {
 
       <section className="mt-12 border-t border-stone/10 pt-10">
         <h2 className="font-display text-2xl text-stone">Delete my account</h2>
-        <p className="mt-3 max-w-prose font-body text-stone/70">This permanently removes your account. Here is exactly what happens:</p>
+        <p className="mt-3 max-w-prose font-body text-stone/80">This permanently removes your account. Here is exactly what happens:</p>
         <div className="mt-4 grid gap-6 sm:grid-cols-2">
           <div>
             <p className="font-body text-sm font-semibold text-stone">Deleted</p>
-            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 font-body text-sm text-stone/70">
+            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 font-body text-sm text-stone/80">
               <li>Your account, Passport, points, badges and vouchers (unused vouchers are cancelled)</li>
               <li>Your reviews</li>
               <li>Your creator profile, applications and Field Notes, and your missions</li>
@@ -178,7 +178,7 @@ export default async function AccountPage() {
           </div>
           <div>
             <p className="font-body text-sm font-semibold text-stone">Kept, without your details</p>
-            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 font-body text-sm text-stone/70">
+            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 font-body text-sm text-stone/80">
               <li>Your enquiries, as anonymous records for the host</li>
               <li>Shop orders, as anonymous payment records</li>
               <li>Stories you wrote, without your name</li>
@@ -194,7 +194,7 @@ export default async function AccountPage() {
                 <li key={b}>{b}</li>
               ))}
             </ul>
-            <p className="mt-3 font-body text-sm text-stone/70">
+            <p className="mt-3 font-body text-sm text-stone/80">
               Need help? <Link href="/contact" className="underline hover:text-rust">Contact us</Link>.
             </p>
           </div>
@@ -203,7 +203,7 @@ export default async function AccountPage() {
             <DeleteAccountForm />
           </div>
         )}
-        <p className="mt-6 font-body text-xs text-stone/50">
+        <p className="mt-6 font-body text-xs text-stone/80">
           More in our <Link href="/privacy" className="underline hover:text-rust">Privacy Policy</Link>.
         </p>
       </section>

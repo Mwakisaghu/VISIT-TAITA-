@@ -24,16 +24,16 @@ export default async function MyTicketsPage() {
       {items.map((r) => (
         <li key={r.id} className="py-3">
           <Link href={`/tickets/${r.id}`} className="font-body text-stone hover:text-rust">{r.ev.name}</Link>
-          <p className="font-body text-xs text-stone/60">{formatEat(r.ev.eventDate)} · {r.ts.length} ticket{r.ts.length === 1 ? "" : "s"} ({r.ts.map((t) => t.number).join(", ")}) · {STATUS_LABEL[r.status]}</p>
+          <p className="font-body text-xs text-stone/80">{formatEat(r.ev.eventDate)} · {r.ts.length} ticket{r.ts.length === 1 ? "" : "s"} ({r.ts.map((t) => t.number).join(", ")}) · {STATUS_LABEL[r.status]}</p>
         </li>
       ))}
     </ul>
   );
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
-      <Link href="/account" className="font-body text-sm text-stone/60 hover:text-rust">← My account</Link>
+      <Link href="/account" className="font-body text-sm text-stone/80 hover:text-rust">← My account</Link>
       <h1 className="mt-3 font-display text-3xl text-stone">My tickets</h1>
-      {rows.length === 0 && <p className="mt-6 font-body text-stone/60">You don&apos;t have any tickets yet. <Link href="/events" className="text-rust underline">See what&apos;s on</Link>.</p>}
+      {rows.length === 0 && <p className="mt-6 font-body text-stone/80">You don&apos;t have any tickets yet. <Link href="/events" className="text-rust underline">See what&apos;s on</Link>.</p>}
       {upcoming.length > 0 && <><h2 className="mt-8 font-display text-xl text-stone">Coming up</h2>{list(upcoming)}</>}
       {rest.length > 0 && <><h2 className="mt-8 font-display text-xl text-stone">Past and cancelled</h2>{list(rest)}</>}
     </div>

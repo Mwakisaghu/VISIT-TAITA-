@@ -57,7 +57,7 @@ export default function MissionForm({
     }
   }
 
-  const label = "font-body text-sm text-stone/70";
+  const label = "font-body text-sm text-stone/80";
 
   return (
     <form onSubmit={submit} className="mt-8 flex max-w-2xl flex-col gap-5">
@@ -74,7 +74,7 @@ export default function MissionForm({
       <label className="flex flex-col gap-1">
         <span className={label}>The brief</span>
         <textarea name="brief" defaultValue={mission?.brief} required minLength={L.briefMin} maxLength={L.briefMax} rows={6} className="input" />
-        <span className="font-body text-xs text-stone/40">Describe the place and the story. Ask for evidence — don&apos;t script how the creator should feel.</span>
+        <span className="font-body text-xs text-stone/80">Describe the place and the story. Ask for evidence — don&apos;t script how the creator should feel.</span>
       </label>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -96,12 +96,12 @@ export default function MissionForm({
             </option>
           ))}
         </select>
-        <span className="font-body text-xs text-stone/40">To open a mission its destination must be published and have a QR code or coordinates.</span>
+        <span className="font-body text-xs text-stone/80">To open a mission its destination must be published and have a QR code or coordinates.</span>
       </label>
 
       <fieldset className="rounded-sm border border-stone/15 p-4">
-        <legend className="px-1 font-body text-sm text-stone/70">Feature a listing (optional)</legend>
-        <p className="font-body text-xs text-stone/50">
+        <legend className="px-1 font-body text-sm text-stone/80">Feature a listing (optional)</legend>
+        <p className="font-body text-xs text-stone/80">
           Shown as &quot;Plan your own visit&quot; on the mission and its Field Notes. Enquiries sent from those links are counted for this mission.
         </p>
         <div className="mt-3 grid gap-4 sm:grid-cols-2">
@@ -156,7 +156,7 @@ export default function MissionForm({
       </label>
 
       <fieldset className="rounded-sm border border-stone/15 p-4">
-        <legend className="px-1 font-body text-sm text-stone/70">Who supports this mission?</legend>
+        <legend className="px-1 font-body text-sm text-stone/80">Who supports this mission?</legend>
         <div className="mt-2 flex flex-col gap-2">
           {MISSION_SUPPORTS.map((s) => (
             <label key={s} className="flex items-start gap-2 font-body text-sm text-stone/80">
@@ -191,7 +191,7 @@ export default function MissionForm({
           <label className="mt-4 flex flex-col gap-1">
             <span className={label}>What is provided?</span>
             <input name="supportNote" defaultValue={mission?.supportNote ?? ""} maxLength={L.supportNoteMax} className="input" placeholder="e.g. Two nights and meals" />
-            <span className="font-body text-xs text-stone/40">Creators disclose this in every post, and we show it on the mission page.</span>
+            <span className="font-body text-xs text-stone/80">Creators disclose this in every post, and we show it on the mission page.</span>
           </label>
         )}
       </fieldset>

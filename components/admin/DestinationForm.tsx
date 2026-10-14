@@ -76,14 +76,14 @@ export default function DestinationForm({ destination }: { destination?: Destina
           className="input"
         />
       </Field>
-      <p className="-mt-3 font-body text-xs text-stone/50">
+      <p className="-mt-3 font-body text-xs text-stone/80">
         How close a visitor must be to check in with GPS (needs latitude and longitude above). 300 m suits most
         sites; use a larger radius for big areas such as forests or lakes.
       </p>
 
       {destination && (
         <div className="rounded-sm border border-stone/10 p-4">
-          <p className="font-body text-sm text-stone/70">QR check-in plaque</p>
+          <p className="font-body text-sm text-stone/80">QR check-in plaque</p>
           <Link
             href={`/admin/destinations/${destination.id}/qr`}
             className="focus-ring mt-1 inline-block font-body text-sm text-rust hover:text-rust-deep"
@@ -100,7 +100,7 @@ export default function DestinationForm({ destination }: { destination?: Destina
         </select>
       </Field>
 
-      <label className="flex items-center gap-2 font-body text-sm text-stone/70">
+      <label className="flex items-center gap-2 font-body text-sm text-stone/80">
         <input type="checkbox" name="featured" defaultChecked={destination?.featured} />
         Featured
       </label>
@@ -118,7 +118,7 @@ export default function DestinationForm({ destination }: { destination?: Destina
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

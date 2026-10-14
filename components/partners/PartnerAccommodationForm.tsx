@@ -86,13 +86,13 @@ export default function PartnerAccommodationForm({ accommodation }: { accommodat
         />
       </Field>
 
-      <label className="flex items-center gap-2 font-body text-sm text-stone/70">
+      <label className="flex items-center gap-2 font-body text-sm text-stone/80">
         <input type="checkbox" name="featured" defaultChecked={accommodation?.featured} />
         Featured (Visit Taita team picks featured listings)
       </label>
 
       {!accommodation && (
-        <p className="font-body text-xs text-stone/50">
+        <p className="font-body text-xs text-stone/80">
           New listings are saved as drafts and reviewed by the Visit Taita
           team before they go live on the Stay page.
         </p>
@@ -111,7 +111,7 @@ export default function PartnerAccommodationForm({ accommodation }: { accommodat
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

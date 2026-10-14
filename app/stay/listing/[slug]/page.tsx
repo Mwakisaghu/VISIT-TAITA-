@@ -129,16 +129,16 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
           <aside>
             <div className="sticky top-24 flex flex-col gap-6 rounded-sm border border-stone/10 p-6">
               <div>
-                <p className="font-body text-xs text-stone/70">From</p>
+                <p className="font-body text-xs text-stone/80">From</p>
                 <p className="font-display text-3xl text-stone">
                   {accommodation.priceFrom ? formatPrice(accommodation.priceFrom) : "Contact for rates"}
                 </p>
-                {accommodation.priceFrom && <p className="font-body text-xs text-stone/70">per night</p>}
+                {accommodation.priceFrom && <p className="font-body text-xs text-stone/80">per night</p>}
               </div>
 
               <div className="border-t border-stone/10 pt-6">
                 <p className="font-display text-lg text-stone">Send an enquiry</p>
-                <p className="mt-1 font-body text-xs text-stone/70">
+                <p className="mt-1 font-body text-xs text-stone/80">
                   Goes straight to {accommodation.name} — no account needed.
                 </p>
                 <div className="mt-4">
@@ -148,7 +148,7 @@ export default async function AccommodationDetailPage({ params }: { params: { sl
 
               {hasDirectContact && (
                 <div className="border-t border-stone/10 pt-6">
-                  <p className="font-body text-xs text-stone/70">Or contact directly</p>
+                  <p className="font-body text-xs text-stone/80">Or contact directly</p>
                   <div className="mt-3 flex flex-col gap-2">
                     {accommodation.contactPhone && (
                       <a

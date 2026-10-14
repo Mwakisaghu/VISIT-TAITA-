@@ -62,7 +62,7 @@ export default function SellerProductForm({ product }: { product?: Product }) {
 
       <Field label="Options, e.g. sizes (optional)">
         <input name="options" defaultValue={product?.options?.join(", ") ?? ""} placeholder="S, M, L, XL, XXL" className="input" />
-        <span className="font-body text-xs text-stone/50">Separate with commas. A buyer must choose one. Stock is shared across the options.</span>
+        <span className="font-body text-xs text-stone/80">Separate with commas. A buyer must choose one. Stock is shared across the options.</span>
       </Field>
 
       <Field label="Option label">
@@ -82,23 +82,23 @@ export default function SellerProductForm({ product }: { product?: Product }) {
       </Field>
 
       <div className="flex gap-6">
-        <label className="flex items-center gap-2 font-body text-sm text-stone/70">
+        <label className="flex items-center gap-2 font-body text-sm text-stone/80">
           <input type="checkbox" name="offersShipping" defaultChecked={product?.offersShipping ?? true} />
           Offers shipping
         </label>
-        <label className="flex items-center gap-2 font-body text-sm text-stone/70">
+        <label className="flex items-center gap-2 font-body text-sm text-stone/80">
           <input type="checkbox" name="offersPickup" defaultChecked={product?.offersPickup ?? true} />
           Offers local pickup
         </label>
       </div>
 
-      <label className="flex items-center gap-2 font-body text-sm text-stone/70">
+      <label className="flex items-center gap-2 font-body text-sm text-stone/80">
         <input type="checkbox" name="featured" defaultChecked={product?.featured} />
         Featured (Visit Taita team picks featured listings)
       </label>
 
       {!product && (
-        <p className="font-body text-xs text-stone/50">
+        <p className="font-body text-xs text-stone/80">
           New listings are saved as drafts and reviewed by the Visit Taita
           team before they go live in the shop.
         </p>
@@ -117,7 +117,7 @@ export default function SellerProductForm({ product }: { product?: Product }) {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

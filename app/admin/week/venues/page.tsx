@@ -21,7 +21,7 @@ export default async function AdminFestivalVenuesPage() {
         {venues.map((v) => (
           <div key={v.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {v.location}
                 {v.isDemo && " · demo"}
               </p>
@@ -30,7 +30,7 @@ export default async function AdminFestivalVenuesPage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/admin/week/venues/${v.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -40,14 +40,14 @@ export default async function AdminFestivalVenuesPage() {
                   await deleteFestivalVenue(v.id);
                 }}
               >
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
             </div>
           </div>
         ))}
-        {venues.length === 0 && <p className="py-8 font-body text-stone/50">No venues yet.</p>}
+        {venues.length === 0 && <p className="py-8 font-body text-stone/80">No venues yet.</p>}
       </div>
     </div>
   );

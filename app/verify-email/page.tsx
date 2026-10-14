@@ -32,8 +32,8 @@ export default async function VerifyEmailPage({ searchParams }: { searchParams: 
   if (!usable) {
     return (
       <Shell>
-        <p className="font-body text-stone/70">This link isn&apos;t valid or has expired.</p>
-        <p className="mt-3 font-body text-stone/70">
+        <p className="font-body text-stone/80">This link isn&apos;t valid or has expired.</p>
+        <p className="mt-3 font-body text-stone/80">
           Sign in and use <Link href="/account" className="underline hover:text-rust">your account page</Link> to send yourself a new one.
         </p>
       </Shell>

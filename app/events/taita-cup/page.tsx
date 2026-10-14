@@ -70,7 +70,7 @@ export default async function TaitaCupPage() {
                 {upcoming.length > 0 ? (
                   upcoming.map((f) => <FixtureRow key={f.id} fixture={f} />)
                 ) : (
-                  <p className="font-body text-stone/50">No fixtures scheduled yet.</p>
+                  <p className="font-body text-stone/80">No fixtures scheduled yet.</p>
                 )}
               </div>
             </div>
@@ -81,7 +81,7 @@ export default async function TaitaCupPage() {
                 {results.length > 0 ? (
                   results.map((f) => <FixtureRow key={f.id} fixture={f} />)
                 ) : (
-                  <p className="font-body text-stone/50">No results yet.</p>
+                  <p className="font-body text-stone/80">No results yet.</p>
                 )}
               </div>
             </div>
@@ -100,7 +100,7 @@ export default async function TaitaCupPage() {
                   <span className="text-xl">{team.crest}</span>
                   <div>
                     <p className="font-display text-stone">{team.name}</p>
-                    <p className="font-body text-xs text-stone/50">{team.town}</p>
+                    <p className="font-body text-xs text-stone/80">{team.town}</p>
                   </div>
                 </Link>
               ))}

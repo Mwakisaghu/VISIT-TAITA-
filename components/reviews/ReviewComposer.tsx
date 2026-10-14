@@ -58,7 +58,7 @@ export default function ReviewComposer({
     return (
       <div className="rounded-sm border border-stone/10 p-5">
         <p className="font-display text-lg text-stone">Been here?</p>
-        <p className="mt-1 font-body text-sm text-stone/70">Sign in to share your experience of {listingName}.</p>
+        <p className="mt-1 font-body text-sm text-stone/80">Sign in to share your experience of {listingName}.</p>
         <Link
           href={`/login?next=${encodeURIComponent(pathname ?? "/")}`}
           className="focus-ring mt-4 inline-block rounded-full bg-rust px-6 py-2.5 font-body text-sm text-parchment hover:bg-rust-deep"
@@ -69,11 +69,11 @@ export default function ReviewComposer({
     );
   }
 
-  if (!state) return <p className="font-body text-sm text-stone/40">Loading…</p>;
+  if (!state) return <p className="font-body text-sm text-stone/80">Loading…</p>;
 
   if (!state.canReview) {
     return state.reason === "own" ? (
-      <p className="font-body text-sm text-stone/60">You can&apos;t review your own listing.</p>
+      <p className="font-body text-sm text-stone/80">You can&apos;t review your own listing.</p>
     ) : null;
   }
 
@@ -155,7 +155,7 @@ export default function ReviewComposer({
           otherwise deleting would leave the old text sitting in the boxes. */}
       <form key={mine ? "existing" : "new"} onSubmit={save} className="mt-4 flex flex-col gap-4">
         <fieldset>
-          <legend className="font-body text-sm text-stone/70">Your rating</legend>
+          <legend className="font-body text-sm text-stone/80">Your rating</legend>
           <div className="mt-1 flex gap-1" role="group" aria-label="Rating">
             {[1, 2, 3, 4, 5].map((n) => (
               <button
@@ -176,7 +176,7 @@ export default function ReviewComposer({
         </fieldset>
 
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Headline (optional)</span>
+          <span className="font-body text-sm text-stone/80">Headline (optional)</span>
           <input
             name="title"
             defaultValue={mine?.title ?? ""}
@@ -187,7 +187,7 @@ export default function ReviewComposer({
         </label>
 
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Your experience</span>
+          <span className="font-body text-sm text-stone/80">Your experience</span>
           <textarea
             name="body"
             defaultValue={mine?.body ?? ""}
@@ -206,7 +206,7 @@ export default function ReviewComposer({
           </p>
         )}
 
-        <p className="font-body text-xs text-stone/50">Your review will be shown publicly with your first name and last initial.</p>
+        <p className="font-body text-xs text-stone/80">Your review will be shown publicly with your first name and last initial.</p>
 
         <div className="flex flex-wrap items-center gap-3">
           <button
@@ -221,7 +221,7 @@ export default function ReviewComposer({
               type="button"
               disabled={busy}
               onClick={remove}
-              className="focus-ring font-body text-sm text-stone/50 hover:text-rust"
+              className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
             >
               Delete my review
             </button>

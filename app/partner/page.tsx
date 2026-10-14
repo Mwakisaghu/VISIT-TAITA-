@@ -7,7 +7,7 @@ function Stat({ value, label }: { value: number; label: string }) {
   return (
     <div className="rounded-sm border border-stone/10 p-5">
       <p className="font-display text-3xl text-stone">{value}</p>
-      <p className="mt-1 font-body text-sm text-stone/60">{label}</p>
+      <p className="mt-1 font-body text-sm text-stone/80">{label}</p>
     </div>
   );
 }
@@ -45,11 +45,11 @@ export default async function PartnerDashboardPage() {
   return (
     <div>
       <h1 className="font-display text-3xl text-stone">Welcome back</h1>
-      <p className="mt-2 font-body text-stone/60">Here&apos;s how your Visit Taita listings are doing.</p>
+      <p className="mt-2 font-body text-stone/80">Here&apos;s how your Visit Taita listings are doing.</p>
 
       {showSeller && (
         <div className="mt-8">
-          <p className="font-body text-sm text-stone/50">Taita Made</p>
+          <p className="font-body text-sm text-stone/80">Taita Made</p>
           <div className="mt-3 grid grid-cols-3 gap-4">
             <Stat value={productTotal} label="Total listings" />
             <Stat value={productPublished} label="Live in shop" />
@@ -60,7 +60,7 @@ export default async function PartnerDashboardPage() {
 
       {showListings && (
         <div className="mt-10">
-          <p className="font-body text-sm text-stone/50">Stay &amp; Experiences</p>
+          <p className="font-body text-sm text-stone/80">Stay &amp; Experiences</p>
           <div className="mt-3 grid grid-cols-3 gap-4">
             <Stat value={accommodationTotal} label="Accommodations" />
             <Stat value={experienceTotal} label="Experiences" />

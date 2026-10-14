@@ -44,7 +44,7 @@ export default function ApplicationReviewPanel({
   return (
     <div className="mt-8 flex flex-col gap-6">
       <div>
-        <p className="font-body text-sm text-stone/70">Status</p>
+        <p className="font-body text-sm text-stone/80">Status</p>
         <div className="mt-2 flex gap-2">
           {(["PENDING", "APPROVED", "REJECTED"] as const).map((s) => (
             <button
@@ -66,7 +66,7 @@ export default function ApplicationReviewPanel({
 
       {currentStatus === "APPROVED" && (isSeller || isListingPartner) && (
         <div>
-          <p className="font-body text-sm text-stone/70">
+          <p className="font-body text-sm text-stone/80">
             {isSeller
               ? "Grant marketplace access to this applicant if they already have a Visit Taita account under the same email."
               : "Grant partner access (their own dashboard: listings and reward vouchers) if they already have a Visit Taita account under the same email."}

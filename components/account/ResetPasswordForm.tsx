@@ -41,11 +41,11 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">New password</span>
+        <span className="font-body text-sm text-stone/80">New password</span>
         <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} maxLength={72} autoComplete="new-password" className="input" />
       </label>
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Type it again</span>
+        <span className="font-body text-sm text-stone/80">Type it again</span>
         <input type="password" name="confirm" value={confirm} onChange={(e) => setConfirm(e.target.value)} required autoComplete="new-password" className="input" />
       </label>
       {error && (

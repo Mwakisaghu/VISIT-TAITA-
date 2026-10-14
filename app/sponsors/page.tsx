@@ -87,7 +87,7 @@ export default async function SponsorsPage() {
               <div key={b.title} className="border-t border-stone/15 pt-5">
                 <p className="font-body text-xs text-rust">{String(i + 1).padStart(2, "0")}</p>
                 <p className="mt-2 font-display text-xl text-stone">{b.title}</p>
-                <p className="mt-2 font-body text-sm leading-relaxed text-stone/70">{b.body}</p>
+                <p className="mt-2 font-body text-sm leading-relaxed text-stone/80">{b.body}</p>
               </div>
             ))}
           </div>
@@ -98,7 +98,7 @@ export default async function SponsorsPage() {
       {sponsors.length > 0 && (
         <section className="bg-parchment-dim/40 px-6 py-16">
           <div className="mx-auto max-w-6xl">
-            <p className="font-body text-sm text-stone/60">Our partners</p>
+            <p className="font-body text-sm text-stone/80">Our partners</p>
             <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
               {sponsors.map((s) => {
                 const href = safeHttpUrl(s.website);
@@ -165,13 +165,13 @@ export default async function SponsorsPage() {
                     <p className={`font-display text-2xl ${featured ? "text-parchment" : "text-stone"}`}>
                       {p.name}
                     </p>
-                    <p className={`mt-4 font-body text-xs ${featured ? "text-parchment/60" : "text-stone/50"}`}>
+                    <p className={`mt-4 font-body text-xs ${featured ? "text-parchment/60" : "text-stone/80"}`}>
                       Indicative, from
                     </p>
                     <p className={`font-display text-3xl ${featured ? "text-ochre" : "text-rust"}`}>
                       {formatPrice(p.startingPrice)}
                       {p.priceNote && (
-                        <span className={`ml-2 font-body text-sm ${featured ? "text-parchment/60" : "text-stone/50"}`}>
+                        <span className={`ml-2 font-body text-sm ${featured ? "text-parchment/60" : "text-stone/80"}`}>
                           {p.priceNote}
                         </span>
                       )}
@@ -208,12 +208,12 @@ export default async function SponsorsPage() {
               })}
             </div>
           ) : (
-            <p className="mt-10 font-body text-stone/60">
+            <p className="mt-10 font-body text-stone/80">
               Packages are being finalised — get in touch below and we&apos;ll talk it through.
             </p>
           )}
 
-          <p className="mt-8 max-w-prose font-body text-xs text-stone/50">
+          <p className="mt-8 max-w-prose font-body text-xs text-stone/80">
             Figures are indicative starting points, not fixed prices. Final terms are agreed with each
             partner.
           </p>
@@ -231,7 +231,7 @@ export default async function SponsorsPage() {
           </div>
           <div className="lg:col-span-3">
             <div className="rounded-sm border border-stone/10 bg-parchment p-6 sm:p-8">
-              <Suspense fallback={<p className="font-body text-sm text-stone/50">Loading form…</p>}>
+              <Suspense fallback={<p className="font-body text-sm text-stone/80">Loading form…</p>}>
                 <SponsorLeadForm packages={packages.map((p) => ({ slug: p.slug, name: p.name }))} />
               </Suspense>
             </div>

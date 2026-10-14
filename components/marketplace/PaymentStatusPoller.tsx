@@ -42,7 +42,7 @@ export default function PaymentStatusPoller({
 
   if (status === "PENDING") {
     return (
-      <p className="font-body text-sm text-stone/60">
+      <p className="font-body text-sm text-stone/80">
         {paymentMethod === "MPESA"
           ? "Waiting for M-Pesa confirmation — check your phone for the payment prompt."
           : "Waiting for card payment confirmation…"}
@@ -95,7 +95,7 @@ export default function PaymentStatusPoller({
   // UNPAID — shouldn't normally be seen on this page since checkout always
   // initiates a payment attempt, but handle it gracefully just in case.
   return (
-    <p className="font-body text-sm text-stone/60">
+    <p className="font-body text-sm text-stone/80">
       Payment hasn&apos;t been started for this order yet.
     </p>
   );

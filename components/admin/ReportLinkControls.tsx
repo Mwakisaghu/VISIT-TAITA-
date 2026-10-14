@@ -39,7 +39,7 @@ export default function ReportLinkControls({
       <p className="font-display text-lg text-stone">Shareable link</p>
       {url ? (
         <>
-          <p className="mt-1 font-body text-sm text-stone/70">Anyone with this link can see this sponsor&apos;s report — and nothing else.</p>
+          <p className="mt-1 font-body text-sm text-stone/80">Anyone with this link can see this sponsor&apos;s report — and nothing else.</p>
           <input readOnly value={url} aria-label="Report link" onFocus={(e) => e.currentTarget.select()} className="input mt-3 select-all" />
           {!shareable && (
             <p className="mt-2 font-body text-xs text-rust">
@@ -57,7 +57,7 @@ export default function ReportLinkControls({
         </>
       ) : (
         <>
-          <p className="mt-1 font-body text-sm text-stone/70">There&apos;s no link yet. Create one to send this report to the sponsor.</p>
+          <p className="mt-1 font-body text-sm text-stone/80">There&apos;s no link yet. Create one to send this report to the sponsor.</p>
           <button type="button" disabled={isPending} onClick={() => run("enable")} className={`${btn} mt-3`}>
             Create link
           </button>

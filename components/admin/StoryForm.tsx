@@ -34,17 +34,17 @@ export default function StoryForm({ story, destinations = [] }: { story?: Story;
             <option key={d.id} value={d.id}>{d.name} — {d.region}</option>
           ))}
         </select>
-        <span className="font-body text-sm text-stone/70">Shown as &ldquo;Where this happened&rdquo;, with where it sits between the plains and the hills, and used to suggest a stay and an experience nearby.</span>
+        <span className="font-body text-sm text-stone/80">Shown as &ldquo;Where this happened&rdquo;, with where it sits between the plains and the hills, and used to suggest a stay and an experience nearby.</span>
       </Field>
 
       <Field label="Body">
         <textarea name="body" defaultValue={story?.body} rows={8} className="input" />
-        <span className="font-body text-sm text-stone/70">Leave a blank line between paragraphs. Start a paragraph with &gt; to make it a pull quote.</span>
+        <span className="font-body text-sm text-stone/80">Leave a blank line between paragraphs. Start a paragraph with &gt; to make it a pull quote.</span>
       </Field>
 
       <Field label="Sources and credits">
         <textarea name="credits" defaultValue={story?.credits ?? ""} rows={5} className="input" />
-        <span className="font-body text-sm text-stone/70">One per line: Title | Author or publisher | https://link (the author and the link are optional). Up to 8. Credit whoever the facts or words came from.</span>
+        <span className="font-body text-sm text-stone/80">One per line: Title | Author or publisher | https://link (the author and the link are optional). Up to 8. Credit whoever the facts or words came from.</span>
       </Field>
 
       <Field label="Reading time">
@@ -65,7 +65,7 @@ export default function StoryForm({ story, destinations = [] }: { story?: Story;
         </select>
       </Field>
 
-      <label className="flex items-center gap-2 font-body text-sm text-stone/70">
+      <label className="flex items-center gap-2 font-body text-sm text-stone/80">
         <input type="checkbox" name="featured" defaultChecked={story?.featured} />
         Featured
       </label>
@@ -83,7 +83,7 @@ export default function StoryForm({ story, destinations = [] }: { story?: Story;
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

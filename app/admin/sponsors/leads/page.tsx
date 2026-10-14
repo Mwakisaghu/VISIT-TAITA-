@@ -21,12 +21,12 @@ export default async function AdminSponsorLeadsPage() {
             className="focus-ring flex items-center justify-between gap-4 py-4"
           >
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {l.package?.name ?? "No package chosen"} · {l.contactName} · {l.email}
                 {l.budgetRange ? ` · ${l.budgetRange}` : ""}
               </p>
               <p className="font-display text-lg text-stone">{l.companyName}</p>
-              <p className="font-body text-xs text-stone/40">{l.createdAt.toLocaleDateString()}</p>
+              <p className="font-body text-xs text-stone/80">{l.createdAt.toLocaleDateString()}</p>
             </div>
             <span
               className={`rounded-full px-3 py-1 font-body text-xs ${
@@ -36,16 +36,16 @@ export default async function AdminSponsorLeadsPage() {
                     ? "bg-rust/10 text-rust"
                     : l.status === "NEW"
                       ? "bg-ochre/20 text-stone"
-                      : "bg-stone/10 text-stone/70"
+                      : "bg-stone/10 text-stone/80"
               }`}
             >
               {sponsorLeadStatusLabel(l.status)}
             </span>
           </Link>
         ))}
-        {leads.length === 0 && <p className="py-8 font-body text-stone/50">No leads yet.</p>}
+        {leads.length === 0 && <p className="py-8 font-body text-stone/80">No leads yet.</p>}
         {leads.length === 200 && (
-          <p className="py-4 font-body text-xs text-stone/40">Showing the latest 200 leads.</p>
+          <p className="py-4 font-body text-xs text-stone/80">Showing the latest 200 leads.</p>
         )}
       </div>
     </div>

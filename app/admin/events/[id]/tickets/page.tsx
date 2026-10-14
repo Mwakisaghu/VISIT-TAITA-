@@ -13,7 +13,7 @@ export default async function AdminEventTicketsPage({ params }: { params: { id: 
   if (!event) notFound();
   return (
     <div>
-      <Link href="/admin/events" className="font-body text-sm text-stone/60 hover:text-rust">← Events</Link>
+      <Link href="/admin/events" className="font-body text-sm text-stone/80 hover:text-rust">← Events</Link>
       <h1 className="mt-3 font-display text-3xl text-stone">{event.name} — tickets</h1>
       <EventTicketsManager event={event} canEditSettings />
     </div>

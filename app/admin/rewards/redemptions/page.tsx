@@ -26,18 +26,18 @@ export default async function AdminRedemptionsPage({
 
   return (
     <div>
-      <Link href="/admin/rewards" className="font-body text-sm text-stone/60 hover:text-rust">
+      <Link href="/admin/rewards" className="font-body text-sm text-stone/80 hover:text-rust">
         ← Rewards
       </Link>
       <h1 className="mt-3 font-display text-3xl text-stone">Vouchers</h1>
 
       <form method="get" className="mt-6 flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/60">Find by code</span>
+          <span className="font-body text-xs text-stone/80">Find by code</span>
           <input name="code" defaultValue={code} placeholder="TAITA-" className="input uppercase" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/60">Status</span>
+          <span className="font-body text-xs text-stone/80">Status</span>
           <select name="status" defaultValue={status ?? ""} className="input">
             <option value="">All</option>
             {REDEMPTION_STATUSES.map((s) => (
@@ -60,11 +60,11 @@ export default async function AdminRedemptionsPage({
           <div key={v.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
             <div>
               <p className="font-display text-lg tracking-wider text-stone">{v.code}</p>
-              <p className="font-body text-sm text-stone/70">
+              <p className="font-body text-sm text-stone/80">
                 {v.reward.name}
                 {v.reward.partnerName ? ` · ${v.reward.partnerName}` : ""} · {v.pointsSpent} points
               </p>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {v.user.name} · {v.user.email} · {v.createdAt.toLocaleString()} · {redemptionStatusLabel(v.status)}
                 {v.usedAt ? ` (${v.usedAt.toLocaleDateString()})` : ""}
               </p>
@@ -72,9 +72,9 @@ export default async function AdminRedemptionsPage({
             <RedemptionActions redemptionId={v.id} status={v.status} pointsSpent={v.pointsSpent} />
           </div>
         ))}
-        {vouchers.length === 0 && <p className="py-8 font-body text-stone/50">No vouchers match.</p>}
+        {vouchers.length === 0 && <p className="py-8 font-body text-stone/80">No vouchers match.</p>}
         {vouchers.length === 200 && (
-          <p className="py-4 font-body text-xs text-stone/40">Showing the latest 200 — narrow with the search above.</p>
+          <p className="py-4 font-body text-xs text-stone/80">Showing the latest 200 — narrow with the search above.</p>
         )}
       </div>
     </div>

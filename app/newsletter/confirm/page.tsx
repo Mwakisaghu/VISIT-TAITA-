@@ -16,7 +16,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <p className="font-body text-sm text-rust">Visit Taita</p>
         <h1 className="mt-1 font-display text-3xl text-stone">Confirm your subscription</h1>
         <div className="mt-6">{children}</div>
-        <p className="mt-10 font-body text-xs text-stone/50">
+        <p className="mt-10 font-body text-xs text-stone/80">
           <Link href="/privacy" className="underline hover:text-rust">
             Privacy Policy
           </Link>
@@ -37,7 +37,7 @@ export default async function NewsletterTokenPage({ searchParams }: { searchPara
   if (!sub) {
     return (
       <Shell>
-        <p className="font-body text-stone/70">This link isn&apos;t valid or has already been used.</p>
+        <p className="font-body text-stone/80">This link isn&apos;t valid or has already been used.</p>
       </Shell>
     );
   }
@@ -45,14 +45,14 @@ export default async function NewsletterTokenPage({ searchParams }: { searchPara
   if (sub.status === "ACTIVE" && sub.confirmedAt) {
     return (
       <Shell>
-        <p className="font-body text-stone/70">You&apos;re already confirmed — nothing more to do. Karibu.</p>
+        <p className="font-body text-stone/80">You&apos;re already confirmed — nothing more to do. Karibu.</p>
       </Shell>
     );
   }
   if (sub.status === "UNSUBSCRIBED") {
     return (
       <Shell>
-        <p className="font-body text-stone/70">You&apos;ve unsubscribed, so this link no longer works. You&apos;re welcome to sign up again from the bottom of any page.</p>
+        <p className="font-body text-stone/80">You&apos;ve unsubscribed, so this link no longer works. You&apos;re welcome to sign up again from the bottom of any page.</p>
       </Shell>
     );
   }
@@ -63,7 +63,7 @@ export default async function NewsletterTokenPage({ searchParams }: { searchPara
       <p className="font-body text-lg text-stone/80">
         Confirm that <strong>{masked}</strong> should receive the Visit Taita letter?
       </p>
-      <p className="mt-2 font-body text-sm text-stone/60">About once a month. You can unsubscribe at any time from any email.</p>
+      <p className="mt-2 font-body text-sm text-stone/80">About once a month. You can unsubscribe at any time from any email.</p>
       <div className="mt-6">
         <TokenActionForm mode="confirm" token={token} />
       </div>

@@ -51,7 +51,7 @@ export default async function AdminEmailsPage({ searchParams }: { searchParams: 
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl text-stone">Emails</h1>
-          <p className="mt-2 max-w-prose font-body text-sm text-stone/60">
+          <p className="mt-2 max-w-prose font-body text-sm text-stone/80">
             Every notification — enquiries to hosts, vouchers to partners, decisions to creators — is recorded here, retried if it fails, and
             cleared once delivered. Message text is never shown or kept after delivery.
           </p>
@@ -98,7 +98,7 @@ export default async function AdminEmailsPage({ searchParams }: { searchParams: 
         {rows.map((r) => (
           <div key={r.id} className="flex flex-wrap items-start justify-between gap-4 py-4">
             <div className="min-w-0 max-w-2xl">
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {r.status === "SENT" ? (
                   <span className="text-canopy">Sent</span>
                 ) : r.status === "PENDING" ? (
@@ -112,14 +112,14 @@ export default async function AdminEmailsPage({ searchParams }: { searchParams: 
                 · {r.createdAt.toLocaleString()}
               </p>
               <p className="font-display text-lg text-stone">{r.subject}</p>
-              <p className="font-body text-sm text-stone/60">To: {r.to.join(", ")}</p>
+              <p className="font-body text-sm text-stone/80">To: {r.to.join(", ")}</p>
               {r.status !== "SENT" && r.lastError && <p className="mt-1 font-body text-xs text-rust">Last error: {r.lastError}</p>}
             </div>
             <EmailRowActions id={r.id} status={r.status} />
           </div>
         ))}
         {rows.length === 0 && (
-          <p className="py-8 font-body text-stone/50">{tab === "attention" ? "Nothing needs attention — every email has been delivered." : "Nothing here yet."}</p>
+          <p className="py-8 font-body text-stone/80">{tab === "attention" ? "Nothing needs attention — every email has been delivered." : "Nothing here yet."}</p>
         )}
       </div>
     </div>

@@ -33,7 +33,7 @@ export default async function EventPage({ params }: { params: { slug: string } }
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-16">
-      <Link href="/events" className="font-body text-sm text-stone/70 hover:text-rust">← All events</Link>
+      <Link href="/events" className="font-body text-sm text-stone/80 hover:text-rust">← All events</Link>
       <div className="mt-6"><Tag tone="rust">{programLabel(e.program)}</Tag></div>
       <h1 className="mt-4 font-display text-[clamp(1.92rem,4.8vw,3rem)] font-medium leading-[1.05] tracking-tight text-stone">{e.name}</h1>
         <ShareBar className="mt-5" />
@@ -50,7 +50,7 @@ export default async function EventPage({ params }: { params: { slug: string } }
       {e.ticketing !== "OFF" && (
         <section aria-labelledby="tickets" className="mt-10 rounded-sm border border-stone/10 p-6">
           <h2 id="tickets" className="font-display text-2xl text-stone">{e.ticketing === "FREE" ? "Free tickets" : `Tickets — KES ${e.ticketPrice.toLocaleString("en-KE")}`}</h2>
-          <p className="mt-1 font-body text-sm text-stone/70">{e.ticketing === "FREE" ? "This event is free, but we ask you to get a ticket so the organisers know who's coming." : e.payeeName ? `Paid to the organiser (${e.payeeName}). You'll be shown how to pay after you reserve.` : "You'll be shown how to pay after you reserve."}</p>
+          <p className="mt-1 font-body text-sm text-stone/80">{e.ticketing === "FREE" ? "This event is free, but we ask you to get a ticket so the organisers know who's coming." : e.payeeName ? `Paid to the organiser (${e.payeeName}). You'll be shown how to pay after you reserve.` : "You'll be shown how to pay after you reserve."}</p>
           <div className="mt-5">
             <TicketPanel eventId={e.id} mode={e.ticketing === "PAID" ? "PAID" : "FREE"} price={e.ticketPrice} perPerson={e.ticketsPerPerson} left={left} signedIn={!!viewer} verified={!!viewer?.emailVerifiedAt} loginHref={`/login?next=/events/${e.slug}`} defaultName={viewer?.name ?? ""} closedReason={closedReason} />
           </div>

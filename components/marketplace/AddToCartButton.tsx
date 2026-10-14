@@ -34,7 +34,7 @@ export default function AddToCartButton({
   const label = optionLabel.toLowerCase();
 
   if (inventory <= 0) {
-    return <p className="font-body text-sm text-stone/50">Currently sold out — check back soon.</p>;
+    return <p className="font-body text-sm text-stone/80">Currently sold out — check back soon.</p>;
   }
 
   /** Adds the item — or, if a size is needed and not chosen yet, says so and does nothing. Returns whether it was added. */
@@ -52,7 +52,7 @@ export default function AddToCartButton({
     <div className="flex flex-col gap-3">
       {options.length > 0 && (
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">{optionLabel}</span>
+          <span className="font-body text-sm text-stone/80">{optionLabel}</span>
           <select
             value={option}
             onChange={(e) => {

@@ -41,7 +41,7 @@ export default async function OrderConfirmationPage({
         <h1 className="mt-1 font-display text-3xl text-stone">
           {order.paymentStatus === "PAID" ? "Thank you." : "Almost there."}
         </h1>
-        <p className="mt-2 font-body text-stone/70">
+        <p className="mt-2 font-body text-stone/80">
           Status: {orderStatusLabel(order.status)} · {fulfillmentLabel(order.fulfillment)}
         </p>
 
@@ -56,7 +56,7 @@ export default async function OrderConfirmationPage({
 
         <div className="mt-8 divide-y divide-stone/10 rounded-sm border border-stone/10 p-4">
           {order.items.map((item) => (
-            <div key={item.id} className="flex justify-between py-3 font-body text-sm text-stone/70">
+            <div key={item.id} className="flex justify-between py-3 font-body text-sm text-stone/80">
               <span>
                 {item.quantity} × {item.product.name}
                 {item.option ? ` (${item.option})` : ""}
@@ -70,7 +70,7 @@ export default async function OrderConfirmationPage({
           </div>
         </div>
 
-        <p className="mt-6 font-body text-sm text-stone/60">
+        <p className="mt-6 font-body text-sm text-stone/80">
           We&apos;ll reach you on {order.phone} to confirm{" "}
           {order.fulfillment === "SHIPPING" ? "delivery" : "pickup"} details.
         </p>

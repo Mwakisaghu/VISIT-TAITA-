@@ -15,7 +15,7 @@ export default function PartnerCard({
     <div className="rounded-sm border border-stone/10 p-5">
       <p className="font-body text-xs text-rust">{partnerTypeLabel(partnerType)}</p>
       <p className="mt-1 font-display text-xl text-stone">{businessName}</p>
-      <p className="mt-2 font-body text-sm text-stone/70 line-clamp-3">{message}</p>
+      <p className="mt-2 font-body text-sm text-stone/80 line-clamp-3">{message}</p>
       {website && (
         <a
           href={website}

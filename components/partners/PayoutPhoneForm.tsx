@@ -21,7 +21,7 @@ export default function PayoutPhoneForm({ maskedCurrent }: { maskedCurrent: stri
       className="flex max-w-md flex-col gap-3"
     >
       <p className="font-body text-sm text-stone/80">{maskedCurrent ? <>Payouts are sent to <strong>{maskedCurrent}</strong>.</> : <strong className="text-rust">You haven&apos;t set a payout number yet — we can&apos;t pay you until you do.</strong>}</p>
-      <label className="flex flex-col gap-1 font-body text-sm text-stone/70">{maskedCurrent ? "Change it to" : "Your M-Pesa number"}
+      <label className="flex flex-col gap-1 font-body text-sm text-stone/80">{maskedCurrent ? "Change it to" : "Your M-Pesa number"}
         <input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" required placeholder="0712 345 678" autoComplete="tel" className="input" />
       </label>
       {error && <p role="alert" className="font-body text-sm text-rust">{error}</p>}

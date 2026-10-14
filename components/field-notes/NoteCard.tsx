@@ -36,7 +36,7 @@ export default function NoteCard({ note }: { note: NoteCardData }) {
       <div className="flex flex-1 flex-col p-5">
         <VerifiedBadge compact place={note.mission.destination.name} at={note.verifiedAt} method={note.verifiedMethod} />
         <p className="mt-2 font-display text-xl text-stone group-hover:text-rust">{note.title}</p>
-        <p className="mt-2 font-body text-sm text-stone/60">
+        <p className="mt-2 font-body text-sm text-stone/80">
           By {note.creator.displayName} · 📍 {note.mission.destination.name}
         </p>
         {badge && <p className="mt-3 w-fit rounded-full bg-ochre/20 px-3 py-0.5 font-body text-xs text-stone">{badge}</p>}

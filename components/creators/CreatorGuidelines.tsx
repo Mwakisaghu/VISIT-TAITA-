@@ -39,12 +39,12 @@ export default function CreatorGuidelines() {
             <span className="font-body text-xs text-rust">{String(i + 1).padStart(2, "0")}</span>
             <div>
               <p className="font-body text-sm font-semibold text-stone">{r.title}</p>
-              <p className="mt-1 font-body text-sm leading-relaxed text-stone/70">{r.body}</p>
+              <p className="mt-1 font-body text-sm leading-relaxed text-stone/80">{r.body}</p>
             </div>
           </li>
         ))}
       </ol>
-      <p className="mt-5 font-body text-xs text-stone/40">Guidelines version {CREATOR_TERMS_VERSION}</p>
+      <p className="mt-5 font-body text-xs text-stone/80">Guidelines version {CREATOR_TERMS_VERSION}</p>
     </div>
   );
 }

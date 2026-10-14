@@ -18,7 +18,7 @@ export default function StarterLinksButton() {
       >
         Add the starter links
       </button>
-      {msg && <span role="status" className="font-body text-sm text-stone/60">{msg}</span>}
+      {msg && <span role="status" className="font-body text-sm text-stone/80">{msg}</span>}
     </div>
   );
 }

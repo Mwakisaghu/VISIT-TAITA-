@@ -21,9 +21,9 @@ export default function ImageListField({ name, label, purpose, defaultValue = ""
   if (enabled === false) {
     return (
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">{label} — web addresses, one per line</span>
+        <span className="font-body text-sm text-stone/80">{label} — web addresses, one per line</span>
         <textarea name={name} value={text} onChange={(e) => setText(e.target.value)} rows={3} className="input" placeholder="https://…" />
-        <span className="font-body text-xs text-stone/50">Picture uploads aren&apos;t set up on this site yet.</span>
+        <span className="font-body text-xs text-stone/80">Picture uploads aren&apos;t set up on this site yet.</span>
       </label>
     );
   }
@@ -43,7 +43,7 @@ export default function ImageListField({ name, label, purpose, defaultValue = ""
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="font-body text-sm text-stone/70">{label} — up to {max}</span>
+      <span className="font-body text-sm text-stone/80">{label} — up to {max}</span>
       <textarea name={name} value={urls.join("\n")} readOnly tabIndex={-1} aria-hidden="true" className="sr-only" />
 
       {urls.length > 0 && (
@@ -68,7 +68,7 @@ export default function ImageListField({ name, label, purpose, defaultValue = ""
       )}
       {busy && <div role="progressbar" aria-label="Upload progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(progress * 100)} className="h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-stone/10"><div className="h-full bg-rust" style={{ width: `${Math.round(progress * 100)}%` }} /></div>}
       {error && <p role="alert" className="font-body text-sm text-rust">{error}</p>}
-      <p className="font-body text-xs text-stone/50">JPEG, PNG or WebP, at least {p.minWidth}×{p.minHeight} px. Location data is removed from every photo.</p>
+      <p className="font-body text-xs text-stone/80">JPEG, PNG or WebP, at least {p.minWidth}×{p.minHeight} px. Location data is removed from every photo.</p>
     </div>
   );
 }

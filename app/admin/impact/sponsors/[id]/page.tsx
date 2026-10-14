@@ -21,7 +21,7 @@ export default async function AdminSponsorReportPage({ params }: { params: { id:
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
-        <Link href="/admin/impact" className="font-body text-sm text-stone/60 hover:text-rust">
+        <Link href="/admin/impact" className="font-body text-sm text-stone/80 hover:text-rust">
           ← Impact
         </Link>
         <PrintButton label="Print or save as PDF" />

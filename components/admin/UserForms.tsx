@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { changeRole, inviteStaff, reinstateUser, sendPasswordLink, sendVerificationLink, signOutEverywhere, suspendUser, type UsersAdminResult } from "@/lib/actions/users-admin";
 import { roleLabel } from "@/lib/user-admin";
 
-const label = "font-body text-sm text-stone/70";
+const label = "font-body text-sm text-stone/80";
 const btn = "focus-ring rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust disabled:opacity-50";
 const primary = "focus-ring rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment hover:bg-rust-deep disabled:opacity-50";
 
@@ -48,11 +48,11 @@ export function InviteForm({ roles }: { roles: { value: string; help: string }[]
         {roles.map((r, i) => (
           <label key={r.value} className="flex items-start gap-2 font-body text-sm text-stone">
             <input type="radio" name="role" value={r.value} defaultChecked={i === roles.length - 1} className="mt-1" />
-            <span><strong>{roleLabel(r.value)}</strong><span className="block text-xs text-stone/60">{r.help}</span></span>
+            <span><strong>{roleLabel(r.value)}</strong><span className="block text-xs text-stone/80">{r.help}</span></span>
           </label>
         ))}
       </fieldset>
-      <p className="font-body text-xs text-stone/60">We email them a link to choose <strong>their own</strong> password (valid for 7 days). You never see or set one.</p>
+      <p className="font-body text-xs text-stone/80">We email them a link to choose <strong>their own</strong> password (valid for 7 days). You never see or set one.</p>
       {note}
       <button type="submit" disabled={busy} className={`${primary} w-fit`}>{busy ? "Sending…" : "Send invitation"}</button>
     </form>

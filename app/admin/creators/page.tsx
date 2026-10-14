@@ -64,7 +64,7 @@ export default async function AdminCreatorsPage({ searchParams }: { searchParams
           {crew.map((c) => (
             <div key={c.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
               <div>
-                <p className="font-body text-xs text-stone/50">
+                <p className="font-body text-xs text-stone/80">
                   {trackLabel(c.track)} · {c.status} · {c.user.email}
                 </p>
                 <Link href={`/creators/${c.slug}`} className="font-display text-lg text-stone hover:text-rust">
@@ -74,7 +74,7 @@ export default async function AdminCreatorsPage({ searchParams }: { searchParams
               <CreatorStatusToggle creatorId={c.id} status={c.status} />
             </div>
           ))}
-          {crew.length === 0 && <p className="py-8 font-body text-stone/50">No creators yet.</p>}
+          {crew.length === 0 && <p className="py-8 font-body text-stone/80">No creators yet.</p>}
         </div>
       ) : (
         <div className="mt-8 divide-y divide-stone/10">
@@ -82,18 +82,18 @@ export default async function AdminCreatorsPage({ searchParams }: { searchParams
             const links = a.portfolioLinks.map((l) => safeHttpUrl(l)).filter((l): l is string => !!l);
             return (
               <div key={a.id} className="py-6">
-                <p className="font-body text-xs text-stone/50">
+                <p className="font-body text-xs text-stone/80">
                   {trackLabel(a.track)}
                   {a.location ? ` · ${a.location}` : ""} · {a.specialties.map(specialtyLabel).join(", ")}
                 </p>
                 <p className="mt-1 font-display text-xl text-stone">{a.displayName}</p>
-                <p className="font-body text-xs text-stone/50">
+                <p className="font-body text-xs text-stone/80">
                   {a.user.name} · {a.user.email} · account role {a.user.role} · applied {a.createdAt.toLocaleDateString()} ·
                   guidelines {a.termsVersion}
                 </p>
 
                 <p className="mt-3 max-w-prose whitespace-pre-line font-body text-sm text-stone/80">{a.bio}</p>
-                <p className="mt-3 font-body text-xs text-stone/50">Pitch</p>
+                <p className="mt-3 font-body text-xs text-stone/80">Pitch</p>
                 <p className="max-w-prose whitespace-pre-line font-body text-sm text-stone/80">{a.pitch}</p>
 
                 {links.length > 0 && (
@@ -108,12 +108,12 @@ export default async function AdminCreatorsPage({ searchParams }: { searchParams
                   </ul>
                 )}
                 {a.followerNote && (
-                  <p className="mt-3 font-body text-xs text-stone/60">
+                  <p className="mt-3 font-body text-xs text-stone/80">
                     Audience note (self-reported, admin-only): {a.followerNote}
                   </p>
                 )}
                 {a.status === "REJECTED" && a.rejectionReason && (
-                  <p className="mt-3 font-body text-xs text-stone/60">Sent to applicant: {a.rejectionReason}</p>
+                  <p className="mt-3 font-body text-xs text-stone/80">Sent to applicant: {a.rejectionReason}</p>
                 )}
 
                 {a.status === "PENDING" && (
@@ -125,7 +125,7 @@ export default async function AdminCreatorsPage({ searchParams }: { searchParams
             );
           })}
           {applications.length === 0 && (
-            <p className="py-8 font-body text-stone/50">
+            <p className="py-8 font-body text-stone/80">
               {tab === "pending" ? "No applications waiting." : `No ${tab} applications.`}
             </p>
           )}

@@ -53,7 +53,7 @@ export default function CreatorApplicationActions({ applicationId }: { applicati
 
       {rejecting && (
         <div className="flex max-w-md flex-col gap-2">
-          <label className="font-body text-xs text-stone/60" htmlFor={`reason-${applicationId}`}>
+          <label className="font-body text-xs text-stone/80" htmlFor={`reason-${applicationId}`}>
             Note shown to the applicant (optional)
           </label>
           <input

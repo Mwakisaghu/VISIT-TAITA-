@@ -58,7 +58,7 @@ export default function MissionClaimBox({ missionId, missionTitle }: { missionId
     return (
       <div className={box}>
         <p className="font-display text-lg text-stone">Want to take this on?</p>
-        <p className="mt-1 font-body text-sm text-stone/70">Sign in to claim a spot on {missionTitle}.</p>
+        <p className="mt-1 font-body text-sm text-stone/80">Sign in to claim a spot on {missionTitle}.</p>
         <Link href={`/login?next=${encodeURIComponent(pathname ?? "/")}`} className={`${primary} mt-4 inline-block`}>
           Sign in
         </Link>
@@ -66,13 +66,13 @@ export default function MissionClaimBox({ missionId, missionTitle }: { missionId
     );
   }
 
-  if (!state) return <p className="font-body text-sm text-stone/40">Loading…</p>;
+  if (!state) return <p className="font-body text-sm text-stone/80">Loading…</p>;
 
   if (state.state === "not-creator") {
     return (
       <div className={box}>
         <p className="font-display text-lg text-stone">Missions are for the Field Crew</p>
-        <p className="mt-1 font-body text-sm text-stone/70">Join the crew to claim missions like this one.</p>
+        <p className="mt-1 font-body text-sm text-stone/80">Join the crew to claim missions like this one.</p>
         <Link href="/creators/apply" className={`${primary} mt-4 inline-block`}>
           Apply to join
         </Link>
@@ -83,7 +83,7 @@ export default function MissionClaimBox({ missionId, missionTitle }: { missionId
   if (state.state === "paused") {
     return (
       <div className={box}>
-        <p className="font-body text-sm text-stone/70">Your Field Crew profile is paused, so you can&apos;t claim missions right now.</p>
+        <p className="font-body text-sm text-stone/80">Your Field Crew profile is paused, so you can&apos;t claim missions right now.</p>
       </div>
     );
   }
@@ -91,7 +91,7 @@ export default function MissionClaimBox({ missionId, missionTitle }: { missionId
   if (state.state === "ineligible" || state.state === "unavailable") {
     return (
       <div className={box}>
-        <p className="font-body text-sm text-stone/70">{state.message}</p>
+        <p className="font-body text-sm text-stone/80">{state.message}</p>
       </div>
     );
   }
@@ -100,7 +100,7 @@ export default function MissionClaimBox({ missionId, missionTitle }: { missionId
     return (
       <div className={box}>
         <p className="font-display text-lg text-canopy">You&apos;re on this mission ✓</p>
-        <p className="mt-1 font-body text-sm text-stone/70">Everything you need — including your disclosure line — is on your crew page.</p>
+        <p className="mt-1 font-body text-sm text-stone/80">Everything you need — including your disclosure line — is on your crew page.</p>
         <div className="mt-4 flex flex-wrap items-center gap-4">
           <Link href="/crew" className={primary}>
             Go to my crew page
@@ -111,7 +111,7 @@ export default function MissionClaimBox({ missionId, missionTitle }: { missionId
             onClick={() => {
               if (window.confirm("Give this spot back?")) void run(() => withdrawClaim(missionId), "available");
             }}
-            className="focus-ring font-body text-sm text-stone/50 hover:text-rust disabled:opacity-60"
+            className="focus-ring font-body text-sm text-stone/80 hover:text-rust disabled:opacity-60"
           >
             Withdraw
           </button>
@@ -128,7 +128,7 @@ export default function MissionClaimBox({ missionId, missionTitle }: { missionId
   return (
     <div className={box}>
       <p className="font-display text-lg text-stone">Claim a spot</p>
-      <p className="mt-1 font-body text-sm text-stone/70">Claiming holds a place for you. You can give it back any time before you file.</p>
+      <p className="mt-1 font-body text-sm text-stone/80">Claiming holds a place for you. You can give it back any time before you file.</p>
       <button type="button" disabled={busy} onClick={() => void run(() => claimMission(missionId), "claimed")} className={`${primary} mt-4`}>
         {busy ? "Claiming…" : "Claim this mission"}
       </button>

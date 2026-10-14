@@ -41,7 +41,7 @@ export default async function CheckinPage({ params }: { params: { token: string 
       <Shell>
         <div className="p-8 text-center">
           <p className="font-display text-2xl text-stone">This check-in code isn&apos;t valid.</p>
-          <p className="mt-3 font-body text-sm text-stone/60">
+          <p className="mt-3 font-body text-sm text-stone/80">
             The plaque may have been replaced. Try the &quot;Check in here&quot; button on your Passport instead.
           </p>
           <Link
@@ -86,7 +86,7 @@ export default async function CheckinPage({ params }: { params: { token: string 
       <div className="p-6">
         {!session?.user ? (
           <div className="flex flex-col gap-3">
-            <p className="font-body text-sm text-stone/70">
+            <p className="font-body text-sm text-stone/80">
               Sign in to check in here and earn points for your Taita Passport.
             </p>
             <Link

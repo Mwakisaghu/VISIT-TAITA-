@@ -60,7 +60,7 @@ export default function FieldNoteModeration({ noteId, status, points }: { noteId
 
       {asking && (
         <div className="flex max-w-md flex-col gap-2">
-          <label htmlFor={`changes-${noteId}`} className="font-body text-xs text-stone/60">
+          <label htmlFor={`changes-${noteId}`} className="font-body text-xs text-stone/80">
             What needs to change? The creator will see this.
           </label>
           <textarea id={`changes-${noteId}`} value={reason} onChange={(e) => setReason(e.target.value)} maxLength={NOTE_LIMITS.reasonMax} rows={3} className="input" />

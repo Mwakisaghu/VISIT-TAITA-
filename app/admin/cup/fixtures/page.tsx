@@ -24,7 +24,7 @@ export default async function AdminFixturesPage() {
         {fixtures.map((f) => (
           <div key={f.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {f.status} · {f.kickoff.toLocaleDateString()} · {f.venue.name}
                 {f.isDemo && " · demo"}
               </p>
@@ -35,18 +35,18 @@ export default async function AdminFixturesPage() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              <Link href={`/admin/cup/fixtures/${f.id}`} className="focus-ring font-body text-sm text-stone/70 hover:text-rust">
+              <Link href={`/admin/cup/fixtures/${f.id}`} className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                 Edit
               </Link>
               <form action={async () => { "use server"; await deleteFixture(f.id); }}>
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
             </div>
           </div>
         ))}
-        {fixtures.length === 0 && <p className="py-8 font-body text-stone/50">No fixtures yet.</p>}
+        {fixtures.length === 0 && <p className="py-8 font-body text-stone/80">No fixtures yet.</p>}
       </div>
     </div>
   );

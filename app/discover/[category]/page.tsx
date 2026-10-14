@@ -43,7 +43,7 @@ export default async function DiscoverCategoryPage({ params, searchParams }: Ctx
     <div>
       <section className="bg-parchment px-6 pb-8 pt-16 sm:pt-20">
         <div className="mx-auto max-w-6xl">
-          <Link href="/discover" className="focus-ring font-body text-sm text-stone/70 hover:text-rust-deep">← All worlds</Link>
+          <Link href="/discover" className="focus-ring font-body text-sm text-stone/80 hover:text-rust-deep">← All worlds</Link>
           <p className="mt-6 font-body text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-rust-deep">Discover</p>
           <div className="mt-4 flex flex-wrap items-end justify-between gap-6">
             <h1 className="font-display text-[clamp(2.072rem,5.18vw,3.7rem)] font-medium leading-[1.02] tracking-tight text-stone">{cat.label}</h1>
@@ -56,7 +56,7 @@ export default async function DiscoverCategoryPage({ params, searchParams }: Ctx
         <div className="mx-auto max-w-6xl">
           {items.length > 0 ? (
             <>
-              <p role="status" className="font-body text-sm text-stone/70">{items.length} {items.length === 1 ? "place" : "places"}</p>
+              <p role="status" className="font-body text-sm text-stone/80">{items.length} {items.length === 1 ? "place" : "places"}</p>
               <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {items.map((d) => <div id={d.slug} key={d.slug}><PlaceCard place={d} /></div>)}
               </div>

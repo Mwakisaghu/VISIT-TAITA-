@@ -10,10 +10,10 @@ export default function EventStrip({ event }: { event: Event }) {
         <p className="font-display text-xl text-stone">
           <Link href={`/events/${event.slug}`} className="hover:text-rust">{event.name}</Link>
         </p>
-        <p className="mt-1 font-body text-sm text-stone/60">{event.location}</p>
+        <p className="mt-1 font-body text-sm text-stone/80">{event.location}</p>
       </div>
       <div className="text-right">
-        <p className="whitespace-nowrap font-body text-sm text-stone/70">{formatEventDate(event.eventDate)}</p>
+        <p className="whitespace-nowrap font-body text-sm text-stone/80">{formatEventDate(event.eventDate)}</p>
         <Link href={`/events/${event.slug}`} className="mt-1 inline-block font-body text-sm text-rust underline">
           {event.ticketing === "FREE" ? "Free tickets →" : event.ticketing === "PAID" ? "Get tickets →" : "Details →"}
         </Link>

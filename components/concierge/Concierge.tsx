@@ -223,7 +223,7 @@ function AskView({ onAct }: { onAct: () => void }) {
       {err && <p role="alert" className="mt-3 font-body text-sm font-semibold text-rust-deep">{err}</p>}
       <form onSubmit={(e) => { e.preventDefault(); send(text); }} className="mt-4 flex gap-2">
         <label htmlFor="cg-ask" className="sr-only">{tr("Your question")}</label>
-        <input id="cg-ask" value={text} maxLength={600} onChange={(e) => setText(e.target.value)} placeholder={tr("Ask about Taita")} className="min-h-[44px] flex-1 rounded-[2px] border border-stone/30 bg-transparent px-3 font-body text-sm placeholder:text-stone/60" />
+        <input id="cg-ask" value={text} maxLength={600} onChange={(e) => setText(e.target.value)} placeholder={tr("Ask about Taita")} className="min-h-[44px] flex-1 rounded-[2px] border border-stone/30 bg-transparent px-3 font-body text-sm placeholder:text-stone/80" />
         <button type="submit" disabled={busy || !text.trim()} className={primary}>{tr("Ask")}</button>
       </form>
     </div>

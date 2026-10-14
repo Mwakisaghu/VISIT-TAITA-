@@ -101,7 +101,7 @@ export default function FixtureForm({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

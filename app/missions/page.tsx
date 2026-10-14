@@ -57,7 +57,7 @@ export default async function MissionsPage() {
       <div className="mx-auto max-w-6xl px-6 py-16">
         <h2 className="font-display text-3xl text-stone">Open now</h2>
         {open.length === 0 ? (
-          <p className="mt-4 max-w-prose font-body text-stone/60">
+          <p className="mt-4 max-w-prose font-body text-stone/80">
             No missions are open right now. New briefs are added regularly — join the Field Crew to be among the first to hear.
           </p>
         ) : (
@@ -70,7 +70,7 @@ export default async function MissionsPage() {
 
         {closed.length > 0 && (
           <section className="mt-16">
-            <h2 className="font-display text-2xl text-stone/70">Recently closed</h2>
+            <h2 className="font-display text-2xl text-stone/80">Recently closed</h2>
             <div className="mt-6 grid gap-6 opacity-70 sm:grid-cols-2 lg:grid-cols-3">
               {closed.map((m) => (
                 <MissionCard key={m.id} mission={m} />

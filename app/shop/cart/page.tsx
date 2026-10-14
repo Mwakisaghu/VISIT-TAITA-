@@ -41,9 +41,9 @@ export default function CartPage() {
                 <Link href={`/shop/product/${item.slug}`} className="focus-ring font-display text-lg text-stone">
                   {item.name}
                 </Link>
-                <p className="font-body text-sm text-stone/60">{formatPrice(item.price)}</p>
+                <p className="font-body text-sm text-stone/80">{formatPrice(item.price)}</p>
                 {item.option && (
-                  <p className="font-body text-sm text-stone/60">
+                  <p className="font-body text-sm text-stone/80">
                     {item.optionLabel ?? "Size"}: {item.option}
                   </p>
                 )}
@@ -63,7 +63,7 @@ export default function CartPage() {
               <button
                 type="button"
                 onClick={() => removeItem(lineKey(item))}
-                className="focus-ring font-body text-sm text-stone/40 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Remove
               </button>
@@ -72,7 +72,7 @@ export default function CartPage() {
         </div>
 
         <div className="mt-8 flex items-center justify-between border-t border-stone/10 pt-6">
-          <p className="font-body text-stone/70">Subtotal</p>
+          <p className="font-body text-stone/80">Subtotal</p>
           <p className="font-display text-2xl text-stone">{formatPrice(subtotal)}</p>
         </div>
 
@@ -91,7 +91,7 @@ export default function CartPage() {
             >
               Sign in to check out
             </Link>
-            <p className="mt-2 text-center font-body text-xs text-stone/50">
+            <p className="mt-2 text-center font-body text-xs text-stone/80">
               Your cart is saved — it&apos;ll still be here after you sign in.
             </p>
           </div>

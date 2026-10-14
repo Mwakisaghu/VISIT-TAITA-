@@ -110,7 +110,7 @@ export default function CheckoutPage() {
 
         <div className="mt-6 rounded-sm border border-stone/10 p-4">
           {items.map((item) => (
-            <div key={lineKey(item)} className="flex justify-between font-body text-sm text-stone/70">
+            <div key={lineKey(item)} className="flex justify-between font-body text-sm text-stone/80">
               <span>
                 {item.quantity} × {item.name}
                 {item.option ? ` (${item.option})` : ""}
@@ -126,7 +126,7 @@ export default function CheckoutPage() {
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
           <fieldset className="flex flex-col gap-2">
-            <legend className="font-body text-sm text-stone/70">Fulfillment</legend>
+            <legend className="font-body text-sm text-stone/80">Fulfillment</legend>
             <label className="flex items-center gap-2 font-body text-sm">
               <input
                 type="radio"
@@ -148,7 +148,7 @@ export default function CheckoutPage() {
           </fieldset>
 
           <fieldset className="flex flex-col gap-2">
-            <legend className="font-body text-sm text-stone/70">Payment</legend>
+            <legend className="font-body text-sm text-stone/80">Payment</legend>
             <label className="flex items-center gap-2 font-body text-sm">
               <input
                 type="radio"
@@ -170,7 +170,7 @@ export default function CheckoutPage() {
           </fieldset>
 
           <label className="flex flex-col gap-1">
-            <span className="font-body text-sm text-stone/70">
+            <span className="font-body text-sm text-stone/80">
               Phone number{paymentMethod === "MPESA" ? " (for the M-Pesa prompt)" : ""}
             </span>
             <input
@@ -185,7 +185,7 @@ export default function CheckoutPage() {
 
           {fulfillment === "SHIPPING" && (
             <label className="flex flex-col gap-1">
-              <span className="font-body text-sm text-stone/70">Shipping address</span>
+              <span className="font-body text-sm text-stone/80">Shipping address</span>
               <textarea
                 required
                 value={address}
@@ -212,7 +212,7 @@ export default function CheckoutPage() {
               : `Pay ${formatPrice(subtotal)}`}
           </button>
 
-          <p className="text-center font-body text-xs text-stone/50">
+          <p className="text-center font-body text-xs text-stone/80">
             {paymentMethod === "MPESA"
               ? "You'll get an M-Pesa prompt on your phone to complete payment."
               : "You'll be redirected to a secure card payment page."}

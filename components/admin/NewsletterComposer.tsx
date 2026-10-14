@@ -87,11 +87,11 @@ export default function NewsletterComposer({
   return (
     <form onSubmit={(e) => e.preventDefault()} className="flex max-w-2xl flex-col gap-4">
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Subject</span>
+        <span className="font-body text-sm text-stone/80">Subject</span>
         <input name="subject" defaultValue={campaign?.subject} required maxLength={L.subjectMax} className="input" />
       </label>
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Message (plain text)</span>
+        <span className="font-body text-sm text-stone/80">Message (plain text)</span>
         <textarea
           name="body"
           defaultValue={campaign?.body}
@@ -101,7 +101,7 @@ export default function NewsletterComposer({
           onChange={(e) => setBodyLength(e.currentTarget.value.length)}
           className="input font-mono text-sm"
         />
-        <span className="font-body text-xs text-stone/40">
+        <span className="font-body text-xs text-stone/80">
           {bodyLength.toLocaleString("en-GB")} / {L.bodyMax.toLocaleString("en-GB")}. Web addresses become links in most mail apps. A footer with the unsubscribe link and your name is added automatically.
         </span>
       </label>
@@ -134,7 +134,7 @@ export default function NewsletterComposer({
         </button>
       </div>
       {sendBlockReason && <p className="font-body text-xs text-rust">{sendBlockReason}</p>}
-      {!sendBlockReason && sendableCount === 0 && <p className="font-body text-xs text-stone/50">There are no confirmed subscribers yet, so there is no one to send to.</p>}
+      {!sendBlockReason && sendableCount === 0 && <p className="font-body text-xs text-stone/80">There are no confirmed subscribers yet, so there is no one to send to.</p>}
     </form>
   );
 }

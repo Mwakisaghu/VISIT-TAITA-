@@ -62,7 +62,7 @@ export default async function MissionPage({ params }: { params: { slug: string }
     <div className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
         <ViewBeacon kind="MISSION" id={mission.id} />
-        <Link href="/missions" className="font-body text-sm text-stone/60 hover:text-rust">
+        <Link href="/missions" className="font-body text-sm text-stone/80 hover:text-rust">
           ← All missions
         </Link>
 
@@ -79,21 +79,21 @@ export default async function MissionPage({ params }: { params: { slug: string }
 
         <dl className="mt-8 grid grid-cols-2 gap-4 border-y border-stone/10 py-5 sm:grid-cols-4">
           <div>
-            <dt className="font-body text-xs text-stone/50">Place</dt>
+            <dt className="font-body text-xs text-stone/80">Place</dt>
             <dd className="font-body text-sm text-stone">{mission.destination.name}</dd>
           </div>
           <div>
-            <dt className="font-body text-xs text-stone/50">Open to</dt>
+            <dt className="font-body text-xs text-stone/80">Open to</dt>
             <dd className="font-body text-sm text-stone">{mission.track ? `${trackLabel(mission.track)}s` : "Everyone in the crew"}</dd>
           </div>
           <div>
-            <dt className="font-body text-xs text-stone/50">{availability.open ? "Closes" : "Status"}</dt>
+            <dt className="font-body text-xs text-stone/80">{availability.open ? "Closes" : "Status"}</dt>
             <dd className="font-body text-sm text-stone">
               {!availability.open ? (availability.reason === "full" ? "All spots taken" : "Closed") : mission.closesAt ? formatDeadline(mission.closesAt) : "When filled"}
             </dd>
           </div>
           <div>
-            <dt className="font-body text-xs text-stone/50">Spots · reward</dt>
+            <dt className="font-body text-xs text-stone/80">Spots · reward</dt>
             <dd className="font-body text-sm text-stone">
               {left === null ? "Open" : `${left} left`}
               {mission.rewardPoints > 0 ? ` · ${mission.rewardPoints} pts` : ""}
@@ -109,7 +109,7 @@ export default async function MissionPage({ params }: { params: { slug: string }
         {mission.prompts.length > 0 && (
           <section className="mt-10">
             <h2 className="font-display text-2xl text-stone">What your note should show</h2>
-            <p className="mt-2 max-w-prose font-body text-sm text-stone/60">
+            <p className="mt-2 max-w-prose font-body text-sm text-stone/80">
               Evidence, not adjectives — what a visitor can&apos;t see from a photo.
             </p>
             <ul className="mt-4 flex flex-col gap-2">
@@ -129,10 +129,10 @@ export default async function MissionPage({ params }: { params: { slug: string }
           <section className="mt-10 rounded-sm border border-ochre/50 bg-ochre/10 p-5">
             <h2 className="font-display text-xl text-stone">{mission.support === "HOSTED" ? "This mission is hosted" : "This mission is sponsored"}</h2>
             {mission.supportNote && <p className="mt-2 font-body text-sm text-stone/80">What&apos;s provided: {mission.supportNote}</p>}
-            <p className="mt-2 font-body text-sm text-stone/70">
+            <p className="mt-2 font-body text-sm text-stone/80">
               Creators always say so in their posts, so you know who made it possible.
             </p>
-            {disclosure && <p className="mt-3 font-body text-xs text-stone/50">Suggested disclosure: {disclosure}</p>}
+            {disclosure && <p className="mt-3 font-body text-xs text-stone/80">Suggested disclosure: {disclosure}</p>}
           </section>
         )}
 
@@ -158,7 +158,7 @@ export default async function MissionPage({ params }: { params: { slug: string }
           {availability.open || mission.status === "OPEN" ? (
             <MissionClaimBox missionId={mission.id} missionTitle={mission.title} />
           ) : (
-            <p className="font-body text-sm text-stone/60">
+            <p className="font-body text-sm text-stone/80">
               {availability.open === false && availability.reason === "full" ? "All the spots on this mission have been taken." : "This mission is closed."}
             </p>
           )}

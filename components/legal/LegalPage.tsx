@@ -40,7 +40,7 @@ export default function LegalPage({
       <div className="mx-auto max-w-3xl">
         <p className="font-body text-sm text-rust">Visit Taita</p>
         <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">{title}</h1>
-        <p className="mt-3 font-body text-sm text-stone/50">
+        <p className="mt-3 font-body text-sm text-stone/80">
           Version {LEGAL_VERSION}
           {info.reviewedOn ? ` · Legally reviewed ${formatLegalDate(info.reviewedOn)}` : ""}
         </p>
@@ -57,7 +57,7 @@ export default function LegalPage({
         {intro && <p className="mt-8 max-w-prose font-body text-lg leading-relaxed text-stone/80">{intro}</p>}
 
         <nav aria-label="On this page" className="mt-8 rounded-sm border border-stone/10 p-4">
-          <p className="font-body text-xs text-stone/50">On this page</p>
+          <p className="font-body text-xs text-stone/80">On this page</p>
           <ol className="mt-2 grid gap-1 sm:grid-cols-2">
             {sections.map((s) => (
               <li key={s.id}>

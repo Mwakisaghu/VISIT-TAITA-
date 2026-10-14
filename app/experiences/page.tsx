@@ -59,7 +59,7 @@ export default async function ExperiencesPage({ searchParams }: { searchParams?:
         <div className="mx-auto max-w-6xl">
         {experiences.length > 0 ? (
           <>
-            <p className="font-body text-sm text-stone/70" role="status">{experiences.length} experience{experiences.length === 1 ? "" : "s"}{filtered ? " match" : ""}</p>
+            <p className="font-body text-sm text-stone/80" role="status">{experiences.length} experience{experiences.length === 1 ? "" : "s"}{filtered ? " match" : ""}</p>
             <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {experiences.map((x) => (
                 <ExperienceCover key={x.slug} experience={x} sessions={x.sessions} rating={ratings.get(x.id) ?? null} now={now} />

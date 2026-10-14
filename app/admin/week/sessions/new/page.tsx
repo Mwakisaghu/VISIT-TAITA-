@@ -10,7 +10,7 @@ export default async function NewFestivalSessionPage() {
       {venues.length > 0 ? (
         <FestivalSessionForm venues={venues} />
       ) : (
-        <p className="mt-6 font-body text-stone/60">
+        <p className="mt-6 font-body text-stone/80">
           You need at least one venue before you can schedule a session.
         </p>
       )}

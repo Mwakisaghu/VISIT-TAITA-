@@ -18,10 +18,10 @@ export default async function AdminOrdersPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="font-display text-lg text-stone">{order.orderNumber}</p>
-                <p className="font-body text-sm text-stone/60">
+                <p className="font-body text-sm text-stone/80">
                   {order.buyer ? `${order.buyer.name} · ${order.buyer.email}` : "Deleted account"} · {order.phone}
                 </p>
-                <p className="font-body text-xs text-stone/50">
+                <p className="font-body text-xs text-stone/80">
                   {fulfillmentLabel(order.fulfillment)}
                   {order.address ? ` · ${order.address}` : ""}
                 </p>
@@ -32,7 +32,7 @@ export default async function AdminOrdersPage() {
                         ? "text-canopy"
                         : order.paymentStatus === "FAILED"
                           ? "text-rust"
-                          : "text-stone/50"
+                          : "text-stone/80"
                     }
                   >
                     {order.paymentMethod === "NONE" ? "No payment method" : order.paymentMethod} ·{" "}
@@ -48,7 +48,7 @@ export default async function AdminOrdersPage() {
               </div>
             </div>
 
-            <ul className="mt-2 font-body text-sm text-stone/50">
+            <ul className="mt-2 font-body text-sm text-stone/80">
               {order.items.map((item) => (
                 <li key={item.id}>
                   {item.quantity} × {item.product.name}
@@ -58,7 +58,7 @@ export default async function AdminOrdersPage() {
             </ul>
           </div>
         ))}
-        {orders.length === 0 && <p className="py-8 font-body text-stone/50">No orders yet.</p>}
+        {orders.length === 0 && <p className="py-8 font-body text-stone/80">No orders yet.</p>}
       </div>
     </div>
   );

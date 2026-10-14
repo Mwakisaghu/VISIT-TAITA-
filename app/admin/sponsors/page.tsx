@@ -21,7 +21,7 @@ export default async function AdminSponsorsPage() {
         </Link>
       </div>
 
-      <p className="mt-2 font-body text-sm text-stone/60">
+      <p className="mt-2 font-body text-sm text-stone/80">
         Only confirmed partners belong here. Packages are managed under{" "}
         <Link href="/admin/sponsors/packages" className="underline hover:text-rust">
           Sponsor Packages
@@ -33,7 +33,7 @@ export default async function AdminSponsorsPage() {
         {sponsors.map((s) => (
           <div key={s.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {s.status}
                 {s.package ? ` · ${s.package.name}` : ""}
                 {s.programs.length > 0 ? ` · ${s.programs.map(programLabel).join(", ")}` : ""}
@@ -44,7 +44,7 @@ export default async function AdminSponsorsPage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/admin/sponsors/${s.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -54,7 +54,7 @@ export default async function AdminSponsorsPage() {
                   await deleteSponsor(s.id);
                 }}
               >
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
@@ -62,7 +62,7 @@ export default async function AdminSponsorsPage() {
           </div>
         ))}
         {sponsors.length === 0 && (
-          <p className="py-8 font-body text-stone/50">No sponsors yet — add your first confirmed partner.</p>
+          <p className="py-8 font-body text-stone/80">No sponsors yet — add your first confirmed partner.</p>
         )}
       </div>
     </div>

@@ -16,9 +16,9 @@ export default async function AvailabilityPage({ params }: { params: { id: strin
 
   return (
     <div>
-      <Link href={`/partner/experiences/${e.id}`} className="font-body text-sm text-stone/60 hover:text-rust">← {e.name}</Link>
+      <Link href={`/partner/experiences/${e.id}`} className="font-body text-sm text-stone/80 hover:text-rust">← {e.name}</Link>
       <h1 className="mt-3 font-display text-3xl text-stone">Booking &amp; availability</h1>
-      <p className="mt-2 max-w-2xl font-body text-sm text-stone/60">
+      <p className="mt-2 max-w-2xl font-body text-sm text-stone/80">
         Guests can book the dates you add here, and pay online. The price is the per-person price on the experience
         ({e.priceFrom ? `KES ${e.priceFrom.toLocaleString("en-KE")}` : <strong className="text-rust">not set yet — set one before switching booking on</strong>}).
       </p>
@@ -32,7 +32,7 @@ export default async function AvailabilityPage({ params }: { params: { id: strin
       <h2 className="mt-12 font-display text-xl text-stone">Your dates</h2>
       <ul className="mt-2 divide-y divide-stone/10">
         {sessions.map((s) => <SessionRow key={s.id} id={s.id} capacity={s.capacity} seatsTaken={s.seatsTaken} status={s.status} note={s.note} whenLabel={formatEat(s.startsAt)} />)}
-        {sessions.length === 0 && <li className="py-4 font-body text-sm text-stone/50">No dates yet.</li>}
+        {sessions.length === 0 && <li className="py-4 font-body text-sm text-stone/80">No dates yet.</li>}
       </ul>
     </div>
   );

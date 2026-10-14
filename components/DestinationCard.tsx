@@ -20,7 +20,7 @@ export default function DestinationCard({ destination }: { destination: Destinat
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
       </div>
-      <p className="mt-3 font-body text-xs text-stone/60">{destination.region}</p>
+      <p className="mt-3 font-body text-xs text-stone/80">{destination.region}</p>
       <p className="font-display text-xl text-stone">{destination.name}</p>
     </Link>
   );

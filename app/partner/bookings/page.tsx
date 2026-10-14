@@ -23,14 +23,14 @@ export default async function PartnerBookingsPage() {
   const card = (b: (typeof bookings)[number]) => (
     <li key={b.id} className="py-4">
       <p className="font-body text-sm text-stone">{b.experience.name} · {formatEat(b.session.startsAt)}</p>
-      <p className="font-body text-sm text-stone/70">{b.guestName} · {b.guests} guest{b.guests === 1 ? "" : "s"} · {b.guestPhone} · {b.guestEmail}</p>
-      <p className="font-body text-xs text-stone/50">{bookingStatusLabel(b.status)} · paid KES {b.paidAmount.toLocaleString("en-KE")} of {b.totalAmount.toLocaleString("en-KE")} · {b.reference}{b.status === "REQUESTED" && b.expiresAt ? ` · answer by ${formatEat(b.expiresAt)}` : ""}</p>
-      {b.note && <p className="mt-1 font-body text-sm text-stone/70">“{b.note}”</p>}
+      <p className="font-body text-sm text-stone/80">{b.guestName} · {b.guests} guest{b.guests === 1 ? "" : "s"} · {b.guestPhone} · {b.guestEmail}</p>
+      <p className="font-body text-xs text-stone/80">{bookingStatusLabel(b.status)} · paid KES {b.paidAmount.toLocaleString("en-KE")} of {b.totalAmount.toLocaleString("en-KE")} · {b.reference}{b.status === "REQUESTED" && b.expiresAt ? ` · answer by ${formatEat(b.expiresAt)}` : ""}</p>
+      {b.note && <p className="mt-1 font-body text-sm text-stone/80">“{b.note}”</p>}
       <HostBookingActions bookingId={b.id} status={b.status} started={b.session.startsAt <= now} />
     </li>
   );
   const section = (title: string, items: typeof bookings, empty: string) => (
-    <section className="mt-10"><h2 className="font-display text-xl text-stone">{title}</h2><ul className="mt-2 divide-y divide-stone/10">{items.map(card)}{items.length === 0 && <li className="py-3 font-body text-sm text-stone/50">{empty}</li>}</ul></section>
+    <section className="mt-10"><h2 className="font-display text-xl text-stone">{title}</h2><ul className="mt-2 divide-y divide-stone/10">{items.map(card)}{items.length === 0 && <li className="py-3 font-body text-sm text-stone/80">{empty}</li>}</ul></section>
   );
   return (
     <div>

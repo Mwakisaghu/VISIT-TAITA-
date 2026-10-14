@@ -8,7 +8,7 @@ function Tile({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-sm border border-stone/15 p-4">
       <p className="font-display text-3xl text-stone">{value}</p>
-      <p className="mt-1 font-body text-xs text-stone/60">{label}</p>
+      <p className="mt-1 font-body text-xs text-stone/80">{label}</p>
     </div>
   );
 }
@@ -33,7 +33,7 @@ export default async function AdminImpactPage() {
   return (
     <div>
       <h1 className="font-display text-3xl text-stone">Impact</h1>
-      <p className="mt-2 max-w-prose font-body text-sm text-stone/60">
+      <p className="mt-2 max-w-prose font-body text-sm text-stone/80">
         What the Field Crew has produced. Views are approximate (counted from browsers, excluding staff and obvious bots). The visitor
         figures are context, not proof that a note caused a visit.
       </p>
@@ -50,12 +50,12 @@ export default async function AdminImpactPage() {
       <section className="mt-12">
         <h2 className="font-display text-2xl text-stone">Missions</h2>
         {missions.length === 0 ? (
-          <p className="mt-3 font-body text-stone/50">No missions have been opened yet.</p>
+          <p className="mt-3 font-body text-stone/80">No missions have been opened yet.</p>
         ) : (
           <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[640px] text-left font-body text-sm">
               <thead>
-                <tr className="border-b border-stone/15 text-xs text-stone/50">
+                <tr className="border-b border-stone/15 text-xs text-stone/80">
                   <th className="py-2 pr-4 font-normal">Mission</th>
                   <th className="py-2 pr-4 font-normal">Claims</th>
                   <th className="py-2 pr-4 font-normal">Notes</th>
@@ -74,7 +74,7 @@ export default async function AdminImpactPage() {
                         <Link href={`/admin/missions/${m.id}`} className="font-display text-base text-stone hover:text-rust">
                           {m.title}
                         </Link>
-                        <p className="text-xs text-stone/50">
+                        <p className="text-xs text-stone/80">
                           {missionStatusLabel(m.status)} · 📍 {m.destination.name}
                         </p>
                       </td>
@@ -100,14 +100,14 @@ export default async function AdminImpactPage() {
       <section className="mt-12">
         <h2 className="font-display text-2xl text-stone">Sponsor reports</h2>
         {sponsors.length === 0 ? (
-          <p className="mt-3 font-body text-stone/50">A report appears here once a sponsored mission has been opened.</p>
+          <p className="mt-3 font-body text-stone/80">A report appears here once a sponsored mission has been opened.</p>
         ) : (
           <ul className="mt-4 divide-y divide-stone/10">
             {sponsors.map((s) => (
               <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
                 <span className="font-display text-lg text-stone">{s.name}</span>
                 <span className="flex items-center gap-4">
-                  <span className="font-body text-xs text-stone/50">{s.reportToken ? "Shareable link on" : "No shareable link"}</span>
+                  <span className="font-body text-xs text-stone/80">{s.reportToken ? "Shareable link on" : "No shareable link"}</span>
                   <Link href={`/admin/impact/sponsors/${s.id}`} className="focus-ring rounded-full border border-stone/25 px-4 py-1.5 font-body text-sm text-stone hover:border-rust hover:text-rust">
                     Open report
                   </Link>

@@ -23,7 +23,7 @@ const CHIP: Record<EnquiryStatusValue, string> = {
   NEW: "bg-rust/10 text-rust",
   CONTACTED: "bg-ochre/20 text-stone",
   CONFIRMED: "bg-canopy/15 text-canopy",
-  DECLINED: "bg-stone/10 text-stone/60",
+  DECLINED: "bg-stone/10 text-stone/80",
 };
 
 const EMPTY: Record<string, string> = {
@@ -46,7 +46,7 @@ export default async function PartnerEnquiriesPage({ searchParams }: { searchPar
     return (
       <div>
         <h1 className="font-display text-3xl text-stone">Enquiries</h1>
-        <p className="mt-3 max-w-prose font-body text-stone/70">Enquiries are for stay and experience partners. Your dashboard shows your shop products and vouchers.</p>
+        <p className="mt-3 max-w-prose font-body text-stone/80">Enquiries are for stay and experience partners. Your dashboard shows your shop products and vouchers.</p>
       </div>
     );
   }
@@ -59,7 +59,7 @@ export default async function PartnerEnquiriesPage({ searchParams }: { searchPar
   return (
     <div>
       <h1 className="font-display text-3xl text-stone">Enquiries</h1>
-      <p className="mt-2 max-w-prose font-body text-stone/60">
+      <p className="mt-2 max-w-prose font-body text-stone/80">
         People who have asked about your stays and experiences. Reply to them directly — then mark where each one stands, so you and we can see what&apos;s been handled.
       </p>
 
@@ -78,7 +78,7 @@ export default async function PartnerEnquiriesPage({ searchParams }: { searchPar
       </div>
 
       {isAdmin && total === 0 && (
-        <p className="mt-6 max-w-prose font-body text-sm text-stone/60">
+        <p className="mt-6 max-w-prose font-body text-sm text-stone/80">
           This page shows enquiries for listings <em>you</em> own. As an admin, manage every enquiry under Admin → Stays / Experiences.
         </p>
       )}
@@ -93,7 +93,7 @@ export default async function PartnerEnquiriesPage({ searchParams }: { searchPar
             <article key={`${e.kind}-${e.id}`} className="rounded-sm border border-stone/15 p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-body text-xs text-stone/50">
+                  <p className="font-body text-xs text-stone/80">
                     {e.kind === "stay" ? "Stay" : "Experience"} · {e.listingName} · {e.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   </p>
                   <p className="font-display text-xl text-stone">{e.name}</p>
@@ -101,7 +101,7 @@ export default async function PartnerEnquiriesPage({ searchParams }: { searchPar
                 <span className={`rounded-full px-3 py-1 font-body text-xs ${CHIP[e.status]}`}>{ENQUIRY_STATUS_LABELS[e.status]}</span>
               </div>
 
-              <p className="mt-2 font-body text-sm text-stone/70">
+              <p className="mt-2 font-body text-sm text-stone/80">
                 {e.email} · {e.phone}
               </p>
 
@@ -109,7 +109,7 @@ export default async function PartnerEnquiriesPage({ searchParams }: { searchPar
                 <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-2">
                   {e.facts.map((f) => (
                     <div key={f.label}>
-                      <dt className="font-body text-xs text-stone/50">{f.label}</dt>
+                      <dt className="font-body text-xs text-stone/80">{f.label}</dt>
                       <dd className="font-body text-sm text-stone">{f.value}</dd>
                     </div>
                   ))}
@@ -144,10 +144,10 @@ export default async function PartnerEnquiriesPage({ searchParams }: { searchPar
             </article>
           );
         })}
-        {items.length === 0 && <p className="py-6 font-body text-stone/50">{EMPTY[tab.key]}</p>}
+        {items.length === 0 && <p className="py-6 font-body text-stone/80">{EMPTY[tab.key]}</p>}
       </div>
 
-      <p className="mt-10 max-w-prose font-body text-xs text-stone/50">
+      <p className="mt-10 max-w-prose font-body text-xs text-stone/80">
         Guests share their details with you only so you can answer their enquiry. Please use them for nothing else, and don&apos;t pass them on.
       </p>
     </div>

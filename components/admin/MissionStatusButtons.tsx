@@ -53,7 +53,7 @@ export default function MissionStatusButtons({
             onClick={() => {
               if (window.confirm("Delete this mission permanently?")) run(() => deleteMission(missionId));
             }}
-            className="focus-ring font-body text-sm text-stone/40 hover:text-rust disabled:opacity-60"
+            className="focus-ring font-body text-sm text-stone/80 hover:text-rust disabled:opacity-60"
           >
             Delete
           </button>

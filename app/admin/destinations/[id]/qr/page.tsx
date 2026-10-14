@@ -30,7 +30,7 @@ export default async function DestinationQrPage({ params }: { params: { id: stri
   return (
     <div>
       <div className="print:hidden">
-        <Link href={`/admin/destinations/${destination.id}`} className="font-body text-sm text-stone/60 hover:text-rust">
+        <Link href={`/admin/destinations/${destination.id}`} className="font-body text-sm text-stone/80 hover:text-rust">
           ← Back to {destination.name}
         </Link>
         <h1 className="mt-3 font-display text-3xl text-stone">Check-in plaque</h1>
@@ -69,7 +69,7 @@ export default async function DestinationQrPage({ params }: { params: { id: stri
           <div className="w-full max-w-md rounded-sm border-2 border-stone bg-white p-8 text-center text-stone print:max-w-none print:border-4">
             <p className="font-body text-xs tracking-widest text-rust">VISIT TAITA · TAITA PASSPORT</p>
             <p className="mt-3 font-display text-3xl leading-tight">{destination.name}</p>
-            <p className="mt-1 font-body text-sm text-stone/60">{destination.region}</p>
+            <p className="mt-1 font-body text-sm text-stone/80">{destination.region}</p>
             <div
               className="mx-auto mt-6 h-64 w-64 print:h-96 print:w-96 [&>svg]:h-full [&>svg]:w-full"
               role="img"
@@ -77,7 +77,7 @@ export default async function DestinationQrPage({ params }: { params: { id: stri
               dangerouslySetInnerHTML={{ __html: svg }}
             />
             <p className="mt-6 font-display text-xl">Scan to check in</p>
-            <p className="mt-1 font-body text-sm text-stone/70">
+            <p className="mt-1 font-body text-sm text-stone/80">
               Earn {CHECKIN_POINTS} points on your Taita Passport
             </p>
           </div>
@@ -92,8 +92,8 @@ export default async function DestinationQrPage({ params }: { params: { id: stri
       <div className="mt-10 flex max-w-xl flex-col gap-6 print:hidden">
         {url && (
           <div>
-            <p className="font-body text-sm text-stone/70">Address encoded in the QR code</p>
-            <p className="mt-1 break-all rounded-sm border border-stone/10 p-3 font-body text-xs text-stone/70">{url}</p>
+            <p className="font-body text-sm text-stone/80">Address encoded in the QR code</p>
+            <p className="mt-1 break-all rounded-sm border border-stone/10 p-3 font-body text-xs text-stone/80">{url}</p>
           </div>
         )}
 
@@ -103,7 +103,7 @@ export default async function DestinationQrPage({ params }: { params: { id: stri
           </summary>
           <div className="mt-3">
             {token && (
-              <p className="font-body text-sm text-stone/70">
+              <p className="font-body text-sm text-stone/80">
                 A new code makes <strong>every plaque already printed for {destination.name} stop working</strong>.
                 Do this if the code has leaked (for example, posted online) — then reprint.
               </p>

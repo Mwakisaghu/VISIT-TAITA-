@@ -5,7 +5,7 @@ import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 const PARTNER_DASHBOARD_ROLES = ["SELLER", "PARTNER", ...ADMIN_ROLES];
 
 const linkClass =
-  "focus-ring rounded-sm px-2 py-2 text-stone/70 hover:bg-stone/5 hover:text-stone";
+  "focus-ring rounded-sm px-2 py-2 text-stone/80 hover:bg-stone/5 hover:text-stone";
 
 export default async function PartnerLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -28,7 +28,7 @@ export default async function PartnerLayout({ children }: { children: React.Reac
     return (
       <div className="px-6 py-24 text-center">
         <p className="font-display text-2xl text-stone">This dashboard is for approved partners.</p>
-        <p className="mt-3 font-body text-stone/60">
+        <p className="mt-3 font-body text-stone/80">
           Apply as a marketplace seller, accommodation or experience partner
           and we&apos;ll grant access once approved.
         </p>

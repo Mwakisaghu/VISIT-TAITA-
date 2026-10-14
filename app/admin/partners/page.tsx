@@ -19,7 +19,7 @@ export default async function AdminPartnersPage() {
             className="focus-ring flex items-center justify-between gap-4 py-4"
           >
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {partnerTypeLabel(app.partnerType)} · {app.email}
               </p>
               <p className="font-display text-lg text-stone">{app.businessName}</p>
@@ -30,7 +30,7 @@ export default async function AdminPartnersPage() {
                   ? "bg-canopy/10 text-canopy"
                   : app.status === "REJECTED"
                     ? "bg-rust/10 text-rust"
-                    : "bg-stone/10 text-stone/70"
+                    : "bg-stone/10 text-stone/80"
               }`}
             >
               {applicationStatusLabel(app.status)}
@@ -38,7 +38,7 @@ export default async function AdminPartnersPage() {
           </Link>
         ))}
         {applications.length === 0 && (
-          <p className="py-8 font-body text-stone/50">No applications yet.</p>
+          <p className="py-8 font-body text-stone/80">No applications yet.</p>
         )}
       </div>
     </div>

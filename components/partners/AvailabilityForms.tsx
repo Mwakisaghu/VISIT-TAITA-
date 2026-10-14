@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { addSessions, cancelSessionAction, saveBookingSettings, updateSession, type HostResult } from "@/lib/actions/bookings-host";
 import { POLICIES, policyLines, type CancellationPolicyKey } from "@/lib/booking";
 
-const label = "font-body text-sm text-stone/70";
+const label = "font-body text-sm text-stone/80";
 const primary = "focus-ring w-fit rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment hover:bg-rust-deep disabled:opacity-50";
 const quiet = "focus-ring rounded-full border border-stone/20 px-4 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust disabled:opacity-50";
 
@@ -46,7 +46,7 @@ export function SettingsForm({ experienceId, s }: { experienceId: string; s: Set
         {(Object.keys(POLICIES) as CancellationPolicyKey[]).map((k) => (
           <label key={k} className="flex items-start gap-2 font-body text-sm text-stone">
             <input type="radio" name="cancellationPolicy" value={k} checked={policy === k} onChange={() => setPolicy(k)} className="mt-1" />
-            <span><strong>{POLICIES[k].label}</strong><span className="block text-xs text-stone/60">{policyLines(k).join(" ")}</span></span>
+            <span><strong>{POLICIES[k].label}</strong><span className="block text-xs text-stone/80">{policyLines(k).join(" ")}</span></span>
           </label>
         ))}
       </fieldset>
@@ -77,20 +77,20 @@ export function SessionRow({ id, capacity, seatsTaken, status, note, whenLabel }
   const { busy, run, note: msg } = useRun();
   const [cancelling, setCancelling] = useState(false);
   const [reason, setReason] = useState("");
-  if (status === "CANCELLED") return <li className="py-3 font-body text-sm text-stone/50 line-through">{whenLabel} — cancelled</li>;
+  if (status === "CANCELLED") return <li className="py-3 font-body text-sm text-stone/80 line-through">{whenLabel} — cancelled</li>;
   return (
     <li className="py-3">
-      <p className="font-body text-sm text-stone">{whenLabel} <span className="text-stone/50">· {seatsTaken}/{capacity} booked{status === "CLOSED" ? " · closed to new bookings" : ""}</span></p>
+      <p className="font-body text-sm text-stone">{whenLabel} <span className="text-stone/80">· {seatsTaken}/{capacity} booked{status === "CLOSED" ? " · closed to new bookings" : ""}</span></p>
       <form onSubmit={(e) => { e.preventDefault(); const fd = new FormData(e.currentTarget); run(() => updateSession(id, fd)); }} className="mt-2 flex flex-wrap items-end gap-3">
-        <label className="flex flex-col gap-1 font-body text-xs text-stone/60">Capacity<input name="capacity" type="number" min={1} max={500} defaultValue={capacity} className="input w-24" /></label>
-        <label className="flex flex-col gap-1 font-body text-xs text-stone/60">Status<select name="status" defaultValue={status} className="input"><option value="OPEN">Open</option><option value="CLOSED">Closed</option></select></label>
-        <label className="flex flex-col gap-1 font-body text-xs text-stone/60">Note<input name="note" defaultValue={note ?? ""} maxLength={200} className="input" /></label>
+        <label className="flex flex-col gap-1 font-body text-xs text-stone/80">Capacity<input name="capacity" type="number" min={1} max={500} defaultValue={capacity} className="input w-24" /></label>
+        <label className="flex flex-col gap-1 font-body text-xs text-stone/80">Status<select name="status" defaultValue={status} className="input"><option value="OPEN">Open</option><option value="CLOSED">Closed</option></select></label>
+        <label className="flex flex-col gap-1 font-body text-xs text-stone/80">Note<input name="note" defaultValue={note ?? ""} maxLength={200} className="input" /></label>
         <button type="submit" disabled={busy} className={quiet}>Save</button>
         <button type="button" onClick={() => setCancelling(!cancelling)} className="font-body text-sm text-rust underline">Cancel this date</button>
       </form>
       {cancelling && (
         <div className="mt-3 flex max-w-md flex-col gap-2 rounded-sm border border-rust/30 p-3">
-          <p className="font-body text-xs text-stone/70">Everyone booked on this date is told and refunded in full.</p>
+          <p className="font-body text-xs text-stone/80">Everyone booked on this date is told and refunded in full.</p>
           <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason (they will see it)" maxLength={200} className="input" aria-label="Reason" />
           <button type="button" disabled={busy} onClick={() => run(() => cancelSessionAction(id, reason), () => setCancelling(false))} className={quiet}>Cancel the date and refund everyone</button>
         </div>

@@ -52,24 +52,24 @@ export default async function AdminFieldNotesPage({ searchParams }: { searchPara
           const links = n.links.map((l) => safeHttpUrl(l)).filter((l): l is string => !!l);
           return (
             <div key={n.id} className="py-6">
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {noteStatusLabel(n.status)} · {n.mission.title} · 📍 {n.mission.destination.name}
               </p>
               <p className="mt-1 font-display text-xl text-stone">{n.title}</p>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {n.creator.displayName} · {n.creator.user.email} · ✓ verified {formatNoteDate(n.verifiedAt)} via {methodLabel(n.verifiedMethod)}
                 {n.pointsAwarded > 0 ? ` · ${n.pointsAwarded} points awarded` : ""}
               </p>
 
               {n.promptsSnapshot.map((p, i) => (
                 <div key={`${i}-${p}`} className="mt-3">
-                  <p className="font-body text-xs text-stone/50">{p}</p>
+                  <p className="font-body text-xs text-stone/80">{p}</p>
                   <p className="max-w-prose whitespace-pre-line font-body text-sm text-stone/80">{n.answers[i]}</p>
                 </div>
               ))}
               {n.body && (
                 <div className="mt-3">
-                  <p className="font-body text-xs text-stone/50">The story</p>
+                  <p className="font-body text-xs text-stone/80">The story</p>
                   <p className="max-w-prose whitespace-pre-line font-body text-sm text-stone/80">{n.body}</p>
                 </div>
               )}
@@ -85,8 +85,8 @@ export default async function AdminFieldNotesPage({ searchParams }: { searchPara
                   ))}
                 </ul>
               )}
-              {n.disclosureText && <p className="mt-3 font-body text-xs text-stone/60">Disclosure the creator confirmed: {n.disclosureText}</p>}
-              {n.status === "CHANGES_REQUESTED" && n.reviewNote && <p className="mt-3 font-body text-xs text-stone/60">Sent to creator: {n.reviewNote}</p>}
+              {n.disclosureText && <p className="mt-3 font-body text-xs text-stone/80">Disclosure the creator confirmed: {n.disclosureText}</p>}
+              {n.status === "CHANGES_REQUESTED" && n.reviewNote && <p className="mt-3 font-body text-xs text-stone/80">Sent to creator: {n.reviewNote}</p>}
               {n.status === "APPROVED" && (
                 <Link href={`/notes/${n.slug}`} className="mt-3 inline-block font-body text-sm text-rust underline">
                   View the public note ↗
@@ -99,7 +99,7 @@ export default async function AdminFieldNotesPage({ searchParams }: { searchPara
             </div>
           );
         })}
-        {notes.length === 0 && <p className="py-8 font-body text-stone/50">{tab.key === "pending" ? "Nothing waiting for review." : "Nothing here."}</p>}
+        {notes.length === 0 && <p className="py-8 font-body text-stone/80">{tab.key === "pending" ? "Nothing waiting for review." : "Nothing here."}</p>}
       </div>
     </div>
   );

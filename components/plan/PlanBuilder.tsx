@@ -131,7 +131,7 @@ export default function PlanBuilder({ defaultDay, minDay, maxDay }: { defaultDay
           <h2 id="your-day" className="font-body text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-stone">Your day</h2>
           <hr className="mb-4 mt-2 h-[5px] border-0 bg-stone" />
           <label htmlFor="plan-title" className={label}>Name it (optional)</label>
-          <input id="plan-title" value={title} maxLength={MAX_TITLE} onChange={(e) => setTitle(e.target.value)} placeholder="My Taita day" className="mt-1.5 min-h-[44px] w-full rounded-[2px] border border-stone/30 bg-transparent px-3.5 font-body text-sm text-stone placeholder:text-stone/60" />
+          <input id="plan-title" value={title} maxLength={MAX_TITLE} onChange={(e) => setTitle(e.target.value)} placeholder="My Taita day" className="mt-1.5 min-h-[44px] w-full rounded-[2px] border border-stone/30 bg-transparent px-3.5 font-body text-sm text-stone placeholder:text-stone/80" />
           {ordered.length === 0 ? <p className="mt-5 font-body text-sm text-stone/80">Nothing yet. Add something from the left.</p> : (
             <ol className="mt-5 flex flex-col gap-4">
               {ordered.map((i) => {

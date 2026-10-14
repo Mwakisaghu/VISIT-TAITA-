@@ -17,7 +17,7 @@ export function ClaimPaymentForm({ groupId, existing }: { groupId: string; exist
   return (
     <form onSubmit={(e) => { e.preventDefault(); run(() => claimPaymentAction(groupId, code)); }} className="flex max-w-md flex-col gap-2">
       {existing && <p className="font-body text-sm text-stone/80">You told us you paid with <strong>{existing}</strong>. We&apos;re waiting for the organiser to confirm it.</p>}
-      <label className="flex flex-col gap-1 font-body text-sm text-stone/70">{existing ? "Change the M-Pesa code" : "Paid? Enter the M-Pesa confirmation code"}
+      <label className="flex flex-col gap-1 font-body text-sm text-stone/80">{existing ? "Change the M-Pesa code" : "Paid? Enter the M-Pesa confirmation code"}
         <input value={code} onChange={(e) => setCode(e.target.value)} required placeholder="e.g. QGH7ABC123" maxLength={20} className="input" aria-label="M-Pesa code" />
       </label>
       {note}

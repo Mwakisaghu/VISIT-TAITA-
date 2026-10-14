@@ -3,7 +3,7 @@ import { LEVELS, LEVEL_LABEL, MOODS, MAX_ALTITUDE_M } from "@/lib/field-guide";
 type Defaults = { altitudeM?: number | null; difficulty?: string | null; elevationGainM?: number | null; hostName?: string | null; hostRole?: string | null; hostQuote?: string | null; moods?: string[] | null; latitude?: number | null; longitude?: number | null };
 
 const label = "flex flex-col gap-1";
-const hint = "font-body text-sm text-stone/70";
+const hint = "font-body text-sm text-stone/80";
 
 /** The "Field guide" part of a listing form: how high it is, how hard, and who a visitor will meet. Every field is optional. */
 export default function GuideFields({ kind, defaults }: { kind: "experience" | "stay" | "place"; defaults?: Defaults | null }) {

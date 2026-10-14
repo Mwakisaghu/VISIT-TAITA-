@@ -57,7 +57,7 @@ export default function ReviewModeration({ reviewId, status }: { reviewId: strin
           onClick={() => {
             if (window.confirm("Delete this review permanently?")) run(() => deleteReview(reviewId));
           }}
-          className="focus-ring font-body text-sm text-stone/40 hover:text-rust disabled:opacity-60"
+          className="focus-ring font-body text-sm text-stone/80 hover:text-rust disabled:opacity-60"
         >
           Delete
         </button>
@@ -65,7 +65,7 @@ export default function ReviewModeration({ reviewId, status }: { reviewId: strin
 
       {rejecting && (
         <div className="flex max-w-md flex-col gap-2">
-          <label className="font-body text-xs text-stone/60" htmlFor={`reason-${reviewId}`}>
+          <label className="font-body text-xs text-stone/80" htmlFor={`reason-${reviewId}`}>
             Reason shown to the author (optional)
           </label>
           <input

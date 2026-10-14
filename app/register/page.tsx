@@ -48,13 +48,13 @@ function RegisterForm() {
   return (
     <div className="mx-auto flex max-w-sm flex-col px-6 py-24">
       <h1 className="font-display text-3xl text-stone">Start your Passport</h1>
-      <p className="mt-2 font-body text-sm text-stone/60">
+      <p className="mt-2 font-body text-sm text-stone/80">
         Track visits, earn badges, become a Taita Insider.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
         <div>
-          <label htmlFor="name" className="font-body text-sm text-stone/70">
+          <label htmlFor="name" className="font-body text-sm text-stone/80">
             Name
           </label>
           <input
@@ -66,7 +66,7 @@ function RegisterForm() {
           />
         </div>
         <div>
-          <label htmlFor="email" className="font-body text-sm text-stone/70">
+          <label htmlFor="email" className="font-body text-sm text-stone/80">
             Email
           </label>
           <input
@@ -79,7 +79,7 @@ function RegisterForm() {
           />
         </div>
         <div>
-          <label htmlFor="password" className="font-body text-sm text-stone/70">
+          <label htmlFor="password" className="font-body text-sm text-stone/80">
             Password
           </label>
           <input
@@ -91,10 +91,10 @@ function RegisterForm() {
             onChange={(e) => setPassword(e.target.value)}
             className="focus-ring mt-1 w-full rounded-sm border border-stone/20 bg-transparent px-4 py-2 font-body text-sm"
           />
-          <p className="mt-1 font-body text-xs text-stone/50">At least 8 characters.</p>
+          <p className="mt-1 font-body text-xs text-stone/80">At least 8 characters.</p>
         </div>
 
-        <label className="flex items-start gap-3 font-body text-sm text-stone/70">
+        <label className="flex items-start gap-3 font-body text-sm text-stone/80">
           <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} required className="mt-1" />
           <span>
             I&apos;m 18 or over, I agree to the{" "}
@@ -120,7 +120,7 @@ function RegisterForm() {
         </button>
       </form>
 
-      <p className="mt-6 font-body text-sm text-stone/60">
+      <p className="mt-6 font-body text-sm text-stone/80">
         Already have one?{" "}
         <Link
           href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
