@@ -46,6 +46,8 @@ export function privacySections(info: SiteInfo): LegalSection[] {
           "**Event tickets:** your name and phone number for each ticket, and (for paid events) the M-Pesa code you entered. The organiser of an event — a partner we work with — and our admins can see these for that event, to confirm payments and let you in. Payment for a paid event goes to the organiser, not to us. If you delete your account we remove your name, phone number and payment code from your tickets and keep the ticket records for the organiser.",
           "**Pictures you upload:** the picture, which account uploaded it, and when. We shrink every picture and remove hidden location data (such as GPS) from it. Pictures you uploaded are deleted when you delete your account, unless they are still in use on the site.",
           "**WhatsApp and Instagram:** if you message us there, those services handle your message under their own terms. We see your name or username, your number (on WhatsApp) and what you send, and use it only to reply.",
+          "**The Taita Guide:** the Guide can suggest a day from the choices you make (for example how high you want to be, and which day). Those choices stay in your browser until you open the suggestion in the planner. If the optional \"Ask Taita\" AI guide is switched on, the question you type, and the last few messages of that conversation, are sent to our AI provider (Anthropic) so that it can write an answer from this site's own pages. We do not store your questions or the answers on our servers. Please do not put personal information in a question.",
+          "**Sharing a page:** the share buttons (WhatsApp, Facebook and copy link) do nothing until you press one. The address they share carries a small tag saying which button was used. We receive nothing from WhatsApp or Facebook.",
           "**Email delivery records:** the recipient, subject and delivery status of emails we send, so we can retry failures. The message text is cleared once the email is delivered, and after 7 days if it never is. The records themselves are deleted after 30 days.",
         ] },
       ],
@@ -61,7 +63,12 @@ export function privacySections(info: SiteInfo): LegalSection[] {
       id: "cookies",
       title: "Cookies and similar technologies",
       body: [
-        "We use only the cookies needed to keep you signed in. We do not use advertising or tracking cookies.",
+        "We use only the cookies and browser storage that the site needs in order to work, or that remember a choice you made. We do not use advertising or tracking cookies, so we do not show a cookie banner. If that ever changes, we will ask you first.",
+        { list: [
+          "**Signing in:** cookies that keep you signed in and protect the sign-in form. They end when you sign out or the session ends.",
+          "**Your language:** if you choose Kiswahili, French or German, a cookie called taita-lang remembers your choice for one year. It holds only the language code. To offer you a language, your browser's list of preferred languages is checked on your own device; it is not sent to us.",
+          "**Saved in your browser, not sent to us:** your \"no thanks\" to a language offer (kept for about six months); the contents of your shopping cart; a draft of a day you are planning; and, for the Taita Guide, a note of when it was last shown or used so that it does not interrupt you again and again. You can clear all of this in your browser settings at any time.",
+        ] },
         "To understand which stories and missions people read, we count page views per page per day, from your browser, without recording who you are. We use your internet address only briefly, in memory, to limit abuse (for example repeated form submissions); we do not store it in our database.",
       ],
     },
@@ -73,7 +80,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
         { list: [
           "**Hosts and partners** receive the details of enquiries made about their own listings.",
           "**Sponsors** receive only totals (for example how many people viewed a mission). Never your personal details.",
-          "**Service providers** who help us run the site: our database (Neon), email delivery (Resend), and payment processing (Safaricom M-Pesa and Pesapal). They may only use your data to provide their service to us.",
+          "**Service providers** who help us run the site: our website host (Netlify), our database (Neon), email delivery (Resend), payment processing (Safaricom M-Pesa and Pesapal) and, only if the optional \"Ask Taita\" AI guide is switched on, our AI provider (Anthropic). They may only use your data to provide their service to us.",
           "**Authorities**, where the law requires it.",
         ] },
       ],
@@ -82,7 +89,15 @@ export function privacySections(info: SiteInfo): LegalSection[] {
       id: "transfers",
       title: "Where your data is processed",
       body: [
-        "Some of our service providers process data outside Kenya. For example, our database is hosted in the United States. Where data leaves Kenya we rely on our providers' contractual and security commitments.",
+        "Some of our service providers process data outside Kenya. For example, our database is hosted in the United States, our website is delivered through a global network, and the optional AI guide is run by a provider in the United States. Where data leaves Kenya we rely on our providers' contractual and security commitments.",
+      ],
+    },
+    {
+      id: "kenya-and-europe",
+      title: "Kenyan law, and visitors from Europe",
+      body: [
+        "We handle personal data in line with Kenya's Data Protection Act, 2019. The reasons we rely on are: to run the service you asked for (your account, bookings, orders and tickets); your consent (the newsletter, and any question you choose to put to the AI guide); our legitimate interest in keeping the site safe and understanding which pages are read; and our legal duties, such as keeping payment records.",
+        "If you are in the European Economic Area, the United Kingdom or Switzerland, you have the rights described below, and you can withdraw your consent at any time. We do not make decisions about you by automated means that have legal or similarly significant effects. To use your rights, [contact us](/contact).",
       ],
     },
     {
@@ -119,7 +134,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
     {
       id: "security",
       title: "Security",
-      body: ["We protect your data with measures such as hashed passwords, access controls and limits on who can see what. No system is perfectly secure, so we cannot guarantee absolute security."],
+      body: ["We protect your data with measures such as hashed passwords, access controls and limits on who can see what. No system is perfectly secure, so we cannot guarantee absolute security.", "If a data breach puts your personal data at risk, we will tell the Data Protection Commissioner and the people affected, as the law requires."],
     },
     {
       id: "changes",
@@ -232,6 +247,7 @@ export function termsSections(info: SiteInfo): LegalSection[] {
       title: "Our responsibility",
       body: [
         "We provide the site \"as is\" and work to keep it available and accurate, but we cannot promise it will always be error-free or uninterrupted. To the extent the law allows, we are not liable for indirect or consequential loss, or for the acts of hosts, operators, sellers or other users. Nothing in these terms limits liability that cannot lawfully be limited.",
+        "The Taita Guide, the day planner and the visitor essentials are for general guidance. They suggest ideas only: nothing is booked until you book it with a host, details such as timetables, seasons and fees change, and answers from the optional AI guide can be wrong. Please check the details with the host, and before you travel.",
       ],
     },
     {

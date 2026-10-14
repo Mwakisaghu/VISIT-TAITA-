@@ -41,6 +41,8 @@ All settings go in the hosting environment (Netlify: Site configuration > Enviro
 Each person is limited to 6 questions a minute and 40 an hour, and the whole site to `CONCIERGE_DAILY_LIMIT` a day. These counters live in the memory of one server, so on serverless hosting they are a brake, not a guarantee. **Also set a monthly spending limit with your AI provider.** Answers are capped at about 350 tokens.
 
 ## Privacy: please update your privacy page
+*(The wording below is now part of the privacy policy, version 2026-10.2 and later, and a test keeps it true. A lawyer should still read it.)*
+
 The guide stores a small note in the visitor's own browser (when it was last shown or dismissed). That holds no personal details. Ask Taita sends the visitor's question, and your published listing text, to your AI provider to produce an answer. Suggested wording for the privacy page, to be checked against your own legal advice and Kenya's Data Protection Act:
 
 > "Our optional Ask Taita guide uses an AI service provided by Anthropic. When you ask a question, the text of your question and recent messages in that conversation are sent to Anthropic to generate an answer. We do not store your questions or the answers. Please do not include personal information in your questions."
