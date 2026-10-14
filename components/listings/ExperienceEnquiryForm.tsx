@@ -5,6 +5,7 @@ import ConsentNote from "@/components/legal/ConsentNote";
 import { useState } from "react";
 import { useReferral } from "@/components/listings/useReferral";
 import { submitExperienceEnquiry } from "@/lib/actions/enquiries";
+import SpamGuard from "@/components/forms/SpamGuard";
 
 export default function ExperienceEnquiryForm({ experienceId }: { experienceId: string }) {
   const referral = useReferral();
@@ -35,7 +36,7 @@ export default function ExperienceEnquiryForm({ experienceId }: { experienceId: 
     return (
       <div className="rounded-sm border border-canopy/30 bg-canopy/10 p-4">
         <p className="font-display text-lg text-stone">Enquiry sent.</p>
-        <p className="mt-1 font-body text-sm text-stone/70">
+        <p className="mt-1 font-body text-sm text-stone/80">
           The guide will reach out on the contact details you gave.
         </p>
       </div>
@@ -44,14 +45,15 @@ export default function ExperienceEnquiryForm({ experienceId }: { experienceId: 
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <SpamGuard />
       {referral && <input type="hidden" name="from" value={referral} />}
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/70">Preferred date</span>
+          <span className="font-body text-xs text-stone/80">Preferred date</span>
           <input name="preferredDate" type="date" className="input" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/70">Party size</span>
+          <span className="font-body text-xs text-stone/80">Party size</span>
           <input name="partySize" type="number" min={1} className="input" />
         </label>
       </div>

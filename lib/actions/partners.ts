@@ -5,6 +5,9 @@ import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { headers } from "next/headers";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { SPAM_RETRY, spamVerdict } from "@/lib/spam";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -38,6 +41,8 @@ const applicationSchema = z.object({
 });
 
 export async function submitApplication(formData: FormData) {
+  const guard = spamVerdict(formData);
+  if (!guard.ok) return guard.reason === "honeypot" ? { success: true } : { error: SPAM_RETRY };
   const parseResult = applicationSchema.safeParse({
     businessName: formData.get("businessName"),
     contactName: formData.get("contactName"),
@@ -52,6 +57,12 @@ export async function submitApplication(formData: FormData) {
     return { error: "Please check the form — something's missing or too short." };
   }
   const data = parseResult.data;
+
+  // This form is open to anyone and writes to the database, so it is limited by address and by email (the other public forms already are).
+  const forwarded = headers().get("x-forwarded-for") ?? "";
+  const ip = forwarded.split(",")[0].trim() || headers().get("x-real-ip") || "";
+  if (ip && !(await checkRateLimit(`partner-apply:ip:${ip}`, 3, 60 * 60 * 1000))) return { error: "Too many applications from this connection — please try again a little later." };
+  if (!(await checkRateLimit(`partner-apply:email:${data.email.toLowerCase()}`, 2, 24 * 60 * 60 * 1000))) return { error: "We already have an application from this email — we will be in touch." };
 
   await prisma.partnerApplication.create({
     data: {

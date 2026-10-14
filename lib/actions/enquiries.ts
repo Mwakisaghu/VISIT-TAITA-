@@ -9,6 +9,7 @@ import { parseReferral } from "@/lib/referral";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { notifyAccommodationEnquiry, notifyExperienceEnquiry } from "@/lib/notifications";
+import { SPAM_RETRY, spamVerdict } from "@/lib/spam";
 
 type EnquiryResult = { success?: true; error?: string };
 
@@ -76,6 +77,8 @@ export async function submitAccommodationEnquiry(
   accommodationId: string,
   formData: FormData
 ): Promise<EnquiryResult> {
+  const guard = spamVerdict(formData);
+  if (!guard.ok) return guard.reason === "honeypot" ? { success: true } : { error: SPAM_RETRY };
   const session = await getServerSession(authOptions);
 
   const rawCheckIn = formData.get("checkIn");
@@ -152,6 +155,8 @@ export async function submitExperienceEnquiry(
   experienceId: string,
   formData: FormData
 ): Promise<EnquiryResult> {
+  const guard = spamVerdict(formData);
+  if (!guard.ok) return guard.reason === "honeypot" ? { success: true } : { error: SPAM_RETRY };
   const session = await getServerSession(authOptions);
 
   const rawDate = formData.get("preferredDate");
