@@ -44,7 +44,7 @@ export default async function ShopCategoryPage({
             ))}
           </div>
         ) : (
-          <p className="mt-10 font-body text-stone/60">No products in this category yet.</p>
+          <p className="mt-10 font-body text-stone/80">No products in this category yet.</p>
         )}
       </div>
     </div>

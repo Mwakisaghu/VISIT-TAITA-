@@ -25,19 +25,19 @@ export default async function AdminSponsorPackagesPage() {
         {packages.map((p) => (
           <div key={p.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {p.status} · from {formatPrice(p.startingPrice)}
                 {p.priceNote ? ` ${p.priceNote}` : ""} · {p._count.sponsors} sponsors · {p._count.leads} leads
               </p>
               <p className="font-display text-lg text-stone">{p.name}</p>
               {p.rights.length > 0 && (
-                <p className="mt-1 font-body text-sm text-stone/60">{p.rights.join(" · ")}</p>
+                <p className="mt-1 font-body text-sm text-stone/80">{p.rights.join(" · ")}</p>
               )}
             </div>
             <div className="flex items-center gap-3">
               <Link
                 href={`/admin/sponsors/packages/${p.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -47,14 +47,14 @@ export default async function AdminSponsorPackagesPage() {
                   await deletePackage(p.id);
                 }}
               >
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
             </div>
           </div>
         ))}
-        {packages.length === 0 && <p className="py-8 font-body text-stone/50">No packages yet.</p>}
+        {packages.length === 0 && <p className="py-8 font-body text-stone/80">No packages yet.</p>}
       </div>
     </div>
   );

@@ -71,7 +71,7 @@ export function DeleteDraftButton({ id }: { id: string }) {
         onClick={() => {
           if (window.confirm("Delete this draft?")) run(() => deleteCampaign(id));
         }}
-        className="focus-ring font-body text-sm text-stone/40 hover:text-rust disabled:opacity-60"
+        className="focus-ring font-body text-sm text-stone/80 hover:text-rust disabled:opacity-60"
       >
         Delete
       </button>

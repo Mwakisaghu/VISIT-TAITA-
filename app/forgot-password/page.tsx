@@ -19,9 +19,9 @@ function Shell({ children }: { children: React.ReactNode }) {
 export default function ForgotPasswordPage() {
   return (
     <Shell>
-      <p className="mb-6 font-body text-stone/70">Enter the email address you registered with and we&apos;ll send you a link to choose a new password.</p>
+      <p className="mb-6 font-body text-stone/80">Enter the email address you registered with and we&apos;ll send you a link to choose a new password.</p>
       <ForgotPasswordForm />
-      <p className="mt-8 font-body text-sm text-stone/60">
+      <p className="mt-8 font-body text-sm text-stone/80">
         Remembered it? <Link href="/login" className="text-rust hover:text-rust-deep">Sign in</Link>.
       </p>
     </Shell>

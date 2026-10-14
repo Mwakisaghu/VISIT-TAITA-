@@ -26,7 +26,7 @@ export default function VerifiedBadge({
       </span>
       <div>
         <p className="font-body text-sm font-semibold text-stone">Verified on location</p>
-        <p className="font-body text-sm text-stone/70">
+        <p className="font-body text-sm text-stone/80">
           Checked in at {place} on {formatNoteDate(at)} using {methodLabel(method) === "GPS" ? "GPS" : "the QR code on site"}.
         </p>
       </div>

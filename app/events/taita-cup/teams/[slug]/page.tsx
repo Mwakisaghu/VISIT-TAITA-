@@ -51,14 +51,14 @@ export default async function TeamPage({ params }: { params: { slug: string } })
             {team.players.map((p) => (
               <div key={p.id} className="flex items-center justify-between py-3">
                 <p className="font-body text-stone">{p.name}</p>
-                <p className="font-body text-sm text-stone/50">
+                <p className="font-body text-sm text-stone/80">
                   {p.position}
                   {p.number ? ` · #${p.number}` : ""}
                 </p>
               </div>
             ))}
             {team.players.length === 0 && (
-              <p className="py-4 font-body text-stone/50">No roster published yet.</p>
+              <p className="py-4 font-body text-stone/80">No roster published yet.</p>
             )}
           </div>
         </div>

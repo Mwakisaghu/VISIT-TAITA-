@@ -18,7 +18,7 @@ export function AdminCancelForm({ bookingId }: { bookingId: string }) {
   return (
     <form onSubmit={(e) => { e.preventDefault(); run(() => adminCancelBooking(bookingId, reason, full)); }} className="mt-2 flex max-w-lg flex-col gap-2">
       <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason" maxLength={200} required className="input" aria-label="Reason" />
-      <label className="flex items-center gap-2 font-body text-xs text-stone/70"><input type="checkbox" checked={full} onChange={(e) => setFull(e.target.checked)} /> Extenuating circumstances — refund in full, whatever the policy</label>
+      <label className="flex items-center gap-2 font-body text-xs text-stone/80"><input type="checkbox" checked={full} onChange={(e) => setFull(e.target.checked)} /> Extenuating circumstances — refund in full, whatever the policy</label>
       {note}
       <button type="submit" disabled={busy} className={`${quiet} w-fit`}>Cancel this booking</button>
     </form>

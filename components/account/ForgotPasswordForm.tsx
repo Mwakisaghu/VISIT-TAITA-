@@ -34,7 +34,7 @@ export default function ForgotPasswordForm() {
   return (
     <form onSubmit={submit} className="flex flex-col gap-4">
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Your email address</span>
+        <span className="font-body text-sm text-stone/80">Your email address</span>
         <input type="email" name="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" className="input" />
       </label>
       {error && (

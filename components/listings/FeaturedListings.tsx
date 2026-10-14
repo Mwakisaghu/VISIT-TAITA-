@@ -29,7 +29,7 @@ function Card({ href, brief, kicker, price }: { href: string; brief: ListingBrie
       <span className="min-w-0">
         <span className="block font-body text-xs text-rust">{kicker}</span>
         <span className="block truncate font-display text-lg text-stone group-hover:text-rust">{brief.name}</span>
-        <span className="block font-body text-xs text-stone/60">
+        <span className="block font-body text-xs text-stone/80">
           {brief.region} · {price}
         </span>
       </span>
@@ -76,7 +76,7 @@ export default function FeaturedListings({
           />
         )}
       </div>
-      <p className="mt-3 max-w-prose font-body text-xs text-stone/50">
+      <p className="mt-3 max-w-prose font-body text-xs text-stone/80">
         If you send an enquiry from one of these links, we record that it started here, so hosts and sponsors can see what a
         mission led to. Nothing else about you is shared.
       </p>

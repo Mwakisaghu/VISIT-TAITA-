@@ -37,26 +37,26 @@ export default async function BookingPage({ params }: { params: { id: string } }
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-12">
-      <Link href="/account/bookings" className="font-body text-sm text-stone/60 hover:text-rust">← My bookings</Link>
+      <Link href="/account/bookings" className="font-body text-sm text-stone/80 hover:text-rust">← My bookings</Link>
       <h1 className="mt-3 font-display text-3xl text-stone">{b.experience.name}</h1>
-      <p className="mt-1 font-body text-sm text-stone/60">Booking {b.reference} · <strong className={b.status === "CONFIRMED" || b.status === "COMPLETED" ? "text-canopy" : ["CANCELLED", "DECLINED", "EXPIRED"].includes(b.status) ? "text-rust" : "text-stone"}>{bookingStatusLabel(b.status)}</strong></p>
+      <p className="mt-1 font-body text-sm text-stone/80">Booking {b.reference} · <strong className={b.status === "CONFIRMED" || b.status === "COMPLETED" ? "text-canopy" : ["CANCELLED", "DECLINED", "EXPIRED"].includes(b.status) ? "text-rust" : "text-stone"}>{bookingStatusLabel(b.status)}</strong></p>
 
       <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-2 font-body text-sm">
-        <dt className="text-stone/50">When</dt><dd>{formatEat(b.session.startsAt)}</dd>
-        <dt className="text-stone/50">Guests</dt><dd>{b.guests}</dd>
-        <dt className="text-stone/50">Price</dt><dd>{kes(b.unitPrice)} × {b.guests} = {kes(b.totalAmount)}</dd>
-        <dt className="text-stone/50">Paid</dt><dd>{kes(b.paidAmount)}</dd>
-        {b.balanceDueAt && balanceOwed > 0 && ["AWAITING_PAYMENT", "CONFIRMED"].includes(b.status) && <><dt className="text-stone/50">Balance due</dt><dd>{kes(balanceOwed)} by {formatEat(b.balanceDueAt)}</dd></>}
+        <dt className="text-stone/80">When</dt><dd>{formatEat(b.session.startsAt)}</dd>
+        <dt className="text-stone/80">Guests</dt><dd>{b.guests}</dd>
+        <dt className="text-stone/80">Price</dt><dd>{kes(b.unitPrice)} × {b.guests} = {kes(b.totalAmount)}</dd>
+        <dt className="text-stone/80">Paid</dt><dd>{kes(b.paidAmount)}</dd>
+        {b.balanceDueAt && balanceOwed > 0 && ["AWAITING_PAYMENT", "CONFIRMED"].includes(b.status) && <><dt className="text-stone/80">Balance due</dt><dd>{kes(balanceOwed)} by {formatEat(b.balanceDueAt)}</dd></>}
       </dl>
 
       {b.status === "REQUESTED" && <p className="mt-6 rounded-sm border border-stone/15 bg-stone/5 p-4 font-body text-sm text-stone/80">Your request has been sent to the host{b.expiresAt ? ` — they have until ${formatEat(b.expiresAt)} to reply` : ""}. We&apos;ll email you; nothing is charged unless they accept.</p>}
       {b.status === "CONFIRMED" && (b.experience.contactPhone || b.experience.contactEmail) && <p className="mt-6 font-body text-sm text-stone/80">Questions? Contact the host: {[b.experience.contactPhone, b.experience.contactEmail].filter(Boolean).join(" · ")}</p>}
-      {["CANCELLED", "DECLINED", "EXPIRED"].includes(b.status) && b.cancelReason && <p className="mt-6 font-body text-sm text-stone/70">Reason: {b.cancelReason}</p>}
+      {["CANCELLED", "DECLINED", "EXPIRED"].includes(b.status) && b.cancelReason && <p className="mt-6 font-body text-sm text-stone/80">Reason: {b.cancelReason}</p>}
 
       {due && due.amount > 0 && (b.status === "AWAITING_PAYMENT" || b.status === "CONFIRMED") && (
         <section className="mt-8">
           <h2 className="font-display text-xl text-stone">{b.status === "AWAITING_PAYMENT" ? "Pay to confirm your place" : "Pay the balance"}</h2>
-          {b.status === "AWAITING_PAYMENT" && b.expiresAt && <p className="mt-1 font-body text-xs text-stone/50">Your seats are held until {formatEat(b.expiresAt)}.</p>}
+          {b.status === "AWAITING_PAYMENT" && b.expiresAt && <p className="mt-1 font-body text-xs text-stone/80">Your seats are held until {formatEat(b.expiresAt)}.</p>}
           <div className="mt-4"><PayPanel bookingId={b.id} amount={due.amount} kind={due.kind} defaultPhone={b.guestPhone} mpesa={channels.mpesa} card={channels.card} waiting={waiting} /></div>
         </section>
       )}
@@ -72,7 +72,7 @@ export default async function BookingPage({ params }: { params: { id: string } }
 
       {cancellable && <section className="mt-8"><CancelPanel bookingId={b.id} /></section>}
 
-      <section className="mt-10 font-body text-sm text-stone/70">
+      <section className="mt-10 font-body text-sm text-stone/80">
         <h2 className="font-display text-lg text-stone">Cancellation policy — {policyLabel(policy)}</h2>
         <ul className="mt-2 list-disc space-y-1 pl-5">{policyLines(policy).map((l) => <li key={l}>{l}</li>)}</ul>
       </section>

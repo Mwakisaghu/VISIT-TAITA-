@@ -43,7 +43,7 @@ export default async function PassportPage() {
       <div className="mx-auto max-w-4xl">
         <p className="font-body text-sm text-rust">Taita Passport</p>
         <h1 className="mt-1 font-display text-3xl text-stone">{user.name}</h1>
-        <p className="mt-2 font-body text-stone/70">
+        <p className="mt-2 font-body text-stone/80">
           {user.points} points · {checkedInCount} check-ins · {user.badges.length} of {allBadges.length} badges
         </p>
         <Link
@@ -94,7 +94,7 @@ export default async function PassportPage() {
                 <div key={d.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
                   <div>
                     <p className="font-display text-lg text-stone">{d.name}</p>
-                    <p className="font-body text-sm text-stone/50">
+                    <p className="font-body text-sm text-stone/80">
                       {d.region}
                       {selfReported && " · marked as visited (no points)"}
                     </p>
@@ -109,7 +109,7 @@ export default async function PassportPage() {
                       {hasCoordinates ? (
                         <LocationCheckinButton destinationId={d.id} />
                       ) : (
-                        <p className="max-w-[12rem] text-right font-body text-xs text-stone/50">
+                        <p className="max-w-[12rem] text-right font-body text-xs text-stone/80">
                           Scan the QR code at the site to check in.
                         </p>
                       )}

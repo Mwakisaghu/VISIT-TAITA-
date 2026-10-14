@@ -45,7 +45,7 @@ export default function AdminNav({ groups, badges }: { groups: NavGroup[]; badge
       >
         <span className="min-w-0">
           {item.label}
-          {sub && <span className="block text-xs text-stone/50">{sub}</span>}
+          {sub && <span className="block text-xs text-stone/80">{sub}</span>}
         </span>
         {item.badge && <Badge n={badges[item.badge] ?? 0} what="waiting" />}
       </Link>
@@ -75,7 +75,7 @@ export default function AdminNav({ groups, badges }: { groups: NavGroup[]; badge
 
         <nav aria-label="Admin" className="mt-4 flex flex-col gap-1">
           {searching ? (
-            results.length === 0 ? <p className="px-3 py-2 font-body text-sm text-stone/60">Nothing matches “{query.trim()}”.</p> : results.map((r) => row(r.item, r.group?.label))
+            results.length === 0 ? <p className="px-3 py-2 font-body text-sm text-stone/80">Nothing matches “{query.trim()}”.</p> : results.map((r) => row(r.item, r.group?.label))
           ) : (
             <>
               {row(OVERVIEW)}
@@ -88,7 +88,7 @@ export default function AdminNav({ groups, badges }: { groups: NavGroup[]; badge
                     <button
                       type="button" aria-expanded={isOpen} aria-controls={`admin-group-${g.id}`}
                       onClick={() => setOpen((o) => ({ ...o, [g.id]: !o[g.id] }))}
-                      className={`focus-ring flex w-full items-center gap-2 rounded-sm px-3 py-2 text-left font-body text-xs font-semibold uppercase tracking-wide ${hasCurrent ? "text-rust" : "text-stone/55 hover:text-stone"}`}
+                      className={`focus-ring flex w-full items-center gap-2 rounded-sm px-3 py-2 text-left font-body text-xs font-semibold uppercase tracking-wide ${hasCurrent ? "text-rust" : "text-stone/80 hover:text-stone"}`}
                     >
                       <span aria-hidden className={`inline-block transition-transform ${isOpen ? "rotate-90" : ""}`}>›</span>
                       {g.label}

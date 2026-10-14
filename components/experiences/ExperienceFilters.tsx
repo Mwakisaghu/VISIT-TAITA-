@@ -15,7 +15,7 @@ export default function ExperienceFilters({ filters }: { filters: Filters }) {
   );
   return (
     <ScrollFade as="nav" aria-label="Filter experiences" className="no-scrollbar -mx-6 flex items-center gap-2.5 overflow-x-auto px-6 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
-      <span className="mr-1 hidden font-body text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-stone/70 sm:inline">I&apos;d like to</span>
+      <span className="mr-1 hidden font-body text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-stone/80 sm:inline">I&apos;d like to</span>
       {experienceCategories.map((c) => (
         <Chip key={c.key} href={filterHref(filters, { type: c.key })} active={filters.type === c.key.toUpperCase()}>{c.label}</Chip>
       ))}

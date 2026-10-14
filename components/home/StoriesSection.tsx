@@ -48,7 +48,7 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
                     <span>
                       <span className="block font-body text-[0.65rem] font-bold uppercase tracking-[0.24em] text-rust-deep">{categoryName(s.category)}</span>
                       <span className={`${display} mt-2 block text-xl leading-snug transition-colors group-hover:text-rust md:text-2xl`}>{s.title}</span>
-                      <span className="mt-2 line-clamp-2 block font-body text-sm leading-relaxed text-stone/70">{s.excerpt}</span>
+                      <span className="mt-2 line-clamp-2 block font-body text-sm leading-relaxed text-stone/80">{s.excerpt}</span>
                     </span>
                   </Link>
                 </Reveal>

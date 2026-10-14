@@ -17,10 +17,10 @@ export function PayoutSettingsForm({ commissionPercent, holdDays }: { commission
   return (
     <form onSubmit={(e) => { e.preventDefault(); run(() => savePayoutSettingsAction(c, h)); }} className="flex max-w-xl flex-col gap-3">
       <div className="grid grid-cols-2 gap-4">
-        <label className="flex flex-col gap-1 font-body text-sm text-stone/70">Visit Taita keeps (%)<input value={c} onChange={(e) => setC(e.target.value)} inputMode="numeric" required className="input" aria-label="Commission percent" /></label>
-        <label className="flex flex-col gap-1 font-body text-sm text-stone/70">Hold earnings for (days)<input value={h} onChange={(e) => setH(e.target.value)} inputMode="numeric" required className="input" aria-label="Holding days" /></label>
+        <label className="flex flex-col gap-1 font-body text-sm text-stone/80">Visit Taita keeps (%)<input value={c} onChange={(e) => setC(e.target.value)} inputMode="numeric" required className="input" aria-label="Commission percent" /></label>
+        <label className="flex flex-col gap-1 font-body text-sm text-stone/80">Hold earnings for (days)<input value={h} onChange={(e) => setH(e.target.value)} inputMode="numeric" required className="input" aria-label="Holding days" /></label>
       </div>
-      <p className="font-body text-xs text-stone/60">The percentage is taken from what guests paid and kept (after refunds). Earnings are held this many days after the experience, then can be paid out. A change applies to payouts prepared from now on; payouts already prepared keep the rate they were prepared with.</p>
+      <p className="font-body text-xs text-stone/80">The percentage is taken from what guests paid and kept (after refunds). Earnings are held this many days after the experience, then can be paid out. A change applies to payouts prepared from now on; payouts already prepared keep the rate they were prepared with.</p>
       {note}
       <button type="submit" disabled={busy} className={`${quiet} w-fit`}>{busy ? "Saving…" : "Save"}</button>
     </form>
@@ -44,7 +44,7 @@ export function RecordPayoutForm({ payoutId }: { payoutId: string }) {
       {cancelling && (
         <div className="flex flex-col gap-2 rounded-sm border border-rust/30 bg-rust/5 p-3">
           <input value={why} onChange={(e) => setWhy(e.target.value)} placeholder="Why? (e.g. the number isn't registered for M-Pesa)" maxLength={200} className="input" aria-label="Why it wasn't sent" />
-          <p className="font-body text-xs text-stone/60">The bookings go back to &ldquo;ready&rdquo; and appear in the next payout you prepare.</p>
+          <p className="font-body text-xs text-stone/80">The bookings go back to &ldquo;ready&rdquo; and appear in the next payout you prepare.</p>
           <button type="button" disabled={busy} onClick={() => run(() => recordPayoutAction(payoutId, "CANCEL", "", why))} className={`${quiet} w-fit`}>Cancel this payout</button>
         </div>
       )}

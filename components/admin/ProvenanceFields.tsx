@@ -1,7 +1,7 @@
 import type { Product } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
-const hint = "font-body text-sm text-stone/70";
+const hint = "font-body text-sm text-stone/80";
 
 /** The "Made by and how" part of a product form. Every field is optional. */
 export default async function ProvenanceFields({ product }: { product?: Pick<Product, "makerId" | "madeInHours" | "material" | "howMade"> | null }) {

@@ -9,17 +9,17 @@ export default function SessionCard({ session }: { session: SessionWithVenue }) 
       <div>
         <p className="font-body text-xs text-rust">{sessionCategoryLabel(session.category)}</p>
         <p className="font-display text-lg text-stone">{session.title}</p>
-        <p className="mt-1 font-body text-sm text-stone/60">{session.description}</p>
-        <p className="mt-2 font-body text-xs text-stone/50">{session.venue.name}</p>
+        <p className="mt-1 font-body text-sm text-stone/80">{session.description}</p>
+        <p className="mt-2 font-body text-xs text-stone/80">{session.venue.name}</p>
       </div>
       <div className="shrink-0 text-right">
-        <p className="font-body text-sm text-stone/70">
+        <p className="font-body text-sm text-stone/80">
           {formatSessionTime(session.startsAt)}
           {session.endsAt ? ` – ${formatSessionTime(session.endsAt)}` : ""}
         </p>
         <p
           className={`mt-1 font-body text-xs ${
-            session.ticketStatus === "SOLD_OUT" ? "text-rust" : "text-stone/50"
+            session.ticketStatus === "SOLD_OUT" ? "text-rust" : "text-stone/80"
           }`}
         >
           {session.ticketStatus === "TICKETED" && session.price

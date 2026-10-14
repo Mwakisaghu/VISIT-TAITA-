@@ -32,7 +32,7 @@ export default async function AdminRewardsPage() {
         {rewards.map((r) => (
           <div key={r.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {r.status} · {r.pointsCost} points · {r.stock === null ? "unlimited stock" : `${r.stock} left`} ·{" "}
                 {r._count.redemptions} redeemed
                 {r.partnerName ? ` · ${r.partnerName}` : ""}
@@ -43,7 +43,7 @@ export default async function AdminRewardsPage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/admin/rewards/${r.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -54,7 +54,7 @@ export default async function AdminRewardsPage() {
                     await deleteReward(r.id);
                   }}
                 >
-                  <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                  <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                     Delete
                   </button>
                 </form>
@@ -63,7 +63,7 @@ export default async function AdminRewardsPage() {
           </div>
         ))}
         {rewards.length === 0 && (
-          <p className="py-8 font-body text-stone/50">
+          <p className="py-8 font-body text-stone/80">
             No rewards yet. Add one once a partner has agreed to honour it.
           </p>
         )}

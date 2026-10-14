@@ -46,7 +46,7 @@ export default async function NotesPage() {
 
       <div className="mx-auto max-w-6xl px-6 py-16">
         {notes.length === 0 ? (
-          <p className="max-w-prose font-body text-stone/60">
+          <p className="max-w-prose font-body text-stone/80">
             The first Field Notes are on their way. Each one will appear here once the crew has been to the place and our team has reviewed it.
           </p>
         ) : (

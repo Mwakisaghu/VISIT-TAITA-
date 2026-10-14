@@ -27,17 +27,17 @@ export default function CreatorCard({ creator }: { creator: Creator }) {
         )}
         <div className="min-w-0">
           <p className="truncate font-display text-xl text-stone group-hover:text-rust">{creator.displayName}</p>
-          <p className="font-body text-xs text-stone/50">
+          <p className="font-body text-xs text-stone/80">
             {trackLabel(creator.track)}
             {creator.location ? ` · ${creator.location}` : ""}
           </p>
         </div>
       </div>
-      <p className="mt-4 line-clamp-3 font-body text-sm leading-relaxed text-stone/70">{creator.bio}</p>
+      <p className="mt-4 line-clamp-3 font-body text-sm leading-relaxed text-stone/80">{creator.bio}</p>
       {creator.specialties.length > 0 && (
         <ul className="mt-4 flex flex-wrap gap-2">
           {creator.specialties.slice(0, 3).map((s) => (
-            <li key={s} className="rounded-full border border-stone/20 px-3 py-0.5 font-body text-xs text-stone/70">
+            <li key={s} className="rounded-full border border-stone/20 px-3 py-0.5 font-body text-xs text-stone/80">
               {specialtyLabel(s)}
             </li>
           ))}

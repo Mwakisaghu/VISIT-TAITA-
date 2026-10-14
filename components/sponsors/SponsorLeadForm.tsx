@@ -5,6 +5,7 @@ import ConsentNote from "@/components/legal/ConsentNote";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { submitSponsorLead } from "@/lib/actions/sponsor-leads";
+import SpamGuard from "@/components/forms/SpamGuard";
 
 export default function SponsorLeadForm({
   packages,
@@ -50,7 +51,7 @@ export default function SponsorLeadForm({
     return (
       <div className="rounded-sm border border-canopy/30 bg-canopy/10 p-6">
         <p className="font-display text-2xl text-stone">Thank you — we&apos;ve got your enquiry.</p>
-        <p className="mt-2 font-body text-stone/70">
+        <p className="mt-2 font-body text-stone/80">
           Someone from the Visit Taita team will be in touch on the contact details you gave.
         </p>
       </div>
@@ -59,35 +60,36 @@ export default function SponsorLeadForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <SpamGuard />
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Company</span>
+          <span className="font-body text-sm text-stone/80">Company</span>
           <input name="companyName" required maxLength={120} className="input" autoComplete="organization" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Your name</span>
+          <span className="font-body text-sm text-stone/80">Your name</span>
           <input name="contactName" required maxLength={120} className="input" autoComplete="name" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Email</span>
+          <span className="font-body text-sm text-stone/80">Email</span>
           <input name="email" type="email" required className="input" autoComplete="email" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Phone</span>
+          <span className="font-body text-sm text-stone/80">Phone</span>
           <input name="phone" type="tel" required className="input" autoComplete="tel" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Website (optional)</span>
+          <span className="font-body text-sm text-stone/80">Website (optional)</span>
           <input name="website" className="input" placeholder="yourcompany.com" inputMode="url" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Budget range (optional)</span>
+          <span className="font-body text-sm text-stone/80">Budget range (optional)</span>
           <input name="budgetRange" maxLength={120} className="input" placeholder="e.g. KSh 1–2M" />
         </label>
       </div>
 
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Package you&apos;re interested in</span>
+        <span className="font-body text-sm text-stone/80">Package you&apos;re interested in</span>
         <select
           name="packageSlug"
           value={selected}
@@ -104,7 +106,7 @@ export default function SponsorLeadForm({
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">What would you like to achieve?</span>
+        <span className="font-body text-sm text-stone/80">What would you like to achieve?</span>
         <textarea
           name="message"
           required

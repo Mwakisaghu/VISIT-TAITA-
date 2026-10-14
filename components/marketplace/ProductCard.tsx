@@ -26,7 +26,7 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
       <p className="mt-3 font-body text-xs text-rust">{categoryLabel(product.category)}</p>
       <p className="font-display text-lg text-stone">{product.name}</p>
-      <p className="mt-1 font-body text-sm text-stone/70">{formatPrice(product.price)}</p>
+      <p className="mt-1 font-body text-sm text-stone/80">{formatPrice(product.price)}</p>
     </Link>
   );
 }

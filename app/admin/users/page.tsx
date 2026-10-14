@@ -8,7 +8,7 @@ import { accountStatus, buildUserWhere, checkActOn, pageNumbers, parseUserListQu
 export const dynamic = "force-dynamic";
 
 const ROLE_ORDER = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER", "PARTNER", "SELLER", "CREATOR", "MEMBER", "VISITOR"];
-const PILL: Record<string, string> = { Active: "bg-canopy/10 text-canopy", Suspended: "bg-rust/10 text-rust", "Invite pending": "bg-ochre/15 text-ochre", "Email not verified": "bg-stone/10 text-stone/70" };
+const PILL: Record<string, string> = { Active: "bg-canopy/10 text-canopy", Suspended: "bg-rust/10 text-rust", "Invite pending": "bg-ochre/15 text-ochre", "Email not verified": "bg-stone/10 text-stone/80" };
 
 export default async function UsersPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
   const actor = await requireManagerPage();
@@ -45,7 +45,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Record
           <Link href="/admin/users/new" className="focus-ring rounded-full bg-rust px-5 py-2 font-body text-sm text-parchment hover:bg-rust-deep">Invite staff</Link>
         </div>
       </div>
-      <p className="mt-2 max-w-2xl font-body text-sm text-stone/60">Everyone who has an account. Open an account to change its role or send it a link; suspend someone here or on their page.</p>
+      <p className="mt-2 max-w-2xl font-body text-sm text-stone/80">Everyone who has an account. Open an account to change its role or send it a link; suspend someone here or on their page.</p>
 
       <DemoAdminWarning />
 
@@ -56,29 +56,29 @@ export default async function UsersPage({ searchParams }: { searchParams: Record
             <Link key={t.label} href={href(1, { status: t.status, q: "", role: "" })} aria-current={on ? "true" : undefined} className={`focus-ring rounded-sm border p-4 ${on ? "border-rust bg-rust/5" : "border-stone/10 hover:border-stone/30"}`}>
               <p className={`font-display text-3xl ${t.tone ?? "text-stone"}`}>{t.value}</p>
               <p className="mt-1 font-body text-sm text-stone">{t.label}</p>
-              <p className="font-body text-xs text-stone/50">{t.note}</p>
+              <p className="font-body text-xs text-stone/80">{t.note}</p>
             </Link>
           );
         })}
       </div>
 
       <form method="get" className="mt-6 flex flex-wrap items-end gap-3">
-        <label className="flex flex-col gap-1 font-body text-xs text-stone/60">Name or email<input name="q" defaultValue={q.q} maxLength={80} className="input" /></label>
-        <label className="flex flex-col gap-1 font-body text-xs text-stone/60">Role
+        <label className="flex flex-col gap-1 font-body text-xs text-stone/80">Name or email<input name="q" defaultValue={q.q} maxLength={80} className="input" /></label>
+        <label className="flex flex-col gap-1 font-body text-xs text-stone/80">Role
           <select name="role" defaultValue={q.role} className="input"><option value="">All roles</option>{ROLE_ORDER.map((r) => <option key={r} value={r}>{roleLabel(r)}</option>)}</select>
         </label>
-        <label className="flex flex-col gap-1 font-body text-xs text-stone/60">Status
+        <label className="flex flex-col gap-1 font-body text-xs text-stone/80">Status
           <select name="status" defaultValue={q.status} className="input"><option value="">Any</option><option value="suspended">Suspended</option><option value="pending">Invite pending</option><option value="unverified">Email not verified</option></select>
         </label>
         <button type="submit" className="focus-ring rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust">Filter</button>
-        {(q.q || q.role || q.status) && <Link href="/admin/users" className="font-body text-sm text-stone/60 underline">Show everyone</Link>}
+        {(q.q || q.role || q.status) && <Link href="/admin/users" className="font-body text-sm text-stone/80 underline">Show everyone</Link>}
       </form>
 
-      <p className="mt-6 font-body text-xs text-stone/50" aria-live="polite">{total === 0 ? "No accounts match." : `Showing ${from}–${to} of ${total} account${total === 1 ? "" : "s"}`}</p>
+      <p className="mt-6 font-body text-xs text-stone/80" aria-live="polite">{total === 0 ? "No accounts match." : `Showing ${from}–${to} of ${total} account${total === 1 ? "" : "s"}`}</p>
       <div className="mt-2 overflow-x-auto">
         <table className="w-full min-w-[44rem] text-left font-body text-sm">
           <caption className="sr-only">Accounts, newest first</caption>
-          <thead className="text-xs text-stone/50"><tr><th scope="col" className="py-2 pr-4">Person</th><th scope="col" className="pr-4">Role</th><th scope="col" className="pr-4">Status</th><th scope="col" className="pr-4">Joined</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
+          <thead className="text-xs text-stone/80"><tr><th scope="col" className="py-2 pr-4">Person</th><th scope="col" className="pr-4">Role</th><th scope="col" className="pr-4">Status</th><th scope="col" className="pr-4">Joined</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
           <tbody className="divide-y divide-stone/10">
             {users.map((u) => {
               const status = accountStatus(u);
@@ -87,13 +87,13 @@ export default async function UsersPage({ searchParams }: { searchParams: Record
                 <tr key={u.id} className={u.suspendedAt ? "bg-rust/[0.03]" : ""}>
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-3">
-                      <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone/10 font-body text-sm text-stone/70">{(u.name || u.email).trim().charAt(0).toUpperCase()}</span>
-                      <span className="min-w-0"><Link href={`/admin/users/${u.id}`} className="block truncate text-stone hover:text-rust">{u.name}</Link><span className="block truncate text-xs text-stone/50">{u.email}</span></span>
+                      <span aria-hidden className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-stone/10 font-body text-sm text-stone/80">{(u.name || u.email).trim().charAt(0).toUpperCase()}</span>
+                      <span className="min-w-0"><Link href={`/admin/users/${u.id}`} className="block truncate text-stone hover:text-rust">{u.name}</Link><span className="block truncate text-xs text-stone/80">{u.email}</span></span>
                     </div>
                   </td>
                   <td className="pr-4">{roleLabel(u.role)}</td>
                   <td className="pr-4"><span className={`rounded-full px-2.5 py-0.5 text-xs ${PILL[status]}`}>{status}</span></td>
-                  <td className="pr-4 text-stone/60">{u.createdAt.toISOString().slice(0, 10)}</td>
+                  <td className="pr-4 text-stone/80">{u.createdAt.toISOString().slice(0, 10)}</td>
                   <td className="py-3 text-right">
                     <div className="flex items-start justify-end gap-3">
                       {canAct && <UserRowActions userId={u.id} name={u.name} suspended={!!u.suspendedAt} />}
@@ -103,7 +103,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Record
                 </tr>
               );
             })}
-            {users.length === 0 && <tr><td colSpan={5} className="py-8 text-stone/50">No accounts match. <Link href="/admin/users" className="text-rust underline">Show everyone</Link></td></tr>}
+            {users.length === 0 && <tr><td colSpan={5} className="py-8 text-stone/80">No accounts match. <Link href="/admin/users" className="text-rust underline">Show everyone</Link></td></tr>}
           </tbody>
         </table>
       </div>
@@ -111,7 +111,7 @@ export default async function UsersPage({ searchParams }: { searchParams: Record
       {pages > 1 && (
         <nav aria-label="Pages" className="mt-6 flex flex-wrap items-center gap-2 font-body text-sm">
           {q.page > 1 && <Link href={href(q.page - 1)} rel="prev" className="rounded-full border border-stone/20 px-4 py-1.5 text-stone hover:border-rust">← Newer</Link>}
-          {pageNumbers(q.page, pages).map((p, i) => p === null ? <span key={`gap${i}`} className="px-1 text-stone/40">…</span> : <Link key={p} href={href(p)} aria-current={p === q.page ? "page" : undefined} className={`min-w-9 rounded-full px-3 py-1.5 text-center ${p === q.page ? "bg-stone text-parchment" : "text-stone hover:bg-stone/5"}`}>{p}</Link>)}
+          {pageNumbers(q.page, pages).map((p, i) => p === null ? <span key={`gap${i}`} className="px-1 text-stone/80">…</span> : <Link key={p} href={href(p)} aria-current={p === q.page ? "page" : undefined} className={`min-w-9 rounded-full px-3 py-1.5 text-center ${p === q.page ? "bg-stone text-parchment" : "text-stone hover:bg-stone/5"}`}>{p}</Link>)}
           {q.page < pages && <Link href={href(q.page + 1)} rel="next" className="rounded-full border border-stone/20 px-4 py-1.5 text-stone hover:border-rust">Older →</Link>}
         </nav>
       )}

@@ -6,6 +6,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { submitApplication, getApplicationStatus } from "@/lib/actions/partners";
 import { partnerTypeLabel, applicationStatusLabel } from "@/lib/format";
+import SpamGuard from "@/components/forms/SpamGuard";
 
 const partnerTypes = [
   "ACCOMMODATION",
@@ -60,7 +61,7 @@ export default function ApplyPage() {
     return (
       <div className="px-6 py-24 text-center">
         <p className="font-display text-3xl text-stone">Application received.</p>
-        <p className="mt-3 font-body text-stone/70">
+        <p className="mt-3 font-body text-stone/80">
           We&apos;ll be in touch. You can check its status any time on this page.
         </p>
         <Link
@@ -79,6 +80,7 @@ export default function ApplyPage() {
         <h1 className="font-display text-3xl text-stone">Apply to partner</h1>
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
+          <SpamGuard />
           <Field label="Business name">
             <input name="businessName" required className="input" />
           </Field>
@@ -156,7 +158,7 @@ export default function ApplyPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

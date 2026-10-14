@@ -30,7 +30,7 @@ export default async function CrewPage() {
   if (!session?.user) {
     return (
       <Shell>
-        <p className="mt-4 font-body text-stone/70">Sign in to see your missions.</p>
+        <p className="mt-4 font-body text-stone/80">Sign in to see your missions.</p>
         <Link href="/login?next=%2Fcrew" className="focus-ring mt-6 inline-block rounded-full bg-rust px-7 py-3 font-body text-sm text-parchment hover:bg-rust-deep">
           Sign in
         </Link>
@@ -47,7 +47,7 @@ export default async function CrewPage() {
   if (!creator) {
     return (
       <Shell>
-        <p className="mt-4 max-w-prose font-body text-stone/70">This page is for Field Crew members. Join the crew to claim missions.</p>
+        <p className="mt-4 max-w-prose font-body text-stone/80">This page is for Field Crew members. Join the crew to claim missions.</p>
         <Link href="/creators/apply" className="focus-ring mt-6 inline-block rounded-full bg-rust px-7 py-3 font-body text-sm text-parchment hover:bg-rust-deep">
           Apply to join
         </Link>
@@ -58,7 +58,7 @@ export default async function CrewPage() {
   if (creator.status !== "ACTIVE") {
     return (
       <Shell>
-        <p className="mt-4 max-w-prose font-body text-stone/70">Your Field Crew profile is paused, so missions are hidden for now. Get in touch if that&apos;s unexpected.</p>
+        <p className="mt-4 max-w-prose font-body text-stone/80">Your Field Crew profile is paused, so missions are hidden for now. Get in touch if that&apos;s unexpected.</p>
       </Shell>
     );
   }
@@ -97,7 +97,7 @@ export default async function CrewPage() {
 
   return (
     <Shell>
-      <p className="mt-2 font-body text-stone/70">
+      <p className="mt-2 font-body text-stone/80">
         Welcome, {creator.displayName}.{" "}
         <Link href={`/creators/${creator.slug}`} className="underline hover:text-rust">
           View your public profile
@@ -107,7 +107,7 @@ export default async function CrewPage() {
       <section className="mt-12">
         <h2 className="font-display text-2xl text-stone">Your missions</h2>
         {claims.length === 0 ? (
-          <p className="mt-3 font-body text-stone/60">You haven&apos;t claimed a mission yet — pick one below.</p>
+          <p className="mt-3 font-body text-stone/80">You haven&apos;t claimed a mission yet — pick one below.</p>
         ) : (
           <div className="mt-6 flex flex-col gap-6">
             {claims.map((c) => {
@@ -124,7 +124,7 @@ export default async function CrewPage() {
                       <Link href={`/missions/${m.slug}`} className="font-display text-2xl text-stone hover:text-rust">
                         {m.title}
                       </Link>
-                      <p className="mt-1 font-body text-sm text-stone/60">
+                      <p className="mt-1 font-body text-sm text-stone/80">
                         📍 {m.destination.name}
                         {m.closesAt ? ` · closes ${formatDeadline(m.closesAt)}` : ""}
                       </p>
@@ -136,7 +136,7 @@ export default async function CrewPage() {
 
                   {m.prompts.length > 0 && (
                     <div className="mt-5">
-                      <p className="font-body text-xs text-stone/50">Your note should show</p>
+                      <p className="font-body text-xs text-stone/80">Your note should show</p>
                       <ul className="mt-2 flex flex-col gap-1">
                         {m.prompts.map((p) => (
                           <li key={p} className="font-body text-sm text-stone/80">
@@ -149,19 +149,19 @@ export default async function CrewPage() {
 
                   {disclosure ? (
                     <div className="mt-5 rounded-sm border border-ochre/50 bg-ochre/10 p-4">
-                      <p className="font-body text-xs text-stone/60">
+                      <p className="font-body text-xs text-stone/80">
                         {badge} — say so in your posts. Suggested line (check it suits you):
                       </p>
                       <p className="mt-1 select-all font-body text-sm text-stone">{disclosure}</p>
                     </div>
                   ) : (
-                    <p className="mt-5 font-body text-xs text-stone/50">
+                    <p className="mt-5 font-body text-xs text-stone/80">
                       Independent mission — nothing to disclose for this one. If anyone else gives you something for the same trip, disclose that.
                     </p>
                   )}
 
                   <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-stone/10 pt-4">
-                    <p className="max-w-md font-body text-sm text-stone/70">
+                    <p className="max-w-md font-body text-sm text-stone/80">
                       {note
                         ? `Field Note: ${noteStatusLabel(note.status)}`
                         : verified
@@ -195,7 +195,7 @@ export default async function CrewPage() {
       <section className="mt-14">
         <h2 className="font-display text-2xl text-stone">Open to you</h2>
         {available.length === 0 ? (
-          <p className="mt-3 font-body text-stone/60">Nothing new to claim right now — check back soon.</p>
+          <p className="mt-3 font-body text-stone/80">Nothing new to claim right now — check back soon.</p>
         ) : (
           <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {available.map((m) => (

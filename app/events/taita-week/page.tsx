@@ -76,7 +76,7 @@ export default async function TaitaWeekPage() {
                 </div>
               ))
             ) : (
-              <p className="mt-6 font-body text-stone/50">Programme coming soon.</p>
+              <p className="mt-6 font-body text-stone/80">Programme coming soon.</p>
             )}
           </div>
 
@@ -87,11 +87,11 @@ export default async function TaitaWeekPage() {
               {venues.map((venue) => (
                 <div key={venue.slug} className="rounded-sm border border-stone/10 px-4 py-3">
                   <p className="font-display text-stone">{venue.name}</p>
-                  <p className="font-body text-xs text-stone/50">{venue.location}</p>
+                  <p className="font-body text-xs text-stone/80">{venue.location}</p>
                 </div>
               ))}
               {venues.length === 0 && (
-                <p className="font-body text-sm text-stone/50">Venues to be announced.</p>
+                <p className="font-body text-sm text-stone/80">Venues to be announced.</p>
               )}
             </div>
           </div>

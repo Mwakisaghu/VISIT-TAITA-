@@ -85,7 +85,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
 
         {!typedSomething && (
           <div className="mt-10">
-            <p className="max-w-prose font-body text-stone/70">Search places to visit, stories, stays, experiences, local products, creators and Field Notes.</p>
+            <p className="max-w-prose font-body text-stone/80">Search places to visit, stories, stays, experiences, local products, creators and Field Notes.</p>
             <div className="mt-6 flex flex-wrap gap-2">
               {BROWSE.map((b) => (
                 <Link key={b.href} href={b.href} className="focus-ring rounded-full border border-stone/20 px-4 py-1.5 font-body text-sm text-stone hover:border-rust hover:text-rust">
@@ -96,9 +96,9 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
           </div>
         )}
 
-        {typedSomething && !parsed && <p className="mt-10 font-body text-stone/70">Type at least two letters to search.</p>}
+        {typedSomething && !parsed && <p className="mt-10 font-body text-stone/80">Type at least two letters to search.</p>}
 
-        {limited && <p className="mt-10 font-body text-stone/70">You&apos;re searching very quickly — please wait a moment and try again.</p>}
+        {limited && <p className="mt-10 font-body text-stone/80">You&apos;re searching very quickly — please wait a moment and try again.</p>}
 
         {parsed && result && (
           <div className="mt-10" aria-live="polite">
@@ -111,7 +111,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
             {result.total === 0 && result.failed.length === 0 && (
               <div>
                 <p className="font-display text-2xl text-stone">No results for “{parsed.display}”</p>
-                <p className="mt-3 max-w-prose font-body text-stone/70">Check the spelling, try fewer or different words, or browse instead:</p>
+                <p className="mt-3 max-w-prose font-body text-stone/80">Check the spelling, try fewer or different words, or browse instead:</p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {BROWSE.map((b) => (
                     <Link key={b.href} href={b.href} className="focus-ring rounded-full border border-stone/20 px-4 py-1.5 font-body text-sm text-stone hover:border-rust hover:text-rust">
@@ -123,7 +123,7 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
             )}
 
             {result.total > 0 && (
-              <p className="font-body text-sm text-stone/60">
+              <p className="font-body text-sm text-stone/80">
                 {onlyLabel ? (
                   <>
                     {onlyLabel} matching “{parsed.display}” ·{" "}
@@ -149,9 +149,9 @@ export default async function SearchPage({ searchParams }: { searchParams: { q?:
                         <Link href={h.href} className="focus-ring font-display text-xl text-stone hover:text-rust">
                           <Marked segments={h.title} />
                         </Link>
-                        {h.meta && <p className="mt-0.5 font-body text-xs text-stone/50">{h.meta}</p>}
+                        {h.meta && <p className="mt-0.5 font-body text-xs text-stone/80">{h.meta}</p>}
                         {h.snippet.length > 0 && (
-                          <p className="mt-1.5 max-w-prose font-body text-sm leading-relaxed text-stone/70">
+                          <p className="mt-1.5 max-w-prose font-body text-sm leading-relaxed text-stone/80">
                             <Marked segments={h.snippet} />
                           </p>
                         )}

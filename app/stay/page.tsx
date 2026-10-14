@@ -55,7 +55,7 @@ export default async function StayPage({ searchParams }: { searchParams?: Promis
           {accommodations.length > 0 ? (
             <>
               {feature && <div className="mb-10"><StayFeature stay={feature} /></div>}
-              <p className="font-body text-sm text-stone/70" role="status">{accommodations.length} stay{accommodations.length === 1 ? "" : "s"}{filtered ? " match" : ""}</p>
+              <p className="font-body text-sm text-stone/80" role="status">{accommodations.length} stay{accommodations.length === 1 ? "" : "s"}{filtered ? " match" : ""}</p>
               {rest.length > 0 && (
                 <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {rest.map((a) => <StayCard key={a.slug} stay={a} rating={ratings.get(a.id) ?? null} />)}

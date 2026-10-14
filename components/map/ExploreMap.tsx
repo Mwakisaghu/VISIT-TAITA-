@@ -81,7 +81,7 @@ export default function ExploreMap({ items }: { items: Item[] }) {
           <div className="flex flex-col gap-3 pb-3 lg:shrink-0 lg:border-b lg:border-stone/20 lg:p-4">
             <div>
               <label htmlFor="map-q" className={label}>Search places, stays, experiences</label>
-              <input id="map-q" type="search" value={view.q} maxLength={60} onChange={(e) => setView((v) => ({ ...v, q: e.target.value }))} placeholder="Try “forest” or “homestay”" className="mt-1.5 min-h-[44px] w-full rounded-[2px] border border-stone/30 bg-transparent px-3.5 font-body text-sm text-stone placeholder:text-stone/60" />
+              <input id="map-q" type="search" value={view.q} maxLength={60} onChange={(e) => setView((v) => ({ ...v, q: e.target.value }))} placeholder="Try “forest” or “homestay”" className="mt-1.5 min-h-[44px] w-full rounded-[2px] border border-stone/30 bg-transparent px-3.5 font-body text-sm text-stone placeholder:text-stone/80" />
             </div>
             <div role="group" aria-label="Show on the map" className="flex flex-wrap items-center gap-x-4 gap-y-1">
               {LAYERS.map((l) => (
@@ -94,7 +94,7 @@ export default function ExploreMap({ items }: { items: Item[] }) {
             </ScrollFade>
             <ScrollFade as="div" role="group" aria-label="How high" className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
               <button type="button" aria-pressed={!view.zone} onClick={() => setView((v) => ({ ...v, zone: null }))} className={`${chip} ${!view.zone ? on : off}`}>Any height</button>
-              {ZONES.map((z: Zone) => <button key={z} type="button" aria-pressed={view.zone === z} onClick={() => setView((v) => ({ ...v, zone: v.zone === z ? null : z }))} className={`${chip} ${view.zone === z ? on : off}`}>{ZONE_LABEL[z]} <span className="text-stone/70" aria-hidden="true">{counts[z]}</span><span className="sr-only">, {counts[z]} shown</span></button>)}
+              {ZONES.map((z: Zone) => <button key={z} type="button" aria-pressed={view.zone === z} onClick={() => setView((v) => ({ ...v, zone: v.zone === z ? null : z }))} className={`${chip} ${view.zone === z ? on : off}`}>{ZONE_LABEL[z]} <span className="text-stone/80" aria-hidden="true">{counts[z]}</span><span className="sr-only">, {counts[z]} shown</span></button>)}
             </ScrollFade>
             <p role="status" className={label}>{visible.length} {visible.length === 1 ? "item" : "items"} in view</p>
           </div>

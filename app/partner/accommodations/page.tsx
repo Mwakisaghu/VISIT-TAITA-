@@ -30,7 +30,7 @@ export default async function PartnerAccommodationsPage() {
         {accommodations.map((a) => (
           <div key={a.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {a.type} · {a.region} · {a.status}
                 {a.priceFrom ? ` · from ${formatPrice(a.priceFrom)}/night` : ""}
               </p>
@@ -39,7 +39,7 @@ export default async function PartnerAccommodationsPage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/partner/accommodations/${a.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -49,7 +49,7 @@ export default async function PartnerAccommodationsPage() {
                   await deletePartnerAccommodation(a.id);
                 }}
               >
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
@@ -57,7 +57,7 @@ export default async function PartnerAccommodationsPage() {
           </div>
         ))}
         {accommodations.length === 0 && (
-          <p className="py-8 font-body text-stone/50">No listings yet — create your first one.</p>
+          <p className="py-8 font-body text-stone/80">No listings yet — create your first one.</p>
         )}
       </div>
     </div>

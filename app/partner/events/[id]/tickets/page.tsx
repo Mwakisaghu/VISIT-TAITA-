@@ -14,7 +14,7 @@ export default async function PartnerEventTicketsPage({ params }: { params: { id
   if (!event || !(me.isAdmin || event.organiserId === me.id)) notFound();
   return (
     <div>
-      <Link href="/partner/events" className="font-body text-sm text-stone/60 hover:text-rust">← My events</Link>
+      <Link href="/partner/events" className="font-body text-sm text-stone/80 hover:text-rust">← My events</Link>
       <h1 className="mt-3 font-display text-3xl text-stone">{event.name} — tickets</h1>
       <EventTicketsManager event={event} canEditSettings={false} />
     </div>

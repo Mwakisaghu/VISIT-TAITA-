@@ -10,7 +10,7 @@ export default async function NewPlayerPage() {
       {teams.length > 0 ? (
         <PlayerForm teams={teams} />
       ) : (
-        <p className="mt-6 font-body text-stone/60">Create a team first.</p>
+        <p className="mt-6 font-body text-stone/80">Create a team first.</p>
       )}
     </div>
   );

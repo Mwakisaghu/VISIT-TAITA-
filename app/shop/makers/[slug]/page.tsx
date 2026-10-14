@@ -34,7 +34,7 @@ export default async function MakerPage({ params }: Ctx) {
   return (
     <div className="px-6 py-14 sm:py-16">
       <div className="mx-auto max-w-6xl">
-        <Link href="/shop" className="focus-ring font-body text-sm text-stone/70 hover:text-rust-deep">← Taita Made</Link>
+        <Link href="/shop" className="focus-ring font-body text-sm text-stone/80 hover:text-rust-deep">← Taita Made</Link>
         <div className="mt-8 flex flex-wrap items-center gap-6"><MakerMark name={m.name} size="lg" /><div><p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-rust-deep">{m.isGroup ? "A group of makers" : "Maker"}</p><h1 className="mt-1 font-display text-[clamp(1.76rem,4vw,2.8rem)] font-medium leading-[1.05] tracking-tight text-stone">{m.name}</h1><p className="mt-1 font-body text-base text-stone/80">{m.craft} · {m.village}</p><ShareBar className="mt-4" /></div></div>
 
         <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_21rem]">
@@ -62,7 +62,7 @@ export default async function MakerPage({ params }: Ctx) {
           <h2 id="work-title" className="font-display text-3xl text-stone">{m.isGroup ? "Their work" : `${m.name.split(" ")[0]}'s work`}</h2>
           {m.products.length > 0 ? (
             <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">{m.products.map((p) => <MakerProductCard key={p.slug} product={p} maker={card} />)}</div>
-          ) : <p className="mt-4 font-body text-stone/70">Nothing in the shop just now.</p>}
+          ) : <p className="mt-4 font-body text-stone/80">Nothing in the shop just now.</p>}
         </section>
       </div>
     </div>

@@ -60,13 +60,13 @@ function LoginForm() {
   return (
     <div className="mx-auto flex max-w-sm flex-col px-6 py-24">
       <h1 className="font-display text-3xl text-stone">Sign in</h1>
-      <p className="mt-2 font-body text-sm text-stone/60">
+      <p className="mt-2 font-body text-sm text-stone/80">
         Sign in to your Visit Taita account.
       </p>
 
       <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
         <div>
-          <label htmlFor="email" className="font-body text-sm text-stone/70">
+          <label htmlFor="email" className="font-body text-sm text-stone/80">
             Email
           </label>
           <input
@@ -79,7 +79,7 @@ function LoginForm() {
           />
         </div>
         <div>
-          <label htmlFor="password" className="font-body text-sm text-stone/70">
+          <label htmlFor="password" className="font-body text-sm text-stone/80">
             Password
           </label>
           <input
@@ -105,13 +105,13 @@ function LoginForm() {
         </button>
       </form>
 
-      <p className="mt-4 font-body text-sm text-stone/60">
+      <p className="mt-4 font-body text-sm text-stone/80">
         <Link href="/forgot-password" className="text-rust hover:text-rust-deep">
           Forgot your password?
         </Link>
       </p>
 
-      <p className="mt-6 font-body text-sm text-stone/60">
+      <p className="mt-6 font-body text-sm text-stone/80">
         No Passport yet?{" "}
         <Link
           href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"}

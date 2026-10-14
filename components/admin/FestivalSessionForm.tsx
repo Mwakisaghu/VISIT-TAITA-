@@ -103,7 +103,7 @@ export default function FestivalSessionForm({
         </select>
       </Field>
 
-      <label className="flex items-center gap-2 font-body text-sm text-stone/70">
+      <label className="flex items-center gap-2 font-body text-sm text-stone/80">
         <input type="checkbox" name="featured" defaultChecked={session?.featured} />
         Featured
       </label>
@@ -121,7 +121,7 @@ export default function FestivalSessionForm({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

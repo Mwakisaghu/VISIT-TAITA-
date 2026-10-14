@@ -55,7 +55,7 @@ export default async function CreatorProfilePage({ params }: { params: { slug: s
   return (
     <div className="px-6 py-16">
       <div className="mx-auto max-w-4xl">
-        <Link href="/creators" className="font-body text-sm text-stone/60 hover:text-rust">
+        <Link href="/creators" className="font-body text-sm text-stone/80 hover:text-rust">
           ← The Field Crew
         </Link>
 
@@ -86,7 +86,7 @@ export default async function CreatorProfilePage({ params }: { params: { slug: s
         {creator.specialties.length > 0 && (
           <ul className="mt-6 flex flex-wrap gap-2">
             {creator.specialties.map((s) => (
-              <li key={s} className="rounded-full border border-stone/20 px-4 py-1 font-body text-sm text-stone/70">
+              <li key={s} className="rounded-full border border-stone/20 px-4 py-1 font-body text-sm text-stone/80">
                 {specialtyLabel(s)}
               </li>
             ))}
@@ -95,7 +95,7 @@ export default async function CreatorProfilePage({ params }: { params: { slug: s
 
         {links.length > 0 && (
           <div className="mt-8">
-            <p className="font-body text-sm text-stone/50">Find their work</p>
+            <p className="font-body text-sm text-stone/80">Find their work</p>
             <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
               {links.map((url) => (
                 <li key={url}>
@@ -116,7 +116,7 @@ export default async function CreatorProfilePage({ params }: { params: { slug: s
         {notes.length > 0 && (
           <section className="mt-16 border-t border-stone/10 pt-12">
             <h2 className="font-display text-3xl text-stone">Field Notes</h2>
-            <p className="mt-2 font-body text-sm text-stone/60">Each one filed after a verified check-in at the place.</p>
+            <p className="mt-2 font-body text-sm text-stone/80">Each one filed after a verified check-in at the place.</p>
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
               {notes.map((n) => (
                 <NoteCard key={n.id} note={n} />

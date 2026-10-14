@@ -5,7 +5,7 @@ import { ACCEPT } from "@/lib/uploads/client";
 import { POLICIES, type Purpose } from "@/lib/uploads/policy";
 import { useImageUpload } from "@/components/uploads/useImageUpload";
 
-const labelCls = "font-body text-sm text-stone/70";
+const labelCls = "font-body text-sm text-stone/80";
 const buttonCls = "focus-ring inline-flex w-fit cursor-pointer items-center rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone transition-colors hover:border-rust hover:text-rust";
 
 /**
@@ -40,7 +40,7 @@ export default function ImageField({ name, label = "Image", purpose, defaultValu
           <span className={labelCls}>{label} (web address)</span>
           <input name={name} value={value} onChange={(e) => setValue(e.target.value)} required={required} inputMode="url" placeholder="https://…" className="input" />
         </label>
-        <p className="font-body text-xs text-stone/50">Picture uploads aren&apos;t set up on this site yet, so paste the address of a picture instead.</p>
+        <p className="font-body text-xs text-stone/80">Picture uploads aren&apos;t set up on this site yet, so paste the address of a picture instead.</p>
       </div>
     );
   }
@@ -64,7 +64,7 @@ export default function ImageField({ name, label = "Image", purpose, defaultValu
           {busy ? "Uploading…" : value ? "Replace picture" : "Choose a picture"}
         </label>
         {value && !required && !busy && (
-          <button type="button" onClick={() => setValue("")} className="focus-ring font-body text-sm text-stone/60 underline hover:text-rust">
+          <button type="button" onClick={() => setValue("")} className="focus-ring font-body text-sm text-stone/80 underline hover:text-rust">
             Remove
           </button>
         )}
@@ -78,7 +78,7 @@ export default function ImageField({ name, label = "Image", purpose, defaultValu
       <p role="status" className="sr-only">{busy ? `Uploading ${Math.round(progress * 100)} percent` : ""}</p>
       {error && <p role="alert" className="font-body text-sm text-rust">{error}</p>}
 
-      <p className="font-body text-xs text-stone/50">
+      <p className="font-body text-xs text-stone/80">
         JPEG, PNG or WebP, at least {w}×{h} px so it stays sharp. Big photos are resized for you, and location data is removed.
       </p>
     </div>

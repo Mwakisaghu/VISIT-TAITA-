@@ -45,7 +45,7 @@ export default function CreatorApplyForm({ defaultName }: { defaultName: string 
     return (
       <div role="status" className="rounded-sm border border-canopy/30 bg-canopy/10 p-6">
         <p className="font-display text-2xl text-stone">Thank you — your application is in.</p>
-        <p className="mt-2 font-body text-stone/70">
+        <p className="mt-2 font-body text-stone/80">
           We read every one. You'll get an email at your account address once we've decided.
         </p>
       </div>
@@ -55,7 +55,7 @@ export default function CreatorApplyForm({ defaultName }: { defaultName: string 
   return (
     <form onSubmit={submit} className="flex flex-col gap-6">
       <fieldset>
-        <legend className="font-body text-sm text-stone/70">Which track fits you?</legend>
+        <legend className="font-body text-sm text-stone/80">Which track fits you?</legend>
         <div className="mt-2 grid gap-3 sm:grid-cols-2">
           {CREATOR_TRACKS.map((t) => (
             <label
@@ -68,7 +68,7 @@ export default function CreatorApplyForm({ defaultName }: { defaultName: string 
                 <input type="radio" name="track" value={t} checked={track === t} onChange={() => setTrack(t)} required />
                 {TRACK_LABELS[t]}
               </span>
-              <span className="font-body text-xs leading-relaxed text-stone/60">{TRACK_BLURBS[t]}</span>
+              <span className="font-body text-xs leading-relaxed text-stone/80">{TRACK_BLURBS[t]}</span>
             </label>
           ))}
         </div>
@@ -76,25 +76,25 @@ export default function CreatorApplyForm({ defaultName }: { defaultName: string 
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Public name</span>
+          <span className="font-body text-sm text-stone/80">Public name</span>
           <input name="displayName" defaultValue={defaultName} required minLength={L.nameMin} maxLength={L.nameMax} className="input" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Where are you based? (optional)</span>
+          <span className="font-body text-sm text-stone/80">Where are you based? (optional)</span>
           <input name="location" maxLength={L.locationMax} className="input" placeholder="e.g. Wundanyi, or Nairobi" />
         </label>
       </div>
 
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Short bio — shown on your public profile</span>
+        <span className="font-body text-sm text-stone/80">Short bio — shown on your public profile</span>
         <textarea name="bio" required minLength={L.bioMin} maxLength={L.bioMax} rows={4} className="input" />
-        <span className="font-body text-xs text-stone/40">
+        <span className="font-body text-xs text-stone/80">
           {L.bioMin}–{L.bioMax} characters
         </span>
       </label>
 
       <fieldset>
-        <legend className="font-body text-sm text-stone/70">What do you create?</legend>
+        <legend className="font-body text-sm text-stone/80">What do you create?</legend>
         <div className="mt-2 flex flex-wrap gap-x-5 gap-y-2">
           {CREATOR_SPECIALTIES.map((s) => (
             <label key={s} className="flex items-center gap-2 font-body text-sm text-stone/80">
@@ -106,7 +106,7 @@ export default function CreatorApplyForm({ defaultName }: { defaultName: string 
       </fieldset>
 
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">
+        <span className="font-body text-sm text-stone/80">
           Links to your work — one per line, up to {L.maxLinks}
           {track === "LOCAL_VOICE" ? " (optional for Local Voices)" : ""}
         </span>
@@ -114,17 +114,17 @@ export default function CreatorApplyForm({ defaultName }: { defaultName: string 
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Why Taita — and a story you'd tell</span>
+        <span className="font-body text-sm text-stone/80">Why Taita — and a story you'd tell</span>
         <textarea name="pitch" required minLength={L.pitchMin} maxLength={L.pitchMax} rows={5} className="input" />
-        <span className="font-body text-xs text-stone/40">
+        <span className="font-body text-xs text-stone/80">
           {L.pitchMin}–{L.pitchMax} characters
         </span>
       </label>
 
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Audience size, if relevant (optional)</span>
+        <span className="font-body text-sm text-stone/80">Audience size, if relevant (optional)</span>
         <input name="followerNote" maxLength={L.followerNoteMax} className="input" placeholder="e.g. ~8k on Instagram" />
-        <span className="font-body text-xs text-stone/40">Only our team sees this — it&apos;s never shown publicly.</span>
+        <span className="font-body text-xs text-stone/80">Only our team sees this — it&apos;s never shown publicly.</span>
       </label>
 
       <label className="flex items-start gap-3 font-body text-sm text-stone/80">

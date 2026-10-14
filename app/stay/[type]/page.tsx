@@ -45,7 +45,7 @@ export default async function StayTypePage({ params }: { params: { type: string 
             ))}
           </div>
         ) : (
-          <p className="mt-10 font-body text-stone/60">No {t.label.toLowerCase()} listed yet.</p>
+          <p className="mt-10 font-body text-stone/80">No {t.label.toLowerCase()} listed yet.</p>
         )}
 
         {accommodations.some((a) => a.isDemo) && (

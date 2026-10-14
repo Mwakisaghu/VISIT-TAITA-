@@ -52,14 +52,14 @@ export default async function ReviewsSection({
         {/* SUMMARY */}
         <div>
           {summary.count === 0 ? (
-            <p className="font-body text-stone/70">No reviews yet — be the first to share your experience.</p>
+            <p className="font-body text-stone/80">No reviews yet — be the first to share your experience.</p>
           ) : (
             <>
               <div className="flex items-end gap-3">
                 <p className="font-display text-4xl text-stone">{summary.average?.toFixed(1)}</p>
                 <div className="pb-1">
                   <StarRating rating={summary.average ?? 0} className="text-lg" />
-                  <p className="font-body text-sm text-stone/70">
+                  <p className="font-body text-sm text-stone/80">
                     {summary.count} review{summary.count === 1 ? "" : "s"}
                   </p>
                 </div>
@@ -69,7 +69,7 @@ export default async function ReviewsSection({
                   const n = summary.distribution[star];
                   const pct = Math.round((n / summary.count) * 100);
                   return (
-                    <li key={star} className="flex items-center gap-3 font-body text-xs text-stone/70">
+                    <li key={star} className="flex items-center gap-3 font-body text-xs text-stone/80">
                       <span className="w-8">{star} ★</span>
                       <span className="h-2 flex-1 overflow-hidden rounded-full bg-stone/10">
                         <span className="block h-full rounded-full bg-ochre" style={{ width: `${pct}%` }} />
@@ -99,13 +99,13 @@ export default async function ReviewsSection({
                   </div>
                   {r.title && <p className="mt-2 font-display text-lg text-stone">{r.title}</p>}
                   <p className="mt-2 whitespace-pre-line font-body text-stone/80">{r.body}</p>
-                  <p className="mt-3 font-body text-xs text-stone/70">
+                  <p className="mt-3 font-body text-xs text-stone/80">
                     {holderLabel(r.user.name)} · {formatDate(r.createdAt)}
                   </p>
                 </article>
               ))}
               {reviews.length === 20 && (
-                <p className="pt-4 font-body text-xs text-stone/40">Showing the 20 most recent reviews.</p>
+                <p className="pt-4 font-body text-xs text-stone/80">Showing the 20 most recent reviews.</p>
               )}
             </div>
           )}

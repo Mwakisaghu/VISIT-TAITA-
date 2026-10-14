@@ -49,7 +49,7 @@ export default function EnquiryStatusButtons({ kind, id, status }: { kind: "stay
         ))}
       </div>
       {status !== "CONFIRMED" && (
-        <p className="max-w-md font-body text-xs text-stone/50">
+        <p className="max-w-md font-body text-xs text-stone/80">
           Confirming means you&apos;ve agreed this with the guest. It lets them leave a verified review, and counts in the reports we share with sponsors.
         </p>
       )}

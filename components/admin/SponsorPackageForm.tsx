@@ -59,7 +59,7 @@ export default function SponsorPackageForm({ sponsorPackage }: { sponsorPackage?
         </Field>
       </div>
 
-      <p className="font-body text-xs text-stone/50">
+      <p className="font-body text-xs text-stone/80">
         Prices are indicative starting points, shown publicly as &quot;from&quot; figures — packages are
         tailored in conversation.
       </p>
@@ -77,7 +77,7 @@ export default function SponsorPackageForm({ sponsorPackage }: { sponsorPackage?
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

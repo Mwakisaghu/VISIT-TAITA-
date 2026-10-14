@@ -28,14 +28,14 @@ export default function ExperienceCard({
         </span>
       </div>
       <div className="mt-3 flex items-center justify-between gap-3">
-        <p className="font-body text-xs text-stone/60">
+        <p className="font-body text-xs text-stone/80">
           {experience.region}
           {experience.duration ? ` · ${experience.duration}` : ""}
         </p>
         <RatingBadge rating={rating} />
       </div>
       <p className="font-display text-lg text-stone">{experience.name}</p>
-      <p className="mt-1 font-body text-sm text-stone/70">
+      <p className="mt-1 font-body text-sm text-stone/80">
         {experience.priceFrom ? `From ${formatPrice(experience.priceFrom)}/person` : "Contact for pricing"}
       </p>
     </Link>

@@ -5,6 +5,7 @@ import ConsentNote from "@/components/legal/ConsentNote";
 import { useState } from "react";
 import { useReferral } from "@/components/listings/useReferral";
 import { submitAccommodationEnquiry } from "@/lib/actions/enquiries";
+import SpamGuard from "@/components/forms/SpamGuard";
 
 export default function AccommodationEnquiryForm({ accommodationId }: { accommodationId: string }) {
   const referral = useReferral();
@@ -35,7 +36,7 @@ export default function AccommodationEnquiryForm({ accommodationId }: { accommod
     return (
       <div className="rounded-sm border border-canopy/30 bg-canopy/10 p-4">
         <p className="font-display text-lg text-stone">Enquiry sent.</p>
-        <p className="mt-1 font-body text-sm text-stone/70">
+        <p className="mt-1 font-body text-sm text-stone/80">
           The host will reach out on the contact details you gave.
         </p>
       </div>
@@ -44,19 +45,20 @@ export default function AccommodationEnquiryForm({ accommodationId }: { accommod
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <SpamGuard />
       {referral && <input type="hidden" name="from" value={referral} />}
       <div className="grid grid-cols-2 gap-3">
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/70">Check-in</span>
+          <span className="font-body text-xs text-stone/80">Check-in</span>
           <input name="checkIn" type="date" className="input" />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="font-body text-xs text-stone/70">Check-out</span>
+          <span className="font-body text-xs text-stone/80">Check-out</span>
           <input name="checkOut" type="date" className="input" />
         </label>
       </div>
       <label className="flex flex-col gap-1">
-        <span className="font-body text-xs text-stone/70">Guests</span>
+        <span className="font-body text-xs text-stone/80">Guests</span>
         <input name="guests" type="number" min={1} className="input" />
       </label>
       <input name="name" required placeholder="Your name" className="input" />

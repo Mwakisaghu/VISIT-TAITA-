@@ -15,19 +15,19 @@ export default async function AdminPartnerDetailPage({ params }: { params: { id:
       <h1 className="mt-1 font-display text-3xl text-stone">{application.businessName}</h1>
 
       <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 font-body text-sm text-stone/80">
-        <dt className="text-stone/50">Contact</dt>
+        <dt className="text-stone/80">Contact</dt>
         <dd>{application.contactName}</dd>
-        <dt className="text-stone/50">Email</dt>
+        <dt className="text-stone/80">Email</dt>
         <dd>{application.email}</dd>
-        <dt className="text-stone/50">Phone</dt>
+        <dt className="text-stone/80">Phone</dt>
         <dd>{application.phone}</dd>
         {application.website && (
           <>
-            <dt className="text-stone/50">Website</dt>
+            <dt className="text-stone/80">Website</dt>
             <dd>{application.website}</dd>
           </>
         )}
-        <dt className="text-stone/50">Submitted</dt>
+        <dt className="text-stone/80">Submitted</dt>
         <dd>{application.createdAt.toLocaleDateString()}</dd>
       </dl>
 

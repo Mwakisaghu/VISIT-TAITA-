@@ -6,6 +6,7 @@ import { CONTACT_LIMITS as L, CONTACT_TOPICS, topicLabel } from "@/lib/contact";
 import { parseRecipients, sendEmail } from "@/lib/email";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { readSiteInfo } from "@/lib/site-info";
+import { SPAM_RETRY, spamVerdict } from "@/lib/spam";
 
 export type ContactResult = { success?: true; error?: string };
 
@@ -26,7 +27,8 @@ const HOUR_MS = 60 * 60 * 1000;
  */
 export async function submitContactMessage(formData: FormData): Promise<ContactResult> {
   // Honeypot: a hidden field real people never fill. Bots get the same "success" so they learn nothing.
-  if (String(formData.get("website") ?? "").trim() !== "") return { success: true };
+  const guard = spamVerdict(formData, { honeypots: ["website"] });
+  if (!guard.ok) return guard.reason === "honeypot" ? { success: true } : { error: SPAM_RETRY };
 
   const parsed = schema.safeParse({
     name: formData.get("name"),

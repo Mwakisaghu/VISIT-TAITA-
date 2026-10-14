@@ -21,25 +21,25 @@ export default async function AdminEventsPage() {
         {events.map((e) => (
           <div key={e.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {e.program} · {e.status}
                 {e.isDemo && " · demo"}
               </p>
               <p className="font-display text-lg text-stone">{e.name}</p>
-              <p className="font-body text-sm text-stone/50">
+              <p className="font-body text-sm text-stone/80">
                 {e.eventDate.toLocaleDateString()} · {e.location}
               </p>
             </div>
             <div className="flex items-center gap-3">
               <Link
                 href={`/admin/events/${e.id}/tickets`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Tickets{e.ticketing !== "OFF" ? ` (${e.ticketsTaken})` : ""}
               </Link>
               <Link
                 href={`/admin/events/${e.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -49,14 +49,14 @@ export default async function AdminEventsPage() {
                   await deleteEvent(e.id);
                 }}
               >
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
             </div>
           </div>
         ))}
-        {events.length === 0 && <p className="py-8 font-body text-stone/50">No events yet.</p>}
+        {events.length === 0 && <p className="py-8 font-body text-stone/80">No events yet.</p>}
       </div>
     </div>
   );

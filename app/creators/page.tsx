@@ -54,7 +54,7 @@ export default async function CreatorsPage() {
         {sections.length === 0 ? (
           <div className="max-w-prose">
             <p className="font-display text-2xl text-stone">The Field Crew is forming.</p>
-            <p className="mt-3 font-body text-stone/70">
+            <p className="mt-3 font-body text-stone/80">
               The first creators will appear here once they&apos;re approved. If you tell stories about Taita
               Taveta — as someone who lives here, or someone who loves it — we&apos;d like to hear from you.
             </p>
@@ -63,7 +63,7 @@ export default async function CreatorsPage() {
           sections.map((s) => (
             <section key={s.key} className="mb-14 last:mb-0">
               <h2 className="font-display text-3xl text-stone">{TRACK_LABELS[s.key]}s</h2>
-              <p className="mt-2 max-w-prose font-body text-sm text-stone/60">{TRACK_BLURBS[s.key]}</p>
+              <p className="mt-2 max-w-prose font-body text-sm text-stone/80">{TRACK_BLURBS[s.key]}</p>
               <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {s.list.map((c) => (
                   <CreatorCard key={c.id} creator={c} />

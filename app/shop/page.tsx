@@ -101,7 +101,7 @@ export default async function ShopPage() {
             <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">
               {cards.map(({ product, maker }) => <MakerProductCard key={product.slug} product={product} maker={maker} />)}
             </div>
-          ) : <p className="mt-6 font-body text-stone/70">No products published yet.</p>}
+          ) : <p className="mt-6 font-body text-stone/80">No products published yet.</p>}
           {hasDemo && <div className="mt-12"><DemoNotice>sample products and makers for layout review. The makers here are invented; real makers appear only after they have agreed to be named. Sellers and inventory aren&apos;t verified.</DemoNotice></div>}
         </div>
       </section>

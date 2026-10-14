@@ -62,7 +62,7 @@ export default async function AdminOverviewPage() {
               <li key={a.key}>
                 <Link href={a.href} className="focus-ring flex items-center justify-between gap-4 px-4 py-3 hover:bg-stone/5">
                   <span className="font-body text-sm text-stone"><strong className="font-display text-lg text-rust">{badges[a.key]}</strong>{" "}{a.text(badges[a.key] ?? 0).replace(/^\d+\s*/, "")}</span>
-                  <span aria-hidden className="text-stone/40">›</span>
+                  <span aria-hidden className="text-stone/80">›</span>
                 </Link>
               </li>
             ))}
@@ -82,12 +82,12 @@ export default async function AdminOverviewPage() {
         <div className="mt-4 grid gap-6 md:grid-cols-2">
           {sections.map((s) => (
             <div key={s.title}>
-              <h3 className="font-body text-xs font-semibold uppercase tracking-wide text-stone/55">{s.title}</h3>
+              <h3 className="font-body text-xs font-semibold uppercase tracking-wide text-stone/80">{s.title}</h3>
               <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {s.stats.map((st) => (
                   <Link key={st.label} href={st.href} className="focus-ring rounded-sm border border-stone/10 p-4 hover:border-stone/30">
                     <p className="font-display text-2xl text-stone">{st.value}</p>
-                    <p className="mt-1 font-body text-xs text-stone/60">{st.label}</p>
+                    <p className="mt-1 font-body text-xs text-stone/80">{st.label}</p>
                   </Link>
                 ))}
               </div>

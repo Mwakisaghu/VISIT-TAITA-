@@ -1,6 +1,6 @@
 export default function DemoNotice({ children }: { children: React.ReactNode }) {
   return (
-    <p className="font-body text-xs text-stone/70">
+    <p className="font-body text-xs text-stone/80">
       Sample content for preview — {children}
     </p>
   );

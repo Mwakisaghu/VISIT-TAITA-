@@ -21,7 +21,7 @@ export default async function AdminStoriesPage() {
         {stories.map((s) => (
           <div key={s.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {s.category} · {s.status}
                 {s.isDemo && " · demo"}
               </p>
@@ -30,7 +30,7 @@ export default async function AdminStoriesPage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/admin/stories/${s.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -40,14 +40,14 @@ export default async function AdminStoriesPage() {
                   await deleteStory(s.id);
                 }}
               >
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
             </div>
           </div>
         ))}
-        {stories.length === 0 && <p className="py-8 font-body text-stone/50">No stories yet.</p>}
+        {stories.length === 0 && <p className="py-8 font-body text-stone/80">No stories yet.</p>}
       </div>
     </div>
   );

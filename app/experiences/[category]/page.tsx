@@ -49,7 +49,7 @@ export default async function ExperienceCategoryPage({
             ))}
           </div>
         ) : (
-          <p className="mt-10 font-body text-stone/60">No {c.label.toLowerCase()} experiences listed yet.</p>
+          <p className="mt-10 font-body text-stone/80">No {c.label.toLowerCase()} experiences listed yet.</p>
         )}
 
         {experiences.some((x) => x.isDemo) && (

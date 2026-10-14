@@ -36,17 +36,17 @@ export default function MissionCard({ mission }: { mission: MissionWithRelations
       <div className="flex flex-1 flex-col p-5">
         <p className="font-body text-xs text-rust">{mission.campaign ?? "Mission"}</p>
         <p className="mt-1 font-display text-xl text-stone group-hover:text-rust">{mission.title}</p>
-        <p className="mt-2 flex-1 font-body text-sm leading-relaxed text-stone/70">{mission.summary}</p>
+        <p className="mt-2 flex-1 font-body text-sm leading-relaxed text-stone/80">{mission.summary}</p>
 
         {badge && (
           <p className="mt-3 w-fit rounded-full bg-ochre/20 px-3 py-0.5 font-body text-xs text-stone">{badge}</p>
         )}
 
-        <p className="mt-4 font-body text-xs text-stone/60">
+        <p className="mt-4 font-body text-xs text-stone/80">
           📍 {mission.destination.name}
           {mission.rewardPoints > 0 ? ` · ${mission.rewardPoints} points` : ""}
         </p>
-        <p className="mt-1 font-body text-xs text-stone/50">
+        <p className="mt-1 font-body text-xs text-stone/80">
           {!availability.open
             ? availability.reason === "full"
               ? "All spots taken"

@@ -70,7 +70,7 @@ export default function DestinationMap({ destinations }: { destinations: MapDest
               className={`focus-ring rounded-full border px-4 py-2 font-body text-sm transition-colors ${
                 active
                   ? "border-rust bg-rust text-parchment"
-                  : "border-stone/20 text-stone/60 hover:border-rust hover:text-rust"
+                  : "border-stone/20 text-stone/80 hover:border-rust hover:text-rust"
               }`}
             >
               {cat.label}
@@ -99,7 +99,7 @@ export default function DestinationMap({ destinations }: { destinations: MapDest
                   <img src={d.image} alt={d.name} className="h-24 w-full rounded-sm object-cover" />
                   <p className="mt-2 text-xs text-rust">{categoryLabel(d.category)}</p>
                   <p className="font-semibold">{d.name}</p>
-                  <p className="mt-1 text-xs text-stone/60">{d.region}</p>
+                  <p className="mt-1 text-xs text-stone/80">{d.region}</p>
                   <Link
                     href={`/discover/${categoryToSlug(d.category)}#${d.slug}`}
                     className="mt-2 inline-block text-xs text-rust underline"
@@ -113,7 +113,7 @@ export default function DestinationMap({ destinations }: { destinations: MapDest
         </MapContainer>
       </div>
 
-      <p className="mt-4 font-body text-xs text-stone/50">
+      <p className="mt-4 font-body text-xs text-stone/80">
         {visible.length} of {destinations.length} mapped destinations shown.
       </p>
     </div>

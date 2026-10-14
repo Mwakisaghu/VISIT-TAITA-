@@ -47,12 +47,12 @@ export default async function RewardsPage() {
   return (
     <div className="px-6 py-16">
       <div className="mx-auto max-w-5xl">
-        <Link href="/passport" className="font-body text-sm text-stone/60 hover:text-rust">
+        <Link href="/passport" className="font-body text-sm text-stone/80 hover:text-rust">
           ← Your Passport
         </Link>
         <p className="mt-6 font-body text-sm text-rust">Taita Passport</p>
         <h1 className="mt-1 font-display text-3xl text-stone">Rewards</h1>
-        <p className="mt-2 font-body text-stone/70">
+        <p className="mt-2 font-body text-stone/80">
           You have <strong className="text-stone">{user.points} points</strong> to spend. Earn more by checking in
           around Taita.
         </p>
@@ -73,18 +73,18 @@ export default async function RewardsPage() {
                       <p className="font-display text-lg text-stone">{v.reward.name}</p>
                       <span
                         className={`rounded-full px-3 py-1 font-body text-xs ${
-                          live ? "bg-canopy text-parchment" : "bg-stone/10 text-stone/70"
+                          live ? "bg-canopy text-parchment" : "bg-stone/10 text-stone/80"
                         }`}
                       >
                         {redemptionStatusLabel(v.status)}
                       </span>
                     </div>
                     {v.reward.partnerName && (
-                      <p className="font-body text-xs text-stone/50">Honoured by {v.reward.partnerName}</p>
+                      <p className="font-body text-xs text-stone/80">Honoured by {v.reward.partnerName}</p>
                     )}
                     <p className="mt-3 font-display text-2xl tracking-wider text-stone">{v.code}</p>
-                    {live && <p className="mt-2 font-body text-sm text-stone/70">{v.reward.instructions}</p>}
-                    <p className="mt-2 font-body text-xs text-stone/50">
+                    {live && <p className="mt-2 font-body text-sm text-stone/80">{v.reward.instructions}</p>}
+                    <p className="mt-2 font-body text-xs text-stone/80">
                       Redeemed {formatDate(v.createdAt)}
                       {v.reward.validUntil ? ` · valid until ${formatDate(v.reward.validUntil)}` : ""}
                     </p>
@@ -99,7 +99,7 @@ export default async function RewardsPage() {
         <section className="mt-14">
           <h2 className="font-display text-2xl text-stone">Available rewards</h2>
           {rewards.length === 0 ? (
-            <p className="mt-5 max-w-prose font-body text-stone/60">
+            <p className="mt-5 max-w-prose font-body text-stone/80">
               No rewards are available right now. Check back soon — keep checking in around Taita and your points
               will be waiting.
             </p>
@@ -120,11 +120,11 @@ export default async function RewardsPage() {
                     </div>
                   )}
                   <div className="flex flex-1 flex-col p-5">
-                    {r.partnerName && <p className="font-body text-xs text-stone/50">{r.partnerName}</p>}
+                    {r.partnerName && <p className="font-body text-xs text-stone/80">{r.partnerName}</p>}
                     <p className="font-display text-xl text-stone">{r.name}</p>
-                    <p className="mt-2 flex-1 font-body text-sm text-stone/70">{r.description}</p>
+                    <p className="mt-2 flex-1 font-body text-sm text-stone/80">{r.description}</p>
                     <p className="mt-4 font-display text-2xl text-rust">{r.pointsCost} points</p>
-                    <p className="font-body text-xs text-stone/50">
+                    <p className="font-body text-xs text-stone/80">
                       {r.stock !== null && r.stock <= 5 ? `Only ${r.stock} left` : ""}
                       {r.stock !== null && r.stock <= 5 && r.validUntil ? " · " : ""}
                       {r.validUntil ? `Until ${formatDate(r.validUntil)}` : ""}

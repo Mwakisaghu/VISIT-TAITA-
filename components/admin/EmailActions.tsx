@@ -49,7 +49,7 @@ export function EmailRowActions({ id, status }: { id: string; status: string }) 
           onClick={() => {
             if (window.confirm("Remove this entry (and its stored message) for good?")) run(() => discardEmail(id));
           }}
-          className="focus-ring font-body text-sm text-stone/40 hover:text-rust disabled:opacity-60"
+          className="focus-ring font-body text-sm text-stone/80 hover:text-rust disabled:opacity-60"
         >
           Discard
         </button>

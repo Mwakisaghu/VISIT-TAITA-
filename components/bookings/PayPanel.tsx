@@ -34,7 +34,7 @@ export default function PayPanel(p: { bookingId: string; amount: number; kind: s
     return () => { live = false; clearTimeout(first); };
   }, [polling, p.bookingId, router]);
 
-  if (!p.mpesa && !p.card) return <p className="font-body text-sm text-stone/70">Online payment isn&apos;t set up yet. Please contact the host to arrange payment.</p>;
+  if (!p.mpesa && !p.card) return <p className="font-body text-sm text-stone/80">Online payment isn&apos;t set up yet. Please contact the host to arrange payment.</p>;
   const label = p.kind === "BALANCE" ? "Pay the balance" : p.kind === "DEPOSIT" ? "Pay the deposit" : "Pay now";
 
   return (
@@ -52,7 +52,7 @@ export default function PayPanel(p: { bookingId: string; amount: number; kind: s
           }}
           className="flex flex-col gap-2"
         >
-          <label className="flex flex-col gap-1 font-body text-sm text-stone/70">M-Pesa number<input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" required placeholder="0712 345 678" className="input" /></label>
+          <label className="flex flex-col gap-1 font-body text-sm text-stone/80">M-Pesa number<input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" required placeholder="0712 345 678" className="input" /></label>
           <button type="submit" disabled={busy || polling} className={`${btn} w-fit bg-rust text-parchment hover:bg-rust-deep`}>{polling ? "Waiting for M-Pesa…" : `Pay ${kes(p.amount)} with M-Pesa`}</button>
         </form>
       )}

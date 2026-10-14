@@ -282,4 +282,11 @@ export const sw: Record<string, string> = {
   "October 2026": "Oktoba 2026",
   "Sources and credits": "Vyanzo na shukrani",
   "Written for Visit Taita in our own words from the sources below. Please read them for the full story.": "Imeandikwa kwa ajili ya Visit Taita kwa maneno yetu wenyewe kutoka vyanzo vilivyo hapa chini. Tafadhali visome kwa hadithi kamili.",
+  "Something went wrong on our side.": "Hitilafu imetokea upande wetu.",
+  "We couldn't load this page. Please try again, or go back to the home page.": "Hatukuweza kupakia ukurasa huu. Tafadhali jaribu tena, au rudi kwenye ukurasa wa mwanzo.",
+  "Try again": "Jaribu tena",
+  "Back to Visit Taita": "Rudi Visit Taita",
+  "Reference: {code}": "Rejea: {code}",
+  "This trail ends here.": "Njia hii inaishia hapa.",
+  "We couldn't find that page. It may have moved, or hasn't been mapped yet.": "Hatukuweza kupata ukurasa huo. Huenda umehamishwa, au bado haujawekwa kwenye ramani.",
 };

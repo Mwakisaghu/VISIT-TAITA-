@@ -36,7 +36,7 @@ export default async function AdminExperiencesPage() {
             {pendingReview.map((a) => (
               <div key={a.id} className="flex items-center justify-between gap-4 py-3">
                 <div>
-                  <p className="font-body text-xs text-stone/50">
+                  <p className="font-body text-xs text-stone/80">
                     {a.owner?.name} · {a.category} · {a.region}
                   </p>
                   <p className="font-display text-base text-stone">{a.name}</p>
@@ -44,7 +44,7 @@ export default async function AdminExperiencesPage() {
                 <div className="flex items-center gap-3">
                   <Link
                     href={`/admin/experiences/${a.id}`}
-                    className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                    className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
                   >
                     Review
                   </Link>
@@ -72,7 +72,7 @@ export default async function AdminExperiencesPage() {
         {experiences.map((a) => (
           <div key={a.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {a.category} · {a.region} · {a.status}
                 {a.priceFrom ? ` · from ${formatPrice(a.priceFrom)}/person` : ""}
                 {a.isDemo && " · demo"}
@@ -82,7 +82,7 @@ export default async function AdminExperiencesPage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/admin/experiences/${a.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -92,14 +92,14 @@ export default async function AdminExperiencesPage() {
                   await deleteExperience(a.id);
                 }}
               >
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
             </div>
           </div>
         ))}
-        {experiences.length === 0 && <p className="py-8 font-body text-stone/50">No experiences yet.</p>}
+        {experiences.length === 0 && <p className="py-8 font-body text-stone/80">No experiences yet.</p>}
       </div>
     </div>
   );

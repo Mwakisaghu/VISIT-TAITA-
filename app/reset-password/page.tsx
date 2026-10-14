@@ -29,8 +29,8 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
   if (!usable) {
     return (
       <Shell>
-        <p className="font-body text-stone/70">This link isn&apos;t valid or has expired. Reset links work once, for an hour.</p>
-        <p className="mt-3 font-body text-stone/70">
+        <p className="font-body text-stone/80">This link isn&apos;t valid or has expired. Reset links work once, for an hour.</p>
+        <p className="mt-3 font-body text-stone/80">
           <Link href="/forgot-password" className="underline hover:text-rust">Request a new one</Link>.
         </p>
       </Shell>

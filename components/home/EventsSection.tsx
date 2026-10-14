@@ -30,11 +30,11 @@ export default function EventsSection({ events }: { events: EventItem[] }) {
                   <Link href={`/events/${e.slug}`} className="focus-ring group block border-t border-stone/25 pt-6">
                     <div className="flex items-baseline gap-4">
                       <span className={`${display} text-4xl leading-none text-rust md:text-5xl`}>{part(e.eventDate, { day: "numeric" })}</span>
-                      <span className="font-body text-xs font-bold uppercase tracking-[0.24em] text-stone/70">{part(e.eventDate, { month: "short" })}<br />{part(e.eventDate, { weekday: "short" })}</span>
+                      <span className="font-body text-xs font-bold uppercase tracking-[0.24em] text-stone/80">{part(e.eventDate, { month: "short" })}<br />{part(e.eventDate, { weekday: "short" })}</span>
                     </div>
                     <p className="mt-6 font-body text-[0.68rem] font-bold uppercase tracking-[0.24em] text-rust-deep">{programLabel(e.program)}</p>
                     <h3 className={`${display} mt-2 text-2xl leading-snug transition-colors group-hover:text-rust md:text-[1.7rem]`}>{e.name}</h3>
-                    <p className="mt-2 font-body text-sm text-stone/65">{e.location}</p>
+                    <p className="mt-2 font-body text-sm text-stone/80">{e.location}</p>
                     {e.ticketing !== "OFF" && <p className="mt-4 inline-block border border-canopy/40 px-3 py-1 font-body text-[0.65rem] font-bold uppercase tracking-[0.2em] text-canopy">{e.ticketing === "FREE" ? "Free tickets" : "Tickets"}</p>}
                   </Link>
                 </Reveal>

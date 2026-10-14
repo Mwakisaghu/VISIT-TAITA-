@@ -60,7 +60,7 @@ export default async function ProductPage({ params }: { params: { slug: string }
 
           <ProductProvenance product={product} maker={maker} />
 
-          <div className="mt-4 flex gap-4 font-body text-xs text-stone/70">
+          <div className="mt-4 flex gap-4 font-body text-xs text-stone/80">
             {product.offersShipping && <span>Ships</span>}
             {product.offersPickup && <span>Local pickup available</span>}
           </div>

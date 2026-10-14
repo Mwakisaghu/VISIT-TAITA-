@@ -61,14 +61,14 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
                   <span className="rounded-full bg-canopy/15 px-3 py-0.5 font-body text-xs text-canopy">Verified guest</span>
                 )}
                 {listing && (
-                  <Link href={listing.href} className="font-body text-sm text-stone/70 hover:text-rust">
+                  <Link href={listing.href} className="font-body text-sm text-stone/80 hover:text-rust">
                     {listing.type}: {listing.name} ↗
                   </Link>
                 )}
               </div>
               {r.title && <p className="mt-2 font-display text-lg text-stone">{r.title}</p>}
               <p className="mt-2 max-w-prose whitespace-pre-line font-body text-sm text-stone/80">{r.body}</p>
-              <p className="mt-2 font-body text-xs text-stone/50">
+              <p className="mt-2 font-body text-xs text-stone/80">
                 {r.user.name} · {r.user.email} · {r.createdAt.toLocaleString()}
                 {r.rejectionReason ? ` · rejected: ${r.rejectionReason}` : ""}
               </p>
@@ -79,7 +79,7 @@ export default async function AdminReviewsPage({ searchParams }: { searchParams:
           );
         })}
         {reviews.length === 0 && (
-          <p className="py-8 font-body text-stone/50">
+          <p className="py-8 font-body text-stone/80">
             {status === "PENDING" ? "Nothing waiting for approval." : `No ${LABELS[status].toLowerCase()} reviews.`}
           </p>
         )}

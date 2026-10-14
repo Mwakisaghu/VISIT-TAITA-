@@ -42,9 +42,9 @@ export default function SponsorForm({
       </Field>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="font-body text-sm text-stone/70">Show on these event pages</legend>
+        <legend className="font-body text-sm text-stone/80">Show on these event pages</legend>
         {SPONSOR_PROGRAMS.map((p) => (
-          <label key={p.key} className="flex items-center gap-2 font-body text-sm text-stone/70">
+          <label key={p.key} className="flex items-center gap-2 font-body text-sm text-stone/80">
             <input
               type="checkbox"
               name="programs"
@@ -56,7 +56,7 @@ export default function SponsorForm({
         ))}
       </fieldset>
 
-      <label className="flex items-center gap-2 font-body text-sm text-stone/70">
+      <label className="flex items-center gap-2 font-body text-sm text-stone/80">
         <input type="checkbox" name="showOnHome" defaultChecked={sponsor?.showOnHome} />
         Show on the homepage
       </label>
@@ -79,7 +79,7 @@ export default function SponsorForm({
         </Field>
       </div>
 
-      <p className="font-body text-xs text-stone/50">
+      <p className="font-body text-xs text-stone/80">
         Only add real, confirmed partners — sponsors appear publicly once published.
       </p>
 
@@ -96,7 +96,7 @@ export default function SponsorForm({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

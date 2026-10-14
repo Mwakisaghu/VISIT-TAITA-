@@ -57,12 +57,12 @@ export default function FieldNoteForm({
     return (
       <div role="status" className="rounded-sm border border-canopy/30 bg-canopy/10 p-6">
         <p className="font-display text-2xl text-stone">Thank you — your Field Note is in.</p>
-        <p className="mt-2 font-body text-stone/70">We&apos;ll review it and email you at your account address. You can still edit it until it&apos;s published.</p>
+        <p className="mt-2 font-body text-stone/80">We&apos;ll review it and email you at your account address. You can still edit it until it&apos;s published.</p>
       </div>
     );
   }
 
-  const label = "font-body text-sm text-stone/70";
+  const label = "font-body text-sm text-stone/80";
 
   return (
     <form onSubmit={submit} className="flex flex-col gap-6">
@@ -73,7 +73,7 @@ export default function FieldNoteForm({
 
       {prompts.length > 0 && (
         <div className="flex flex-col gap-5">
-          <p className="font-body text-sm text-stone/60">Show the evidence — specifics, not adjectives.</p>
+          <p className="font-body text-sm text-stone/80">Show the evidence — specifics, not adjectives.</p>
           {prompts.map((p, i) => (
             <label key={`${i}-${p}`} className="flex flex-col gap-1">
               <span className="font-body text-sm font-semibold text-stone">{p}</span>
@@ -86,7 +86,7 @@ export default function FieldNoteForm({
                 rows={3}
                 className="input"
               />
-              <span className="font-body text-xs text-stone/40">
+              <span className="font-body text-xs text-stone/80">
                 {L.answerMin}–{L.answerMax} characters
               </span>
             </label>
@@ -104,7 +104,7 @@ export default function FieldNoteForm({
       <label className="flex flex-col gap-1">
         <span className={label}>Links to your own posts about this — one per line, up to {L.maxLinks}</span>
         <textarea name="links" defaultValue={defaults?.links} rows={2} className="input" placeholder={"instagram.com/p/…"} />
-        <span className="font-body text-xs text-stone/40">Add at least one photo link or one post link.</span>
+        <span className="font-body text-xs text-stone/80">Add at least one photo link or one post link.</span>
       </label>
 
       {disclosureLine && (

@@ -42,7 +42,7 @@ export default function DeleteAccountForm() {
   return (
     <form onSubmit={submit} className="flex max-w-md flex-col gap-4">
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Enter your password to confirm</span>
+        <span className="font-body text-sm text-stone/80">Enter your password to confirm</span>
         <input
           type="password"
           name="password"

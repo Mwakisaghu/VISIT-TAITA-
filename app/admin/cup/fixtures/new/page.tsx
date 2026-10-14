@@ -13,7 +13,7 @@ export default async function NewFixturePage() {
       {teams.length >= 2 && venues.length >= 1 ? (
         <FixtureForm teams={teams} venues={venues} />
       ) : (
-        <p className="mt-6 font-body text-stone/60">
+        <p className="mt-6 font-body text-stone/80">
           You need at least two teams and one venue before you can schedule a
           fixture.
         </p>

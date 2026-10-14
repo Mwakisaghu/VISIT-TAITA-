@@ -20,7 +20,7 @@ export default async function QrLinksPage() {
   return (
     <div>
       <h1 className="font-display text-3xl text-stone">QR links</h1>
-      <p className="mt-2 max-w-2xl font-body text-sm text-stone/60">
+      <p className="mt-2 max-w-2xl font-body text-sm text-stone/80">
         A printed QR code points at a short, permanent address on your own site (like <code>/go/hills</code>), which then forwards to a page.
         You can change where it forwards <strong>at any time without reprinting</strong>, and see how many people scanned it. A link can be switched off but
         never deleted or renamed, because printed copies exist.
@@ -41,19 +41,19 @@ export default async function QrLinksPage() {
 
       <div className="mt-8 overflow-x-auto">
         <table className="w-full min-w-[40rem] text-left font-body text-sm">
-          <thead className="text-xs text-stone/50"><tr><th className="py-2 pr-4">Link</th><th className="pr-4">Goes to</th><th className="pr-4">Scans</th><th className="pr-4">7 days</th><th className="pr-4">30 days</th><th /></tr></thead>
+          <thead className="text-xs text-stone/80"><tr><th className="py-2 pr-4">Link</th><th className="pr-4">Goes to</th><th className="pr-4">Scans</th><th className="pr-4">7 days</th><th className="pr-4">30 days</th><th /></tr></thead>
           <tbody className="divide-y divide-stone/10">
             {links.map((l) => (
               <tr key={l.id} className={l.active ? "" : "opacity-60"}>
-                <td className="py-3 pr-4"><p className="text-stone">{l.label}</p><p className="text-xs text-stone/50">/go/{l.slug}{l.active ? "" : " · switched off"}</p></td>
-                <td className="pr-4 text-stone/70">{l.target}</td>
+                <td className="py-3 pr-4"><p className="text-stone">{l.label}</p><p className="text-xs text-stone/80">/go/{l.slug}{l.active ? "" : " · switched off"}</p></td>
+                <td className="pr-4 text-stone/80">{l.target}</td>
                 <td className="pr-4">{l.clicks}</td>
                 <td className="pr-4">{sum(l.id, 7)}</td>
                 <td className="pr-4">{sum(l.id, 30)}</td>
                 <td><Link href={`/admin/qr/${l.id}`} className="text-rust underline">QR &amp; edit</Link></td>
               </tr>
             ))}
-            {links.length === 0 && <tr><td colSpan={6} className="py-6 text-stone/50">No links yet.</td></tr>}
+            {links.length === 0 && <tr><td colSpan={6} className="py-6 text-stone/80">No links yet.</td></tr>}
           </tbody>
         </table>
       </div>

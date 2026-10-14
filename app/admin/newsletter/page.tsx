@@ -19,7 +19,7 @@ function Tile({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-sm border border-stone/15 p-4">
       <p className="font-display text-3xl text-stone">{value.toLocaleString("en-GB")}</p>
-      <p className="mt-1 font-body text-xs text-stone/60">{label}</p>
+      <p className="mt-1 font-body text-xs text-stone/80">{label}</p>
     </div>
   );
 }
@@ -61,7 +61,7 @@ export default async function AdminNewsletterPage({ searchParams }: { searchPara
   return (
     <div>
       <h1 className="font-display text-3xl text-stone">Newsletter</h1>
-      <p className="mt-2 max-w-prose font-body text-sm text-stone/60">
+      <p className="mt-2 max-w-prose font-body text-sm text-stone/80">
         People are only added after they confirm their address by email, and only confirmed subscribers are ever mailed. Every email carries the person&apos;s own unsubscribe link.
       </p>
 
@@ -98,7 +98,7 @@ export default async function AdminNewsletterPage({ searchParams }: { searchPara
       {legacyCount > 0 && (
         <section className="mt-6 rounded-sm border border-stone/15 p-5">
           <p className="font-display text-lg text-stone">{legacyCount} older sign-up{legacyCount === 1 ? "" : "s"} never confirmed their address</p>
-          <p className="mt-1 max-w-prose font-body text-sm text-stone/70">
+          <p className="mt-1 max-w-prose font-body text-sm text-stone/80">
             They signed up before confirmation existed, so we can&apos;t be sure the address is theirs and they will <strong>not</strong> be mailed. Ask them to confirm; anyone who doesn&apos;t simply stays off the list.
           </p>
           <div className="mt-4">
@@ -117,7 +117,7 @@ export default async function AdminNewsletterPage({ searchParams }: { searchPara
       <section className="mt-12">
         <h2 className="font-display text-2xl text-stone">Newsletters</h2>
         {campaigns.length === 0 ? (
-          <p className="mt-3 font-body text-stone/50">None yet.</p>
+          <p className="mt-3 font-body text-stone/80">None yet.</p>
         ) : (
           <div className="mt-4 divide-y divide-stone/10">
             {campaigns.map((c) => {
@@ -128,7 +128,7 @@ export default async function AdminNewsletterPage({ searchParams }: { searchPara
               return (
                 <div key={c.id} className="flex flex-wrap items-center justify-between gap-4 py-4">
                   <div>
-                    <p className="font-body text-xs text-stone/50">
+                    <p className="font-body text-xs text-stone/80">
                       {state}
                       {c.startedAt ? ` · to ${c.recipientCount.toLocaleString("en-GB")} · ${sentN} delivered${waiting ? ` · ${waiting} waiting` : ""}${failed ? ` · ${failed} failed` : ""}` : ""} · {c.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                     </p>
@@ -153,13 +153,13 @@ export default async function AdminNewsletterPage({ searchParams }: { searchPara
       <section className="mt-12">
         <h2 className="font-display text-2xl text-stone">Recent sign-ups</h2>
         {recent.length === 0 ? (
-          <p className="mt-3 font-body text-stone/50">Nobody has signed up yet.</p>
+          <p className="mt-3 font-body text-stone/80">Nobody has signed up yet.</p>
         ) : (
           <ul className="mt-4 divide-y divide-stone/10">
             {recent.map((s) => (
               <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 py-2 font-body text-sm">
                 <span className="text-stone">{s.email}</span>
-                <span className="text-stone/50">
+                <span className="text-stone/80">
                   {s.status === "ACTIVE" ? (s.confirmedAt ? "Confirmed" : "Not confirmed (older sign-up)") : s.status === "PENDING" ? "Waiting to confirm" : "Unsubscribed"} ·{" "}
                   {s.createdAt.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                 </span>

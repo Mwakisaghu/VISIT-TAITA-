@@ -22,11 +22,11 @@ export default function FixtureRow({ fixture }: { fixture: FixtureWithRelations 
             {fixture.homeScore} – {fixture.awayScore}
           </p>
         ) : (
-          <p className="font-body text-xs text-stone/50">
+          <p className="font-body text-xs text-stone/80">
             {fixture.kickoff.toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
           </p>
         )}
-        <p className="mt-0.5 font-body text-[11px] text-stone/40">{fixture.venue.name}</p>
+        <p className="mt-0.5 font-body text-[11px] text-stone/80">{fixture.venue.name}</p>
       </div>
 
       <div className="flex flex-1 items-center gap-2">

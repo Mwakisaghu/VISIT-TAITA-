@@ -91,7 +91,7 @@ export default function RewardForm({
           ))}
         </select>
       </Field>
-      <p className="-mt-3 font-body text-xs text-stone/50">
+      <p className="-mt-3 font-body text-xs text-stone/80">
         A partner (or seller) account can look up this reward&apos;s voucher codes and mark them used from its own
         dashboard. Leave blank if staff will handle it.
       </p>
@@ -103,7 +103,7 @@ export default function RewardForm({
         </select>
       </Field>
 
-      <p className="font-body text-xs text-stone/50">
+      <p className="font-body text-xs text-stone/80">
         Only list rewards a partner has actually agreed to honour. Visitors spend real points on these.
       </p>
 
@@ -120,7 +120,7 @@ export default function RewardForm({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
-      <span className="font-body text-sm text-stone/70">{label}</span>
+      <span className="font-body text-sm text-stone/80">{label}</span>
       {children}
     </label>
   );

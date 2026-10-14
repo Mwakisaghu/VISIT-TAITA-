@@ -26,9 +26,9 @@ export default function UserRowActions({ userId, name, suspended }: { userId: st
       </div>
       {asking && !suspended && (
         <form onSubmit={(e) => { e.preventDefault(); run(() => suspendUser(userId, reason)); }} className="flex w-64 flex-col gap-2 rounded-sm border border-rust/30 bg-rust/5 p-3 text-left">
-          <label className="font-body text-xs text-stone/70" htmlFor={`why-${userId}`}>Why? (other admins will see it)</label>
+          <label className="font-body text-xs text-stone/80" htmlFor={`why-${userId}`}>Why? (other admins will see it)</label>
           <input id={`why-${userId}`} value={reason} onChange={(e) => setReason(e.target.value)} minLength={3} maxLength={200} required className="input" />
-          <p className="font-body text-xs text-stone/60">They are signed out and can&apos;t sign in until reinstated.</p>
+          <p className="font-body text-xs text-stone/80">They are signed out and can&apos;t sign in until reinstated.</p>
           <div className="flex gap-2">
             <button type="submit" disabled={busy} className="focus-ring rounded-full bg-rust px-3 py-1 font-body text-xs text-parchment hover:bg-rust-deep disabled:opacity-50">{busy ? "Suspending…" : "Suspend"}</button>
             <button type="button" onClick={() => { setAsking(false); setError(""); }} className="focus-ring rounded-full border border-stone/20 px-3 py-1 font-body text-xs text-stone">Cancel</button>

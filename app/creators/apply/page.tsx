@@ -19,7 +19,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
-        <Link href="/creators" className="font-body text-sm text-stone/60 hover:text-rust">
+        <Link href="/creators" className="font-body text-sm text-stone/80 hover:text-rust">
           ← The Field Crew
         </Link>
         <h1 className="mt-6 font-display text-3xl text-stone sm:text-4xl">Join the Field Crew</h1>
@@ -36,7 +36,7 @@ export default async function CreatorApplyPage() {
     const next = encodeURIComponent("/creators/apply");
     return (
       <Shell>
-        <p className="mt-4 max-w-prose font-body text-stone/70">
+        <p className="mt-4 max-w-prose font-body text-stone/80">
           Sign in or create a free Taita Passport first — it&apos;s how we link your application to your account.
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
@@ -75,7 +75,7 @@ export default async function CreatorApplyPage() {
   if (creator) {
     return (
       <Shell>
-        <p className="mt-4 max-w-prose font-body text-stone/70">
+        <p className="mt-4 max-w-prose font-body text-stone/80">
           You&apos;re already in the Field Crew, {creator.displayName}.
           {creator.status === "PAUSED" ? " Your profile is currently paused — get in touch if that's unexpected." : ""}
         </p>
@@ -96,7 +96,7 @@ export default async function CreatorApplyPage() {
       <Shell>
         <div role="status" className="mt-6 max-w-prose rounded-sm border border-ochre/50 bg-ochre/10 p-5">
           <p className="font-display text-xl text-stone">Your application is under review.</p>
-          <p className="mt-2 font-body text-sm text-stone/70">
+          <p className="mt-2 font-body text-sm text-stone/80">
             You applied on {formatDate(pending.createdAt)}. We&apos;ll email you at your account address once
             we&apos;ve decided.
           </p>
@@ -107,7 +107,7 @@ export default async function CreatorApplyPage() {
 
   return (
     <Shell>
-      <p className="mt-4 max-w-prose font-body text-lg text-stone/70">
+      <p className="mt-4 max-w-prose font-body text-lg text-stone/80">
         We&apos;re building a crew of local storytellers and visiting creators who show Taita as it really is —
         with real evidence and honest disclosure.
       </p>

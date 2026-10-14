@@ -52,13 +52,13 @@ export default async function PartnerVouchersPage({
   return (
     <div>
       <h1 className="font-display text-3xl text-stone">Vouchers</h1>
-      <p className="mt-2 max-w-prose font-body text-stone/70">
+      <p className="mt-2 max-w-prose font-body text-stone/80">
         When a visitor shows you a Visit Taita voucher, enter its code to check it before you honour it.
       </p>
 
       <form method="get" className="mt-6 flex max-w-md items-end gap-3">
         <label className="flex flex-1 flex-col gap-1">
-          <span className="font-body text-sm text-stone/70">Voucher code</span>
+          <span className="font-body text-sm text-stone/80">Voucher code</span>
           <input
             name="code"
             defaultValue={typed}
@@ -107,20 +107,20 @@ export default async function PartnerVouchersPage({
               </p>
               <p className="mt-3 font-display text-2xl tracking-wider text-stone">{found.code}</p>
               <p className="mt-2 font-body text-stone">{found.reward.name}</p>
-              <p className="font-body text-sm text-stone/70">
+              <p className="font-body text-sm text-stone/80">
                 Holder: {holderLabel(found.user.name)} · redeemed {formatDate(found.createdAt)}
                 {found.reward.validUntil ? ` · valid until ${formatDate(found.reward.validUntil)}` : ""}
               </p>
               {found.status === "ISSUED" && (!expired || isAdmin) && (
                 <>
-                  <p className="mt-3 font-body text-sm text-stone/70">{found.reward.instructions}</p>
+                  <p className="mt-3 font-body text-sm text-stone/80">{found.reward.instructions}</p>
                   <div className="mt-4">
                     <MarkUsedButton redemptionId={found.id} />
                   </div>
                 </>
               )}
               {found.status === "ISSUED" && expired && !isAdmin && (
-                <p className="mt-3 font-body text-sm text-stone/70">
+                <p className="mt-3 font-body text-sm text-stone/80">
                   Please check with Visit Taita before honouring this voucher.
                 </p>
               )}
@@ -136,7 +136,7 @@ export default async function PartnerVouchersPage({
           <div key={v.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
             <div>
               <p className="font-display text-lg tracking-wider text-stone">{v.code}</p>
-              <p className="font-body text-sm text-stone/70">
+              <p className="font-body text-sm text-stone/80">
                 {v.reward.name} · {holderLabel(v.user.name)} · {formatDate(v.createdAt)} ·{" "}
                 {redemptionStatusLabel(v.status)}
               </p>
@@ -145,7 +145,7 @@ export default async function PartnerVouchersPage({
           </div>
         ))}
         {recent.length === 0 && (
-          <p className="py-6 font-body text-stone/50">
+          <p className="py-6 font-body text-stone/80">
             No vouchers yet. They appear here when visitors redeem rewards you honour.
           </p>
         )}

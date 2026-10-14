@@ -10,7 +10,7 @@ function Tile({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-sm border border-stone/15 p-4">
       <p className="font-display text-3xl text-stone">{value}</p>
-      <p className="mt-1 font-body text-xs text-stone/60">{label}</p>
+      <p className="mt-1 font-body text-xs text-stone/80">{label}</p>
     </div>
   );
 }
@@ -28,7 +28,7 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
         <div>
           <p className="font-body text-sm text-rust">Taita Field Crew · Impact report</p>
           <h1 className="mt-1 font-display text-3xl text-stone">{data.sponsor.name}</h1>
-          <p className="mt-1 font-body text-sm text-stone/60">Prepared {formatDeadline(data.generatedAt)}</p>
+          <p className="mt-1 font-body text-sm text-stone/80">Prepared {formatDeadline(data.generatedAt)}</p>
         </div>
         {logo && (
           <span className="relative h-16 w-32 shrink-0">
@@ -46,14 +46,14 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
       </section>
 
       {data.missions.length === 0 ? (
-        <p className="mt-10 font-body text-stone/60">No sponsored missions have run yet. This report fills in as they do.</p>
+        <p className="mt-10 font-body text-stone/80">No sponsored missions have run yet. This report fills in as they do.</p>
       ) : (
         <div className="mt-10 flex flex-col gap-10">
           {data.missions.map((m) => {
             const i = m.impact;
             return (
               <section key={m.id} className="break-inside-avoid">
-                <p className="font-body text-xs text-stone/50">
+                <p className="font-body text-xs text-stone/80">
                   {m.campaign ? `${m.campaign} · ` : ""}📍 {m.place} · {m.status === "OPEN" ? "Open" : "Closed"}
                 </p>
                 <h2 className="font-display text-2xl text-stone">
@@ -61,26 +61,26 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
                     {m.title}
                   </Link>
                 </h2>
-                {m.supportNote && <p className="mt-1 font-body text-sm text-stone/70">What your sponsorship provided: {m.supportNote}</p>}
+                {m.supportNote && <p className="mt-1 font-body text-sm text-stone/80">What your sponsorship provided: {m.supportNote}</p>}
 
                 <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
                   <div>
-                    <dt className="font-body text-xs text-stone/50">Creators</dt>
+                    <dt className="font-body text-xs text-stone/80">Creators</dt>
                     <dd className="font-body text-lg text-stone">{formatCount(i.claims)}</dd>
                   </div>
                   <div>
-                    <dt className="font-body text-xs text-stone/50">Field Notes published</dt>
+                    <dt className="font-body text-xs text-stone/80">Field Notes published</dt>
                     <dd className="font-body text-lg text-stone">{formatCount(i.notes)}</dd>
                   </div>
                   <div>
-                    <dt className="font-body text-xs text-stone/50">Page views (approx.)</dt>
+                    <dt className="font-body text-xs text-stone/80">Page views (approx.)</dt>
                     <dd className="font-body text-lg text-stone">{formatCount(i.views)}</dd>
                   </div>
                   <div>
-                    <dt className="font-body text-xs text-stone/50">Enquiries started</dt>
+                    <dt className="font-body text-xs text-stone/80">Enquiries started</dt>
                     <dd className="font-body text-lg text-stone">
                       {formatCount(i.enquiries)}
-                      {i.enquiries > 0 && <span className="font-body text-xs text-stone/50"> ({formatCount(i.confirmed)} confirmed)</span>}
+                      {i.enquiries > 0 && <span className="font-body text-xs text-stone/80"> ({formatCount(i.confirmed)} confirmed)</span>}
                     </dd>
                   </div>
                 </dl>
@@ -98,7 +98,7 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
                         <Link href={`/notes/${n.slug}`} className="underline hover:text-rust">
                           {n.title}
                         </Link>{" "}
-                        <span className="text-stone/50">
+                        <span className="text-stone/80">
                           — by {n.creatorName}
                           {n.publishedAt ? `, ${formatDeadline(n.publishedAt)}` : ""} · {formatCount(n.views)} view{n.views === 1 ? "" : "s"}
                         </span>
@@ -116,7 +116,7 @@ export default function SponsorReport({ data }: { data: SponsorReportData }) {
         <h2 className="font-display text-lg text-stone">How to read these numbers</h2>
         <ul className="mt-3 flex flex-col gap-2">
           {METHODOLOGY.map((line) => (
-            <li key={line} className="font-body text-sm leading-relaxed text-stone/70">
+            <li key={line} className="font-body text-sm leading-relaxed text-stone/80">
               {line}
             </li>
           ))}

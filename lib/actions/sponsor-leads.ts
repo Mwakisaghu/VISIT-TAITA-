@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { notifySponsorLead } from "@/lib/notifications";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { safeHttpUrl } from "@/lib/url";
+import { SPAM_RETRY, spamVerdict } from "@/lib/spam";
 
 type SponsorLeadResult = { success?: true; error?: string };
 
@@ -46,9 +47,8 @@ const leadSchema = z.object({
 export async function submitSponsorLead(formData: FormData): Promise<SponsorLeadResult> {
   // Honeypot: real visitors never see or fill this field. Bots that do get a
   // normal-looking success and nothing is stored.
-  if (String(formData.get("companyWebsite") ?? "").trim() !== "") {
-    return { success: true };
-  }
+  const guard = spamVerdict(formData, { honeypots: ["companyWebsite"] });
+  if (!guard.ok) return guard.reason === "honeypot" ? { success: true } : { error: SPAM_RETRY };
 
   const parsed = leadSchema.safeParse({
     companyName: formData.get("companyName"),

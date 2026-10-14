@@ -38,7 +38,7 @@ export default async function SponsorStrip({ program }: { program: StripProgram 
           <p className="font-body text-sm text-stone/80">{LABELS[program]}</p>
           <Link
             href="/sponsors"
-            className="focus-ring font-body text-sm text-stone/70 transition-colors hover:text-rust"
+            className="focus-ring font-body text-sm text-stone/80 transition-colors hover:text-rust"
           >
             Become a partner →
           </Link>

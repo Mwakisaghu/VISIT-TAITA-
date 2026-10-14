@@ -17,7 +17,7 @@ export default function SectionHeading({
       </h2>
       {description && (
         <p
-          className={`mt-3 font-body text-stone/70 ${
+          className={`mt-3 font-body text-stone/80 ${
             align === "center" ? "mx-auto max-w-md" : "max-w-md"
           }`}
         >

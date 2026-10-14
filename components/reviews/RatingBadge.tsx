@@ -7,14 +7,14 @@ export default function RatingBadge({
   if (!rating || rating.count <= 0) return null;
   return (
     <span
-      className="inline-flex items-center gap-1 font-body text-xs text-stone/70"
+      className="inline-flex items-center gap-1 font-body text-xs text-stone/80"
       aria-label={`Rated ${rating.average.toFixed(1)} out of 5 from ${rating.count} review${rating.count === 1 ? "" : "s"}`}
     >
       <span className="text-ochre" aria-hidden="true">
         ★
       </span>
       <span aria-hidden="true">{rating.average.toFixed(1)}</span>
-      <span className="text-stone/40" aria-hidden="true">
+      <span className="text-stone/80" aria-hidden="true">
         ({rating.count})
       </span>
     </span>

@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { reserveTicketsAction } from "@/lib/actions/tickets";
 import { kes } from "@/lib/ticket";
 
-const label = "font-body text-sm text-stone/70";
+const label = "font-body text-sm text-stone/80";
 
 /** The "get tickets" box on an event page. */
 export default function TicketPanel(p: { eventId: string; mode: "FREE" | "PAID"; price: number; perPerson: number; left: number | null; signedIn: boolean; verified: boolean; loginHref: string; defaultName: string; closedReason: string | null }) {
@@ -19,9 +19,9 @@ export default function TicketPanel(p: { eventId: string; mode: "FREE" | "PAID";
   const [error, setError] = useState("");
   const q = Math.min(qty, max);
 
-  if (p.closedReason) return <p className="font-body text-sm text-stone/70">{p.closedReason}</p>;
-  if (!p.signedIn) return <p className="font-body text-sm text-stone/70"><Link href={p.loginHref} className="text-rust underline">Sign in</Link> to get {p.mode === "FREE" ? "your free ticket" : "tickets"}{p.mode === "PAID" ? ` — ${kes(p.price)} each` : ""}.</p>;
-  if (!p.verified) return <p className="font-body text-sm text-stone/70">Please verify your email address first — we send your tickets there. You can resend the link from <Link href="/account" className="text-rust underline">your account</Link>.</p>;
+  if (p.closedReason) return <p className="font-body text-sm text-stone/80">{p.closedReason}</p>;
+  if (!p.signedIn) return <p className="font-body text-sm text-stone/80"><Link href={p.loginHref} className="text-rust underline">Sign in</Link> to get {p.mode === "FREE" ? "your free ticket" : "tickets"}{p.mode === "PAID" ? ` — ${kes(p.price)} each` : ""}.</p>;
+  if (!p.verified) return <p className="font-body text-sm text-stone/80">Please verify your email address first — we send your tickets there. You can resend the link from <Link href="/account" className="text-rust underline">your account</Link>.</p>;
 
   return (
     <form
@@ -37,7 +37,7 @@ export default function TicketPanel(p: { eventId: string; mode: "FREE" | "PAID";
       <label className="flex flex-col gap-1"><span className={label}>Name on the tickets</span><input value={name} onChange={(e) => setName(e.target.value)} required minLength={2} maxLength={80} autoComplete="name" className="input" /></label>
       <label className="flex flex-col gap-1"><span className={label}>Your phone number</span><input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" required placeholder="0712 345 678" autoComplete="tel" className="input" /></label>
       <div className="rounded-sm border border-stone/10 bg-stone/5 p-3 font-body text-sm text-stone/80">
-        {p.mode === "FREE" ? <p><strong>Free.</strong> Your {q === 1 ? "ticket is" : "tickets are"} issued straight away.</p> : <><p>{kes(p.price)} × {q} = <strong>{kes(p.price * q)}</strong></p><p className="mt-1 text-stone/60">You&apos;ll be shown how to pay next. Your {q === 1 ? "ticket is" : "tickets are"} held for you, and become valid once the organiser confirms your payment.</p></>}
+        {p.mode === "FREE" ? <p><strong>Free.</strong> Your {q === 1 ? "ticket is" : "tickets are"} issued straight away.</p> : <><p>{kes(p.price)} × {q} = <strong>{kes(p.price * q)}</strong></p><p className="mt-1 text-stone/80">You&apos;ll be shown how to pay next. Your {q === 1 ? "ticket is" : "tickets are"} held for you, and become valid once the organiser confirms your payment.</p></>}
         {p.left !== null && p.left <= 20 && <p className="mt-1 text-rust">Only {p.left} left.</p>}
       </div>
       {error && <p role="alert" className="font-body text-sm text-rust">{error}</p>}

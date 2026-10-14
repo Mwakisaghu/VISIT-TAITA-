@@ -42,7 +42,7 @@ export default function AboutPage() {
           {WHAT.map((w) => (
             <Link key={w.href} href={w.href} className="focus-ring rounded-sm border border-stone/15 p-5 transition-colors hover:border-rust">
               <p className="font-display text-xl text-stone">{w.title}</p>
-              <p className="mt-2 font-body text-sm text-stone/70">{w.text}</p>
+              <p className="mt-2 font-body text-sm text-stone/80">{w.text}</p>
             </Link>
           ))}
         </div>
@@ -74,7 +74,7 @@ export default function AboutPage() {
               Taita&apos;s stories and events? <Link href="/sponsors" className="underline hover:text-rust">See sponsorship packages</Link>. Tell stories about Taita?{" "}
               <Link href="/creators/apply" className="underline hover:text-rust">Join the Field Crew</Link>. Or just <Link href="/contact" className="underline hover:text-rust">say hello</Link>.
             </p>
-            <p className="mt-6 max-w-prose font-body text-sm text-stone/50">Visit Taita is currently a preview build and is not yet live.</p>
+            <p className="mt-6 max-w-prose font-body text-sm text-stone/80">Visit Taita is currently a preview build and is not yet live.</p>
           </section>
         </div>
       </div>

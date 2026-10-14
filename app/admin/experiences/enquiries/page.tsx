@@ -17,13 +17,13 @@ export default async function AdminExperienceEnquiriesPage() {
           <div key={e.id} className="py-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="font-body text-xs text-stone/50">
+                <p className="font-body text-xs text-stone/80">
                   {e.experience.name}
                   {e.preferredDate ? ` · ${e.preferredDate.toLocaleDateString()}` : ""}
                   {e.partySize ? ` · ${e.partySize} people` : ""}
                 </p>
                 <p className="font-display text-lg text-stone">{e.name}</p>
-                <p className="font-body text-sm text-stone/60">
+                <p className="font-body text-sm text-stone/80">
                   {e.email} · {e.phone}
                 </p>
                 {(e.referredByNote || e.referredByMission) && (
@@ -31,16 +31,16 @@ export default async function AdminExperienceEnquiriesPage() {
                     Came from {e.referredByNote ? `the Field Note “${e.referredByNote.title}”` : `the mission “${e.referredByMission?.title}”`}
                   </p>
                 )}
-                <p className="mt-2 max-w-prose font-body text-sm text-stone/70">{e.message}</p>
-                <p className="mt-1 font-body text-xs text-stone/40">{e.createdAt.toLocaleString()}</p>
+                <p className="mt-2 max-w-prose font-body text-sm text-stone/80">{e.message}</p>
+                <p className="mt-1 font-body text-xs text-stone/80">{e.createdAt.toLocaleString()}</p>
               </div>
               <ExperienceEnquiryStatusSelect enquiryId={e.id} status={e.status} />
             </div>
           </div>
         ))}
-        {enquiries.length === 0 && <p className="py-8 font-body text-stone/50">No enquiries yet.</p>}
+        {enquiries.length === 0 && <p className="py-8 font-body text-stone/80">No enquiries yet.</p>}
         {enquiries.length === 200 && (
-          <p className="py-4 font-body text-xs text-stone/40">Showing the latest 200 enquiries.</p>
+          <p className="py-4 font-body text-xs text-stone/80">Showing the latest 200 enquiries.</p>
         )}
       </div>
     </div>

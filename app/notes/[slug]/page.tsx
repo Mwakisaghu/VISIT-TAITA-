@@ -59,13 +59,13 @@ export default async function FieldNotePublicPage({ params }: { params: { slug: 
     <article className="px-6 py-16">
       <div className="mx-auto max-w-3xl">
         <ViewBeacon kind="NOTE" id={note.id} />
-        <Link href="/notes" className="font-body text-sm text-stone/60 hover:text-rust">
+        <Link href="/notes" className="font-body text-sm text-stone/80 hover:text-rust">
           ← All Field Notes
         </Link>
 
         <p className="mt-6 font-body text-sm text-rust">{note.mission.campaign ?? "Field Note"}</p>
         <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">{note.title}</h1>
-        <p className="mt-3 font-body text-stone/70">
+        <p className="mt-3 font-body text-stone/80">
           By{" "}
           {creatorPublic ? (
             <Link href={`/creators/${note.creator.slug}`} className="underline hover:text-rust">
@@ -84,7 +84,7 @@ export default async function FieldNotePublicPage({ params }: { params: { slug: 
         {(badge || note.disclosureText) && (
           <div className="mt-4 rounded-sm border border-ochre/50 bg-ochre/10 p-4">
             {badge && <p className="font-body text-sm font-semibold text-stone">{badge}</p>}
-            {note.disclosureText && <p className="mt-1 font-body text-sm text-stone/70">{note.disclosureText}</p>}
+            {note.disclosureText && <p className="mt-1 font-body text-sm text-stone/80">{note.disclosureText}</p>}
           </div>
         )}
 
@@ -118,7 +118,7 @@ export default async function FieldNotePublicPage({ params }: { params: { slug: 
 
         {links.length > 0 && (
           <section className="mt-10">
-            <p className="font-body text-sm text-stone/50">Also posted on</p>
+            <p className="font-body text-sm text-stone/80">Also posted on</p>
             <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-2">
               {links.map((url) => (
                 <li key={url}>
@@ -133,7 +133,7 @@ export default async function FieldNotePublicPage({ params }: { params: { slug: 
 
         <FeaturedListings stay={note.mission.featuredAccommodation} experience={note.mission.featuredExperience} referral={{ kind: "note", slug: note.slug }} />
 
-        <p className="mt-12 border-t border-stone/10 pt-6 font-body text-sm text-stone/60">
+        <p className="mt-12 border-t border-stone/10 pt-6 font-body text-sm text-stone/80">
           Written for the mission{" "}
           <Link href={`/missions/${note.mission.slug}`} className="underline hover:text-rust">
             {note.mission.title}

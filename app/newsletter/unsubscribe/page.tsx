@@ -16,7 +16,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <p className="font-body text-sm text-rust">Visit Taita</p>
         <h1 className="mt-1 font-display text-3xl text-stone">Unsubscribe</h1>
         <div className="mt-6">{children}</div>
-        <p className="mt-10 font-body text-xs text-stone/50">
+        <p className="mt-10 font-body text-xs text-stone/80">
           <Link href="/privacy" className="underline hover:text-rust">
             Privacy Policy
           </Link>
@@ -37,7 +37,7 @@ export default async function NewsletterTokenPage({ searchParams }: { searchPara
   if (!sub) {
     return (
       <Shell>
-        <p className="font-body text-stone/70">This link isn&apos;t valid or has already been used.</p>
+        <p className="font-body text-stone/80">This link isn&apos;t valid or has already been used.</p>
       </Shell>
     );
   }
@@ -45,7 +45,7 @@ export default async function NewsletterTokenPage({ searchParams }: { searchPara
   if (sub.status === "UNSUBSCRIBED") {
     return (
       <Shell>
-        <p className="font-body text-stone/70">You&apos;re already unsubscribed. You won&apos;t hear from us.</p>
+        <p className="font-body text-stone/80">You&apos;re already unsubscribed. You won&apos;t hear from us.</p>
       </Shell>
     );
   }

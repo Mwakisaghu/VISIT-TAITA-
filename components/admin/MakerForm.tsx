@@ -5,7 +5,7 @@ import ImageField from "@/components/uploads/ImageField";
 import GuideFields from "@/components/field/GuideFields";
 import { prisma } from "@/lib/prisma";
 
-const hint = "font-body text-sm text-stone/70";
+const hint = "font-body text-sm text-stone/80";
 
 export default async function MakerForm({ maker }: { maker?: Maker }) {
   const action = saveMaker.bind(null, maker?.id ?? null);
@@ -56,5 +56,5 @@ export default async function MakerForm({ maker }: { maker?: Maker }) {
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="flex flex-col gap-1"><span className="font-body text-sm text-stone/70">{label}</span>{children}</label>;
+  return <label className="flex flex-col gap-1"><span className="font-body text-sm text-stone/80">{label}</span>{children}</label>;
 }

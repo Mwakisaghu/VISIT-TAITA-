@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveShortLink } from "@/lib/actions/qr-admin";
 
-const label = "font-body text-sm text-stone/70";
+const label = "font-body text-sm text-stone/80";
 
 export default function ShortLinkForm({ link }: { link?: { id: string; slug: string; label: string; target: string; active: boolean } }) {
   const router = useRouter();
@@ -34,7 +34,7 @@ export default function ShortLinkForm({ link }: { link?: { id: string; slug: str
       {!link && (
         <label className="flex flex-col gap-1">
           <span className={label}>Short address — permanent once printed</span>
-          <span className="flex items-center gap-1 font-body text-sm text-stone/60">
+          <span className="flex items-center gap-1 font-body text-sm text-stone/80">
             /go/<input name="slug" required maxLength={30} pattern="[a-z0-9]([a-z0-9\-]{0,28}[a-z0-9])?" placeholder="hills" className="input flex-1" />
           </span>
         </label>

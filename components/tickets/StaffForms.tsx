@@ -7,7 +7,7 @@ import { PAY_METHODS, type PayMethodKey } from "@/lib/ticket";
 import { formatEat } from "@/lib/booking";
 
 const quiet = "focus-ring rounded-full border border-stone/20 px-4 py-1.5 font-body text-sm text-stone hover:border-rust hover:text-rust disabled:opacity-50";
-const lab = "font-body text-sm text-stone/70";
+const lab = "font-body text-sm text-stone/80";
 function useRun() {
   const router = useRouter(); const [busy, setBusy] = useState(false); const [error, setError] = useState(""); const [message, setMessage] = useState("");
   const run = async (fn: () => Promise<TicketResult>) => { setBusy(true); setError(""); setMessage(""); try { const r = await fn(); if (!r.ok) setError(r.error); else { setMessage(r.message); router.refresh(); } } catch { setError("Something went wrong — please try again."); } finally { setBusy(false); } };
@@ -71,7 +71,7 @@ export function CancelGroupForm({ eventId, groupId }: { eventId: string; groupId
       {open && (
         <div className="mt-2 flex max-w-md flex-col gap-2 rounded-sm border border-rust/30 bg-rust/5 p-3">
           <input value={why} onChange={(e) => setWhy(e.target.value)} placeholder="Reason (the guest will see it)" maxLength={200} className="input" aria-label="Reason" />
-          <p className="font-body text-xs text-stone/60">If they have paid, you will need to refund them yourself: the payment went to the organiser.</p>
+          <p className="font-body text-xs text-stone/80">If they have paid, you will need to refund them yourself: the payment went to the organiser.</p>
           {note}
           <button type="button" disabled={busy} onClick={() => run(() => cancelTicketsAction(eventId, groupId, why))} className={`${quiet} w-fit`}>Cancel and tell the guest</button>
         </div>
@@ -95,7 +95,7 @@ export function DoorBox({ eventId }: { eventId: string }) {
   const router = useRouter(); const [number, setNumber] = useState(""); const [busy, setBusy] = useState(false); const [error, setError] = useState(""); const [out, setOut] = useState<any>(null);
   return (
     <form onSubmit={async (e) => { e.preventDefault(); setBusy(true); setError(""); setOut(null); try { const r = await admitAction(eventId, { number }); if (!r.ok) setError(r.error); else { setOut(r.admission); if (r.admission.result === "ADMITTED") { setNumber(""); router.refresh(); } } } catch { setError("Something went wrong — please try again."); } finally { setBusy(false); } }} className="flex max-w-md flex-col gap-2">
-      <label className="flex flex-col gap-1 font-body text-sm text-stone/70">Ticket number<input value={number} onChange={(e) => setNumber(e.target.value)} required placeholder="e.g. SHR-0042" autoCapitalize="characters" autoComplete="off" className="input" aria-label="Ticket number" /></label>
+      <label className="flex flex-col gap-1 font-body text-sm text-stone/80">Ticket number<input value={number} onChange={(e) => setNumber(e.target.value)} required placeholder="e.g. SHR-0042" autoCapitalize="characters" autoComplete="off" className="input" aria-label="Ticket number" /></label>
       {error && <p role="alert" className="font-body text-sm text-rust">{error}</p>}
       {out && <Outcome a={out} />}
       <button type="submit" disabled={busy} className={`${quiet} w-fit`}>{busy ? "Checking…" : "Check and admit"}</button>

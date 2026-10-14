@@ -30,7 +30,7 @@ export default async function PartnerProductsPage() {
         {products.map((p) => (
           <div key={p.id} className="flex items-center justify-between gap-4 py-4">
             <div>
-              <p className="font-body text-xs text-stone/50">
+              <p className="font-body text-xs text-stone/80">
                 {p.category} · {p.status} · {formatPrice(p.price)} · {p.inventory} in stock
               </p>
               <p className="font-display text-lg text-stone">{p.name}</p>
@@ -38,7 +38,7 @@ export default async function PartnerProductsPage() {
             <div className="flex items-center gap-3">
               <Link
                 href={`/partner/products/${p.id}`}
-                className="focus-ring font-body text-sm text-stone/70 hover:text-rust"
+                className="focus-ring font-body text-sm text-stone/80 hover:text-rust"
               >
                 Edit
               </Link>
@@ -48,7 +48,7 @@ export default async function PartnerProductsPage() {
                   await deleteSellerProduct(p.id);
                 }}
               >
-                <button type="submit" className="focus-ring font-body text-sm text-stone/40 hover:text-rust">
+                <button type="submit" className="focus-ring font-body text-sm text-stone/80 hover:text-rust">
                   Delete
                 </button>
               </form>
@@ -56,7 +56,7 @@ export default async function PartnerProductsPage() {
           </div>
         ))}
         {products.length === 0 && (
-          <p className="py-8 font-body text-stone/50">No listings yet — create your first one.</p>
+          <p className="py-8 font-body text-stone/80">No listings yet — create your first one.</p>
         )}
       </div>
     </div>

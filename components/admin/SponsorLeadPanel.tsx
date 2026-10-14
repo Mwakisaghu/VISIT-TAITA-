@@ -41,7 +41,7 @@ export default function SponsorLeadPanel({
   return (
     <div className="mt-8 flex max-w-xl flex-col gap-6">
       <div>
-        <p className="font-body text-sm text-stone/70">Pipeline status</p>
+        <p className="font-body text-sm text-stone/80">Pipeline status</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {SPONSOR_LEAD_STATUSES.map((s) => (
             <button
@@ -65,7 +65,7 @@ export default function SponsorLeadPanel({
       </div>
 
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/70">Internal notes</span>
+        <span className="font-body text-sm text-stone/80">Internal notes</span>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
