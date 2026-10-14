@@ -14,6 +14,9 @@ import PersonChip from "@/components/field/PersonChip";
 import AltitudeRibbon from "@/components/field/AltitudeRibbon";
 import { LEVEL_LABEL, climbLabel } from "@/lib/field-guide";
 import ShareBar from "@/components/share/ShareBar";
+import MoneyLabel from "@/components/payouts/MoneyLabel";
+import { moneyLabel, showMoneyLabel } from "@/lib/money-label";
+import { getSettings } from "@/lib/payout-ops";
 
 export async function generateStaticParams() {
   const experiences = await prisma.experience.findMany({ select: { slug: true } });
@@ -53,6 +56,9 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
 
   // Online booking: only when the host has switched it on, set a price and added dates that still have room.
   const bookable = experience.bookingEnabled && !!experience.priceFrom;
+  // Where the money goes: shown only when a host really is paid through the site (the same rule payouts use).
+  const moneySettings = showMoneyLabel(experience) ? await getSettings() : null;
+  const money = moneySettings ? moneyLabel(experience.priceFrom as number, moneySettings.commissionPercent, moneySettings.holdDays) : null;
   const openDates = bookable
     ? (await prisma.experienceSession.findMany({ where: { experienceId: experience.id, status: "OPEN", startsAt: { gt: new Date(Date.now() + experience.bookingCutoffHours * 3600000) } }, orderBy: { startsAt: "asc" }, take: 24 }))
         .filter((s) => s.capacity - s.seatsTaken > 0).slice(0, 12)
@@ -148,6 +154,12 @@ export default async function ExperienceDetailPage({ params }: { params: { slug:
                       signedIn={!!viewer} verified={!!viewer?.emailVerifiedAt} loginHref={`/login?next=/experiences/listing/${experience.slug}`}
                     />
                   </div>
+                </div>
+              )}
+
+              {money && (
+                <div className="border-t border-stone/10 pt-6">
+                  <MoneyLabel data={money} />
                 </div>
               )}
 
