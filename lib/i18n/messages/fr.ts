@@ -282,4 +282,11 @@ export const fr: Record<string, string> = {
   "October 2026": "octobre 2026",
   "Sources and credits": "Sources et crédits",
   "Written for Visit Taita in our own words from the sources below. Please read them for the full story.": "Rédigé pour Visit Taita avec nos propres mots, d'après les sources ci-dessous. Lisez-les pour l'histoire complète.",
+  "Something went wrong on our side.": "Un problème est survenu de notre côté.",
+  "We couldn't load this page. Please try again, or go back to the home page.": "Nous n'avons pas pu charger cette page. Veuillez réessayer ou retourner à l'accueil.",
+  "Try again": "Réessayer",
+  "Back to Visit Taita": "Retour à Visit Taita",
+  "Reference: {code}": "Référence : {code}",
+  "This trail ends here.": "Le sentier s'arrête ici.",
+  "We couldn't find that page. It may have moved, or hasn't been mapped yet.": "Nous n'avons pas trouvé cette page. Elle a peut-être été déplacée, ou n'est pas encore cartographiée.",
 };

@@ -282,4 +282,11 @@ export const de: Record<string, string> = {
   "October 2026": "Oktober 2026",
   "Sources and credits": "Quellen und Nachweise",
   "Written for Visit Taita in our own words from the sources below. Please read them for the full story.": "Für Visit Taita in eigenen Worten geschrieben, nach den Quellen unten. Lies sie für die ganze Geschichte.",
+  "Something went wrong on our side.": "Bei uns ist etwas schiefgelaufen.",
+  "We couldn't load this page. Please try again, or go back to the home page.": "Diese Seite konnte nicht geladen werden. Bitte versuche es erneut oder gehe zur Startseite zurück.",
+  "Try again": "Erneut versuchen",
+  "Back to Visit Taita": "Zurück zu Visit Taita",
+  "Reference: {code}": "Referenz: {code}",
+  "This trail ends here.": "Hier endet der Pfad.",
+  "We couldn't find that page. It may have moved, or hasn't been mapped yet.": "Diese Seite wurde nicht gefunden. Vielleicht ist sie umgezogen oder noch nicht kartiert.",
 };
