@@ -25,5 +25,12 @@ Add it in `tiles()` in `lib/account-hub-text.ts` (icon, title, status, link), gi
 ## Language
 The page is in English, Kiswahili, Français and Deutsch. The translations were drafted for Visit Taita and **must be read by a native speaker before launch** (like the rest). French says "vous", German "du". Server messages that come back from forms (for example a wrong password when deleting an account) and the reasons an account cannot yet be deleted are still English.
 
+## Your name, your password, and signing out everywhere
+- **Name:** "Edit" turns the name into a small form. The browser checks it first (2 to 80 characters, no `@`, no angle brackets, no invisible characters) and the server checks it again; the page refreshes when it is saved.
+- **Password:** needs the **current** password (a stolen session alone cannot change it). Every attempt, right or wrong, counts toward 5 an hour, and the current password is checked *before* anything about the new one is revealed. The new one follows the same rule as sign-up (10 or more characters, not a common password, not containing your name or email). On success every sign-in ends (this one too), reset links still waiting are cancelled, and the owner is emailed.
+- **Sign out everywhere:** asks once ("including this one?"), then records the moment on your account; every sign-in that began before it ends. Other devices drop within about five minutes (staff within one), because that is how often a sign-in is rechecked.
+- **Errors are codes, not English sentences:** the actions (`lib/actions/account-security.ts`) return a code and the page says it in the person's language. The password rule's messages are in `lib/password-policy-text.ts`.
+- The password and sign-out forms use the right `autocomplete` values, so password managers work, and pasting is never blocked.
+
 ## Not on it yet
-Editing your name, changing your password while signed in, and "sign out of every device" are planned. Until then the password row sends a reset link by email and name or email changes go through "Contact us".
+Changing your email address (it needs a verification flow) and two-step sign-in. Until then, an email change goes through "Contact us".

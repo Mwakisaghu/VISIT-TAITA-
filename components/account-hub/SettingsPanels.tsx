@@ -1,5 +1,8 @@
 import Link from "next/link";
 import DeleteAccountForm from "@/components/account/DeleteAccountForm";
+import ChangePasswordForm from "@/components/account-hub/ChangePasswordForm";
+import EditNameForm from "@/components/account-hub/EditNameForm";
+import SignOutEverywhere from "@/components/account-hub/SignOutEverywhere";
 import UnsubscribeButton from "@/components/account/UnsubscribeButton";
 import Icon, { type IconName } from "@/components/account-hub/Icon";
 import SignOutButton from "@/components/account-hub/SignOutButton";
@@ -60,7 +63,7 @@ export function SettingsPanels({ hub }: { hub: AccountHub }) {
       </div>
 
       <Panel id="details" title={tr("Your details")} summary={tr("Name, email, terms")} icon="person" open>
-        <Row first label={tr("Name")} action={contact}>{u.name}</Row>
+        <Row first label={tr("Name")}><EditNameForm name={u.name} /></Row>
         <Row label={tr("Email")} action={contact}>
           <span className="break-words">{u.email}</span>
           <span className={`block text-[0.85rem] font-semibold ${u.emailVerifiedAt ? "text-canopy-deep" : "text-rust-deep"}`}>{u.emailVerifiedAt ? tr("Verified on {date}", { date: formatLong(u.emailVerifiedAt, l) }) : tr("Not verified yet")}</span>
@@ -71,8 +74,9 @@ export function SettingsPanels({ hub }: { hub: AccountHub }) {
       </Panel>
 
       <Panel id="security" title={tr("Sign-in and security")} summary={tr("Password and signing out")} icon="lock">
-        <Row first label={tr("Password")} action={<Link href={lp("/forgot-password")} className={LINK}>{tr("Change password")}</Link>}>{tr("We email you a link to choose a new one.")}</Row>
+        <Row first label={tr("Password")}><ChangePasswordForm summary={u.passwordChangedAt ? tr("Last changed on {date}", { date: formatLong(u.passwordChangedAt, l) }) : tr("You have not changed it since you created your account.")} name={u.name} email={u.email} /></Row>
         <Row label={tr("This device")} action={<SignOutButton className={LINK} />}>{tr("You are signed in here.")}</Row>
+        <Row label={tr("Every device")}><SignOutEverywhere summary={tr("Lost a phone or used a shared computer? Sign out everywhere at once.")} /></Row>
       </Panel>
 
       <Panel id="language" title={tr("Language and notifications")} summary={`${LOCALE_INFO[l].native}. ${newsletterOn ? tr("The Taita letter: on") : tr("The Taita letter: off")}`} icon="globe">

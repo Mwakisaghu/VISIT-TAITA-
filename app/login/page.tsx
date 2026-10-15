@@ -13,6 +13,7 @@ function LoginForm() {
   const params = useSearchParams();
   const next = safeNext(params.get("next"));
   const resetDone = params.get("reset") === "1";
+  const signedOutEverywhere = params.get("signedout") === "1";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -93,6 +94,8 @@ function LoginForm() {
         </div>
 
         {resetDone && !error && <p className="font-body text-sm text-canopy">Your password has been changed. Sign in with the new one.</p>}
+
+        {signedOutEverywhere && !error && <p className="font-body text-sm text-canopy">You have been signed out of every device.</p>}
 
         {error && <p className="font-body text-sm text-rust">{error}</p>}
 

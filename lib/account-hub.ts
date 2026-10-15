@@ -11,7 +11,7 @@ export type ComingItem =
 export type HostStats = { liveListings: number; pendingRequests: number; newEnquiries: number; payoutPending: { amount: number; count: number } | null };
 
 export type AccountHub = {
-  user: { id: string; name: string; email: string; role: string; createdAt: Date; emailVerifiedAt: Date | null; termsAcceptedAt: Date | null; termsVersion: string | null; points: number; payoutPhone: string | null };
+  user: { id: string; name: string; email: string; role: string; createdAt: Date; emailVerifiedAt: Date | null; termsAcceptedAt: Date | null; termsVersion: string | null; points: number; payoutPhone: string | null; passwordChangedAt: Date | null };
   ribbon: ReturnType<typeof ribbonOf>;
   wishes: { id: string; slug: string; name: string }[];
   next: { id: string; slug: string; name: string } | null;
@@ -32,7 +32,7 @@ export type AccountHub = {
 
 /** The page needs the person's account; null if it has gone. */
 export async function loadAccountHub(userId: string, now: Date = new Date()): Promise<AccountHub | null> {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, name: true, email: true, role: true, createdAt: true, emailVerifiedAt: true, termsAcceptedAt: true, termsVersion: true, points: true, payoutPhone: true } });
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, name: true, email: true, role: true, createdAt: true, emailVerifiedAt: true, termsAcceptedAt: true, termsVersion: true, points: true, payoutPhone: true, passwordChangedAt: true } });
   if (!user) return null;
   const mine = { userId: user.id };
   const [visits, wishRows, bookingRows, ticketRows, orderRows, plans, expEnq, accEnq, reviewRows, notes, rewardRows, vouchers, subscriber, blockers, ownedExp, ownedAcc] = await Promise.all([

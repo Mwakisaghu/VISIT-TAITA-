@@ -3,7 +3,7 @@
 export const PASSWORD_MIN = 10;
 export const PASSWORD_MAX_BYTES = 72; // bcrypt only reads the first 72 BYTES, so a longer password would silently be cut short
 
-export type PasswordCheck = { ok: true } | { ok: false; reason: "short" | "long" | "common" | "repetitive" | "personal"; message: string };
+export type PasswordCheck = { ok: true } | { ok: false; reason: "short" | "long" | "common" | "repetitive" | "personal"; message: string; detail?: "variety" }; // detail tells the two kinds of "repetitive" apart, so each can be shown in the right language
 
 // The passwords (and the words under them) that guessing tools try first, plus words that are common in Kenya and on this site. Matched after lower-casing, undoing letter-for-symbol swaps
 // (p@ssw0rd) and removing digits and symbols from the end (password2026!).
@@ -42,7 +42,7 @@ export function checkPassword(password: unknown, ctx: { email?: string; name?: s
   if (password.length < PASSWORD_MIN) return { ok: false, reason: "short", message: `Use at least ${PASSWORD_MIN} characters.` };
   if (new TextEncoder().encode(password).length > PASSWORD_MAX_BYTES) return { ok: false, reason: "long", message: `Use at most ${PASSWORD_MAX_BYTES} characters (a few fewer if it has accents or emoji).` };
   const visible = Array.from(password.replace(/\s/g, "").toLowerCase());
-  if (visible.length < 8 || new Set(visible).size < 5) return { ok: false, reason: "repetitive", message: "Use more different characters: a short phrase of unrelated words works well." };
+  if (visible.length < 8 || new Set(visible).size < 5) return { ok: false, reason: "repetitive", detail: "variety", message: "Use more different characters: a short phrase of unrelated words works well." };
   if (tooCommon(password)) return { ok: false, reason: "common", message: "That password is too easy to guess. Try three or four unrelated words, or something only you would know." };
   if (repetitive(password)) return { ok: false, reason: "repetitive", message: "Avoid repeated or sequential characters, like 1111111111 or abcdefghij." };
   if (personal(password, ctx)) return { ok: false, reason: "personal", message: "Your password should not contain your name or email address." };
