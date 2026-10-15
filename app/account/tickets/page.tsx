@@ -1,41 +1,42 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
-import { formatEat } from "@/lib/booking";
+import SubpageFrame, { EmptyList, ListCard } from "@/components/account-hub/SubpageFrame";
+import { formatDayTime, ticketGroups } from "@/lib/account-hub-rules";
+import { ticketChip, ticketCount } from "@/lib/account-hub-text";
 import { currentBookingUser } from "@/lib/booking-auth";
+import { getLocale, lp, tr } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
-import { STATUS_LABEL, type TicketStatusKey } from "@/lib/ticket";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "My tickets", robots: { index: false } };
+export async function generateMetadata(): Promise<Metadata> { return { title: tr("My tickets"), robots: { index: false } }; }
 
 export default async function MyTicketsPage() {
   const me = await currentBookingUser();
-  if (!me) redirect("/login?next=/account/tickets");
-  const tickets = await prisma.ticket.findMany({ where: { userId: me.id }, orderBy: { createdAt: "desc" }, take: 300, include: { event: { select: { name: true, eventDate: true } } } });
-  const groups = new Map<string, typeof tickets>();
-  for (const t of tickets) groups.set(t.groupId, [...(groups.get(t.groupId) ?? []), t]);
-  const now = Date.now();
-  const rows = [...groups.entries()].map(([id, ts]) => ({ id, ts, ev: ts[0].event, status: (["PENDING_PAYMENT", "VALID", "USED", "EXPIRED", "CANCELLED"].find((s) => ts.some((t) => t.status === s)) ?? "CANCELLED") as TicketStatusKey }));
-  const upcoming = rows.filter((r) => r.ev.eventDate.getTime() > now && ["PENDING_PAYMENT", "VALID"].includes(r.status));
-  const rest = rows.filter((r) => !upcoming.includes(r));
-  const list = (items: typeof rows) => (
-    <ul className="mt-3 divide-y divide-stone/10">
-      {items.map((r) => (
-        <li key={r.id} className="py-3">
-          <Link href={`/tickets/${r.id}`} className="font-body text-stone hover:text-rust">{r.ev.name}</Link>
-          <p className="font-body text-xs text-stone/80">{formatEat(r.ev.eventDate)} · {r.ts.length} ticket{r.ts.length === 1 ? "" : "s"} ({r.ts.map((t) => t.number).join(", ")}) · {STATUS_LABEL[r.status]}</p>
-        </li>
+  if (!me) redirect(`${lp("/login")}?next=%2Faccount%2Ftickets`);
+  const l = getLocale();
+  const tickets = await prisma.ticket.findMany({ where: { userId: me.id }, orderBy: { createdAt: "desc" }, take: 300, include: { event: { select: { id: true, name: true, eventDate: true } } } });
+  // The same rules as the account page's "Coming up": tickets reserved together are one group; upcoming means the event is still to come and the group is valid or waiting for payment. Soonest first; the rest most recent first.
+  const { groups, upcoming } = ticketGroups(tickets.map((t) => ({ groupId: t.groupId, status: t.status, number: t.number, event: t.event })), new Date());
+  const upcomingIds = new Set(upcoming.map((g) => g.id)); const rest = groups.filter((g) => !upcomingIds.has(g.id)).sort((a, b) => b.event.eventDate.getTime() - a.event.eventDate.getTime());
+  const list = (items: typeof groups) => (
+    <ul className="flex flex-col gap-3" role="list">
+      {items.map((g) => (
+        <ListCard key={g.id} title={g.event.name} href={lp(`/tickets/${g.id}`)} meta={tr("{when}. {tickets}.", { when: formatDayTime(g.event.eventDate, l), tickets: ticketCount(g.count) })} chip={ticketChip(g.status)}>
+          {g.numbers.length > 0 && <p className="font-body text-sm text-stone/80">{tr("Ticket numbers: {numbers}", { numbers: g.numbers.join(", ") })}</p>}
+        </ListCard>
       ))}
     </ul>
   );
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
-      <Link href="/account" className="font-body text-sm text-stone/80 hover:text-rust">← My account</Link>
-      <h1 className="mt-3 font-display text-3xl text-stone">My tickets</h1>
-      {rows.length === 0 && <p className="mt-6 font-body text-stone/80">You don&apos;t have any tickets yet. <Link href="/events" className="text-rust underline">See what&apos;s on</Link>.</p>}
-      {upcoming.length > 0 && <><h2 className="mt-8 font-display text-xl text-stone">Coming up</h2>{list(upcoming)}</>}
-      {rest.length > 0 && <><h2 className="mt-8 font-display text-xl text-stone">Past and cancelled</h2>{list(rest)}</>}
-    </div>
+    <SubpageFrame title={tr("My tickets")} intro={tr("Your tickets for events, and which are ready to use.")}>
+      {groups.length === 0 ? (
+        <EmptyList title={tr("No tickets yet")} body={tr("When you get tickets for an event, they appear here with their QR codes.")} actions={[{ label: tr("See what is on"), href: lp("/events") }]} />
+      ) : (
+        <div className="flex flex-col gap-8">
+          {upcoming.length > 0 && <section aria-labelledby="coming-h"><h2 id="coming-h" className="mb-3 font-display text-xl font-semibold">{tr("Coming up")}</h2>{list(upcoming)}</section>}
+          {rest.length > 0 && <section aria-labelledby="past-h"><h2 id="past-h" className="mb-3 font-display text-xl font-semibold">{tr("Past and cancelled")}</h2>{list(rest)}</section>}
+        </div>
+      )}
+    </SubpageFrame>
   );
 }
