@@ -12,7 +12,7 @@ import { prisma } from "@/lib/prisma";
 import ShareBar from "@/components/share/ShareBar";
 import { shareMeta } from "@/lib/share-meta";
 
-type Ctx = { params: Promise<{ slug: string }> | { slug: string } };
+type Ctx = { params: Promise<{ slug: string }> };
 
 // A maker page exists only for a maker who is published AND has consented: the consent check is part of the lookup itself.
 const find = (slug: string) => prisma.maker.findFirst({ where: { slug, ...PUBLIC_MAKER }, include: { experience: { select: { slug: true, name: true, status: true } }, products: { where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { name: "asc" }] } } });

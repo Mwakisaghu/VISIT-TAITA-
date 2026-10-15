@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 type SearchParams = Record<string, string | string[] | undefined>;
 
 // `searchParams` is read with `await` so this page is correct on today's Next.js and on the next one (where it becomes a promise).
-export default async function ExperiencesPage({ searchParams }: { searchParams?: Promise<SearchParams> | SearchParams }) {
+export default async function ExperiencesPage({ searchParams }: { searchParams?: Promise<SearchParams> }) {
   const filters = parseExperienceFilters((await searchParams) ?? {});
   const now = new Date();
   const { from, to } = weekendWindow(now);

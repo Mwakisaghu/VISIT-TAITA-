@@ -27,7 +27,7 @@ const THEMES = [
 ];
 
 // `searchParams` is read with `await` so this page is correct on today's Next.js and on the next one (where it becomes a promise).
-export default async function DiscoverPage({ searchParams }: { searchParams?: Promise<SearchParams> | SearchParams }) {
+export default async function DiscoverPage({ searchParams }: { searchParams?: Promise<SearchParams> }) {
   const sp = (await searchParams) ?? {};
   const z = (Array.isArray(sp.zone) ? sp.zone[0] : sp.zone ?? "").toUpperCase();
   const zone = (ZONES as string[]).includes(z) ? (z as Zone) : null;
