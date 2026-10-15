@@ -2,9 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import LeafletMap, { type MapPin } from "@/components/map/LeafletMap";
 import AltitudeRibbon from "@/components/field/AltitudeRibbon";
 import Tag from "@/components/field/Tag";
 import Photo from "@/components/home/Photo";
@@ -31,16 +30,15 @@ function pinIcon(i: Item, selected: boolean) {
 }
 
 /** Moves the map: to the chosen item, or to fit everything shown. Respects "reduce motion". It waits while the map is hidden (zero size), then moves as soon as it is shown. */
-function Camera({ visible, selected, shown }: { visible: Item[]; selected: Item | null; shown: boolean }) {
-  const map = useMap();
+function useCamera(map: L.Map | null, visible: Item[], selected: Item | null, shown: boolean) {
   useEffect(() => {
+    if (!map) return;
     map.invalidateSize();
     const size = map.getSize(); if (!usableSize(size.x, size.y)) return;
     const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     if (selected) map.flyTo([selected.latitude, selected.longitude], Math.max(map.getZoom(), 12), { animate: !reduce, duration: 0.6 });
     else map.fitBounds(boundsOf(visible), { animate: false, maxZoom: 12 });
   }, [map, selected, visible, shown]);
-  return null;
 }
 
 export default function ExploreMap({ items }: { items: Item[] }) {
@@ -60,6 +58,9 @@ export default function ExploreMap({ items }: { items: Item[] }) {
 
   const visible = useMemo(() => filterItems(items, view), [items, view]);
   const selected = useMemo(() => visible.find((i) => i.id === selectedId) ?? null, [visible, selectedId]);
+  const [map, setMap] = useState<L.Map | null>(null);
+  useCamera(map, visible, selected, pane === "map");
+  const pins = useMemo<MapPin[]>(() => visible.map((i) => ({ id: i.id, position: [i.latitude, i.longitude] as [number, number], icon: pinIcon(i, i.id === selected?.id), title: `${i.name}, ${kindLabel(i)}`, alt: `${i.name}, ${kindLabel(i)}`, onClick: () => setSelectedId(i.id) })), [visible, selected]);
 
   // Keep the address in step, so any view can be shared.
   useEffect(() => { if (ready) window.history.replaceState(null, "", window.location.pathname + viewQuery({ ...view, place: selected?.slug ?? null })); }, [ready, view, selected]);
@@ -166,13 +167,7 @@ export default function ExploreMap({ items }: { items: Item[] }) {
 
         <div className={`${pane === "map" ? "block" : "hidden"} lg:block`}>
           <div role="region" aria-label="Map of Taita Taveta" className="h-[28rem] overflow-hidden rounded-[2px] border border-stone/20 lg:h-full">
-            <MapContainer bounds={TAITA_BOUNDS} className="h-full w-full" scrollWheelZoom>
-              <TileLayer attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              <Camera visible={visible} selected={selected} shown={pane === "map"} />
-              {visible.map((i) => (
-                <Marker key={`${i.id}:${i.id === selected?.id}`} position={[i.latitude, i.longitude]} icon={pinIcon(i, i.id === selected?.id)} title={`${i.name}, ${kindLabel(i)}`} alt={`${i.name}, ${kindLabel(i)}`} eventHandlers={{ click: () => setSelectedId(i.id) }} />
-              ))}
-            </MapContainer>
+            <LeafletMap bounds={TAITA_BOUNDS} className="h-full w-full" pins={pins} onMap={setMap} />
           </div>
           <p className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 font-body text-xs text-stone/80">
             <span className="inline-flex items-center gap-1.5"><i aria-hidden="true" className="inline-block h-3 w-3 rounded-full bg-canopy" /> Place (colour = world)</span>

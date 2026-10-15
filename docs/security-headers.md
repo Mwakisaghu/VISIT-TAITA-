@@ -21,5 +21,5 @@ Set `CSP_ENFORCE=1` in the hosting settings and redeploy. The same policy now bl
 
 ### Things to know
 - Inline scripts must stay allowed because the framework writes them. A stricter policy using "nonces" is possible later.
-- The map's marker image is loaded from `unpkg.com`. It works under this policy, but relying on another site for it is fragile: copy the image into `public/` when convenient.
+- The map no longer loads anything from `unpkg.com` (its pins are drawn by the site itself). The only outside address a page loads for the map is the OpenStreetMap tiles.
 - A new outside script, stylesheet or embed needs a change to the policy on purpose. A test checks that the code does not load any today.

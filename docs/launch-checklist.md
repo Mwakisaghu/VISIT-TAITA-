@@ -22,7 +22,7 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 - [ ] You have read `docs/data-protection.md`: you know whether you must register with the Data Protection Commissioner, the breach steps are filled in (who does what, and the exact deadline), and the table of what you hold is correct.
 - [ ] You have accepted the data processing terms of each provider (Netlify, Neon, Resend, Safaricom, Pesapal, and Anthropic if the AI is on), and the privacy policy's region for your database is correct.
 - [ ] The Content-Security-Policy has run in report-only mode for a week with no unexpected `[csp]` lines, then `CSP_ENFORCE=1` is set (`docs/security-headers.md`).
-- [ ] A decision is made about react-leaflet's licence (`docs/third-party-licences.md`).
+- [x] The map library's licence question is resolved: the site no longer uses react-leaflet (`docs/third-party-licences.md`).
 - [ ] If you add analytics, it is cookie-free and added to the policy first.
 - [ ] A lawyer or professional translator has handled the privacy, terms and consent wording in any language other than English you want to offer.
 
