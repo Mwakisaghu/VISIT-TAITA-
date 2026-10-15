@@ -1,6 +1,6 @@
 import { randomInt } from "crypto";
-import bcrypt from "bcryptjs";
 import { normaliseEmail } from "@/lib/user-admin";
+import { hashPassword } from "@/lib/password";
 
 type Db = {
   user: { findUnique: (a: any) => Promise<any>; create: (a: any) => Promise<any>; update: (a: any) => Promise<any> };
@@ -38,7 +38,7 @@ export async function createSuperAdmin(db: Db, input: { email: unknown; name: un
   }
   if (name.length < 2 || name.length > 80) return { ok: false, error: "Give the person's name with --name \"Full Name\" (2–80 characters)." };
   const password = generatePassword();
-  const created = await db.user.create({ data: { name, email, passwordHash: await bcrypt.hash(password, 10), role: "SUPER_ADMIN", emailVerifiedAt: now }, select: { id: true } });
+  const created = await db.user.create({ data: { name, email, passwordHash: await hashPassword(password), role: "SUPER_ADMIN", emailVerifiedAt: now }, select: { id: true } });
   await db.adminAuditLog.create({ data: { actorEmail: "command line", action: "user.invite", targetUserId: created.id, targetEmail: email, detail: "Created as super admin (npm run admin:create)" } });
   return { ok: true, created: true, password, email };
 }

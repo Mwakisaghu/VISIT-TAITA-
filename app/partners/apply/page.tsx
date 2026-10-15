@@ -141,12 +141,10 @@ export default function ApplyPage() {
             </button>
           </form>
           {statusError && <p className="mt-3 font-body text-sm text-rust">{statusError}</p>}
-          {statusResult && (
-            <div className="mt-4 rounded-sm border border-stone/10 p-4 font-body text-sm text-stone/80">
-              <p>
-                <strong>{statusResult.businessName}</strong> — {partnerTypeLabel(statusResult.partnerType)}
-              </p>
-              <p className="mt-1">Status: {applicationStatusLabel(statusResult.status)}</p>
+          {statusResult?.sent && (
+            <div role="status" className="mt-4 rounded-sm border border-stone/10 p-4 font-body text-sm text-stone/80">
+              <p>If we have an application from that address, we have emailed its status to it.</p>
+              <p className="mt-1">Please check your inbox, and your spam folder.</p>
             </div>
           )}
         </div>

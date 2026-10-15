@@ -1,18 +1,22 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { sendVerificationEmail } from "@/lib/account-verification";
 import { clientIpFrom } from "@/lib/login-throttle";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { LEGAL_VERSION } from "@/lib/site-info";
+import { hashPassword } from "@/lib/password";
+import { checkPassword } from "@/lib/password-policy";
 
 const registerSchema = z.object({
   name: z.string().min(2).max(80),
   email: z.string().email(),
-  password: z.string().min(8).max(72),
+  password: z.string().max(200), // the real rule is checkPassword below (it counts bytes, not characters)
   // Must be explicitly true: the person has accepted the Terms and acknowledged the Privacy Policy.
   acceptTerms: z.literal(true),
+}).superRefine((d, ctx) => {
+  const r = checkPassword(d.password, { email: d.email, name: d.name });
+  if (!r.ok) ctx.addIssue({ code: "custom", path: ["password"], message: r.message });
 });
 
 export async function POST(request: Request) {
@@ -31,7 +35,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Please accept the Terms of Use and Privacy Policy to create an account." }, { status: 400 });
     }
     return NextResponse.json(
-      { error: "Please check your name, email and password (8+ characters)." },
+      { error: parsed.error.issues.find((i) => i.code === "custom" && i.path[0] === "password")?.message ?? "Please check your name, email and password." },
       { status: 400 }
     );
   }
@@ -47,7 +51,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await hashPassword(password);
 
   const user = await prisma.user.create({
     data: {

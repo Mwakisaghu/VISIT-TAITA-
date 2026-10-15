@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { clearLoginFailures, clientIpFrom, isLoginBlocked, recordLoginFailure } from "@/lib/login-throttle";
 import { prisma } from "@/lib/prisma";
+import { hashPassword, needsRehash } from "@/lib/password";
+import { SESSION_MAX_AGE_SECONDS, staffSessionExpired } from "@/lib/session-limits";
 
 // How long a login token may keep a role before it is re-checked against the database.
 const ROLE_REFRESH_MS = 5 * 60 * 1000;
@@ -13,10 +15,10 @@ const refreshEvery = (role: unknown) => (ADMIN_ROLES.includes(role as string) ? 
 // A real bcrypt hash of a throwaway string, made once. Sign-in compares the password against THIS when the email is unknown,
 // so rejecting an unknown address takes as long as rejecting a wrong password and doesn't reveal which addresses have accounts.
 let dummyHash: Promise<string> | null = null;
-const getDummyHash = () => (dummyHash ??= bcrypt.hash("not-a-real-password", 10));
+const getDummyHash = () => (dummyHash ??= hashPassword("not-a-real-password")); // same cost as real hashes, so timing does not give accounts away
 
 export const authOptions: NextAuthOptions = {
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: SESSION_MAX_AGE_SECONDS },
   pages: {
     signIn: "/login",
   },
@@ -49,6 +51,11 @@ export const authOptions: NextAuthOptions = {
         // A suspended account is refused only AFTER the password is right, so this message can't be used to find out which addresses have accounts.
         if (user.suspendedAt) throw new Error("AccountSuspended");
 
+        // Passwords stored with an older, cheaper setting are upgraded now, while we hold the correct password. A failure here changes nothing: they are signed in with the old hash.
+        if (needsRehash(user.passwordHash)) {
+          try { await prisma.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(credentials.password) } }); } catch { /* try again at the next sign-in */ }
+        }
+
         return {
           id: user.id,
           name: user.name,
@@ -68,6 +75,9 @@ export const authOptions: NextAuthOptions = {
         (token as any).signedInAt = Date.now();
         return token;
       }
+
+      // Staff sign-ins last at most 12 hours, however busy they are (refreshing a token does not reset this clock), so a stolen admin cookie cannot stay useful for weeks.
+      if (staffSessionExpired(token)) throw new Error("SessionEnded");
 
       // The role used to be read once at sign-in and then trusted for the life of the
       // token (30 days by default) — so a promotion (e.g. approved as a creator) didn't
