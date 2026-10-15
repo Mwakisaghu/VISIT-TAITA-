@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { notifySponsorLead } from "@/lib/notifications";
@@ -16,8 +16,8 @@ const TOO_MANY: SponsorLeadResult = {
 };
 const HOUR_MS = 60 * 60 * 1000;
 
-function clientIp() {
-  const forwarded = (headers() as unknown as UnsafeUnwrappedHeaders).get("x-forwarded-for");
+async function clientIp() {
+  const forwarded = (await headers()).get("x-forwarded-for");
   return forwarded ? forwarded.split(",")[0].trim() : null;
 }
 
@@ -66,7 +66,7 @@ export async function submitSponsorLead(formData: FormData): Promise<SponsorLead
   }
   const data = parsed.data;
 
-  const ip = clientIp();
+  const ip = await clientIp();
   if (ip && !(await checkRateLimit(`sponsor-lead:${ip}`, 5, 10 * 60 * 1000))) return TOO_MANY;
 
   const email = data.email.toLowerCase();

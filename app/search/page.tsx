@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
+import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { SEARCH_LIMITS, parseQuery, type Segment } from "@/lib/search";
 import { SEARCH_TYPES, isSearchType, searchSite, type SearchResult } from "@/lib/search-data";
@@ -37,8 +37,8 @@ const BROWSE = [
   { href: "/events", label: "Events" },
 ];
 
-function clientIp(): string {
-  const h = (headers() as unknown as UnsafeUnwrappedHeaders);
+async function clientIp(): Promise<string> {
+  const h = await headers();
   return (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "unknown";
 }
 
@@ -55,7 +55,7 @@ export default async function SearchPage(
   let result: SearchResult | null = null;
   let limited = false;
   if (parsed) {
-    if (!(await checkRateLimit(`search:${clientIp()}`, 60, 60 * 1000))) limited = true;
+    if (!(await checkRateLimit(`search:${await clientIp()}`, 60, 60 * 1000))) limited = true;
     else result = await searchSite(parsed, only);
   }
   const onlyLabel = only ? SEARCH_TYPES.find((t) => t.key === only)!.label : null;

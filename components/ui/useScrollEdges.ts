@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, type RefObject } from "react";
 import { NO_EDGES, activeIndex, edgeState, type Edges } from "@/lib/scroll-rail";
 
 /** Watches a sideways-scrolling element: what is hidden on each side, how far along it is, and (optionally) which child is current. */
-export function useScrollEdges(ref: RefObject<HTMLElement>, trackItems = false): { edges: Edges; active: number } {
+export function useScrollEdges(ref: RefObject<HTMLElement | null>, trackItems = false): { edges: Edges; active: number } {
   const [state, setState] = useState<{ edges: Edges; active: number }>({ edges: NO_EDGES, active: 0 });
   const measure = useCallback(() => {
     const el = ref.current; if (!el) return;

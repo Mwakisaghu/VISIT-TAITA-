@@ -11,7 +11,7 @@ let STAYS: any[] = []; let NEARBY: any[] = []; const calls: { method: string; ar
 const model = (name: string) => new Proxy({}, { get: (_t, method: string) => async (args?: any) => { calls.push({ method: `${name}.${method}`, args }); if (name === "accommodation" && method === "findMany") return STAYS; if (name === "experience" && method === "findMany") return NEARBY; if (name === "review" && method === "groupBy") return [{ accommodationId: "a1", rating: 5, _count: { _all: 3 } }]; return method === "findMany" ? [] : null; } });
 (globalThis as any).prisma = new Proxy({}, { get: (_t, name: string) => model(name) });
 import { renderToStaticMarkup } from "react-dom/server";
-const txt = (h: string) => h.replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x2F;/g, "/").replace(/\s+/g, " ");
+const txt = (h: string) => h.replace(/<script\b[\s\S]*?<\/script>/g, " ").replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x2F;/g, "/").replace(/\s+/g, " ");
 const routeExists = (href: string) => { const p = href.split("#")[0].split("?")[0]; if (p === "/") return true; const segs = p.split("/").filter(Boolean); const walk = (dir: string, i: number): boolean => { if (i === segs.length) return fs.existsSync(path.join(dir, "page.tsx")); const here = path.join(dir, segs[i]); if (fs.existsSync(here) && walk(here, i + 1)) return true; return fs.readdirSync(dir, { withFileTypes: true }).some((e) => e.isDirectory() && /^\[.+\]$/.test(e.name) && walk(path.join(dir, e.name), i + 1)); }; return walk("app", 0); };
 
 async function main() {
@@ -28,7 +28,7 @@ async function main() {
   let { html, text, where } = await render();
   t("STRUCTURE: one h1, the headline and supporting line, four stays, the count", (html.match(/<h1/g) ?? []).length === 1 && /Stay somewhere that feels like part of the journey\./.test(text) && /Every stay has a host you can name/.test(text) && /4 stays/.test(text));
   t("FEATURE: with no filters the featured stay is shown large (h2, its host's quote, a 'See this stay' link) and is NOT repeated in the grid", /See this stay/.test(text) && /Karibu, make yourself at home\./.test(text) && (html.match(/href="\/stay\/listing\/hill-house"/g) ?? []).length === 1 && (html.match(/<h2/g) ?? []).length === 4);
-  t("LINKS: every stay links to its own page and every address on the page is a real route", ["hill-house", "ridge-lodge", "plains-camp", "town-hotel"].every((s) => html.includes(`href="/stay/listing/${s}"`)) && [...new Set([...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => h.startsWith("/")))].every(routeExists));
+  t("LINKS: every stay links to its own page and every address on the page is a real route", ["hill-house", "ridge-lodge", "plains-camp", "town-hotel"].every((s) => html.includes(`href="/stay/listing/${s}"`)) && [...new Set([...html.replace(/<link\b[^>]*>/g, "").matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => h.startsWith("/")))].every(routeExists));
   const card = (slug: string) => (html.split(`href="/stay/listing/${slug}"`)[1] ?? "").split("</a>")[0];
   const f1 = txt(html.split("<article")[1].split("</article>")[0]);
   t("FEATURE content: kind, altitude with its zone, the named host with role, price per night", /Homestay/.test(f1) && /1,500 m · Highlands/.test(f1) && /Hosted by Mama Njeri/.test(f1) && /Host/.test(f1) && /From KES 4,500 a night/.test(f1));

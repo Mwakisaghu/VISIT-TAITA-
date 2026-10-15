@@ -16,7 +16,7 @@ const icon = "h-5 w-5";
  * with a short message in that language. Nothing is sent anywhere until a button is pressed.
  */
 export default function ShareBar({ className = "" }: { className?: string }) {
-  const { tr } = useI18n(); const [native, setNative] = useState(false); const [status, setStatus] = useState(""); const timer = useRef<ReturnType<typeof setTimeout>>();
+  const { tr } = useI18n(); const [native, setNative] = useState(false); const [status, setStatus] = useState(""); const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => { setNative(typeof navigator !== "undefined" && typeof navigator.share === "function"); return () => clearTimeout(timer.current); }, []);
   const say = (m: string) => { setStatus(m); clearTimeout(timer.current); timer.current = setTimeout(() => setStatus(""), 4000); };
   const where = (channel?: string) => shareUrl(window.location.href, { origin: process.env.NEXT_PUBLIC_APP_URL ?? null, channel });

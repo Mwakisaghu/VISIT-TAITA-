@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
+import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 import { consumeToken, findUsableToken } from "@/lib/account-tokens";
@@ -24,14 +24,14 @@ const emailSchema = z.string().trim().toLowerCase().email().max(254);
 
 // SECURITY: server actions are public endpoints, so the visitor's address is read from the request here — never accepted as an
 // argument, where a caller could simply invent one to dodge the limits.
-function clientIp(): string {
-  const h = (headers() as unknown as UnsafeUnwrappedHeaders);
+async function clientIp(): Promise<string> {
+  const h = await headers();
   return (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "unknown";
 }
 
 /** Confirms an address from the emailed link. Single use; only the newest link works. */
 export async function verifyEmail(token: string): Promise<AccountEmailResult> {
-  if (!(await checkRateLimit(`verify-email:${clientIp()}`, 60, HOUR_MS))) return { ok: false, error: "Too many attempts — please try again later." };
+  if (!(await checkRateLimit(`verify-email:${await clientIp()}`, 60, HOUR_MS))) return { ok: false, error: "Too many attempts — please try again later." };
 
   const found = await findUsableToken(prisma, token, "VERIFY_EMAIL");
   if (!found) return { ok: false, error: INVALID_VERIFY };
@@ -71,7 +71,7 @@ export async function requestPasswordReset(rawEmail: string): Promise<AccountEma
   if (!parsed.success) return { ok: false, error: "Enter a valid email address." };
   const email = parsed.data;
 
-  if (!(await checkRateLimit(`reset:ip:${clientIp()}`, 10, HOUR_MS))) return { ok: false, error: "Too many requests — please try again later." };
+  if (!(await checkRateLimit(`reset:ip:${await clientIp()}`, 10, HOUR_MS))) return { ok: false, error: "Too many requests — please try again later." };
   if (!(await checkRateLimit(`reset:email:${email}`, 3, HOUR_MS))) return { ok: true }; // quietly: don't let one address be mail-bombed
   if (!checkinBaseUrl()) return { ok: false, error: "Password reset isn't available yet." };
 
@@ -90,7 +90,7 @@ export async function requestPasswordReset(rawEmail: string): Promise<AccountEma
  * emails the owner that the password changed.
  */
 export async function resetPassword(token: string, newPassword: string): Promise<AccountEmailResult> {
-  if (!(await checkRateLimit(`reset-submit:${clientIp()}`, 20, HOUR_MS))) return { ok: false, error: "Too many attempts — please try again later." };
+  if (!(await checkRateLimit(`reset-submit:${await clientIp()}`, 20, HOUR_MS))) return { ok: false, error: "Too many attempts — please try again later." };
 
   const strength = checkPassword(newPassword);
   if (!strength.ok) return { ok: false, error: strength.message };

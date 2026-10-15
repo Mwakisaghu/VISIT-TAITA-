@@ -12,7 +12,7 @@ let EXPS: any[] = []; const calls: { method: string; args: any }[] = [];
 const model = (name: string) => new Proxy({}, { get: (_t, method: string) => async (args?: any) => { calls.push({ method: `${name}.${method}`, args }); if (name === "experience" && method === "findMany") return EXPS; if (name === "review" && method === "groupBy") return [{ experienceId: "e4", rating: 5, _count: { _all: 8 } }, { experienceId: "e4", rating: 4, _count: { _all: 4 } }]; return method === "findMany" ? [] : null; } });
 (globalThis as any).prisma = new Proxy({}, { get: (_t, name: string) => model(name) });
 import { renderToStaticMarkup } from "react-dom/server";
-const txt = (h: string) => h.replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x2F;/g, "/").replace(/\s+/g, " ");
+const txt = (h: string) => h.replace(/<script\b[\s\S]*?<\/script>/g, " ").replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x2F;/g, "/").replace(/\s+/g, " ");
 const routeExists = (href: string) => { const p = href.split("#")[0].split("?")[0]; if (p === "/") return true; const segs = p.split("/").filter(Boolean); const walk = (dir: string, i: number): boolean => { if (i === segs.length) return fs.existsSync(path.join(dir, "page.tsx")); const here = path.join(dir, segs[i]); if (fs.existsSync(here) && walk(here, i + 1)) return true; return fs.readdirSync(dir, { withFileTypes: true }).some((e) => e.isDirectory() && /^\[.+\]$/.test(e.name) && walk(path.join(dir, e.name), i + 1)); }; return walk("app", 0); };
 
 async function main() {
@@ -28,7 +28,7 @@ async function main() {
 
   let { html, text, where } = await render();
   t("STRUCTURE: one h1, the headline, the supporting line, four covers each with its own h2", (html.match(/<h1/g) ?? []).length === 1 && /Led by the people who know the way\./.test(text) && /how hard the climb is before you book/.test(text) && (html.match(/<h2/g) ?? []).length === 4 && /4 experiences/.test(text));
-  t("LINKS: every cover goes to its own page, and every address on the page is a real route", ["ridge-walk", "market-lunch", "basket-weaving", "tsavo-dawn"].every((s) => html.includes(`href="/experiences/listing/${s}"`)) && [...new Set([...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => h.startsWith("/")))].every(routeExists));
+  t("LINKS: every cover goes to its own page, and every address on the page is a real route", ["ridge-walk", "market-lunch", "basket-weaving", "tsavo-dawn"].every((s) => html.includes(`href="/experiences/listing/${s}"`)) && [...new Set([...html.replace(/<link\b[^>]*>/g, "").matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => h.startsWith("/")))].every(routeExists));
   const card = (slug: string) => (html.split(`href="/experiences/listing/${slug}"`)[1] ?? "").split("</a>")[0];
   const c1 = txt(card("ridge-walk"));
   t("COVER (full): category, duration, how hard, the climb and 'altitude · zone' as tags, in one voice", /Adventure/.test(c1) && /3 hours/.test(c1) && /Moderate/.test(c1) && /\+350 m/.test(c1) && /1,420 m · Highlands/.test(c1));
