@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { resetPassword } from "@/lib/actions/account-email";
+import { checkPassword } from "@/lib/password-policy";
 
 export default function ResetPasswordForm({ token }: { token: string }) {
   const [password, setPassword] = useState("");
@@ -14,7 +15,8 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
-    if (password.length < 8 || password.length > 72) return setError("Choose a password of 8 to 72 characters.");
+    const strength = checkPassword(password);
+    if (!strength.ok) return setError(strength.message);
     if (password !== confirm) return setError("The two passwords don't match.");
     setBusy(true);
     try {

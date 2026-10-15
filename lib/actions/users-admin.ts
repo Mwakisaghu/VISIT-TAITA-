@@ -1,13 +1,13 @@
 "use server";
 
 import { randomBytes } from "crypto";
-import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { sendPasswordResetEmail, sendStaffInviteEmail, sendVerificationEmail } from "@/lib/account-verification";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { currentManager, type ManagerActor } from "@/lib/user-admin-server";
 import { checkActOn, checkReinstate, checkRoleChange, checkSuspend, isPendingInvite, roleLabel, validateInvite } from "@/lib/user-admin";
+import { hashPassword } from "@/lib/password";
 
 export type UsersAdminResult = { success?: true; id?: string; message?: string; error?: string; existingId?: string };
 
@@ -38,7 +38,7 @@ export async function inviteStaff(formData: FormData): Promise<UsersAdminResult>
   if (existing) return { error: "There's already an account with that email. Find them under Users and change their role there.", existingId: existing.id };
 
   // An unusable password (random, thrown away): the account can only be entered through the emailed link.
-  const passwordHash = await bcrypt.hash(randomBytes(32).toString("hex"), 10);
+  const passwordHash = await hashPassword(randomBytes(32).toString("hex"));
   let created: { id: string };
   try {
     created = await prisma.$transaction(async (tx) => {

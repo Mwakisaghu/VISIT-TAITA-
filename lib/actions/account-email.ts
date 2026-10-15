@@ -1,6 +1,5 @@
 "use server";
 
-import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { getServerSession } from "next-auth";
@@ -13,6 +12,8 @@ import { checkinBaseUrl } from "@/lib/checkin-url";
 import { sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { hashPassword } from "@/lib/password";
+import { checkPassword } from "@/lib/password-policy";
 
 export type AccountEmailResult = { ok: true; already?: boolean } | { ok: false; error: string };
 
@@ -91,13 +92,12 @@ export async function requestPasswordReset(rawEmail: string): Promise<AccountEma
 export async function resetPassword(token: string, newPassword: string): Promise<AccountEmailResult> {
   if (!await checkRateLimit(`reset-submit:${clientIp()}`, 20, HOUR_MS)) return { ok: false, error: "Too many attempts — please try again later." };
 
-  if (typeof newPassword !== "string" || newPassword.length < 8 || newPassword.length > 72) {
-    return { ok: false, error: "Choose a password of 8 to 72 characters." };
-  }
+  const strength = checkPassword(newPassword);
+  if (!strength.ok) return { ok: false, error: strength.message };
   const found = await findUsableToken(prisma, token, "RESET_PASSWORD");
   if (!found) return { ok: false, error: INVALID_RESET };
 
-  const passwordHash = await bcrypt.hash(newPassword, 10); // slow on purpose, so done before the transaction
+  const passwordHash = await hashPassword(newPassword); // slow on purpose, so done before the transaction
 
   const user = await prisma.$transaction(async (tx) => {
     if (!(await consumeToken(tx, found.id))) return null; // someone else used it first

@@ -86,12 +86,12 @@ function RegisterForm() {
             id="password"
             type="password"
             required
-            minLength={8}
+            minLength={10}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="focus-ring mt-1 w-full rounded-sm border border-stone/20 bg-transparent px-4 py-2 font-body text-sm"
           />
-          <p className="mt-1 font-body text-xs text-stone/80">At least 8 characters.</p>
+          <p className="mt-1 font-body text-xs text-stone/80">At least 10 characters. Avoid common passwords and your own name.</p>
         </div>
 
         <label className="flex items-start gap-3 font-body text-sm text-stone/80">
@@ -124,7 +124,7 @@ function RegisterForm() {
         Already have one?{" "}
         <Link
           href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
-          className="text-rust hover:text-rust-deep"
+          className="text-rust underline underline-offset-2 hover:text-rust-deep"
         >
           Sign in
         </Link>

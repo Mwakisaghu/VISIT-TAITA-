@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma";
 import { headers } from "next/headers";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { SPAM_RETRY, spamVerdict } from "@/lib/spam";
+import { sendEmail } from "@/lib/email";
+import { applicationStatusText } from "@/lib/partner-emails";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -81,23 +83,22 @@ export async function submitApplication(formData: FormData) {
 }
 
 /** Public status lookup by email — returns only what an applicant should see. */
-export async function getApplicationStatus(email: string) {
+/**
+ * "Where is my application?" Anyone can type any email address here, so the page never shows what it finds: it says the same thing whether or not that address applied, and, if one did, EMAILS the status to that
+ * address (so only the owner of the mailbox learns it). Counted per connection and per address, so it cannot be used to spam someone's inbox or to test which emails have applied.
+ */
+export async function getApplicationStatus(email: string): Promise<{ sent?: true; error?: string }> {
   const parsed = z.string().email().safeParse(email);
   if (!parsed.success) return { error: "Enter a valid email address." };
+  const address = parsed.data.toLowerCase();
+  const forwarded = headers().get("x-forwarded-for") ?? "";
+  const ip = forwarded.split(",")[0].trim() || headers().get("x-real-ip") || "";
+  if (ip && !(await checkRateLimit(`partner-status:ip:${ip}`, 10, 60 * 60 * 1000))) return { error: "Too many lookups from this connection — please try again a little later." };
+  if (!(await checkRateLimit(`partner-status:email:${address}`, 3, 24 * 60 * 60 * 1000))) return { error: "We have already sent the status to that address today. Please check your inbox (and spam folder), or try again tomorrow." };
 
-  const application = await prisma.partnerApplication.findFirst({
-    where: { email: parsed.data.toLowerCase() },
-    orderBy: { createdAt: "desc" },
-  });
-
-  if (!application) return { error: "No application found for that email." };
-
-  return {
-    businessName: application.businessName,
-    partnerType: application.partnerType,
-    status: application.status,
-    submittedAt: application.createdAt,
-  };
+  const application = await prisma.partnerApplication.findFirst({ where: { email: address }, orderBy: { createdAt: "desc" } });
+  if (application) await sendEmail({ to: address, subject: "Your Visit Taita partner application", text: applicationStatusText(application) });
+  return { sent: true };
 }
 
 // ---------------------------------------------------------------------------

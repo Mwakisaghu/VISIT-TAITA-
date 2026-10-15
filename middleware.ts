@@ -2,6 +2,7 @@ import { withAuth } from "next-auth/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALE_COOKIE, LOCALE_HEADER, type Locale } from "@/lib/i18n/config";
 import { decide } from "@/lib/i18n/routing";
+import { staffSessionExpired } from "@/lib/session-limits";
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
 
@@ -9,8 +10,10 @@ const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
 const adminGate = withAuth(
   function middleware(req) {
     const token = (req as any).nextauth?.token;
-    if (!token || !ADMIN_ROLES.includes(token.role as string)) {
-      return NextResponse.redirect(new URL("/login", req.url));
+    if (!token || !ADMIN_ROLES.includes(token.role as string) || staffSessionExpired(token)) {
+      const back = new URL("/login", req.url);
+      if (token && ADMIN_ROLES.includes(token.role as string)) back.searchParams.set("next", req.nextUrl.pathname + req.nextUrl.search); // an expired staff sign-in returns to the same page afterwards
+      return NextResponse.redirect(back);
     }
     return NextResponse.next();
   },
