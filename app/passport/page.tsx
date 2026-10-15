@@ -75,7 +75,9 @@ export default async function PassportPage() {
           </div>
         </div>
 
-        <WishList wishes={wishRows.map((w) => w.destination)} />
+        <div id="want-to-go" className="scroll-mt-24">
+          <WishList wishes={wishRows.map((w) => w.destination)} />
+        </div>
 
         {/* CHECK-INS */}
         <div className="mt-16">

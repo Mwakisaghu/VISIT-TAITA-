@@ -1,10 +1,12 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n/client";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { resendVerification } from "@/lib/actions/account-email";
 
 export default function ResendVerificationButton() {
+  const { tr } = useI18n();
   const router = useRouter();
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -23,15 +25,15 @@ export default function ResendVerificationButton() {
               const res = await resendVerification();
               if (!res.ok) setError(res.error);
               else if (res.already) router.refresh();
-              else setMessage("Sent — check your inbox (and your spam folder).");
+              else setMessage(tr("Sent — check your inbox (and your spam folder)."));
             } catch {
-              setError("Something went wrong — please try again.");
+              setError(tr("Something went wrong — please try again."));
             }
           });
         }}
         className="focus-ring w-fit rounded-full border border-stone/25 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust disabled:opacity-60"
       >
-        {isPending ? "Sending…" : "Send me a new link"}
+        {isPending ? tr("Sending…") : tr("Send me a new link")}
       </button>
       {message && (
         <p role="status" className="font-body text-xs text-canopy">

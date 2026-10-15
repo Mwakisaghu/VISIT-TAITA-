@@ -1,10 +1,12 @@
 "use client";
 
+import { useI18n } from "@/lib/i18n/client";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { deleteMyAccount } from "@/lib/actions/account";
 
 export default function DeleteAccountForm() {
+  const { tr } = useI18n();
   const [password, setPassword] = useState("");
   const [understood, setUnderstood] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -25,7 +27,7 @@ export default function DeleteAccountForm() {
       // The account is gone; end this browser's session too.
       await signOut({ callbackUrl: "/" });
     } catch {
-      setError("Something went wrong — please try again.");
+      setError(tr("Something went wrong — please try again."));
     } finally {
       setBusy(false);
     }
@@ -34,7 +36,7 @@ export default function DeleteAccountForm() {
   if (done) {
     return (
       <p role="status" className="font-body text-stone/80">
-        Your account has been deleted. Signing you out…
+        {tr("Your account has been deleted. Signing you out…")}
       </p>
     );
   }
@@ -42,7 +44,7 @@ export default function DeleteAccountForm() {
   return (
     <form onSubmit={submit} className="flex max-w-md flex-col gap-4">
       <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/80">Enter your password to confirm</span>
+        <span className="font-body text-sm text-stone/80">{tr("Enter your password to confirm")}</span>
         <input
           type="password"
           name="password"
@@ -55,7 +57,7 @@ export default function DeleteAccountForm() {
       </label>
       <label className="flex items-start gap-3 font-body text-sm text-stone/80">
         <input type="checkbox" checked={understood} onChange={(e) => setUnderstood(e.target.checked)} className="mt-1" />
-        <span>I understand this is permanent and can&apos;t be undone.</span>
+        <span>{tr("I understand this is permanent and can't be undone.")}</span>
       </label>
 
       {error && (
@@ -69,7 +71,7 @@ export default function DeleteAccountForm() {
         disabled={busy || !understood || password.length === 0}
         className="focus-ring w-fit rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment transition-colors hover:bg-rust-deep disabled:opacity-50"
       >
-        {busy ? "Deleting…" : "Delete my account"}
+        {busy ? tr("Deleting…") : tr("Delete my account")}
       </button>
     </form>
   );
