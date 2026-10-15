@@ -59,6 +59,7 @@ const ORDER_CHIP: Record<OrderState, () => Chip> = {
 };
 const guests = (n: number) => (n === 1 ? tr("1 guest") : tr("{n} guests", { n }));
 const ticketsN = (n: number) => (n === 1 ? tr("1 ticket") : tr("{n} tickets", { n }));
+export const guestCount = guests; export const ticketCount = ticketsN; // the same sentences, for the My bookings and My tickets lists
 
 export const orderChip = (state: OrderState): Chip => ORDER_CHIP[state]();
 export function enquiryChip(status: string): Chip {
@@ -69,6 +70,27 @@ export function reviewChip(status: string): Chip {
 }
 export function noteChip(status: string): Chip {
   return status === "APPROVED" ? { text: tr("Published"), tone: "good" } : status === "CHANGES_REQUESTED" ? { text: tr("Changes requested"), tone: "warn" } : status === "HIDDEN" ? { text: tr("Hidden"), tone: "warn" } : { text: tr("Waiting for review"), tone: "info" };
+}
+export function bookingChip(status: string): Chip {
+  switch (status) {
+    case "CONFIRMED": return { text: tr("Confirmed"), tone: "good" };
+    case "REQUESTED": return { text: tr("Waiting for the host"), tone: "info" };
+    case "AWAITING_PAYMENT": return { text: tr("Payment needed"), tone: "warn" };
+    case "COMPLETED": return { text: tr("Completed"), tone: "good" };
+    case "DECLINED": return { text: tr("Declined"), tone: "warn" };
+    case "EXPIRED": return { text: tr("Expired"), tone: "warn" };
+    case "NO_SHOW": return { text: tr("Did not attend"), tone: "warn" };
+    default: return { text: tr("Cancelled"), tone: "warn" };
+  }
+}
+export function ticketChip(status: string): Chip {
+  switch (status) {
+    case "VALID": return { text: tr("Valid"), tone: "good" };
+    case "PENDING_PAYMENT": return { text: tr("Waiting for payment"), tone: "warn" };
+    case "USED": return { text: tr("Used at the door"), tone: "info" };
+    case "EXPIRED": return { text: tr("Reservation expired"), tone: "warn" };
+    default: return { text: tr("Cancelled"), tone: "warn" };
+  }
 }
 export function comingCards(h: AccountHub): ComingCard[] {
   const l = getLocale();

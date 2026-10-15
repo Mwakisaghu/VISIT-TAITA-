@@ -18,10 +18,11 @@ export default function SubpageFrame({ title, intro, children }: { title: string
   );
 }
 
+// On a phone the status always sits under the title (so every card looks the same); on a wider screen it sits beside it.
 export function ListCard({ title, href, meta, chip, children }: { title: string; href?: string; meta?: string; chip?: Chip; children?: React.ReactNode }) {
   return (
     <li className="flex flex-col gap-2 rounded border border-stone/15 bg-[#F6F0DF] p-5">
-      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1.5">
+      <div className="flex flex-col items-start gap-1.5 sm:flex-row sm:justify-between sm:gap-x-3">
         <h3 className="min-w-0 font-display text-[1.2rem] font-semibold leading-snug">{href ? <Link href={href} className="focus-ring underline-offset-2 hover:text-rust-deep hover:underline">{title}</Link> : title}</h3>
         {chip && <span className={`inline-flex items-center rounded-full px-2.5 py-1 font-body text-[0.78rem] font-bold ${CHIP_TONE[chip.tone]}`}>{chip.text}</span>}
       </div>

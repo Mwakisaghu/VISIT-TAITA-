@@ -39,13 +39,14 @@ export function bookingBuckets<B extends { status: string; startsAt: Date }>(row
   return { upcoming, past: rows.length - upcoming.length };
 }
 export const TICKET_ORDER = ["PENDING_PAYMENT", "VALID", "USED", "EXPIRED", "CANCELLED"] as const;
-export type TicketRow = { groupId: string; status: string; event: { id: string; name: string; eventDate: Date } };
+export type TicketRow = { groupId: string; status: string; number?: string; event: { id: string; name: string; eventDate: Date } };
 export function ticketGroups(rows: TicketRow[], now: Date) {
   const by = new Map<string, TicketRow[]>(); for (const t of rows) by.set(t.groupId, [...(by.get(t.groupId) ?? []), t]);
   const groups = [...by.entries()].map(([id, ts]) => ({
     id, count: ts.length, event: ts[0].event, status: (TICKET_ORDER.find((s) => ts.some((t) => t.status === s)) ?? "CANCELLED") as (typeof TICKET_ORDER)[number],
     valid: ts.filter((t) => t.status === "VALID").length, // tickets that will get someone in
     live: ts.filter((t) => t.status === "VALID" || t.status === "PENDING_PAYMENT").length, // tickets still held for this person (a group can also hold cancelled ones)
+    numbers: ts.map((t) => t.number).filter((n): n is string => !!n), // the ticket numbers, for the My tickets list
   }));
   const upcoming = groups.filter((g) => g.event.eventDate.getTime() > now.getTime() && (g.status === "PENDING_PAYMENT" || g.status === "VALID")).sort((a, b) => a.event.eventDate.getTime() - b.event.eventDate.getTime());
   return { groups, upcoming, valid: upcoming.reduce((n, g) => n + g.valid, 0) }; // counts tickets one by one, so a group that also holds a cancelled ticket is not overcounted

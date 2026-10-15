@@ -1,0 +1,83 @@
+import React from "react"; (globalThis as any).React = React; import fs from "fs";
+const Module = require("module"); const origLoad = Module._load; let session: any = null;
+Module._load = function (r: string, ...x: any[]) {
+  if (r === "next-auth") return { getServerSession: async () => session };
+  if (r === "@/lib/booking-auth") return { currentBookingUser: async () => (session?.user ? { id: session.user.id } : null) };
+  if (r === "next/navigation") return { redirect: (p: string) => { throw new Error("NEXT_REDIRECT:" + p); }, notFound: () => { throw new Error("NEXT_NOT_FOUND"); }, useRouter: () => ({ push() {}, refresh() {} }), usePathname: () => "/account/bookings" };
+  if (r === "next/headers") return { headers: () => new Headers({ "x-taita-locale": (globalThis as any).__loc ?? "en" }) };
+  if (r === "next/cache") return { revalidatePath() {} };
+  if (r === "@/lib/account-data") return { getDeletionBlockers: async () => [] };
+  return origLoad.call(this, r, ...x);
+};
+const T: Record<string, any[]> = {}; const table = (m: string) => (T[m] ??= []);
+const match = (row: any, where: any): boolean => !where || Object.entries(where).every(([k, v]: [string, any]) => { if (v && typeof v === "object" && !(v instanceof Date)) { if ("in" in v) return v.in.includes(row?.[k]); return row?.[k] != null && match(row[k], v); } return row?.[k] === v; });
+const handler = (model: string) => ({ findMany: async (a: any = {}) => { let rows = table(model).filter((r) => match(r, a.where)); if (a.take) rows = rows.slice(0, a.take); return rows; }, findUnique: async (a: any) => table(model).find((r) => match(r, a.where)) ?? null, count: async (a: any = {}) => table(model).filter((r) => match(r, a.where)).length, aggregate: async (a: any = {}) => { const rows = table(model).filter((r) => match(r, a.where)); return { _sum: { amount: rows.reduce((n, r) => n + r.amount, 0) || null }, _count: rows.length }; } });
+(globalThis as any).prisma = new Proxy({}, { get: (_t, model: string) => handler(model) }); process.env.NEXTAUTH_SECRET = "x".repeat(32);
+import { renderToStaticMarkup } from "react-dom/server";
+const expand = async (n: any): Promise<any> => { if (Array.isArray(n)) return Promise.all(n.map(expand)); if (!n || typeof n !== "object" || !n.type) return n; if (typeof n.type === "function" && n.type.constructor?.name === "AsyncFunction") return expand(await n.type(n.props)); const c = n.props?.children; if (c === undefined || typeof n.type === "function") return n; return React.cloneElement(n, undefined, ...(Array.isArray(c) ? await Promise.all(c.map(expand)) : [await expand(c)])); };
+const H = 3600000; const NOW = new Date(); const at = (h: number) => new Date(NOW.getTime() + h * H);
+async function main() {
+  const { LocaleProvider } = await import("@/lib/i18n/client"); const R = await import("@/lib/account-hub-rules"); const { loadAccountHub } = await import("@/lib/account-hub");
+  const Bookings = (await import("@/app/account/bookings/page")).default as any; const Tickets = (await import("@/app/account/tickets/page")).default as any;
+  const render = async (C: any, loc = "en") => { (globalThis as any).__loc = loc; return renderToStaticMarkup(<LocaleProvider locale={loc as any}>{await expand(await C())}</LocaleProvider>).replace(/<!-- -->/g, ""); };
+  const text = (h: string) => h.replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/\s+/g, " ");
+  const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
+  const U = { id: "u1", name: "Neema Mwadime", email: "n@x.co", role: "MEMBER", createdAt: new Date("2026-09-03T08:00:00Z"), emailVerifiedAt: new Date(), termsAcceptedAt: null, termsVersion: null, points: 0, payoutPhone: null };
+  const bk = (id: string, userId: string, status: string, h: number, name: string, guests = 2) => ({ id, userId, status, guests, reference: "REF-" + id.toUpperCase(), session: { startsAt: at(h) }, experience: { name, ownerId: "host1" } });
+  const seed = () => {
+    for (const k of Object.keys(T)) delete T[k]; session = { user: { id: "u1", role: "MEMBER" } }; (globalThis as any).__loc = "en"; T.user = [U];
+    // created in the order a person might book: the farthest first, so "newest first" would be the WRONG order for 'upcoming'
+    T.booking = [bk("b1", "u1", "CONFIRMED", 72, "Walk Bravo"), bk("b2", "u1", "REQUESTED", 24, "Walk Alpha", 1), bk("b3", "u1", "AWAITING_PAYMENT", 120, "Walk Charlie", 3), bk("b4", "u1", "COMPLETED", -500, "Walk Done"), bk("b5", "u1", "CANCELLED", 10, "Walk Cancelled"), bk("b6", "u1", "DECLINED", -20, "Walk Declined"), bk("b7", "u1", "EXPIRED", 5, "Walk Expired"), bk("b8", "u1", "NO_SHOW", -30, "Walk NoShow"), bk("bx", "u2", "CONFIRMED", 12, "SECRET other booking")];
+    const ev = (id: string, name: string, h: number) => ({ id, name, eventDate: at(h) });
+    const tk = (groupId: string, userId: string, status: string, number: string, e: any) => ({ groupId, userId, status, number, event: e });
+    const eA = ev("eA", "Fest Alpha", 48), eB = ev("eB", "Fest Bravo", 24), eC = ev("eC", "Fest Past", -10), eD = ev("eD", "Fest Cancelled", 72), eE = ev("eE", "Fest Lapsed", -300), eX = ev("eX", "SECRET other event", 5);
+    T.ticket = [tk("g1", "u1", "VALID", "T-1", eA), tk("g1", "u1", "VALID", "T-2", eA), tk("g2", "u1", "PENDING_PAYMENT", "T-3", eB), tk("g3", "u1", "USED", "T-4", eC), tk("g4", "u1", "CANCELLED", "T-5", eD), tk("g5", "u1", "EXPIRED", "T-6", eE), tk("gx", "u2", "VALID", "T-X", eX)];
+    for (const k of ["visit", "placeWish", "order", "dayPlan", "experienceEnquiry", "accommodationEnquiry", "review", "fieldNote", "reward", "rewardRedemption", "newsletterSubscriber"]) T[k] = [];
+  };
+  const order = (h: string, ids: string[], prefix: string) => ids.map((id) => h.indexOf(`href="${prefix}${id}"`));
+  const inOrder = (a: number[]) => a.every((x, i) => x >= 0 && (i === 0 || x > a[i - 1]));
+  // ===== My bookings =====
+  seed(); const b = await render(Bookings), bt = text(b);
+  t("MY BOOKINGS (upcoming): what is still to come and still alive, SOONEST FIRST (Alpha in 24 h, Bravo in 72 h, Charlie in 120 h), even though Bravo was booked first — the order the account page's 'Coming up' also uses; nothing past, cancelled, declined or expired is in it", inOrder(order(b.slice(0, b.indexOf('id="past-h"')), ["b2", "b1", "b3"], "/bookings/")) && !/Walk Done|Walk Cancelled|Walk Declined|Walk Expired|Walk NoShow/.test(bt.slice(0, bt.indexOf("Past and cancelled"))) && /Upcoming/.test(bt));
+  t("MY BOOKINGS (the rest): under 'Past and cancelled', MOST RECENT FIRST (cancelled and expired ones still to come first, then the declined, the no-show, the completed one months ago)", inOrder(order(b.slice(b.indexOf('id="past-h"')), ["b5", "b7", "b6", "b8", "b4"], "/bookings/")) && /Past and cancelled/.test(bt));
+  const chip = (name: string) => { const re = new RegExp(`${name}[\\s\\S]*?rounded-full[^>]*>([^<]+)<`); return re.exec(b)?.[1]; };
+  t("MY BOOKINGS (each status in plain words): Confirmed, Waiting for the host, Payment needed, Completed, Cancelled, Declined, Expired, Did not attend", [["Walk Bravo", "Confirmed"], ["Walk Alpha", "Waiting for the host"], ["Walk Charlie", "Payment needed"], ["Walk Done", "Completed"], ["Walk Cancelled", "Cancelled"], ["Walk Declined", "Declined"], ["Walk Expired", "Expired"], ["Walk NoShow", "Did not attend"]].every(([n, c]) => chip(n) === c));
+  t("MY BOOKINGS (the details): the day and time in Nairobi time, the right 'guest' or 'guests', and the reference; each links to its own booking; another person's booking is nowhere", bt.includes(`${R.formatDayTime(at(24), "en")}. 1 guest. Reference REF-B2.`) && bt.includes(`${R.formatDayTime(at(72), "en")}. 2 guests. Reference REF-B1.`) && bt.includes("3 guests") && !/SECRET|REF-BX|bx/.test(b.replace(/\bbox\b/g, "")));
+  const hub: any = await loadAccountHub("u1", NOW); const upLinks = (b.slice(0, b.indexOf('id="past-h"')).match(/href="\/bookings\/b\d"/g) ?? []).length;
+  t("MY BOOKINGS AGREES WITH THE ACCOUNT PAGE: the hub's 'coming up' booking is the FIRST in this list, and the hub's count of upcoming bookings equals the number listed under Upcoming", hub.comingUp[0].kind === "booking" && hub.comingUp[0].id === "b2" && b.indexOf('href="/bookings/b2"') === Math.min(...["b1", "b2", "b3"].map((id) => b.indexOf(`href="/bookings/${id}"`))) && hub.bookings.upcoming === 3 && upLinks === 3);
+  seed(); T.booking = [bk("bx", "u2", "CONFIRMED", 12, "SECRET other booking")]; const b0 = await render(Bookings), b0t = text(b0);
+  t("MY BOOKINGS (empty): an explained empty state with one clear next step (browse experiences); no section headings", /Nothing booked yet/.test(b0t) && /When you book an experience, you can follow it here/.test(b0t) && /href="\/experiences"[^>]*>Browse experiences/.test(b0) && !/Upcoming|Past and cancelled/.test(b0t) && !/SECRET/.test(b0));
+  seed(); T.booking = [bk("b9", "u1", "COMPLETED", -50, "Only Past")]; const bp = text(await render(Bookings));
+  t("MY BOOKINGS (only past ones): just 'Past and cancelled', no empty 'Upcoming' heading", /Past and cancelled/.test(bp) && !/Upcoming/.test(bp) && /Only Past/.test(bp));
+  // ===== My tickets =====
+  seed(); const k = await render(Tickets), kt = text(k); const kUp = k.slice(0, k.indexOf('id="past-h"')), kRest = k.slice(k.indexOf('id="past-h"'));
+  t("MY TICKETS (coming up): tickets reserved together are ONE entry; soonest event first (Bravo in 24 h waiting for payment, then Alpha in 48 h valid); with the day and time, the count, and the ticket numbers; each links to its own tickets", inOrder(order(kUp, ["g2", "g1"], "/tickets/")) && kt.includes(`${R.formatDayTime(at(48), "en")}. 2 tickets.`) && kt.includes(`${R.formatDayTime(at(24), "en")}. 1 ticket.`) && /Ticket numbers: T-1, T-2/.test(kt) && /Ticket numbers: T-3/.test(kt) && /Coming up/.test(kt));
+  t("MY TICKETS (the rest): most recent event first (cancelled one in 72 h, used one 10 h ago, lapsed one 300 h ago), none of them in 'Coming up'", inOrder(order(kRest, ["g4", "g3", "g5"], "/tickets/")) && !/Fest Cancelled|Fest Past|Fest Lapsed/.test(text(kUp)) && /Past and cancelled/.test(kt));
+  const kchip = (name: string) => new RegExp(`${name}[\\s\\S]*?rounded-full[^>]*>([^<]+)<`).exec(k)?.[1];
+  t("MY TICKETS (each status in plain words): Valid, Waiting for payment, Used at the door, Cancelled, Reservation expired; nobody else's tickets", [["Fest Alpha", "Valid"], ["Fest Bravo", "Waiting for payment"], ["Fest Past", "Used at the door"], ["Fest Cancelled", "Cancelled"], ["Fest Lapsed", "Reservation expired"]].every(([n, c]) => kchip(n) === c) && !/SECRET|T-X/.test(k));
+  t("MY TICKETS AGREES WITH THE ACCOUNT PAGE: the hub's coming-up tickets are the FIRST entry here, its count of upcoming groups equals those listed, and its count of valid tickets is exactly the tickets that will get someone in (2)", hub.comingUp.find((c: any) => c.kind === "tickets")?.id === "g2" && hub.tickets.upcoming === 2 && (kUp.match(/href="\/tickets\/g\d"/g) ?? []).length === 2 && hub.tickets.valid === 2);
+  seed(); T.ticket = []; const k0 = await render(Tickets), k0t = text(k0);
+  t("MY TICKETS (empty): an explained empty state with one clear next step (see what is on)", /No tickets yet/.test(k0t) && /they appear here with their QR codes/.test(k0t) && /href="\/events"[^>]*>See what is on/.test(k0));
+  for (const [nm, C, path] of [["bookings", Bookings, "bookings"], ["tickets", Tickets, "tickets"]] as any) { session = null; let msg = ""; try { await C(); } catch (e: any) { msg = e.message; } t(`PRIVATE (${nm}): a signed-out visitor is sent to sign in and brought back to this page afterwards`, msg === `NEXT_REDIRECT:/login?next=%2Faccount%2F${path}`); }
+  // ===== structure, safety, colour =====
+  seed(); const pages = [b, k, await render(Bookings, "sw"), await render(Tickets, "fr")];
+  t("STRUCTURE: each page has exactly one h1 and never skips a heading level; every id is unique; every link has a name; a way back to the account", pages.every((h) => { const heads = [...h.matchAll(/<h([1-6])\b/g)].map((m) => Number(m[1])); const ids = [...h.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]); const links = [...h.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)]; return heads[0] === 1 && heads.filter((n) => n === 1).length === 1 && heads.every((n, i) => i === 0 || n - heads[i - 1] <= 1) && new Set(ids).size === ids.length && links.every(([, a, inner]) => /aria-label="[^"]+"/.test(a) || text(inner).trim() !== "") && /href="(\/(sw|fr))?\/account"/.test(h); }));
+  const COL = /(?<![:\w-])text-(?:stone(?:\/\d+)?|parchment|rust(?:-deep)?|canopy(?:-deep)?|ochre(?:-light)?|white)(?![\w-])/g;
+  t("NO ELEMENT FIGHTS ITSELF OVER ITS TEXT COLOUR on either page", pages.every((h) => [...h.matchAll(/\bclass="([^"]*)"/g)].every((m) => (m[1].match(COL) ?? []).length <= 1)));
+  t("NO RAW HTML, AND NEVER CACHED: neither page uses dangerouslySetInnerHTML, both are dynamic, and both keep out of search engines", ["app/account/bookings/page.tsx", "app/account/tickets/page.tsx"].every((f) => { const s = fs.readFileSync(f, "utf8"); return !/dangerouslySetInnerHTML/.test(s) && /export const dynamic = "force-dynamic"/.test(s) && /robots: \{ index: false \}/.test(s); }));
+  // ===== every language =====
+  seed(); const sw = text(await render(Bookings, "sw")), fr = text(await render(Bookings, "fr")), de = text(await render(Bookings, "de")), swT = text(await render(Tickets, "sw")), frT = text(await render(Tickets, "fr")), deT = text(await render(Tickets, "de"));
+  t("KISWAHILI: titles, headings, statuses, the guest count, the reference and the dates are all in Kiswahili", /Uhifadhi wangu|Uhifadhi/.test(sw) && /Zijazo/.test(sw) && /Zilizopita na zilizoghairiwa/.test(sw) && /Imethibitishwa/.test(sw) && /Mgeni 1/.test(sw) && /Nambari ya uhifadhi REF-B2/.test(sw) && new RegExp(R.formatDayTime(at(24), "sw").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).test(sw) && /Yanayokuja/.test(swT) && /Nambari za tiketi: T-1, T-2/.test(swT) && /Imetumika mlangoni/.test(swT));
+  t("FRANÇAIS and DEUTSCH: the same, in French (formal 'vous') and German (informal 'du'), with dates in the right language", /À venir/.test(fr) && /Passées et annulées/.test(fr) && /Confirmée/.test(fr) && /1 personne/.test(fr) && /Référence REF-B2/.test(fr) && /octobre/.test(fr) && /Demnächst/.test(deT) && /Bevorstehend/.test(de) && /Vergangen und storniert/.test(de) && /Referenz REF-B2/.test(de) && /Oktober/.test(de) && /Numéros de billets : T-1, T-2/.test(frT) && /Ticketnummern: T-1, T-2/.test(deT) && /Reservierung abgelaufen/.test(deT));
+  t("DATES FOLLOW THE LANGUAGE ON BOTH PAGES: the exact moment of a booking and of an event is written the way that language writes it (weekday, month, 24-hour time in Nairobi), in Kiswahili, French and German, on My bookings AND My tickets",
+    [["sw", sw, swT], ["fr", fr, frT], ["de", de, deT]].every(([l, bh, th]: any) => bh.includes(R.formatDayTime(at(24), l)) && bh.includes(R.formatDayTime(at(72), l)) && th.includes(R.formatDayTime(at(24), l)) && th.includes(R.formatDayTime(at(48), l))) && R.formatDayTime(at(24), "sw") !== R.formatDayTime(at(24), "en") && R.formatDayTime(at(24), "fr") !== R.formatDayTime(at(24), "de"));
+  const english = ["Upcoming", "Past and cancelled", "Coming up", "Waiting for the host", "Payment needed", "Did not attend", "Ticket numbers", "Used at the door", "Reservation expired", "Reference REF", "guests"];
+  const leaks = [sw, fr, de, swT, frT, deT].flatMap((x) => english.filter((e) => x.includes(e)));
+  t("NO ENGLISH LEFT BEHIND: in Kiswahili, French and German, none of the English status or heading phrases remain" + (leaks.length ? " — LEAKED: " + leaks.join(", ") : ""), leaks.length === 0);
+  const hrefs = (h: string) => [...h.matchAll(/\bhref="(\/[^"]*)"/g)].map((m) => m[1]);
+  const wrong = [["sw", await render(Bookings, "sw")], ["fr", await render(Tickets, "fr")], ["de", await render(Bookings, "de")]].flatMap(([l, h]: any) => hrefs(h).filter((u: string) => !u.startsWith(`/${l}/`)));
+  t("LINKS STAY IN THE PERSON'S LANGUAGE: every address on the translated pages keeps the language prefix" + (wrong.length ? " — e.g. " + wrong[0] : ""), wrong.length === 0);
+  let nbad = 0; for (const [nm, ok2] of res) { console.log((ok2 ? "PASS " : "FAIL ") + nm); if (!ok2) nbad++; }
+  console.log(nbad ? `\n${nbad} FAILED` : `\nALL ${res.length} MY BOOKINGS AND MY TICKETS CHECKS PASSED`); process.exit(nbad ? 1 : 0);
+}
+main().catch((e) => { console.error("ERROR:", e); process.exit(2); });
