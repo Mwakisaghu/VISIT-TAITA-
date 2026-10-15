@@ -1464,3 +1464,21 @@ live in the account menu rather than the main bar).
   It stops completely for visitors who ask their device to reduce motion, and the optional film never plays for them, on a data-saver connection, or on a slow one.
 - **Measured** in a browser against a production build: no accessibility violations (colour contrast, labels, headings) at desktop or phone size, including with the menus open;
   about 130 KB of JavaScript. Please re-check with your real photographs, which will be heavier than the stand-ins used for the measurements.
+
+## Tests
+The folder `tests/` holds the test suite: about 60 files and 1,700 checks covering the rules, the pages, the browser behaviour and the guards that keep the privacy policy, the spam protection,
+the security headers, the visitor essentials and the translations true as the code changes. CI runs it on every pull request, next to the repository check and the type check.
+
+```
+npm test                     # run everything (about two minutes)
+npm test -- spam csp         # run only the files whose name contains "spam" or "csp"
+npm test -- --jobs 2         # run two at a time on a slow machine
+```
+
+- Each file in `tests/` ends in `_test.tsx` (or `_test.js`) and prints its own PASS / FAIL lines. A file passes only if it exits normally and prints its "ALL n ... PASSED" line.
+- The tests use fake data and fake services: they never touch your database, send email, or call a payment provider.
+- They are run by `tsx`, not type-checked: they deliberately mock framework internals. `tests/` is excluded from the type check in `tsconfig.json`.
+- Some tests are guards, not features: if one fails after you add a cookie, a storage key, an outside service, a tracker or a number on the visitor essentials page, it is telling you to update the privacy policy
+  (`lib/legal-text.ts`) or the page's reviewed numbers on purpose. Read what it says before changing the test.
+- To add a test: copy a small existing one (`spam_test.tsx` is a good start), keep the `ALL n ... PASSED` line at the end, and run `npm test -- yourname`.
+- `tests/fixtures/en-homepage.html` is a saved copy of the English homepage as the tests render it. If you change the English homepage on purpose, the translation test will fail until you refresh it.

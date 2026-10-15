@@ -1,0 +1,84 @@
+import React from "react"; (globalThis as any).React = React;
+const { JSDOM } = require("jsdom");
+const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: "http://localhost/admin", pretendToBeVisual: true }); const w = dom.window as any;
+Object.assign(globalThis, { self: w, window: w, document: w.document, HTMLElement: w.HTMLElement, Node: w.Node, Event: w.Event, KeyboardEvent: w.KeyboardEvent, HTMLInputElement: w.HTMLInputElement });
+Object.defineProperty(globalThis, "navigator", { value: w.navigator, configurable: true, writable: true }); // Node 20 has no global navigator (21+ does); React reads it as it loads
+(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+let pathname = "/admin"; const pushes: string[] = []; let refreshes = 0; const calls: any[] = []; const queue: Record<string, any[]> = {};
+const Module = require("module"); const origLoad = Module._load;
+Module._load = function (r: string, ...x: any[]) {
+  if (r === "next/navigation") return { usePathname: () => pathname, useRouter: () => ({ push: (p: string) => { pushes.push(p); }, refresh: () => { refreshes++; } }) };
+  if (r === "@/lib/actions/users-admin") return { suspendUser: async (id: string, reason: string) => { calls.push(["suspend", id, reason]); return queue.suspend?.shift() ?? { success: true }; }, reinstateUser: async (id: string) => { calls.push(["reinstate", id]); return queue.reinstate?.shift() ?? { success: true }; } };
+  return origLoad.call(this, r, ...x);
+};
+// react-dom must load AFTER the fake browser (jsdom) exists, or it decides there is no DOM and ignores real input events (React 19).
+const { createRoot } = require("react-dom/client"); const { act } = require("react"); // (react-dom/test-utils was removed in React 19)
+const flush = () => act(async () => { await new Promise((r) => setTimeout(r, 0)); });
+const q = (s: string) => w.document.querySelector(s) as any; const qa = (s: string) => [...w.document.querySelectorAll(s)] as any[]; const text = () => w.document.body.textContent ?? "";
+const click = async (el: any) => { await act(async () => { el.click(); }); await flush(); };
+const setVal = async (el: any, v: string) => { await act(async () => { Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype, "value")!.set!.call(el, v); el.dispatchEvent(new w.Event(el.tagName === "SELECT" ? "change" : "input", { bubbles: true })); }); };
+const submit = async (form: any) => { await act(async () => { form.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true })); }); await flush(); };
+let root: any; const mount = async (el: any) => { if (root) root.unmount(); w.document.body.innerHTML = '<div id="root"></div>'; root = createRoot(q("#root")); await act(async () => { root.render(el); }); await flush(); };
+const reset = () => { pushes.length = 0; refreshes = 0; calls.length = 0; for (const k of Object.keys(queue)) delete queue[k]; };
+
+async function main() {
+  const NavMod = await import("@/lib/admin-nav"); const Nav = (await import("@/components/admin/AdminNav")).default as any; const Crumb = (await import("@/components/admin/AdminCrumb")).default as any; const RowActions = (await import("@/components/admin/UserRowActions")).default as any;
+  const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, ok]);
+  const mgr = NavMod.visibleGroups("ADMIN"); const edt = NavMod.visibleGroups("EDITOR");
+  const badges = { stayEnquiries: 2, experienceEnquiries: 1, refunds: 4, reviews: 3, emails: 120 };
+  const headers = () => qa("nav button[aria-expanded]"); const hdr = (label: string) => headers().find((b: any) => b.textContent.includes(label)); const links = () => qa("nav a"); const linkTo = (href: string) => links().find((a: any) => a.getAttribute("href") === href);
+
+  // ===== folding sections, current page =====
+  pathname = "/admin"; await mount(<Nav groups={mgr} badges={badges} />);
+  t("MENU: nine collapsible sections plus Overview at the top (not a wall of 32 links)", headers().length === 9 && linkTo("/admin") && links().filter((a: any) => a.getAttribute("aria-current") === "page").length === 1 && linkTo("/admin").getAttribute("aria-current") === "page");
+  t("MENU: on the overview every section starts folded, so only the section names are visible", headers().every((b: any) => b.getAttribute("aria-expanded") === "false") && links().length === 1);
+  t("MENU: closed sections show how many things are waiting inside (Stays: 2+1+4 = 7; Community: 3; Messages: 99+)", /7 waiting in this section/.test(hdr("Stays").innerHTML) && /3 waiting in this section/.test(hdr("Community").innerHTML) && /99\+/.test(hdr("Messages").innerHTML) && !/waiting in this section/.test(hdr("Shop").innerHTML));
+  await click(hdr("Stays")); t("MENU: clicking a section opens it — its six pages appear, each waiting-count shown on its own line, and the section total moves off the header", hdr("Stays").getAttribute("aria-expanded") === "true" && ["Accommodations", "Stay enquiries", "Experiences", "Experience enquiries", "Bookings & refunds", "Partner applications"].every((l) => links().some((a: any) => a.textContent.includes(l))) && /2 waiting/.test(linkTo("/admin/accommodations/enquiries").innerHTML) && /4 waiting/.test(linkTo("/admin/bookings").innerHTML) && !/waiting in this section/.test(hdr("Stays").innerHTML));
+  await click(hdr("Stays")); t("MENU: clicking again folds it away", hdr("Stays").getAttribute("aria-expanded") === "false" && !linkTo("/admin/bookings"));
+  pathname = "/admin/shop/orders"; await mount(<Nav groups={mgr} badges={badges} />);
+  t("CURRENT PAGE: opening /admin/shop/orders opens the Shop section only, highlights 'Orders' (aria-current=page) and nothing else", hdr("Shop").getAttribute("aria-expanded") === "true" && headers().filter((b: any) => b.getAttribute("aria-expanded") === "true").length === 1 && linkTo("/admin/shop/orders").getAttribute("aria-current") === "page" && links().filter((a: any) => a.getAttribute("aria-current") === "page").length === 1 && /text-rust/.test(linkTo("/admin/shop/orders").className));
+  pathname = "/admin/users/audit"; await mount(<Nav groups={mgr} badges={badges} />); t("CURRENT PAGE: on the activity log, 'Activity log' is current and 'Accounts' is not (most specific wins)", linkTo("/admin/users/audit").getAttribute("aria-current") === "page" && linkTo("/admin/users").getAttribute("aria-current") === null);
+  pathname = "/admin/users/abc123"; await mount(<Nav groups={mgr} badges={badges} />); t("CURRENT PAGE: on one person's page, 'Accounts' is current", linkTo("/admin/users").getAttribute("aria-current") === "page");
+  pathname = "/admin/reviews"; await mount(<Nav groups={mgr} badges={badges} />); await click(hdr("Shop")); t("MENU: you can have several sections open at once", hdr("Shop").getAttribute("aria-expanded") === "true" && hdr("Community").getAttribute("aria-expanded") === "true");
+  pathname = "/admin/cup/teams"; await act(async () => { root.render(<Nav groups={mgr} badges={badges} />); }); await flush(); t("NAVIGATING (the menu stays mounted between pages): moving to another section opens it, and keeps the others as the user left them", hdr("Football cup").getAttribute("aria-expanded") === "true" && hdr("Community").getAttribute("aria-expanded") === "true" && linkTo("/admin/cup/teams").getAttribute("aria-current") === "page");
+  t("ACCESSIBILITY: a labelled navigation landmark, headers are real buttons tied to their lists with aria-controls, links are real links, a hidden live region names where you are", !!q('nav[aria-label="Admin"]') && headers().every((b: any) => b.tagName === "BUTTON" && b.getAttribute("aria-controls")) && qa("[aria-live]").some((e: any) => /Football cup › Teams/.test(e.textContent)) && links().every((a: any) => a.getAttribute("href")?.startsWith("/admin")));
+
+  // ===== find a page =====
+  pathname = "/admin"; await mount(<Nav groups={mgr} badges={badges} />); const box = () => q("#admin-find");
+  t("FIND: a labelled search box ('Find a page') at the top of the menu", !!box() && /Find a page/.test(q('label[for="admin-find"]').textContent) && box().type === "search");
+  await setVal(box(), "refund"); t("FIND: typing 'refund' replaces the menu with a flat list of matches, each showing its section", links().length === 1 && /Bookings & refunds/.test(links()[0].textContent) && /Stays & experiences/.test(links()[0].textContent) && headers().length === 0);
+  await submit(q('form[role="search"]')); t("FIND: pressing Enter goes to the first match", JSON.stringify(pushes) === '["/admin/bookings"]');
+  await setVal(box(), "accounts"); t("FIND: 'accounts' finds the accounts screen (the page you couldn't find before)", links().length === 1 && links()[0].getAttribute("href") === "/admin/users");
+  await setVal(box(), "zzzz"); t("FIND: no match says so plainly and Enter does nothing", /Nothing matches “zzzz”/.test(text()) && (reset(), await submit(q('form[role="search"]')), pushes.length === 0));
+  await act(async () => { box().dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true })); }); await flush(); t("FIND: Escape clears the search and brings the menu back", box().value === "" && headers().length === 9);
+  await mount(<Nav groups={edt} badges={badges} />); await setVal(box(), "accounts"); t("FIND (editor): an editor searching 'accounts' finds nothing — the menu never offers what they can't open", /Nothing matches/.test(text()) && !linkTo("/admin/users")); await setVal(box(), "");
+  t("MENU (editor): no 'People & access' section, no Bookings link anywhere", !hdr("People") && headers().length === 8 && !/Bookings/.test(text()));
+
+  // ===== phone =====
+  pathname = "/admin/shop/orders"; await mount(<Nav groups={mgr} badges={badges} />); const menuBtn = () => qa("button").find((b: any) => /Menu|Close menu/.test(b.textContent));
+  t("PHONE: a 'Menu · Orders' button names where you are; the menu itself is hidden until opened (hidden below the desktop width, always shown above it)", /Menu · Orders/.test(menuBtn().textContent) && menuBtn().getAttribute("aria-expanded") === "false" && /\bhidden\b/.test(q("#admin-menu").className) && /lg:block/.test(q("#admin-menu").className) && /lg:hidden/.test(menuBtn().className));
+  await click(menuBtn()); t("PHONE: tapping it opens the menu and the button becomes 'Close menu'", menuBtn().getAttribute("aria-expanded") === "true" && /Close menu/.test(menuBtn().textContent) && !/\bhidden\b/.test(q("#admin-menu").className));
+  pathname = "/admin/stories"; await act(async () => { root.render(<Nav groups={mgr} badges={badges} />); }); await flush(); t("PHONE: choosing a page closes the menu again", menuBtn().getAttribute("aria-expanded") === "false" && /\bhidden\b/.test(q("#admin-menu").className));
+  await mount(<Nav groups={mgr} badges={{}} />); t("BADGES: with nothing waiting no badge is drawn anywhere", qa('[aria-label*="waiting"]').length === 0);
+  await mount(<Nav groups={mgr} badges={{ reviews: 0, refunds: -3 as any }} />); t("BADGES: zero and negative counts are not drawn", qa('[aria-label*="waiting"]').length === 0);
+
+  // ===== breadcrumb =====
+  pathname = "/admin/users/audit"; await mount(<Crumb groups={mgr} />); t("TRAIL: 'Admin › People & access › Activity log' above the page, each part a link", /Admin › People & access › Activity log/.test(text().replace(/\s+/g, " ")) && qa("a").map((a: any) => a.getAttribute("href")).join() === "/admin,/admin/users/audit");
+  pathname = "/admin"; await mount(<Crumb groups={mgr} />); t("TRAIL: nothing on the overview", text().trim() === "");
+  pathname = "/somewhere/else"; await mount(<Crumb groups={mgr} />); t("TRAIL: nothing for a page that isn't in the menu", text().trim() === "");
+
+  // ===== suspend / reinstate from the accounts list =====
+  reset(); await mount(<RowActions userId="u1" name="Jane Wanjiru" suspended={false} />); const sbtn = () => qa("button").find((b: any) => /Suspend…/.test(b.textContent));
+  t("ROW: an active account offers 'Suspend…' (labelled with the person's name for screen readers) and nothing else; no form until asked", !!sbtn() && sbtn().getAttribute("aria-label") === "Suspend Jane Wanjiru" && !q("form") && !qa("button").some((b: any) => /Reinstate/.test(b.textContent)));
+  await click(sbtn()); t("ROW: clicking it opens a small form asking WHY (required, 3–200 characters), says what happens, and has Suspend / Cancel", !!q("form") && q("form input").required && q("form input").minLength === 3 && q("form input").maxLength === 200 && /signed out and can't sign in/.test(text()) && sbtn().getAttribute("aria-expanded") === "true" && qa("form button").map((b: any) => b.textContent.trim()).join() === "Suspend,Cancel");
+  await click(qa("form button").find((b: any) => b.textContent === "Cancel")); t("ROW: Cancel closes it without doing anything", !q("form") && calls.length === 0);
+  await click(sbtn()); await setVal(q("form input"), "Repeated abuse of the review system"); await submit(q("form")); t("ROW: submitting suspends THAT account with the typed reason, closes the form and refreshes the list", JSON.stringify(calls) === '[["suspend","u1","Repeated abuse of the review system"]]' && !q("form") && refreshes === 1);
+  reset(); queue.suspend = [{ error: "Only a super admin can change an admin or super admin account." }]; await click(sbtn()); await setVal(q("form input"), "Because"); await submit(q("form")); t("ROW: a refusal from the server (the same rules as the account page) is shown in an alert, the form stays open, nothing refreshes", /super admin can change/.test(q('[role="alert"]').textContent) && !!q("form") && refreshes === 0);
+  reset(); await mount(<RowActions userId="u2" name="Peter Kamau" suspended />); t("ROW: a suspended account offers 'Reinstate' (and no suspend control)", !!qa("button").find((b: any) => /Reinstate/.test(b.textContent)) && !qa("button").some((b: any) => /Suspend…/.test(b.textContent)));
+  await click(qa("button").find((b: any) => /Reinstate/.test(b.textContent))); t("ROW: Reinstate reinstates that account at once and refreshes", JSON.stringify(calls) === '[["reinstate","u2"]]' && refreshes === 1);
+  reset(); queue.reinstate = [{ error: "Admin access required." }]; await click(qa("button").find((b: any) => /Reinstate/.test(b.textContent))); t("ROW: a refused reinstate shows why", /Admin access required/.test(q('[role="alert"]').textContent) && refreshes === 0);
+
+  let nbad = 0; for (const [nm, ok2] of res) { console.log((ok2 ? "PASS " : "FAIL ") + nm); if (!ok2) nbad++; }
+  console.log(nbad ? `\n${nbad} FAILED` : `\nALL ${res.length} ADMIN UI (BROWSER) CHECKS PASSED`); process.exit(nbad ? 1 : 0);
+}
+main().catch((e) => { console.error("ERROR:", e); process.exit(2); });
