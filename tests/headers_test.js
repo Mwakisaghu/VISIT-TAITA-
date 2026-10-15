@@ -1,0 +1,15 @@
+const cfg = require(process.cwd() + "/next.config.js"); const res = []; const t = (n, ok) => res.push([n, !!ok]);
+(async () => {
+  const rules = await cfg.headers(); const all = rules.find((r) => r.source === "/:path*"); const h = Object.fromEntries((all?.headers ?? []).map((x) => [x.key, x.value]));
+  t("headers apply to every page (/:path*)", rules.length === 1 && all);
+  t("X-Content-Type-Options: nosniff", h["X-Content-Type-Options"] === "nosniff");
+  t("X-Frame-Options: SAMEORIGIN (other sites can't frame the site; its own pages still can)", h["X-Frame-Options"] === "SAMEORIGIN");
+  t("Referrer-Policy: strict-origin-when-cross-origin", h["Referrer-Policy"] === "strict-origin-when-cross-origin");
+  t("Permissions-Policy switches camera, microphone, payment and USB off but LEAVES GEOLOCATION ON for the site itself (Passport check-in uses it)", /camera=\(\)/.test(h["Permissions-Policy"]) && /microphone=\(\)/.test(h["Permissions-Policy"]) && /payment=\(\)/.test(h["Permissions-Policy"]) && /usb=\(\)/.test(h["Permissions-Policy"]) && /geolocation=\(self\)/.test(h["Permissions-Policy"]) && !/geolocation=\(\)/.test(h["Permissions-Policy"]));
+  const sts = Number(/max-age=(\d+)/.exec(h["Strict-Transport-Security"] ?? "")?.[1]); t("Strict-Transport-Security: at least 180 days, WITHOUT includeSubDomains or preload (those can lock out sub-domains and are hard to undo)", sts >= 15552000 && !/includeSubDomains|preload/i.test(h["Strict-Transport-Security"]));
+  t("the Content-Security-Policy is REPORT-ONLY, not enforced, until CSP_ENFORCE=1 is set (a wrong enforced one would break the map, pictures and inline data; see docs/security-headers.md)", !("Content-Security-Policy" in h) && typeof h["Content-Security-Policy-Report-Only"] === "string" && /report-uri \/api\/csp-report/.test(h["Content-Security-Policy-Report-Only"]));
+  t("no header value has stray whitespace or newlines (browsers reject those)", Object.values(h).every((v) => v === v.trim() && !/[\r\n]/.test(v)));
+  t("the picture settings from the earlier change are intact (remote hosts + 30-day cache)", cfg.images.minimumCacheTTL === 2592000 && cfg.images.remotePatterns.some((p) => p.hostname === "images.unsplash.com"));
+  const pj = JSON.parse(require("fs").readFileSync("package.json", "utf8")); t("package.json: the check and the hook installer are wired, and every earlier script is still there (adding new scripts, such as the test script, is fine)", pj.scripts["check:repo"] === "node scripts/check-repo.mjs" && pj.scripts.prepare === "node scripts/check-repo.mjs --install-hooks" && pj.scripts.postinstall === "prisma generate" && pj.scripts.build === "next build" && ["dev", "build", "start", "lint", "postinstall", "db:seed", "merch:seed", "admin:create", "pesapal:register-ipn", "dev:turbo", "email:test", "points:backfill", "check:repo", "prepare"].every((k) => typeof pj.scripts[k] === "string"));
+  let bad = 0; for (const [n, ok] of res) { console.log((ok ? "PASS " : "FAIL ") + n); if (!ok) bad++; } console.log(bad ? `\n${bad} FAILED` : `\nALL ${res.length} HEADER / CONFIG CHECKS PASSED`); process.exit(bad ? 1 : 0);
+})();

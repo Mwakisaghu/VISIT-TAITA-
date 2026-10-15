@@ -24,3 +24,6 @@ jobs:
       - run: node scripts/check-repo.mjs
       # Catches syntax errors and type mistakes anywhere in the site.
       - run: npx tsc --noEmit
+      # The test suite in tests/ (about two minutes): the rules, the pages, the browser behaviour, and the guards that keep the privacy policy, the spam protection,
+      # the security headers and the visitor essentials honest. See the README, "Tests".
+      - run: npm test
