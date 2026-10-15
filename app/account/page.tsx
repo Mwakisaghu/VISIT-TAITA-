@@ -1,212 +1,61 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import DeleteAccountForm from "@/components/account/DeleteAccountForm";
-import ResendVerificationButton from "@/components/account/ResendVerificationButton";
-import UnsubscribeButton from "@/components/account/UnsubscribeButton";
-import { getDeletionBlockers } from "@/lib/account-data";
+import { AccountRail, AttentionCards, ComingUp, HelpBand, HubCover, HubTiles, PassportCard, WorkBand } from "@/components/account-hub/HubBlocks";
+import { SettingsPanels } from "@/components/account-hub/SettingsPanels";
+import { loadAccountHub } from "@/lib/account-hub";
+import { attention, comingCards, tiles as buildTiles, workBand } from "@/lib/account-hub-text";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { lp, tr } from "@/lib/i18n/server";
 
-export const metadata: Metadata = { title: "Your account" };
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: tr("My account") };
+}
 
-// Personal to the signed-in person — never cached.
+// Personal to the signed-in person: never cached.
 export const dynamic = "force-dynamic";
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Plain({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-6 py-16">
-      <div className="mx-auto max-w-3xl">
-        <p className="font-body text-sm text-rust">Visit Taita</p>
-        <h1 className="mt-1 font-display text-3xl text-stone sm:text-4xl">Your account</h1>
+    <div className="bg-parchment px-5 py-16 sm:px-8">
+      <div className="mx-auto max-w-[40rem]">
+        <p className="font-body text-xs font-bold uppercase tracking-[0.16em] text-rust-deep">{tr("My account")}</p>
+        <h1 className="mt-2.5 font-display text-[2.4rem] font-semibold leading-tight text-stone">{tr("My account")}</h1>
         {children}
       </div>
     </div>
   );
 }
 
-function formatDate(d: Date) {
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-}
-
 export default async function AccountPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return (
-      <Shell>
-        <p className="mt-4 font-body text-stone/80">Sign in to manage your account and your data.</p>
-        <Link href="/login?next=%2Faccount" className="focus-ring mt-6 inline-block rounded-full bg-rust px-7 py-3 font-body text-sm text-parchment hover:bg-rust-deep">
-          Sign in
-        </Link>
-      </Shell>
+      <Plain>
+        <p className="mt-4 font-body text-stone/80">{tr("Sign in to manage your account and your data.")}</p>
+        <Link href={`${lp("/login")}?next=%2Faccount`} className="focus-ring mt-6 inline-flex min-h-12 items-center rounded bg-rust px-7 font-body text-sm font-bold text-white hover:bg-rust-deep">{tr("Sign in")}</Link>
+      </Plain>
     );
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { id: true, name: true, email: true, role: true, createdAt: true, termsAcceptedAt: true, termsVersion: true, emailVerifiedAt: true },
-  });
-  if (!user) {
-    return (
-      <Shell>
-        <p className="mt-4 font-body text-stone/80">This account no longer exists.</p>
-      </Shell>
-    );
-  }
+  const hub = await loadAccountHub(session.user.id);
+  if (!hub) return <Plain><p className="mt-4 font-body text-stone/80">{tr("This account no longer exists.")}</p></Plain>;
 
-  const [subscriber, blockers] = await Promise.all([
-    prisma.newsletterSubscriber.findUnique({ where: { email: user.email }, select: { createdAt: true, status: true, confirmedAt: true } }),
-    getDeletionBlockers({ id: user.id, role: user.role }),
-  ]);
-
+  const t = buildTiles(hub), band = workBand(hub);
   return (
-    <Shell>
-      <section className="mt-10">
-        <h2 className="font-display text-2xl text-stone">Your details</h2>
-        <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-          <div>
-            <dt className="font-body text-xs text-stone/80">Name</dt>
-            <dd className="font-body text-stone">{user.name}</dd>
-          </div>
-          <div>
-            <dt className="font-body text-xs text-stone/80">Email</dt>
-            <dd className="font-body text-stone">{user.email}</dd>
-          </div>
-          <div>
-            <dt className="font-body text-xs text-stone/80">Member since</dt>
-            <dd className="font-body text-stone">{formatDate(user.createdAt)}</dd>
-          </div>
-          <div>
-            <dt className="font-body text-xs text-stone/80">Terms accepted</dt>
-            <dd className="font-body text-stone">
-              {user.termsAcceptedAt ? `${formatDate(user.termsAcceptedAt)} (version ${user.termsVersion ?? "—"})` : "Before we recorded this"}
-            </dd>
-          </div>
-        </dl>
-        <p className="mt-4 font-body text-sm text-stone/80">
-          To correct your details, <Link href="/contact" className="underline hover:text-rust">contact us</Link>.
-        </p>
-      </section>
-
-      <section className="mt-12 border-t border-stone/10 pt-10">
-        <h2 className="font-display text-2xl text-stone">Email address</h2>
-        {user.emailVerifiedAt ? (
-          <p className="mt-3 font-body text-stone/80">Verified on {formatDate(user.emailVerifiedAt)}.</p>
-        ) : (
-          <>
-            <p className="mt-3 max-w-prose font-body text-stone/80">
-              Your email address isn&apos;t verified yet. We sent a link to <strong>{user.email}</strong> when you registered — click it to verify. Until then you can&apos;t write reviews or apply to the Field Crew.
-            </p>
-            <div className="mt-4">
-              <ResendVerificationButton />
-            </div>
-          </>
-        )}
-      </section>
-
-      <section className="mt-12 border-t border-stone/10 pt-10">
-        <h2 className="font-display text-2xl text-stone">Newsletter</h2>
-        {subscriber && subscriber.status === "ACTIVE" && subscriber.confirmedAt ? (
-          <>
-            <p className="mt-3 font-body text-stone/80">You&apos;re subscribed (since {formatDate(subscriber.confirmedAt)}).</p>
-            <div className="mt-4">
-              <UnsubscribeButton />
-            </div>
-          </>
-        ) : subscriber && subscriber.status === "PENDING" ? (
-          <>
-            <p className="mt-3 max-w-prose font-body text-stone/80">We&apos;ve emailed you a link to confirm your address. Click it to start receiving the letter.</p>
-            <div className="mt-4">
-              <UnsubscribeButton />
-            </div>
-          </>
-        ) : subscriber && subscriber.status === "ACTIVE" ? (
-          <>
-            <p className="mt-3 max-w-prose font-body text-stone/80">
-              You signed up before we asked people to confirm, so we won&apos;t email you until you do. Sign up again from the bottom of any page and we&apos;ll send you a confirmation link.
-            </p>
-            <div className="mt-4">
-              <UnsubscribeButton />
-            </div>
-          </>
-        ) : (
-          <p className="mt-3 font-body text-stone/80">You&apos;re not subscribed to our newsletter.</p>
-        )}
-      </section>
-
-      <section className="mt-12 border-t border-stone/10 pt-10">
-        <h2 className="font-display text-2xl text-stone">My bookings</h2>
-        <p className="mt-3 max-w-prose font-body text-stone/80">
-          Experiences you have booked, what you paid, and any refunds. <Link href="/account/bookings" className="text-rust underline">See my bookings</Link>.
-        </p>
-      </section>
-
-      <section className="mt-12 border-t border-stone/10 pt-10">
-        <h2 className="font-display text-2xl text-stone">My tickets</h2>
-        <p className="mt-3 max-w-prose font-body text-stone/80">
-          Tickets for events, with their QR codes. <Link href="/account/tickets" className="text-rust underline">See my tickets</Link>.
-        </p>
-      </section>
-
-      <section className="mt-12 border-t border-stone/10 pt-10">
-        <h2 className="font-display text-2xl text-stone">Download my data</h2>
-        <p className="mt-3 max-w-prose font-body text-stone/80">
-          Get a copy of the personal data linked to your account — your details, Passport, reviews, enquiries, orders and any creator profile — as a file you can keep.
-          It does not include your password (we only store a one-way hash) or our internal notes.
-        </p>
-        <a
-          href="/api/account/export"
-          download
-          className="focus-ring mt-4 inline-block rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment hover:bg-rust-deep"
-        >
-          Download my data
-        </a>
-      </section>
-
-      <section className="mt-12 border-t border-stone/10 pt-10">
-        <h2 className="font-display text-2xl text-stone">Delete my account</h2>
-        <p className="mt-3 max-w-prose font-body text-stone/80">This permanently removes your account. Here is exactly what happens:</p>
-        <div className="mt-4 grid gap-6 sm:grid-cols-2">
-          <div>
-            <p className="font-body text-sm font-semibold text-stone">Deleted</p>
-            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 font-body text-sm text-stone/80">
-              <li>Your account, Passport, points, badges and vouchers (unused vouchers are cancelled)</li>
-              <li>Your reviews</li>
-              <li>Your creator profile, applications and Field Notes, and your missions</li>
-              <li>Your newsletter subscription</li>
-            </ul>
-          </div>
-          <div>
-            <p className="font-body text-sm font-semibold text-stone">Kept, without your details</p>
-            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 font-body text-sm text-stone/80">
-              <li>Your enquiries, as anonymous records for the host</li>
-              <li>Shop orders, as anonymous payment records</li>
-              <li>Stories you wrote, without your name</li>
-            </ul>
-          </div>
+    <div className="bg-parchment text-stone">
+      <HubCover hub={hub}><PassportCard hub={hub} /></HubCover>
+      <div className="mx-auto flex max-w-[1200px] flex-wrap items-start gap-12 px-5 pb-6 pt-10 sm:px-8 lg:pt-12">
+        <AccountRail tiles={t} />
+        <div className="min-w-0 flex-[999_1_600px]">
+          <AttentionCards items={attention(hub)} />
+          <ComingUp cards={comingCards(hub)} />
+          <WorkBand band={band} />
+          <HubTiles id="everything-h" title={band ? tr("Your Taita") : tr("Everything in your account")} sub={band ? tr("Your own trips, tickets and saved places, as a visitor.") : tr("Every part of your Taita, one tap away.")} tiles={t} />
+          <SettingsPanels hub={hub} />
+          <HelpBand />
         </div>
-
-        {blockers.length > 0 ? (
-          <div role="note" className="mt-6 rounded-sm border border-ochre/60 bg-ochre/10 p-4">
-            <p className="font-body text-sm font-semibold text-stone">You can&apos;t delete this account just yet</p>
-            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 font-body text-sm text-stone/80">
-              {blockers.map((b) => (
-                <li key={b}>{b}</li>
-              ))}
-            </ul>
-            <p className="mt-3 font-body text-sm text-stone/80">
-              Need help? <Link href="/contact" className="underline hover:text-rust">Contact us</Link>.
-            </p>
-          </div>
-        ) : (
-          <div className="mt-6">
-            <DeleteAccountForm />
-          </div>
-        )}
-        <p className="mt-6 font-body text-xs text-stone/80">
-          More in our <Link href="/privacy" className="underline hover:text-rust">Privacy Policy</Link>.
-        </p>
-      </section>
-    </Shell>
+      </div>
+    </div>
   );
 }
