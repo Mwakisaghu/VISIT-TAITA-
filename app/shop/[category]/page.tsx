@@ -11,7 +11,8 @@ export function generateStaticParams() {
   return shopCategories.map((c) => ({ category: c.key }));
 }
 
-export function generateMetadata({ params }: { params: { category: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ category: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const cat = shopCategories.find((c) => c.key === params.category);
   if (!cat) return {};
   return { title: cat.label, ...shareMeta(cat.label, "Made in Taita, by people who call it home.") };
@@ -19,11 +20,12 @@ export function generateMetadata({ params }: { params: { category: string } }): 
 
 export const revalidate = 30;
 
-export default async function ShopCategoryPage({
-  params,
-}: {
-  params: { category: string };
-}) {
+export default async function ShopCategoryPage(
+  props: {
+    params: Promise<{ category: string }>;
+  }
+) {
+  const params = await props.params;
   const cat = shopCategories.find((c) => c.key === params.category);
   if (!cat) notFound();
 

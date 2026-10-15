@@ -61,8 +61,8 @@ export async function submitApplication(formData: FormData) {
   const data = parseResult.data;
 
   // This form is open to anyone and writes to the database, so it is limited by address and by email (the other public forms already are).
-  const forwarded = headers().get("x-forwarded-for") ?? "";
-  const ip = forwarded.split(",")[0].trim() || headers().get("x-real-ip") || "";
+  const forwarded = (await headers()).get("x-forwarded-for") ?? "";
+  const ip = forwarded.split(",")[0].trim() || (await headers()).get("x-real-ip") || "";
   if (ip && !(await checkRateLimit(`partner-apply:ip:${ip}`, 3, 60 * 60 * 1000))) return { error: "Too many applications from this connection — please try again a little later." };
   if (!(await checkRateLimit(`partner-apply:email:${data.email.toLowerCase()}`, 2, 24 * 60 * 60 * 1000))) return { error: "We already have an application from this email — we will be in touch." };
 
@@ -91,8 +91,8 @@ export async function getApplicationStatus(email: string): Promise<{ sent?: true
   const parsed = z.string().email().safeParse(email);
   if (!parsed.success) return { error: "Enter a valid email address." };
   const address = parsed.data.toLowerCase();
-  const forwarded = headers().get("x-forwarded-for") ?? "";
-  const ip = forwarded.split(",")[0].trim() || headers().get("x-real-ip") || "";
+  const forwarded = (await headers()).get("x-forwarded-for") ?? "";
+  const ip = forwarded.split(",")[0].trim() || (await headers()).get("x-real-ip") || "";
   if (ip && !(await checkRateLimit(`partner-status:ip:${ip}`, 10, 60 * 60 * 1000))) return { error: "Too many lookups from this connection — please try again a little later." };
   if (!(await checkRateLimit(`partner-status:email:${address}`, 3, 24 * 60 * 60 * 1000))) return { error: "We have already sent the status to that address today. Please check your inbox (and spam folder), or try again tomorrow." };
 

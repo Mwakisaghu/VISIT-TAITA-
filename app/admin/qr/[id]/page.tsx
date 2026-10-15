@@ -8,7 +8,8 @@ import { getSiteUrl } from "@/lib/site-url";
 
 export const dynamic = "force-dynamic";
 
-export default async function QrLinkPage({ params }: { params: { id: string } }) {
+export default async function QrLinkPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const link = await prisma.shortLink.findUnique({ where: { id: params.id } });
   if (!link) notFound();
   const days = await prisma.shortLinkDay.findMany({ where: { linkId: link.id }, orderBy: { day: "desc" }, take: 30, select: { day: true, count: true } });

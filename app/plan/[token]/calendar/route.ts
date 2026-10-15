@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 /** The plan as a calendar file: one event for each stop that has a time and is still available. */
-export async function GET(_req: Request, ctx: { params: Promise<{ token: string }> | { token: string } }) {
+export async function GET(_req: Request, ctx: { params: Promise<Promise<{ token: string }> | { token: string }> }) {
   const { token } = await ctx.params;
   if (!isToken(token)) return new Response("Not found", { status: 404 });
   const plan = await prisma.dayPlan.findUnique({ where: { token }, select: { token: true, title: true, day: true, stops: { orderBy: { position: "asc" }, select: { kind: true, refId: true, sessionId: true, startMinutes: true, note: true } } } });

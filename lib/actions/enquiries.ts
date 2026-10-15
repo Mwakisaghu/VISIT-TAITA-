@@ -43,8 +43,8 @@ async function resolveReferral(raw: FormDataEntryValue | null, listing: ListingR
   }
 }
 
-function clientIp() {
-  const forwarded = headers().get("x-forwarded-for");
+async function clientIp() {
+  const forwarded = (await headers()).get("x-forwarded-for");
   return forwarded ? forwarded.split(",")[0].trim() : null;
 }
 
@@ -105,8 +105,8 @@ export async function submitAccommodationEnquiry(
     return { error: "This listing is no longer available." };
   }
 
-  const ip = clientIp();
-  if (ip && !await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
+  const ip = await clientIp();
+  if (ip && !(await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000))) return TOO_MANY;
   const recentFromEmail = await prisma.accommodationEnquiry.count({
     where: { email: data.email.toLowerCase(), createdAt: { gte: new Date(Date.now() - HOUR_MS) } },
   });
@@ -181,8 +181,8 @@ export async function submitExperienceEnquiry(
     return { error: "This experience is no longer available." };
   }
 
-  const ip = clientIp();
-  if (ip && !await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
+  const ip = await clientIp();
+  if (ip && !(await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000))) return TOO_MANY;
   const recentFromEmail = await prisma.experienceEnquiry.count({
     where: { email: data.email.toLowerCase(), createdAt: { gte: new Date(Date.now() - HOUR_MS) } },
   });

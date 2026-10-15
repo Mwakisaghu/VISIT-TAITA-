@@ -1,7 +1,7 @@
 import React from "react"; (globalThis as any).React = React;
 import fs from "fs"; import path from "path";
 import { renderToStaticMarkup } from "react-dom/server";
-const txt = (h: string) => h.replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/\s+/g, " ");
+const txt = (h: string) => h.replace(/<script\b[\s\S]*?<\/script>/g, " ").replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/\s+/g, " ");
 const routeExists = (href: string) => { const p = href.split("#")[0].split("?")[0]; if (p === "/") return true; const segs = p.split("/").filter(Boolean); const has = (d: string) => fs.existsSync(path.join(d, "page.tsx")) || fs.existsSync(path.join(d, "route.ts")); const walk = (dir: string, i: number): boolean => { if (i === segs.length) return has(dir); const here = path.join(dir, segs[i]); if (fs.existsSync(here) && walk(here, i + 1)) return true; return fs.readdirSync(dir, { withFileTypes: true }).some((e) => e.isDirectory() && /^\[.+\]$/.test(e.name) && walk(path.join(dir, e.name), i + 1)); }; return walk("app", 0); };
 const KEYS = ["INSTAGRAM_HANDLE", "WHATSAPP_NUMBER", "FACEBOOK_URL", "TIKTOK_HANDLE", "YOUTUBE_URL", "X_HANDLE", "CONTACT_EMAIL", "CONTACT_PHONE", "CONTACT_ADDRESS"];
 const clear = () => KEYS.forEach((k) => delete process.env[k]);

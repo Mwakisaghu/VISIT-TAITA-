@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function PartnerEventTicketsPage({ params }: { params: { id: string } }) {
+export default async function PartnerEventTicketsPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const me = await currentBookingUser();
   if (!me || !(me.isAdmin || me.role === "PARTNER")) notFound();
   const event = await prisma.event.findUnique({ where: { id: params.id }, include: { organiser: { select: { name: true, email: true } } } });

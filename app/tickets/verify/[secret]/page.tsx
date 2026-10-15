@@ -10,7 +10,8 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Ticket check", robots: { index: false } };
 
 /** The page a ticket's QR code opens. Only the event's staff can see anything; it admits nobody until the button is pressed. */
-export default async function VerifyPage({ params }: { params: { secret: string } }) {
+export default async function VerifyPage(props: { params: Promise<{ secret: string }> }) {
+  const params = await props.params;
   const me = await currentBookingUser();
   if (!me) redirect(`/login?next=${encodeURIComponent(`/tickets/verify/${params.secret}`)}`);
   const t = await prisma.ticket.findUnique({ where: { secret: params.secret }, include: { event: { select: { id: true, name: true, eventDate: true, organiserId: true } } } });

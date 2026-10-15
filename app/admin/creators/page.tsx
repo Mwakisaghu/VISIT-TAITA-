@@ -11,7 +11,8 @@ const TABS = [
   { key: "rejected", label: "Rejected", status: "REJECTED" },
 ] as const;
 
-export default async function AdminCreatorsPage({ searchParams }: { searchParams: { tab?: string } }) {
+export default async function AdminCreatorsPage(props: { searchParams: Promise<{ tab?: string }> }) {
+  const searchParams = await props.searchParams;
   const tab = searchParams.tab === "crew" ? "crew" : TABS.find((t) => t.key === searchParams.tab)?.key ?? "pending";
 
   const [grouped, crewCount] = await Promise.all([

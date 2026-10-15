@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import FixtureForm from "@/components/admin/FixtureForm";
 
-export default async function EditFixturePage({ params }: { params: { id: string } }) {
+export default async function EditFixturePage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const [fixture, teams, venues] = await Promise.all([
     prisma.sportFixture.findUnique({ where: { id: params.id } }),
     prisma.sportTeam.findMany({ orderBy: { name: "asc" } }),

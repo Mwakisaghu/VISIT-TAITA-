@@ -15,7 +15,8 @@ export const metadata: Metadata = { title: "Your booking", robots: { index: fals
 
 const kes = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
 
-export default async function BookingPage({ params }: { params: { id: string } }) {
+export default async function BookingPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect(`/login?next=${encodeURIComponent(`/bookings/${params.id}`)}`);
   const mine = await prisma.booking.findFirst({ where: { id: params.id, userId: session.user.id }, select: { id: true } });

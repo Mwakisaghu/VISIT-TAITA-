@@ -11,11 +11,12 @@ export async function generateStaticParams() {
   return teams.map((t) => ({ slug: t.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const team = await prisma.sportTeam.findUnique({ where: { slug: params.slug } });
   if (!team) return {};
   return { title: team.name, ...shareMeta(team.name, `${team.name}, a Taita Cup team.`) };
@@ -23,7 +24,8 @@ export async function generateMetadata({
 
 export const revalidate = 60;
 
-export default async function TeamPage({ params }: { params: { slug: string } }) {
+export default async function TeamPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const team = await prisma.sportTeam.findUnique({
     where: { slug: params.slug },
     include: { players: { orderBy: { number: "asc" } } },

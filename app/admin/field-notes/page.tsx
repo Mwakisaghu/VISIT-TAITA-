@@ -11,7 +11,8 @@ const TABS = [
   { key: "hidden", label: "Hidden", status: "HIDDEN" },
 ] as const;
 
-export default async function AdminFieldNotesPage({ searchParams }: { searchParams: { tab?: string } }) {
+export default async function AdminFieldNotesPage(props: { searchParams: Promise<{ tab?: string }> }) {
+  const searchParams = await props.searchParams;
   const tab = TABS.find((t) => t.key === searchParams.tab) ?? TABS[0];
 
   const [grouped, notes] = await Promise.all([

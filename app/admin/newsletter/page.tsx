@@ -24,7 +24,8 @@ function Tile({ label, value }: { label: string; value: number }) {
   );
 }
 
-export default async function AdminNewsletterPage({ searchParams }: { searchParams: { edit?: string } }) {
+export default async function AdminNewsletterPage(props: { searchParams: Promise<{ edit?: string }> }) {
+  const searchParams = await props.searchParams;
   const health = emailHealth(process.env);
   const info = readSiteInfo();
   const base = checkinBaseUrl();

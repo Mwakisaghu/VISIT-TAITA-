@@ -39,14 +39,16 @@ async function loadNote(slug: string) {
   return note && note.status === "APPROVED" ? note : null;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const note = await loadNote(params.slug);
   if (!note) return {};
   const lead = note.answers[0] ?? note.body ?? "";
   { const _t = `${note.title} — Field Note`; const _d = lead.slice(0, 160); return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
 }
 
-export default async function FieldNotePublicPage({ params }: { params: { slug: string } }) {
+export default async function FieldNotePublicPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const note = await loadNote(params.slug);
   if (!note) notFound();
 

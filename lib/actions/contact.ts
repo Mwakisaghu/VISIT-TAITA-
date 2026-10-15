@@ -39,10 +39,10 @@ export async function submitContactMessage(formData: FormData): Promise<ContactR
   if (!parsed.success) return { error: "Please check your name, email and message (at least 10 characters)." };
   const { name, email, topic, message } = parsed.data;
 
-  const forwarded = headers().get("x-forwarded-for") ?? "";
-  const ip = forwarded.split(",")[0].trim() || headers().get("x-real-ip") || "";
-  if (ip && !await checkRateLimit(`contact:ip:${ip}`, 5, HOUR_MS)) return { error: "Too many messages — please try again a little later." };
-  if (!await checkRateLimit(`contact:email:${email}`, 3, HOUR_MS)) return { error: "You've sent several messages already — please wait a little before sending another." };
+  const forwarded = (await headers()).get("x-forwarded-for") ?? "";
+  const ip = forwarded.split(",")[0].trim() || (await headers()).get("x-real-ip") || "";
+  if (ip && !(await checkRateLimit(`contact:ip:${ip}`, 5, HOUR_MS))) return { error: "Too many messages — please try again a little later." };
+  if (!(await checkRateLimit(`contact:email:${email}`, 3, HOUR_MS))) return { error: "You've sent several messages already — please wait a little before sending another." };
 
   const info = readSiteInfo();
   const team = parseRecipients(process.env.NOTIFY_EMAIL);

@@ -4,7 +4,8 @@ import { safeHttpUrl } from "@/lib/url";
 import { formatPrice } from "@/lib/format";
 import SponsorLeadPanel from "@/components/admin/SponsorLeadPanel";
 
-export default async function AdminSponsorLeadDetailPage({ params }: { params: { id: string } }) {
+export default async function AdminSponsorLeadDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const lead = await prisma.sponsorLead.findUnique({
     where: { id: params.id },
     include: { package: { select: { name: true, startingPrice: true, priceNote: true } } },

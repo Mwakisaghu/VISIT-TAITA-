@@ -7,7 +7,8 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function AvailabilityPage({ params }: { params: { id: string } }) {
+export default async function AvailabilityPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const user = await currentBookingUser();
   if (!user || !(user.isAdmin || user.role === "PARTNER")) notFound();
   const e = await prisma.experience.findUnique({ where: { id: params.id } });

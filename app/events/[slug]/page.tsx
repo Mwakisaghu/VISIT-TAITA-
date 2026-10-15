@@ -16,12 +16,14 @@ import { shareMeta } from "@/lib/share-meta";
 
 export const dynamic = "force-dynamic"; // seats left and sign-in state are live
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const e = await prisma.event.findUnique({ where: { slug: params.slug }, select: { name: true, blurb: true, status: true } });
   return e && e.status === "PUBLISHED" ? { title: e.name, description: e.blurb, ...shareMeta(e.name, e.blurb) } : { title: "Event" };
 }
 
-export default async function EventPage({ params }: { params: { slug: string } }) {
+export default async function EventPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const e = await prisma.event.findUnique({ where: { slug: params.slug }, include: { organiser: { select: { name: true } } } });
   if (!e || e.status !== "PUBLISHED") notFound();
   const now = new Date();

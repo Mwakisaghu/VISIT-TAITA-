@@ -9,7 +9,8 @@ import PrintButton from "@/components/admin/PrintButton";
 
 export const dynamic = "force-dynamic";
 
-export default async function DestinationQrPage({ params }: { params: { id: string } }) {
+export default async function DestinationQrPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const destination = await prisma.destination.findUnique({
     where: { id: params.id },
     select: { id: true, name: true, region: true, status: true, checkinToken: true },

@@ -27,7 +27,8 @@ function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default async function FieldNotePage({ params }: { params: { slug: string } }) {
+export default async function FieldNotePage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session?.user) {
     return (

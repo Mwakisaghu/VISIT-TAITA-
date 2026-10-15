@@ -7,7 +7,8 @@ import { checkinBaseUrl, isLocalUrl } from "@/lib/checkin-url";
 import { getSponsorReport } from "@/lib/impact-data";
 import { prisma } from "@/lib/prisma";
 
-export default async function AdminSponsorReportPage({ params }: { params: { id: string } }) {
+export default async function AdminSponsorReportPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const [report, sponsor] = await Promise.all([
     getSponsorReport(params.id),
     prisma.sponsor.findUnique({ where: { id: params.id }, select: { reportToken: true } }),

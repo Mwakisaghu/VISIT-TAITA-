@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import SponsorForm from "@/components/admin/SponsorForm";
 
-export default async function EditSponsorPage({ params }: { params: { id: string } }) {
+export default async function EditSponsorPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const [sponsor, packages] = await Promise.all([
     prisma.sponsor.findUnique({ where: { id: params.id } }),
     prisma.sponsorPackage.findMany({

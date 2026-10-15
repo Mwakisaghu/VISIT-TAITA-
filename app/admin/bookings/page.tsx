@@ -8,7 +8,8 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 const STATUSES = ["REQUESTED", "AWAITING_PAYMENT", "CONFIRMED", "COMPLETED", "CANCELLED", "DECLINED", "EXPIRED", "NO_SHOW"];
 
-export default async function AdminBookingsPage({ searchParams }: { searchParams: { status?: string } }) {
+export default async function AdminBookingsPage(props: { searchParams: Promise<{ status?: string }> }) {
+  const searchParams = await props.searchParams;
   const me = await currentBookingUser();
   if (!me?.isAdmin) redirect("/admin"); // editors and content managers can use the admin area, but not handle bookings and refunds
   const status = STATUSES.includes(searchParams.status ?? "") ? searchParams.status : undefined;

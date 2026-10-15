@@ -14,7 +14,7 @@ const user = { id: "uA", name: "Amina", points: 120, badges: [], visits: [] };
 const model = (name: string) => new Proxy({}, { get: (_t, method: string) => async (args?: any) => { calls.push({ method: `${name}.${method}`, args }); if (name === "user" && method === "findUnique") return user; if (name === "placeWish" && method === "findMany") return WISHES; return method === "findMany" ? [] : null; } });
 (globalThis as any).prisma = new Proxy({}, { get: (_t, name: string) => model(name) });
 import { renderToStaticMarkup } from "react-dom/server";
-const txt = (h: string) => h.replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&ldquo;|&rdquo;/g, '"').replace(/\s+/g, " ");
+const txt = (h: string) => h.replace(/<script\b[\s\S]*?<\/script>/g, " ").replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&ldquo;|&rdquo;/g, '"').replace(/\s+/g, " ");
 async function main() {
   const Page = (await import("@/app/passport/page")).default as any; const WishList = (await import("@/components/stamps/WishList")).default as any; const Stamp = (await import("@/components/stamps/StampMark")).default as any;
   const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);

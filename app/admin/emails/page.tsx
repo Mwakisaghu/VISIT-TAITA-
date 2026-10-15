@@ -23,7 +23,8 @@ function Banner({ tone, title, children }: { tone: "bad" | "warn" | "good"; titl
   );
 }
 
-export default async function AdminEmailsPage({ searchParams }: { searchParams: { tab?: string } }) {
+export default async function AdminEmailsPage(props: { searchParams: Promise<{ tab?: string }> }) {
+  const searchParams = await props.searchParams;
   const tab = TABS.find((t) => t.key === searchParams.tab)?.key ?? "attention";
   const health = emailHealth(process.env);
   const now = new Date();

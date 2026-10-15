@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import PlayerForm from "@/components/admin/PlayerForm";
 
-export default async function EditPlayerPage({ params }: { params: { id: string } }) {
+export default async function EditPlayerPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const [player, teams] = await Promise.all([
     prisma.sportPlayer.findUnique({ where: { id: params.id } }),
     prisma.sportTeam.findMany({ orderBy: { name: "asc" } }),

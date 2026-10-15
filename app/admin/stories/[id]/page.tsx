@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import StoryForm from "@/components/admin/StoryForm";
 
-export default async function EditStoryPage({ params }: { params: { id: string } }) {
+export default async function EditStoryPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const story = await prisma.story.findUnique({ where: { id: params.id } });
   if (!story) notFound();
   const destinations = await prisma.destination.findMany({ select: { id: true, name: true, region: true }, orderBy: { name: "asc" } });

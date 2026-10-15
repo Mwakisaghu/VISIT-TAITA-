@@ -14,11 +14,12 @@ function formatDate(d: Date) {
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-export default async function PartnerVouchersPage({
-  searchParams,
-}: {
-  searchParams: { code?: string };
-}) {
+export default async function PartnerVouchersPage(
+  props: {
+    searchParams: Promise<{ code?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const session = await getServerSession(authOptions);
   const userId = session!.user.id;
   const isAdmin = ADMIN_ROLES.includes(session!.user.role);
@@ -27,7 +28,7 @@ export default async function PartnerVouchersPage({
 
   const typed = (searchParams.code ?? "").trim();
   const code = normalizeVoucherCode(typed);
-  const limited = typed !== "" && code !== null && !await checkRateLimit(`voucher-lookup:${userId}`, 30, 60 * 1000);
+  const limited = typed !== "" && code !== null && !(await checkRateLimit(`voucher-lookup:${userId}`, 30, 60 * 1000));
 
   const found =
     code && !limited

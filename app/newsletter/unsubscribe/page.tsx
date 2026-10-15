@@ -30,7 +30,8 @@ function Shell({ children }: { children: React.ReactNode }) {
  * Opening this link only SHOWS a button. Nothing happens until it is pressed, because email security scanners open every
  * link in a message and would otherwise unsubscribe people by accident.
  */
-export default async function NewsletterTokenPage({ searchParams }: { searchParams: { token?: string } }) {
+export default async function NewsletterTokenPage(props: { searchParams: Promise<{ token?: string }> }) {
+  const searchParams = await props.searchParams;
   const token = typeof searchParams.token === "string" ? searchParams.token : "";
   const sub = token && token.length <= 64 ? await prisma.newsletterSubscriber.findUnique({ where: { token }, select: { email: true, status: true, confirmedAt: true } }) : null;
 

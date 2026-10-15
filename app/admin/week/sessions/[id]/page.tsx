@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import FestivalSessionForm from "@/components/admin/FestivalSessionForm";
 
-export default async function EditFestivalSessionPage({ params }: { params: { id: string } }) {
+export default async function EditFestivalSessionPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const [session, venues] = await Promise.all([
     prisma.festivalSession.findUnique({ where: { id: params.id } }),
     prisma.festivalVenue.findMany({ orderBy: { name: "asc" } }),

@@ -25,7 +25,8 @@ function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default async function CheckinPage({ params }: { params: { token: string } }) {
+export default async function CheckinPage(props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   const token = params.token.trim();
 
   const [session, destination] = await Promise.all([

@@ -3,11 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { REDEMPTION_STATUSES, redemptionStatusLabel } from "@/lib/rewards";
 import RedemptionActions from "@/components/admin/RedemptionActions";
 
-export default async function AdminRedemptionsPage({
-  searchParams,
-}: {
-  searchParams: { code?: string; status?: string };
-}) {
+export default async function AdminRedemptionsPage(
+  props: {
+    searchParams: Promise<{ code?: string; status?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   const code = (searchParams.code ?? "").trim().toUpperCase();
   const status = REDEMPTION_STATUSES.find((s) => s === searchParams.status);
 

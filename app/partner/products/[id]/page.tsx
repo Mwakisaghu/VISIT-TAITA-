@@ -4,7 +4,8 @@ import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import SellerProductForm from "@/components/partners/SellerProductForm";
 
-export default async function EditPartnerProductPage({ params }: { params: { id: string } }) {
+export default async function EditPartnerProductPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const isAdmin = ADMIN_ROLES.includes(session!.user.role);
 

@@ -16,8 +16,8 @@ const TOO_MANY: SponsorLeadResult = {
 };
 const HOUR_MS = 60 * 60 * 1000;
 
-function clientIp() {
-  const forwarded = headers().get("x-forwarded-for");
+async function clientIp() {
+  const forwarded = (await headers()).get("x-forwarded-for");
   return forwarded ? forwarded.split(",")[0].trim() : null;
 }
 
@@ -66,8 +66,8 @@ export async function submitSponsorLead(formData: FormData): Promise<SponsorLead
   }
   const data = parsed.data;
 
-  const ip = clientIp();
-  if (ip && !await checkRateLimit(`sponsor-lead:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
+  const ip = await clientIp();
+  if (ip && !(await checkRateLimit(`sponsor-lead:${ip}`, 5, 10 * 60 * 1000))) return TOO_MANY;
 
   const email = data.email.toLowerCase();
   const recentFromEmail = await prisma.sponsorLead.count({

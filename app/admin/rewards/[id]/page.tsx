@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import RewardForm from "@/components/admin/RewardForm";
 
-export default async function EditRewardPage({ params }: { params: { id: string } }) {
+export default async function EditRewardPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const [reward, partners] = await Promise.all([
     prisma.reward.findUnique({ where: { id: params.id } }),
     prisma.user.findMany({
