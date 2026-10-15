@@ -9,7 +9,7 @@ import { deletePlan } from "@/lib/actions/plan";
 import { formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
-type Ctx = { params: Promise<{ token: string }> | { token: string } };
+type Ctx = { params: Promise<{ token: string }> };
 export const dynamic = "force-dynamic";
 // A shared plan is for the people it was shared with: it is not for search engines.
 export const metadata: Metadata = { title: "A Taita day", robots: { index: false, follow: false } };

@@ -16,7 +16,7 @@ import { parseStoryBody } from "@/lib/stories-view";
 import StoryCredits from "@/components/stories/StoryCredits";
 import ShareBar from "@/components/share/ShareBar";
 
-type Ctx = { params: Promise<{ slug: string }> | { slug: string } };
+type Ctx = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
   const stories = await prisma.story.findMany({ select: { slug: true } });

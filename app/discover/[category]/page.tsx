@@ -10,7 +10,7 @@ import { slugToCategory } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { shareMeta } from "@/lib/share-meta";
 
-type Ctx = { params: Promise<{ category: string }> | { category: string }; searchParams?: Promise<Record<string, string | string[] | undefined>> | Record<string, string | string[] | undefined> };
+type Ctx = { params: Promise<{ category: string }>; searchParams?: Promise<Record<string, string | string[] | undefined>> };
 
 export function generateStaticParams() {
   return discoverCategories.map((c) => ({ category: c.key }));
