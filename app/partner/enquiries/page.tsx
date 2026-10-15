@@ -37,7 +37,8 @@ const EMPTY: Record<string, string> = {
 const linkBtn =
   "focus-ring rounded-full border border-stone/25 px-4 py-1.5 font-body text-sm text-stone hover:border-rust hover:text-rust";
 
-export default async function PartnerEnquiriesPage({ searchParams }: { searchParams: { tab?: string } }) {
+export default async function PartnerEnquiriesPage(props: { searchParams: Promise<{ tab?: string }> }) {
+  const searchParams = await props.searchParams;
   const session = await getServerSession(authOptions);
   const user = session!.user;
   const isAdmin = ADMIN_ROLES.includes(user.role);

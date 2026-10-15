@@ -17,7 +17,8 @@ async function loadCreator(slug: string) {
   return prisma.creator.findFirst({ where: { slug, status: "ACTIVE" } });
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const creator = await loadCreator(params.slug);
   if (!creator) return {};
   return {
@@ -27,7 +28,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default async function CreatorProfilePage({ params }: { params: { slug: string } }) {
+export default async function CreatorProfilePage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const creator = await loadCreator(params.slug);
   if (!creator) notFound();
 

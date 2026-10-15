@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import EventForm from "@/components/admin/EventForm";
 
-export default async function EditEventPage({ params }: { params: { id: string } }) {
+export default async function EditEventPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const event = await prisma.event.findUnique({ where: { id: params.id } });
   if (!event) notFound();
 

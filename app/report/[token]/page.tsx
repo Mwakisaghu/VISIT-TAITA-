@@ -11,7 +11,8 @@ export const metadata: Metadata = {
 };
 export const dynamic = "force-dynamic";
 
-export default async function PublicSponsorReportPage({ params }: { params: { token: string } }) {
+export default async function PublicSponsorReportPage(props: { params: Promise<{ token: string }> }) {
+  const params = await props.params;
   const token = params.token;
   if (!token || token.length > 64) notFound();
 

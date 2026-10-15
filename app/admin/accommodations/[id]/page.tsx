@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import AccommodationForm from "@/components/admin/AccommodationForm";
 
-export default async function EditAccommodationPage({ params }: { params: { id: string } }) {
+export default async function EditAccommodationPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const accommodation = await prisma.accommodation.findUnique({ where: { id: params.id } });
   if (!accommodation) notFound();
 

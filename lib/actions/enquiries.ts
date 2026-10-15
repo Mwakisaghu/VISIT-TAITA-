@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { headers } from "next/headers";
+import { headers, type UnsafeUnwrappedHeaders } from "next/headers";
 import { getServerSession } from "next-auth";
 import { authOptions, ADMIN_ROLES } from "@/lib/auth";
 import { parseReferral } from "@/lib/referral";
@@ -44,7 +44,7 @@ async function resolveReferral(raw: FormDataEntryValue | null, listing: ListingR
 }
 
 function clientIp() {
-  const forwarded = headers().get("x-forwarded-for");
+  const forwarded = (headers() as unknown as UnsafeUnwrappedHeaders).get("x-forwarded-for");
   return forwarded ? forwarded.split(",")[0].trim() : null;
 }
 
@@ -106,7 +106,7 @@ export async function submitAccommodationEnquiry(
   }
 
   const ip = clientIp();
-  if (ip && !await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
+  if (ip && !(await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000))) return TOO_MANY;
   const recentFromEmail = await prisma.accommodationEnquiry.count({
     where: { email: data.email.toLowerCase(), createdAt: { gte: new Date(Date.now() - HOUR_MS) } },
   });
@@ -182,7 +182,7 @@ export async function submitExperienceEnquiry(
   }
 
   const ip = clientIp();
-  if (ip && !await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000)) return TOO_MANY;
+  if (ip && !(await checkRateLimit(`enquiry:${ip}`, 5, 10 * 60 * 1000))) return TOO_MANY;
   const recentFromEmail = await prisma.experienceEnquiry.count({
     where: { email: data.email.toLowerCase(), createdAt: { gte: new Date(Date.now() - HOUR_MS) } },
   });

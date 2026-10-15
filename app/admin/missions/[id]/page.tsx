@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import MissionForm from "@/components/admin/MissionForm";
 import { prisma } from "@/lib/prisma";
 
-export default async function EditMissionPage({ params }: { params: { id: string } }) {
+export default async function EditMissionPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const mission = await prisma.mission.findUnique({ where: { id: params.id } });
   if (!mission) notFound();
 

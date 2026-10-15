@@ -10,7 +10,10 @@ export const dynamic = "force-dynamic";
 const ROLE_ORDER = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER", "PARTNER", "SELLER", "CREATOR", "MEMBER", "VISITOR"];
 const PILL: Record<string, string> = { Active: "bg-canopy/10 text-canopy", Suspended: "bg-rust/10 text-rust", "Invite pending": "bg-ochre/15 text-ochre", "Email not verified": "bg-stone/10 text-stone/80" };
 
-export default async function UsersPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
+export default async function UsersPage(
+  props: { searchParams: Promise<Record<string, string | string[] | undefined>> }
+) {
+  const searchParams = await props.searchParams;
   const actor = await requireManagerPage();
   const q = parseUserListQuery(searchParams);
   const where = buildUserWhere(q);

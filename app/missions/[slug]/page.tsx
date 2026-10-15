@@ -31,13 +31,15 @@ async function loadMission(slug: string) {
   return mission && mission.status !== "DRAFT" ? mission : null;
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const mission = await loadMission(params.slug);
   if (!mission) return {};
   { const _t = `${mission.title} — Field Crew mission`; const _d = mission.summary; return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
 }
 
-export default async function MissionPage({ params }: { params: { slug: string } }) {
+export default async function MissionPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const mission = await loadMission(params.slug);
   if (!mission) notFound();
 

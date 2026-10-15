@@ -7,7 +7,8 @@ import { AUDIT_LABELS, accountStatus, checkActOn, isPendingInvite, roleLabel, ro
 
 export const dynamic = "force-dynamic";
 
-export default async function UserPage({ params }: { params: { id: string } }) {
+export default async function UserPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const actor = await requireManagerPage();
   const u = await prisma.user.findUnique({ where: { id: params.id }, select: { id: true, name: true, email: true, role: true, points: true, createdAt: true, emailVerifiedAt: true, passwordChangedAt: true, invitedAt: true, suspendedAt: true, suspendedReason: true } });
   if (!u) notFound();

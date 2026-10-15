@@ -22,7 +22,8 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 /** Opening the link only shows the form (and checks the link is still good). Nothing changes until a new password is submitted. */
-export default async function ResetPasswordPage({ searchParams }: { searchParams: { token?: string } }) {
+export default async function ResetPasswordPage(props: { searchParams: Promise<{ token?: string }> }) {
+  const searchParams = await props.searchParams;
   const token = typeof searchParams.token === "string" ? searchParams.token : "";
   const usable = token ? await findUsableToken(prisma, token, "RESET_PASSWORD") : null;
 

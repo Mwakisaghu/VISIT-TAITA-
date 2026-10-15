@@ -20,7 +20,8 @@ function destination(target: string | null): URL {
 
 const headers = { "Cache-Control": "no-store, max-age=0", "X-Robots-Tag": "noindex", "Referrer-Policy": "no-referrer" };
 
-export async function GET(request: Request, { params }: { params: { slug: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const link = await resolveLink(prisma, params.slug);
   if (link && !isBot(request.headers.get("user-agent"))) {
     try {
@@ -33,7 +34,8 @@ export async function GET(request: Request, { params }: { params: { slug: string
 }
 
 // Link checkers and previews often HEAD first; that is not a scan.
-export async function HEAD(_request: Request, { params }: { params: { slug: string } }) {
+export async function HEAD(_request: Request, props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const link = await resolveLink(prisma, params.slug);
   return NextResponse.redirect(destination(link?.target ?? null), { status: 302, headers });
 }

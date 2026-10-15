@@ -13,7 +13,8 @@ export function generateStaticParams() {
   return experienceCategories.map((c) => ({ category: c.key }));
 }
 
-export function generateMetadata({ params }: { params: { category: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ category: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const c = experienceCategories.find((x) => x.key === params.category);
   if (!c) return {};
   { const _t = c.label; const _d = c.description; return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
@@ -21,11 +22,12 @@ export function generateMetadata({ params }: { params: { category: string } }): 
 
 export const revalidate = 60;
 
-export default async function ExperienceCategoryPage({
-  params,
-}: {
-  params: { category: string };
-}) {
+export default async function ExperienceCategoryPage(
+  props: {
+    params: Promise<{ category: string }>;
+  }
+) {
+  const params = await props.params;
   const c = experienceCategories.find((x) => x.key === params.category);
   if (!c) notFound();
 

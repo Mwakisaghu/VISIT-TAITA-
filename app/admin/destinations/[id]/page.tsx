@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import DestinationForm from "@/components/admin/DestinationForm";
 
-export default async function EditDestinationPage({ params }: { params: { id: string } }) {
+export default async function EditDestinationPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const destination = await prisma.destination.findUnique({ where: { id: params.id } });
   if (!destination) notFound();
 

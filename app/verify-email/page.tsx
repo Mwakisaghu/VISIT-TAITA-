@@ -25,7 +25,8 @@ function Shell({ children }: { children: React.ReactNode }) {
  * Opening this link only SHOWS a button. Nothing happens until it is pressed, because email security scanners open every link
  * in a message and would otherwise verify addresses (or use up the link) on the person's behalf.
  */
-export default async function VerifyEmailPage({ searchParams }: { searchParams: { token?: string } }) {
+export default async function VerifyEmailPage(props: { searchParams: Promise<{ token?: string }> }) {
+  const searchParams = await props.searchParams;
   const token = typeof searchParams.token === "string" ? searchParams.token : "";
   const usable = token ? await findUsableToken(prisma, token, "VERIFY_EMAIL") : null;
 

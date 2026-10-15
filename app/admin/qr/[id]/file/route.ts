@@ -9,7 +9,8 @@ import { getSiteUrl } from "@/lib/site-url";
 export const dynamic = "force-dynamic";
 
 /** Downloads a link's QR code: ?format=svg (vector, for printers) or ?format=png&size=2000. Admin only. */
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session?.user) return new NextResponse("Please sign in.", { status: 401 });
   if (!ADMIN_ROLES.includes(session.user.role)) return new NextResponse("Admin access required.", { status: 403 });

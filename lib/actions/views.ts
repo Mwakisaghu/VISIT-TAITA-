@@ -29,7 +29,7 @@ export async function recordView(kind: string, targetId: string): Promise<void> 
     const id = String(targetId ?? "");
     if (!id || id.length > 40) return;
 
-    const h = headers();
+    const h = await headers();
     if (isBotUserAgent(h.get("user-agent"))) return;
 
     const session = await getServerSession(authOptions);
@@ -38,7 +38,7 @@ export async function recordView(kind: string, targetId: string): Promise<void> 
     const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "unknown";
     // Behind a proxy that hides the address, everyone shares one key — allow a generous cap instead of a tiny one.
     const limit = ip === "unknown" ? 200 : VIEWS_PER_ITEM_PER_DAY;
-    if (!await checkRateLimit(`view:${ip}:${kind}:${id}`, limit, DAY_MS)) return;
+    if (!(await checkRateLimit(`view:${ip}:${kind}:${id}`, limit, DAY_MS))) return;
 
     const isPublic =
       kind === "NOTE"

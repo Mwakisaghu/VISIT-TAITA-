@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import PartnerExperienceForm from "@/components/partners/PartnerExperienceForm";
 import Link from "next/link";
 
-export default async function EditPartnerExperiencePage({ params }: { params: { id: string } }) {
+export default async function EditPartnerExperiencePage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   const isAdmin = ADMIN_ROLES.includes(session!.user.role);
 

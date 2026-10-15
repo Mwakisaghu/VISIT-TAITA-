@@ -7,13 +7,14 @@ import { confirmShopPesapal } from "@/lib/shop-payments";
 import PaymentStatusPoller from "@/components/marketplace/PaymentStatusPoller";
 import { formatPrice, fulfillmentLabel, orderStatusLabel } from "@/lib/format";
 
-export default async function OrderConfirmationPage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { OrderTrackingId?: string };
-}) {
+export default async function OrderConfirmationPage(
+  props: {
+    params: Promise<{ id: string }>;
+    searchParams: Promise<{ OrderTrackingId?: string }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const session = await getServerSession(authOptions);
   if (!session?.user) redirect("/login");
 

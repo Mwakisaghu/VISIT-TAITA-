@@ -3,7 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { partnerTypeLabel } from "@/lib/format";
 import ApplicationReviewPanel from "@/components/partners/ApplicationReviewPanel";
 
-export default async function AdminPartnerDetailPage({ params }: { params: { id: string } }) {
+export default async function AdminPartnerDetailPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const application = await prisma.partnerApplication.findUnique({
     where: { id: params.id },
   });

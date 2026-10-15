@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { buildEventIcs } from "@/lib/ics";
 
 // `params` is read with `await` so this works on today's Next.js and on the next one (where it becomes a promise).
-export async function GET(_req: Request, ctx: { params: Promise<{ slug: string }> | { slug: string } }) {
+export async function GET(_req: Request, ctx: { params: Promise<Promise<{ slug: string }> | { slug: string }> }) {
   const { slug } = await ctx.params;
   const e = await prisma.event.findUnique({ where: { slug }, select: { slug: true, name: true, blurb: true, location: true, eventDate: true, status: true } });
   if (!e || e.status !== "PUBLISHED") return new Response("Not found", { status: 404 });

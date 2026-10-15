@@ -13,7 +13,8 @@ export function generateStaticParams() {
   return accommodationTypes.map((t) => ({ type: t.key }));
 }
 
-export function generateMetadata({ params }: { params: { type: string } }): Metadata {
+export async function generateMetadata(props: { params: Promise<{ type: string }> }): Promise<Metadata> {
+  const params = await props.params;
   const t = accommodationTypes.find((x) => x.key === params.type);
   if (!t) return {};
   { const _t = t.label; const _d = t.description; return { title: _t, description: _d, ...shareMeta(_t, _d) }; }
@@ -21,7 +22,8 @@ export function generateMetadata({ params }: { params: { type: string } }): Meta
 
 export const revalidate = 60;
 
-export default async function StayTypePage({ params }: { params: { type: string } }) {
+export default async function StayTypePage(props: { params: Promise<{ type: string }> }) {
+  const params = await props.params;
   const t = accommodationTypes.find((x) => x.key === params.type);
   if (!t) notFound();
 

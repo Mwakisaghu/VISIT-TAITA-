@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminEventTicketsPage({ params }: { params: { id: string } }) {
+export default async function AdminEventTicketsPage(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const me = await currentBookingUser();
   if (!me?.isAdmin) redirect("/admin"); // tickets hold names, phone numbers and payment details: admins and super admins only
   const event = await prisma.event.findUnique({ where: { id: params.id }, include: { organiser: { select: { name: true, email: true } } } });

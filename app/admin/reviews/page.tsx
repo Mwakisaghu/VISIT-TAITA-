@@ -10,7 +10,8 @@ const LABELS: Record<(typeof STATUSES)[number], string> = {
   REJECTED: "Rejected",
 };
 
-export default async function AdminReviewsPage({ searchParams }: { searchParams: { status?: string } }) {
+export default async function AdminReviewsPage(props: { searchParams: Promise<{ status?: string }> }) {
+  const searchParams = await props.searchParams;
   const status = STATUSES.find((s) => s === searchParams.status) ?? "PENDING";
 
   const [reviews, grouped] = await Promise.all([

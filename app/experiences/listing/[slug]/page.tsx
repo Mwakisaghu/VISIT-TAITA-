@@ -23,11 +23,12 @@ export async function generateStaticParams() {
   return experiences.map((x) => ({ slug: x.slug }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+): Promise<Metadata> {
+  const params = await props.params;
   const experience = await prisma.experience.findFirst({
     where: { slug: params.slug, status: "PUBLISHED" },
   });
@@ -41,7 +42,8 @@ export async function generateMetadata({
 
 export const revalidate = 60;
 
-export default async function ExperienceDetailPage({ params }: { params: { slug: string } }) {
+export default async function ExperienceDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const experience = await prisma.experience.findUnique({ where: { slug: params.slug } });
   if (!experience || experience.status !== "PUBLISHED") notFound();
 

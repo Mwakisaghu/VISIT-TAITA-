@@ -13,7 +13,8 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Your tickets", robots: { index: false } };
 const PILL: Record<string, string> = { VALID: "bg-canopy/10 text-canopy", USED: "bg-stone/10 text-stone/80", PENDING_PAYMENT: "bg-ochre/15 text-ochre", CANCELLED: "bg-rust/10 text-rust", EXPIRED: "bg-stone/10 text-stone/80" };
 
-export default async function TicketsPage({ params }: { params: { group: string } }) {
+export default async function TicketsPage(props: { params: Promise<{ group: string }> }) {
+  const params = await props.params;
   const me = await currentBookingUser();
   if (!me) redirect(`/login?next=${encodeURIComponent(`/tickets/${params.group}`)}`);
   const tickets = await prisma.ticket.findMany({ where: { groupId: params.group, userId: me.id }, orderBy: { number: "asc" }, include: { event: true } });
