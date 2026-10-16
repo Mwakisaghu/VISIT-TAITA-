@@ -13,9 +13,13 @@ import {
   isWithinCheckinRadius,
 } from "@/lib/passport";
 
+// A failed check-in carries a CODE as well as English text, so the page can say it in the person's own language (`distanceM` goes with "too_far").
+export type CheckinCode = "sign_in" | "too_many" | "bad_location" | "imprecise" | "unavailable" | "no_location" | "too_far";
 export type CheckinResult = {
   success?: true;
   error?: string;
+  code?: CheckinCode;
+  distanceM?: number;
   destinationName?: string;
   pointsAwarded?: number;
   alreadyCheckedIn?: boolean;
@@ -32,6 +36,7 @@ const CATEGORY_BADGE: Record<string, string> = {
 };
 
 const RATE_LIMITED: CheckinResult = {
+  code: "too_many",
   error: "Too many check-in attempts — please wait a few minutes and try again.",
 };
 
@@ -172,7 +177,7 @@ async function recordVerifiedCheckin(
 
 export async function checkInWithToken(token: string): Promise<CheckinResult> {
   const session = await getServerSession(authOptions);
-  if (!session?.user) return { error: "Please sign in to check in." };
+  if (!session?.user) return { error: "Please sign in to check in.", code: "sign_in" };
   const userId = session.user.id;
 
   if (!await checkRateLimit(`checkin:${userId}`, 10, 10 * 60 * 1000)) return RATE_LIMITED;
@@ -203,7 +208,7 @@ export async function checkInWithLocation(
   accuracy: number
 ): Promise<CheckinResult> {
   const session = await getServerSession(authOptions);
-  if (!session?.user) return { error: "Please sign in to check in." };
+  if (!session?.user) return { error: "Please sign in to check in.", code: "sign_in" };
   const userId = session.user.id;
 
   if (!await checkRateLimit(`checkin:${userId}`, 10, 10 * 60 * 1000)) return RATE_LIMITED;
@@ -215,11 +220,12 @@ export async function checkInWithLocation(
     Math.abs(latitude) <= 90 &&
     Math.abs(longitude) <= 180 &&
     accuracy >= 0;
-  if (!valid) return { error: "We couldn't read your location. Please try again." };
+  if (!valid) return { error: "We couldn't read your location. Please try again.", code: "bad_location" };
 
   if (accuracy > MAX_GPS_ACCURACY_M) {
     return {
       error: "Your location isn't precise enough yet. Step outside or into the open and try again.",
+      code: "imprecise",
     };
   }
 
@@ -227,16 +233,18 @@ export async function checkInWithLocation(
     where: { id: String(destinationId), status: "PUBLISHED" },
     select: { id: true, name: true, latitude: true, longitude: true, checkinRadiusM: true },
   });
-  if (!destination) return { error: "This place isn't available for check-in." };
+  if (!destination) return { error: "This place isn't available for check-in.", code: "unavailable" };
 
   if (destination.latitude === null || destination.longitude === null) {
-    return { error: "This place doesn't support location check-in yet — scan its QR code on site instead." };
+    return { code: "no_location", error: "This place doesn't support location check-in yet — scan its QR code on site instead." };
   }
 
   const distanceM = distanceMetres(latitude, longitude, destination.latitude, destination.longitude);
   if (!isWithinCheckinRadius({ distanceM, accuracyM: accuracy, radiusM: destination.checkinRadiusM })) {
     return {
       error: `You're about ${formatDistance(distanceM)} from ${destination.name}. Get closer and try again.`,
+      code: "too_far",
+      distanceM: Math.round(distanceM),
     };
   }
 
