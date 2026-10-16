@@ -1,0 +1,134 @@
+import React from "react"; (globalThis as any).React = React;
+const { JSDOM } = require("jsdom");
+const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: "http://localhost/passport", pretendToBeVisual: true }); const w = dom.window as any;
+w.requestAnimationFrame = (f: any) => setTimeout(() => f(0), 0); w.cancelAnimationFrame = (n: any) => clearTimeout(n); w.HTMLElement.prototype.scrollIntoView = function () {};
+const media = { narrow: false, calm: false }; const lis: Record<string, Set<() => void>> = { narrow: new Set(), calm: new Set() };
+w.matchMedia = (q: string) => { const k = q.includes("max-width") ? "narrow" : "calm"; return { get matches() { return (media as any)[k]; }, addEventListener: (_: string, f: () => void) => lis[k].add(f), removeEventListener: (_: string, f: () => void) => lis[k].delete(f) }; };
+Object.assign(globalThis, { FormData: w.FormData, HTMLInputElement: w.HTMLInputElement, HTMLFormElement: w.HTMLFormElement, Element: w.Element, self: w, window: w, document: w.document, HTMLElement: w.HTMLElement, Node: w.Node, Event: w.Event, KeyboardEvent: w.KeyboardEvent, MouseEvent: w.MouseEvent, requestAnimationFrame: w.requestAnimationFrame, cancelAnimationFrame: w.cancelAnimationFrame, matchMedia: w.matchMedia });
+Object.defineProperty(globalThis, "navigator", { value: w.navigator, configurable: true, writable: true }); (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+let refreshes = 0; const calls: { stamp: any[]; visit: string[]; wish: string[] } = { stamp: [], visit: [], wish: [] };
+let stampReply: any = { success: true, destinationName: "X", pointsAwarded: 10 }; let stampThrows = false; let visitThrows = false; let hold: Promise<void> | null = null; let geo: any = { mode: "ok", lat: -3.4, lng: 38.55, acc: 20 };
+const Module = require("module"); const origLoad = Module._load;
+Module._load = function (r: string, ...x: any[]) {
+  if (r.endsWith(".css")) return {};
+  if (r === "next/navigation") return { useRouter: () => ({ push() {}, refresh() { refreshes++; } }), usePathname: () => "/passport" };
+  if (r === "next/link") return { __esModule: true, default: ({ href, children, ...rest }: any) => React.createElement("a", { href, ...rest }, children) };
+  if (r === "@/lib/actions/passport") return { checkInWithLocation: async (...a: any[]) => { calls.stamp.push(a); if (hold) await hold; if (stampThrows) throw new Error("boom"); return stampReply; }, toggleVisit: async (id: string) => { calls.visit.push(id); if (visitThrows) throw new Error("boom"); } };
+  if (r === "@/lib/actions/stamps") return { toggleWish: async (id: string) => { calls.wish.push(id); } };
+  return origLoad.call(this, r, ...x);
+};
+const { createRoot } = require("react-dom/client"); const { act } = require("react");
+const flush = () => act(async () => { for (let i = 0; i < 4; i++) await new Promise((r) => setTimeout(r, 4)); });
+const q = (s: string) => w.document.querySelector(s) as any; const qa = (s: string) => [...w.document.querySelectorAll(s)] as any[];
+let root: any; const mount = async (el: any) => { if (root) await act(async () => root.unmount()); w.document.body.innerHTML = '<div id="root"></div>'; root = createRoot(q("#root")); await act(async () => { root.render(el); }); await flush(); };
+const click = async (el: any) => { await act(async () => { el.click(); }); await flush(); };
+const key = async (k: string, o: any = {}) => { await act(async () => { w.document.dispatchEvent(new w.KeyboardEvent("keydown", { key: k, bubbles: true, ...o })); }); await flush(); };
+const ptr = async (type: string, x: number, y: number, pt = "touch") => { await act(async () => { const e = new w.MouseEvent(type, { bubbles: true, clientX: x, clientY: y }); Object.defineProperty(e, "pointerType", { value: pt }); q(".pp-book-wrap").dispatchEvent(e); }); await flush(); };
+const swipe = async (dx: number, dy = 0, pt = "touch") => { await ptr("pointerdown", 200, 300, pt); await ptr("pointerup", 200 + dx, 300 + dy, pt); };
+const btn = (re: RegExp) => qa("button").find((b: any) => re.test(b.textContent.trim()));
+const until = async (cond: () => boolean, ms = 1500) => { const t0 = Date.now(); while (!cond() && Date.now() - t0 < ms) await new Promise((r) => setTimeout(r, 10)); await flush(); };
+const setGeo = (g: any) => { geo = g; Object.defineProperty(w.navigator, "geolocation", { configurable: true, value: g.mode === "none" ? undefined : { getCurrentPosition: (ok: any, err: any) => { setTimeout(() => { if (geo.mode === "ok") ok({ coords: { latitude: geo.lat, longitude: geo.lng, accuracy: geo.acc } }); else err({ code: geo.mode === "denied" ? 1 : 2, PERMISSION_DENIED: 1 }); }, 5); } } }); if (g.mode === "none") delete (w.navigator as any).geolocation; };
+const reset = () => { refreshes = 0; calls.stamp.length = 0; calls.visit.length = 0; calls.wish.length = 0; stampReply = { success: true, destinationName: "X", pointsAwarded: 10 }; stampThrows = false; visitThrows = false; hold = null; media.narrow = false; media.calm = false; w.location.hash = ""; setGeo({ mode: "ok", lat: -3.4, lng: 38.55, acc: 20 }); };
+async function main() {
+  const { LocaleProvider } = await import("@/lib/i18n/client"); const PassportBook = (await import("@/components/passport/book/PassportBook")).default as any; const R = await import("@/lib/passport-book"); const { trFor } = await import("@/lib/i18n/translate");
+  const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
+  const pl = (id: string, o: any = {}): any => ({ id, slug: id, name: id.toUpperCase() + " Place", region: "Region " + id, category: "WILD", altitudeM: 600, state: "open", method: null, visitedAt: null, canLocate: true, radiusM: 300, wanted: false, ...o });
+  const DATA: any = {
+    holder: { name: "Neema Mwadime", issuedAt: "2026-09-03T08:00:00Z" }, points: 120,
+    places: [pl("voi", { altitudeM: 580, state: "stamped", method: "QR", visitedAt: "2026-09-12T08:00:00Z" }), pl("mzima"), pl("mudanda", { canLocate: false }), pl("chala", { state: "marked", method: "SELF_REPORTED", visitedAt: "2026-09-14T08:00:00Z" }), pl("wundanyi", { altitudeM: 1250, state: "stamped", method: "LOCATION", visitedAt: "2026-10-05T08:00:00Z" }), pl("ngangao", { altitudeM: 1800, wanted: true }), pl("nowhere", { altitudeM: null })],
+    endorsements: [{ key: "TAITA_EXPLORER", label: "Taita Explorer", description: "First visit.", earned: true, earnedAt: "2026-09-12T08:00:00Z", progress: null }, { key: "TAITA_INSIDER", label: "Taita Insider", description: "Three kinds.", earned: false, earnedAt: null, progress: { have: 2, need: 3 } }],
+    wishes: [{ id: "ngangao", name: "NGANGAO Place", slug: "ngangao", region: "Region ngangao", altitudeM: 1800 }, { id: "voi", name: "VOI Place", slug: "voi", region: "Region voi", altitudeM: null }],
+  };
+  const content = R.contentPages(DATA.places); const sheets = R.sheetsOf(content); const spreads = R.spreadsOf(sheets);
+  const show = (loc = "en", data = DATA) => mount(<LocaleProvider locale={loc as any}><PassportBook data={data} /></LocaleProvider>);
+  const active = () => qa(".pp-face").filter((f: any) => !f.hasAttribute("inert")).map((f: any) => f.dataset ? f.querySelector(".pp-page, .pp-cover")?.className : "");
+  const status = () => q(".pp-status").textContent;
+  const slot = (id: string) => q(`.pp-slot-btn[data-place="${id}"]`);
+  reset(); await show();
+  // ===== the booklet =====
+  t("BUILT AFTER THE BROWSER IS READY: sheets match the rules' sheets exactly; the two switches appear; only the cover is reachable (every other page is inert and hidden from screen readers)", qa(".pp-sheet").length === sheets.length && qa(".pp-switches button").length === 2 && qa(".pp-face:not([inert])").length === 1 && !!q(".pp-face:not([inert]) .pp-cover") && qa(".pp-face[inert]").every((f: any) => f.getAttribute("aria-hidden") === "true") && q(".pp-book").dataset.s === "0");
+  t("HEADER AND LANDMARKS: one h1, a labelled region for the booklet, a labelled page navigation, and a polite live region for announcements", qa("h1").length === 1 && q("section[aria-label]") && q("nav").getAttribute("aria-label") === "Passport pages" && q(".pp-status").getAttribute("role") === "status" && q(".pp-status").getAttribute("aria-live") === "polite" && !q("main"));
+  t("PREVIOUS IS DISABLED ON THE COVER (and does nothing); the tabs are one per spread, in order, with the first current", q("#x") === null && qa(".pp-nb")[0].getAttribute("aria-disabled") === "true" && qa(".pp-tab").length === spreads.length && qa(".pp-tab")[0].getAttribute("aria-current") === "true" && qa(".pp-tab")[1].getAttribute("aria-current") === "false");
+  await click(qa(".pp-nb")[0]); t("…clicking the disabled Previous changes nothing", q(".pp-book").dataset.s === "0");
+  await click(q(".pp-cover"));
+  t("OPENING THE COVER turns to the first spread: 'You' beside the first stamp page; sheet 0 is flipped; the other pages stay unreachable; the change is announced", q(".pp-book").dataset.s === "1" && q('.pp-sheet[data-x], .pp-sheet').classList.contains("pp-flipped") && qa(".pp-face:not([inert])").length === 2 && /Neema Mwadime/.test(qa(".pp-face:not([inert])").map((f: any) => f.textContent).join(" ")) && /Showing You · Plains\./.test(status()));
+  const z = qa(".pp-sheet").map((s: any) => Number(s.style.zIndex)); t("PAGES STACK THE RIGHT WAY: a flipped sheet sits above the ones still to come, and later flipped sheets above earlier ones (so a turned page never slips under another)", z[0] >= 20 && z[1] < 20 && z.slice(1).every((v, i, a) => i === 0 || v < a[i - 1]));
+  await key("ArrowRight"); const s2 = q(".pp-book").dataset.s; await key("ArrowLeft"); const s3 = q(".pp-book").dataset.s; await key("ArrowRight", { shiftKey: true }); const s4 = q(".pp-book").dataset.s; await key("ArrowRight", { altKey: true });
+  t("ARROW KEYS turn the page from anywhere on the page (not only when a button has focus), left goes back, and combinations with Shift or Alt are left alone", s2 === "2" && s3 === "1" && s4 === "1" && q(".pp-book").dataset.s === "1");
+  await click(qa(".pp-tab")[spreads.length - 1]); const last = q(".pp-book").dataset.s; t("A TAB JUMPS STRAIGHT TO ITS SPREAD, the tab shows as current, and Next is disabled at the end (and does nothing)", last === String(spreads.length - 1) && qa(".pp-tab")[spreads.length - 1].getAttribute("aria-current") === "true" && qa(".pp-nb")[1].getAttribute("aria-disabled") === "true");
+  await key("ArrowRight"); t("…the arrow key at the end does not run past it", q(".pp-book").dataset.s === last);
+  await click(qa(".pp-tab")[1]);
+  await swipe(-140); const sw1 = q(".pp-book").dataset.s; await swipe(140); const sw2 = q(".pp-book").dataset.s; await swipe(-30); const sw3 = q(".pp-book").dataset.s; await swipe(-140, 160); const sw4 = q(".pp-book").dataset.s; await swipe(-140, 0, "mouse"); const sw5 = q(".pp-book").dataset.s;
+  t("SWIPING: a clear sideways swipe on touch turns the page either way; a tiny one, a mostly-vertical one (scrolling) and a mouse drag do nothing", sw1 === "2" && sw2 === "1" && sw3 === "1" && sw4 === "1" && sw5 === "1");
+  // ===== the check-in sheet =====
+  const dlg = () => q("dialog"); const dOpen = () => dlg().hasAttribute("open") || dlg().open;
+  await click(slot("mzima"));
+  t("TAPPING A PLACE opens its sheet: the name as the title the dialog is labelled by, region, height and zone, a stamp picture, and exactly ONE main action", dOpen() && q("#pp-dlg-title").textContent === "MZIMA Place" && dlg().getAttribute("aria-labelledby") === "pp-dlg-title" && /Region mzima · 600 m · Plains/.test(q(".pp-where").textContent) && qa("dialog .pp-cta:not(.pp-cta-2)").length === 1 && /Stamp my passport/.test(btn(/Stamp my passport/)?.textContent ?? "") && /Just mark as visited \(no points\)/.test(dlg().textContent) && /within about 300 m/.test(dlg().textContent) && /do not store it/.test(dlg().textContent));
+  t("ONE FILE OF IDS: the stamp drawn in the sheet and the same stamp on the page never share an id (so one can't be lettered with the other's text)", (() => { const ids = qa("[id]").map((e: any) => e.id); return new Set(ids).size === ids.length; })());
+  await click(btn(/Not now/)!); t("'NOT NOW' closes the sheet and nothing was sent anywhere", !dOpen() && calls.stamp.length === 0 && calls.visit.length === 0);
+  await click(slot("mudanda")); const qrTxt = dlg().textContent; t("A QR-ONLY PLACE says to scan the plaque and offers no location button", /QR plaque/.test(qrTxt) && !btn(/Stamp my passport/) && /Just mark as visited/.test(qrTxt)); await click(btn(/Not now/)!);
+  await click(slot("chala")); const mk = dlg().textContent; t("A MARKED PLACE explains how to earn the stamp ('turn it into a stamp … earn 10 points'), offers 'Remove my mark' (never 'Undo'), and still offers the real stamp", /Marked as visited · no points/.test(mk) && /turn it into a stamp with its date, and earn 10 points/.test(mk) && /Remove my mark/.test(mk) && !/Undo/.test(mk) && !!btn(/Stamp my passport/)); await click(btn(/Not now/)!);
+  await click(slot("voi")); const st = dlg().textContent; t("A STAMPED PLACE shows its date in words and how it was checked in, offers only 'Close', and says each place pays once", /Stamped on 12 September 2026, checked in with a QR code/.test(st) && /first time you stamp it/.test(st) && !btn(/Stamp my passport/) && !btn(/Not now/) && !!btn(/^Close$/)); await click(btn(/^Close$/)!);
+  // ===== stamping =====
+  stampReply = { success: true, destinationName: "MZIMA Place", pointsAwarded: 10, newBadges: ["Taita Wild"] }; await click(slot("mzima")); let release!: () => void; hold = new Promise<void>((r) => { release = r; });
+  await click(btn(/Stamp my passport/)!); await until(() => !!btn(/Locating…/)); const busyBtn = btn(/Locating…/); const busy = !!busyBtn && busyBtn.disabled === true; await until(() => calls.stamp.length === 1); release(); await until(() => !dOpen());
+  t("STAMPING: while it works the button says 'Locating…' and cannot be pressed twice; the person's real position (latitude, longitude, accuracy) goes to the server with the place id; on success the sheet closes, the page refreshes, and the result is announced with the points and the new endorsement", busy && calls.stamp[0].join() === "mzima,-3.4,38.55,20" && !dOpen() && refreshes >= 1 && /MZIMA Place stamped\. 10 points added\. New endorsement: Taita Wild\./.test(status()));
+  t("THE NEW STAMP ANIMATES in its slot (the thud), once", !!slot("mzima").querySelector(".pp-stamp.pp-just"));
+  // ===== every way it can fail, each in words =====
+  const fail = async (reply: any, g: any, expect: RegExp, name: string, throws = false) => { reset(); setGeo(g); stampReply = reply; stampThrows = throws; await click(slot("mzima")); await click(btn(/Stamp my passport/)!); await until(() => !!q("#pp-dlg-msg")); const m = q("#pp-dlg-msg"); const ok = !!m && m.getAttribute("role") === "alert" && expect.test(m.textContent) && dOpen() && !btn(/Locating…/) && refreshes === 0 && btn(/Stamp my passport/)?.getAttribute("aria-describedby") === "pp-dlg-msg"; await click(btn(/Not now/)!); return [name, ok] as const; };
+  const F = [
+    await fail({ code: "too_far", error: "x", distanceM: 38400 }, { mode: "ok" }, /You're about 38\.4 km away\. Get closer and try again\./, "too far (38.4 km)"),
+    await fail({ code: "too_far", error: "x", distanceM: 120 }, { mode: "ok" }, /about 120 m away/, "too far (120 m)"),
+    await fail({ code: "imprecise", error: "x" }, { mode: "ok" }, /isn't precise enough yet/, "imprecise"),
+    await fail({ code: "no_location", error: "x" }, { mode: "ok" }, /only be stamped with its QR code/, "no coordinates"),
+    await fail({ code: "unavailable", error: "x" }, { mode: "ok" }, /isn't available for check-in/, "unavailable"),
+    await fail({ code: "too_many", error: "x" }, { mode: "ok" }, /Too many check-in attempts/, "too many"),
+    await fail({ code: "sign_in", error: "x" }, { mode: "ok" }, /Please sign in to check in/, "signed out"),
+    await fail({ code: "bad_location", error: "x" }, { mode: "ok" }, /couldn't read your location/, "bad reading"),
+    await fail({ error: "x" }, { mode: "ok" }, /Something went wrong checking you in/, "an unknown code"),
+    await fail({}, { mode: "ok" }, /Something went wrong checking you in/, "the server crashing", true),
+    await fail({}, { mode: "denied" }, /Location access was denied/, "permission denied"),
+    await fail({}, { mode: "unavailable" }, /couldn't get your location/, "no fix"),
+    await fail({}, { mode: "none" }, /browser can't share its location/, "no geolocation at all"),
+  ];
+  t("EVERY FAILURE IS SAID IN PLAIN WORDS, announced as an alert, tied to the button, leaves the sheet open and the button usable, and never refreshes the page: " + F.map((f) => (f[1] ? "ok " : "BAD ") + f[0]).join("; "), F.every((f) => f[1]));
+  // ===== marking, unmarking, wishes =====
+  reset(); await click(slot("mzima")); await click(btn(/Just mark as visited/)!); t("MARKING AS VISITED sends only the place id, closes the sheet, refreshes, and says it earns no points yet", calls.visit.join() === "mzima" && !dOpen() && refreshes >= 1 && /MZIMA Place marked as visited\. It earns no points until you check in there\./.test(status()));
+  reset(); await click(slot("chala")); await click(btn(/Remove my mark/)!); t("REMOVING A MARK does the same toggle and says the mark was removed", calls.visit.join() === "chala" && /The mark on CHALA Place was removed\./.test(status()));
+  reset(); visitThrows = true; await click(slot("mzima")); await click(btn(/Just mark as visited/)!); t("IF MARKING FAILS the person is told plainly and nothing is claimed", /Something went wrong\. Please try again\./.test(status()));
+  reset(); visitThrows = false; const ri = spreads.findIndex((s: any[]) => s.some((p) => p.kind === "rewards")); await click(qa(".pp-tab")[ri]);
+  const wishItems = qa(".pp-wish li"); t("WANT TO GO lists each saved place with its region and height, a map link in the person's language that names the place, and a Remove button that names the place for screen readers", wishItems.length === 2 && /NGANGAO Place/.test(wishItems[0].textContent) && /Region ngangao · 1,800 m/.test(wishItems[0].textContent) && !/ · null|undefined/.test(wishItems[1].textContent) && wishItems[0].querySelector('a[href="/map?place=ngangao"]')?.getAttribute("aria-label") === "Show NGANGAO Place on the map" && wishItems[0].querySelector("button")?.getAttribute("aria-label") === "Remove NGANGAO Place from your list" && !!q("#want-to-go"));
+  await click(wishItems[0].querySelector("button")); t("REMOVING A SAVED PLACE calls the server with its id, refreshes, and announces it", calls.wish.join() === "ngangao" && refreshes >= 1 && /NGANGAO Place was removed from your list\./.test(status()));
+  const empty = { ...DATA, wishes: [] }; await show("en", empty); await click(qa(".pp-tab")[ri]); t("WITH NOTHING SAVED: a friendly line and a link to the map, no list and no Remove buttons", /Nothing saved yet\./.test(q("#want-to-go").textContent) && !!q('#want-to-go a[href="/map"]') && !q(".pp-wish"));
+  // ===== switches =====
+  reset(); await show(); const root1 = () => q(".pp-root");
+  t("MOTION IS ON BY DEFAULT and the switch says so", root1().dataset.motion === "on" && btn(/Page-turn motion/)!.getAttribute("aria-pressed") === "true");
+  await click(btn(/Page-turn motion/)!); t("THE MOTION SWITCH turns it off for this visit, shows it, and announces it", root1().dataset.motion === "off" && btn(/Page-turn motion/)!.getAttribute("aria-pressed") === "false" && /Page-turn motion is off\. Pages change instantly\./.test(status())); await click(btn(/Page-turn motion/)!); t("…and back on", root1().dataset.motion === "on" && /Page-turn motion is on\./.test(status()));
+  reset(); media.calm = true; await show(); t("THE PHONE'S REDUCE-MOTION SETTING starts the page with motion off, and the switch shows it", root1().dataset.motion === "off" && btn(/Page-turn motion/)!.getAttribute("aria-pressed") === "false");
+  media.calm = false; await act(async () => { lis.calm.forEach((f) => f()); }); await flush(); t("…and follows the setting if it changes while the page is open", root1().dataset.motion === "on");
+  await click(q(".pp-cover")); await click(btn(/Plain view/)!);
+  t("PLAIN VIEW drops the booklet and lists every page in order, with nothing hidden or inert, no page-turn controls, and an announcement; the switch shows it", !q(".pp-book") && !q(".pp-nav") && qa(".pp-plain section").length === content.length + 1 && qa("[inert]").length === 0 && btn(/Plain view/)!.getAttribute("aria-pressed") === "true" && /Plain view: every page is listed in order/.test(status()) && /Neema Mwadime/.test(q(".pp-plain").textContent));
+  await click(slot("voi")); t("…places can still be opened in plain view", dOpen() && q("#pp-dlg-title").textContent === "VOI Place"); await click(btn(/^Close$/)!);
+  await click(btn(/Plain view/)!); t("BACK TO THE BOOKLET returns to the cover", !!q(".pp-book") && !q(".pp-plain") && /Back to the booklet\./.test(status()));
+  // ===== phone =====
+  reset(); media.narrow = true; await show();
+  t("ON A PHONE: one page at a time (cover + every page), one tab per page, the same rules for what is reachable", q(".pp-book").classList.contains("pp-single") && qa(".pp-sheet").length === content.length + 1 && qa(".pp-tab").length === content.length + 1 && qa(".pp-face:not([inert])").length === 1);
+  await click(q(".pp-cover")); await swipe(-140); t("…turning goes one page at a time, by button, tab or swipe", q(".pp-book").dataset.s === "2" && qa(".pp-face:not([inert])").length === 1);
+  media.narrow = false; await act(async () => { lis.narrow.forEach((f) => f()); }); await flush(); t("…and rotating or resizing to a wide screen rebuilds the spread layout from the cover", !q(".pp-book").classList.contains("pp-single") && q(".pp-book").dataset.s === "0" && qa(".pp-sheet").length === sheets.length);
+  // ===== the account page's 'Want to go' link =====
+  reset(); w.location.hash = "#want-to-go"; await show(); t("THE ACCOUNT PAGE'S 'WANT TO GO' LINK opens the booklet straight at the page with the list (the anchor exists and its spread is showing)", !!q("#want-to-go") && q(".pp-book").dataset.s === String(ri) && !q("#want-to-go").closest(".pp-face[inert]"));
+  reset(); await show(); await click(qa(".pp-tab")[1]); w.location.hash = "#want-to-go"; await act(async () => { w.dispatchEvent(new w.Event("hashchange")); }); await flush(); t("…and also when the link is followed while the page is already open", q(".pp-book").dataset.s === String(ri));
+  // ===== languages =====
+  reset(); await show("sw"); t("KISWAHILI: the title, the switches, the cover label and the page navigation are all in Kiswahili", q("h1").textContent === trFor("sw", "Your Passport") && !!btn(new RegExp(trFor("sw", "Plain view"))) && q(".pp-cover").getAttribute("aria-label") === trFor("sw", "Open your Taita Passport") && q("nav").getAttribute("aria-label") === trFor("sw", "Passport pages"));
+  await click(q(".pp-cover")); await click(slot("mzima")); setGeo({ mode: "ok" }); stampReply = { code: "too_far", error: "x", distanceM: 38400 }; await click(btn(new RegExp(trFor("sw", "Stamp my passport")))!); await until(() => !!q("#pp-dlg-msg"));
+  t("…and a failed check-in is said in Kiswahili, with the distance written the Kiswahili way", q("#pp-dlg-msg").textContent === trFor("sw", "You're about {distance} away. Get closer and try again.", { distance: R.distanceText(38400, "sw") }) && /38[.,]4 km/.test(q("#pp-dlg-msg").textContent) && !/Get closer/.test(q("#pp-dlg-msg").textContent));
+  reset(); await show("de"); await click(q(".pp-cover")); await click(slot("mzima")); stampReply = { code: "too_far", error: "x", distanceM: 38400 }; await click(btn(new RegExp(trFor("de", "Stamp my passport")))!); await until(() => !!q("#pp-dlg-msg"));
+  t("DEUTSCH: the same, in German, with a decimal comma", /38,4 km/.test(q("#pp-dlg-msg").textContent) && /entfernt/.test(q("#pp-dlg-msg").textContent) && !/Get closer/.test(q("#pp-dlg-msg").textContent));
+  reset(); await show("fr"); await click(q(".pp-cover")); t("FRANÇAIS: the announcement on opening is in French", new RegExp(trFor("fr", "Showing {pages}.", { pages: "" }).split(" ")[0]).test(status()) && !/Showing/.test(status()));
+  // ===== structure =====
+  reset(); await show(); await click(q(".pp-cover")); const names = qa("button").filter((b: any) => !b.hasAttribute("inert") && !b.closest("[inert]")).filter((b: any) => !(b.getAttribute("aria-label") || b.textContent.trim())); t("EVERY BUTTON THE PERSON CAN REACH HAS A NAME", names.length === 0);
+  const COL = /(?<![:\w-])text-(?:stone|parchment|rust|canopy|ochre|white)/; t("NO TAILWIND TEXT COLOURS LEAK INTO THE BOOKLET (its colours all come from its own stylesheet)", qa("[class]").every((e: any) => !COL.test(String(e.getAttribute("class")))));
+  let nbad = 0; for (const [nm, ok2] of res) { console.log((ok2 ? "PASS " : "FAIL ") + nm); if (!ok2) nbad++; }
+  console.log(nbad ? `\n${nbad} FAILED` : `\nALL ${res.length} PASSPORT BOOKLET CHECKS PASSED`); process.exit(nbad ? 1 : 0);
+}
+main().catch((e) => { console.error("ERROR:", e); process.exit(2); });

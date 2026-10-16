@@ -2,8 +2,8 @@ import { randomBytes } from "node:crypto";
 
 // Passport check-in rules, kept in one place so they're easy to tune.
 
-/** Points for the first verified check-in at a destination. */
-export const CHECKIN_POINTS = 10;
+// Defined in lib/passport-constants.ts (the booklet needs it in the browser); re-exported here so everything that imports it from here keeps working.
+export { CHECKIN_POINTS } from "@/lib/passport-constants";
 
 /** GPS fixes worse than this (metres of reported accuracy) are rejected as too imprecise. */
 export const MAX_GPS_ACCURACY_M = 200;
