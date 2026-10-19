@@ -16,6 +16,9 @@ export async function currentManager(): Promise<ManagerActor | null> {
   const session = await getServerSession(authOptions);
   const id = session?.user?.id;
   if (!id) return null;
+  // Someone who must set up two-step but has not yet is held at a session with NO privileges. This helper reads the real role from the database, so it must honour that itself: server actions are public
+  // endpoints, and the admin gate only guards pages.
+  if ((session?.user as { twoStepSetupRequired?: boolean } | undefined)?.twoStepSetupRequired) return null;
   const a = await prisma.user.findUnique({ where: { id }, select: { id: true, name: true, email: true, role: true, suspendedAt: true } });
   if (!a || a.suspendedAt || !isManager(a.role)) return null;
   return { id: a.id, name: a.name, email: a.email, role: a.role };

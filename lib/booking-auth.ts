@@ -16,5 +16,7 @@ export async function currentBookingUser(): Promise<BookingUser | null> {
   if (!id) return null;
   const u = await prisma.user.findUnique({ where: { id }, select: { id: true, name: true, email: true, role: true, emailVerifiedAt: true, suspendedAt: true } });
   if (!u || u.suspendedAt) return null;
-  return { id: u.id, name: u.name, email: u.email, role: u.role, emailVerifiedAt: u.emailVerifiedAt, isAdmin: isManager(u.role) };
+  // A staff member who must set up two-step but has not yet is held at a session with NO privileges. This helper reads the real role from the database, so it has to honour that itself.
+  const held = (session?.user as { twoStepSetupRequired?: boolean } | undefined)?.twoStepSetupRequired === true;
+  return { id: u.id, name: u.name, email: u.email, role: held ? "VISITOR" : u.role, emailVerifiedAt: u.emailVerifiedAt, isAdmin: !held && isManager(u.role) };
 }
