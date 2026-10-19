@@ -38,6 +38,19 @@ export function passwordChangedText(name: string): string {
   ].join("\n");
 }
 
+/** Sent when two-step sign-in is turned on or off, so the owner knows if it was not them. */
+export function twoStepChangedText(name: string, on: boolean): string {
+  return [
+    `Hi ${firstName(name)},`,
+    "",
+    on ? "Two-step sign-in was just turned ON for your Visit Taita account. From now on, signing in asks for a code from your authenticator app as well as your password." : "Two-step sign-in was just turned OFF for your Visit Taita account.",
+    "",
+    "If this was you, there's nothing more to do. If it wasn't, reset your password straight away and contact us.",
+    "",
+    "Visit Taita",
+  ].join("\n");
+}
+
 function firstName(name: string): string {
   return String(name ?? "").trim().split(/\s+/)[0] || "there";
 }
