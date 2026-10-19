@@ -47,6 +47,8 @@ model User {
   invitedAt DateTime?
   // "Sign out everywhere": any sign-in older than this is ended.
   sessionsRevokedAt DateTime?
+  twoFactor         TwoFactor?
+  recoveryCodes     RecoveryCode[]
   accountTokens     AccountToken[]
   auditActions      AdminAuditLog[] @relation("AuditActor")
   uploads           UploadedImage[]
@@ -1779,4 +1781,26 @@ model DayPlanStop {
   plan         DayPlan      @relation(fields: [planId], references: [id], onDelete: Cascade)
 
   @@index([planId, position])
+}
+
+model TwoFactor {
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  secretEnc     String
+  enabledAt     DateTime?
+  lastStep      Int?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model RecoveryCode {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
 }
