@@ -109,6 +109,8 @@ export function accountStatus(u: StatusFields): "Suspended" | "Invite pending" |
 export const AUDIT_LABELS: Record<string, string> = {
   "user.invite": "Invited as staff", "user.role": "Changed role", "user.suspend": "Suspended", "user.reinstate": "Reinstated",
   "user.signout": "Signed out everywhere", "user.reset_link": "Sent a password link", "user.verify_link": "Sent a verification link",
+  "user.twostep_on": "Turned two-step sign-in on", "user.twostep_off": "Turned two-step sign-in off", "user.twostep_codes": "Made new recovery codes",
+  "user.twostep_reset_requested": "Asked to reset two-step sign-in", "user.twostep_reset_cancelled": "Cancelled a two-step reset", "user.twostep_reset_done": "Two-step sign-in was reset", "user.twostep_reset": "Reset two-step sign-in (command line)",
 };
 
 // ---------- the list screen ----------

@@ -528,6 +528,15 @@ export const de: Record<string, string> = {
   "Your account needs two-step sign-in. Until it is on, you can't use the admin area.": "Dein Konto braucht die Zwei-Schritt-Anmeldung. Solange sie nicht eingeschaltet ist, kannst du den Admin-Bereich nicht nutzen.",
   "Your new recovery codes are saved.": "Deine neuen Wiederherstellungscodes sind gespeichert.",
   "Your password and a code from your phone: both, every time.": "Dein Passwort und ein Code von deinem Handy: beides, jedes Mal.",
+  // Two-step reset by another super admin (the page the emailed cancel link opens). Drafted for Visit Taita: a native speaker must read these before launch.
+  "A super admin asked to reset the two-step sign-in on your account. If you did not expect this, cancel it now. Nothing has changed yet.": "Ein Super-Admin hat darum gebeten, die Zwei-Schritt-Anmeldung deines Kontos zurückzusetzen. Wenn du das nicht erwartet hast, brich es jetzt ab. Bisher hat sich nichts geändert.",
+  "Cancel the reset": "Zurücksetzen abbrechen",
+  "Cancelling…": "Wird abgebrochen…",
+  "Change my password": "Mein Passwort ändern",
+  "Open the link from your email to cancel a reset.": "Öffne den Link aus deiner E-Mail, um ein Zurücksetzen abzubrechen.",
+  "Stop the reset of your two-step sign-in": "Das Zurücksetzen deiner Zwei-Schritt-Anmeldung stoppen",
+  "The reset was cancelled. Nothing has changed on your account. As a precaution, change your password.": "Das Zurücksetzen wurde abgebrochen. An deinem Konto hat sich nichts geändert. Ändere vorsichtshalber dein Passwort.",
+  "This link is no longer valid. It may already have been used, or the reset may have been cancelled or finished. If you did not expect a reset, change your password and contact us.": "Dieser Link ist nicht mehr gültig. Er wurde vielleicht schon verwendet, oder das Zurücksetzen wurde abgebrochen oder abgeschlossen. Wenn du kein Zurücksetzen erwartet hast, ändere dein Passwort und kontaktiere uns.",
   // The account page and its lists (My account, orders, enquiries, reviews). Drafted for Visit Taita: a native speaker must read these before launch (see docs/i18n.md).
   "{amount} is waiting to be sent to you": "{amount} sind für die Überweisung an dich vorgemerkt",
   "{amount} waiting to be sent": "{amount} zur Überweisung vorgemerkt",

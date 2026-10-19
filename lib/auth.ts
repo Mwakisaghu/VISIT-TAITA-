@@ -5,6 +5,8 @@ import { prisma } from "@/lib/prisma";
 import { hashPassword, needsRehash, verifyPassword } from "@/lib/password";
 import { twoStepAvailable } from "@/lib/two-step/crypto";
 import { parseMoneyFrom, requiresTwoStep, RESTRICTED_ROLE } from "@/lib/two-step/policy";
+import { sendEmail } from "@/lib/email";
+import { executeDueReset } from "@/lib/two-step/reset";
 import { twoStepEnabled, verifyLoginCode } from "@/lib/two-step/service";
 import { SESSION_MAX_AGE_SECONDS, staffSessionExpired } from "@/lib/session-limits";
 
@@ -60,6 +62,9 @@ export const authOptions: NextAuthOptions = {
 
         // TWO-STEP SIGN-IN. The password was right. If this person has turned two-step on, they must ALSO give a code, and the code is checked here, before anything is issued: there is no way to a session around it.
         // A database error here refuses the sign-in (it never lets someone through); only a site that has never switched two-step on (no key set) carries on if its table is not there yet.
+        // A super admin may have asked to reset this person's two-step (they lost their phone and codes) and the 24 hours may be up: it takes effect now, after the password was proved. If this ever fails (for example the table
+        // is not there yet) it must NEVER block signing in: the reset simply does not happen, which is the safe side.
+        if (twoStepAvailable()) { try { await executeDueReset(user.id, { mail: sendEmail }); } catch { /* never blocks sign-in */ } }
         let enabled = false;
         try { enabled = await twoStepEnabled(user.id); } catch (e) { if (twoStepAvailable()) throw e; }
         let mfa = false;

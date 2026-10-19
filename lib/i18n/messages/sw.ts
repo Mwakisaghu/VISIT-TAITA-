@@ -528,6 +528,15 @@ export const sw: Record<string, string> = {
   "Your account needs two-step sign-in. Until it is on, you can't use the admin area.": "Akaunti yako inahitaji kuingia kwa hatua mbili. Hadi iwashwe, huwezi kutumia eneo la usimamizi.",
   "Your new recovery codes are saved.": "Misimbo yako mipya ya kurejesha imehifadhiwa.",
   "Your password and a code from your phone: both, every time.": "Nenosiri lako na msimbo kutoka kwenye simu yako: vyote viwili, kila mara.",
+  // Two-step reset by another super admin (the page the emailed cancel link opens). Drafted for Visit Taita: a native speaker must read these before launch.
+  "A super admin asked to reset the two-step sign-in on your account. If you did not expect this, cancel it now. Nothing has changed yet.": "Msimamizi mkuu aliomba kuweka upya kuingia kwa hatua mbili kwenye akaunti yako. Ikiwa hukutarajia hili, ghairi sasa. Bado hakuna kilichobadilika.",
+  "Cancel the reset": "Ghairi kuweka upya",
+  "Cancelling…": "Inaghairi…",
+  "Change my password": "Badilisha nenosiri langu",
+  "Open the link from your email to cancel a reset.": "Fungua kiungo kutoka kwenye barua pepe yako ili kughairi kuweka upya.",
+  "Stop the reset of your two-step sign-in": "Simamisha kuwekwa upya kwa kuingia kwako kwa hatua mbili",
+  "The reset was cancelled. Nothing has changed on your account. As a precaution, change your password.": "Kuweka upya kumeghairiwa. Hakuna kilichobadilika kwenye akaunti yako. Kama tahadhari, badilisha nenosiri lako.",
+  "This link is no longer valid. It may already have been used, or the reset may have been cancelled or finished. If you did not expect a reset, change your password and contact us.": "Kiungo hiki hakitumiki tena. Huenda kilishatumika, au kuweka upya kumeghairiwa au kukamilika. Ikiwa hukutarajia kuweka upya, badilisha nenosiri lako na uwasiliane nasi.",
   // The account page and its lists (My account, orders, enquiries, reviews). Drafted for Visit Taita: a native speaker must read these before launch (see docs/i18n.md).
   "{amount} is waiting to be sent to you": "{amount} inasubiri kutumwa kwako",
   "{amount} waiting to be sent": "{amount} inasubiri kutumwa",

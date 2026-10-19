@@ -19,13 +19,20 @@ Signing in asks for the password and then a 6-digit code from an authenticator a
 - Staff cannot turn it off. Members can, with their password and a code. The owner is emailed whenever it is turned on or off, and an audit entry is written.
 
 ## When someone is locked out (lost phone AND recovery codes)
-1. **Another super admin cannot reset them yet** (planned: a 24-hour delayed reset with notifications).
-2. **Break-glass, for whoever controls the database:**
+1. **Another super admin resets it, with a delay.** Under **Users**, open the person, and in **Two-step sign-in** choose "Reset their two-step sign-in". Only a super admin can (never for themselves, never an ordinary admin).
+   - The person is **emailed at once** with a link to cancel it, and the other super admins are told, so it cannot happen quietly. It is in the audit log.
+   - **Nothing changes for 24 hours.** After that it takes effect **the next time they sign in** (after their password is checked): their second step and recovery codes are removed and they are signed out everywhere. They are emailed again. If their role requires two-step, they must set it up again before they can use the admin area.
+   - **Any super admin can cancel** from the same page, and the person can cancel from their email. A cancelled request never takes effect, and neither does one that is more than a week overdue (ask again).
+   - It needs `NEXT_PUBLIC_APP_URL` (the cancel link must be a real address); without it nothing is started. It needs no scheduled job.
+   - Opening the emailed link does **not** cancel anything (mail scanners open links): the page has one button.
+2. **Break-glass, for whoever controls the database** (when no other super admin can do step 1):
    `DATABASE_URL="postgresql://..." node scripts/two-step-reset.mjs person@example.org`
-   It asks you to type the address again and the word RESET, removes their second step and recovery codes, signs them out everywhere, and writes an audit entry. Then tell them **by another way** (a phone call) that it was done. If they must use two-step they set it up again at their next sign-in.
-3. Keep at least **two super admins**, each with their recovery codes saved in a different place.
+   It asks you to type the address again and the word RESET, removes their second step and recovery codes, signs them out everywhere, and writes an audit entry. Then tell them **by another way** (a phone call) that it was done.
+3. Keep at least **two super admins**, each with their recovery codes saved in a different place. The admin area shows a warning whenever there is fewer than two active ones.
 
-## Not in this step yet
+## What a half-finished sign-in cannot do
+Staff who must set up two-step but have not yet get a session with no privileges. Two helpers that read the person's real role from the database (the user-management helper and the bookings helper, whose "admin" flag guards refunds) honour that themselves, because server actions are public endpoints that cannot rely on the admin gate alone. Tests pin both.
+
+## Not built yet
 - Email codes as an alternative for members (never for staff).
 - "Remember this browser for 30 days" for members (it needs a cookie, so the privacy page and its guard test must change with it).
-- A super admin resetting someone else's two-step from the admin area (with a delay, notices and the audit trail), and a warning when there is only one super admin.

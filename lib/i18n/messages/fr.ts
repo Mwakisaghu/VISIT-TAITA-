@@ -528,6 +528,15 @@ export const fr: Record<string, string> = {
   "Your account needs two-step sign-in. Until it is on, you can't use the admin area.": "Votre compte exige la connexion en deux étapes. Tant qu'elle n'est pas activée, vous ne pouvez pas utiliser l'espace d'administration.",
   "Your new recovery codes are saved.": "Vos nouveaux codes de récupération sont enregistrés.",
   "Your password and a code from your phone: both, every time.": "Votre mot de passe et un code de votre téléphone : les deux, à chaque fois.",
+  // Two-step reset by another super admin (the page the emailed cancel link opens). Drafted for Visit Taita: a native speaker must read these before launch.
+  "A super admin asked to reset the two-step sign-in on your account. If you did not expect this, cancel it now. Nothing has changed yet.": "Un super administrateur a demandé la réinitialisation de la connexion en deux étapes de votre compte. Si vous ne vous y attendiez pas, annulez-la maintenant. Rien n'a encore changé.",
+  "Cancel the reset": "Annuler la réinitialisation",
+  "Cancelling…": "Annulation…",
+  "Change my password": "Changer mon mot de passe",
+  "Open the link from your email to cancel a reset.": "Ouvrez le lien de votre e-mail pour annuler une réinitialisation.",
+  "Stop the reset of your two-step sign-in": "Arrêter la réinitialisation de votre connexion en deux étapes",
+  "The reset was cancelled. Nothing has changed on your account. As a precaution, change your password.": "La réinitialisation a été annulée. Rien n'a changé sur votre compte. Par précaution, changez votre mot de passe.",
+  "This link is no longer valid. It may already have been used, or the reset may have been cancelled or finished. If you did not expect a reset, change your password and contact us.": "Ce lien n'est plus valable. Il a peut-être déjà été utilisé, ou la réinitialisation a été annulée ou terminée. Si vous ne vous attendiez pas à une réinitialisation, changez votre mot de passe et contactez-nous.",
   // The account page and its lists (My account, orders, enquiries, reviews). Drafted for Visit Taita: a native speaker must read these before launch (see docs/i18n.md).
   "{amount} is waiting to be sent to you": "{amount} en attente de versement",
   "{amount} waiting to be sent": "{amount} en attente d'envoi",

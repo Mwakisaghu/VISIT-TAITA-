@@ -49,6 +49,7 @@ model User {
   sessionsRevokedAt DateTime?
   twoFactor         TwoFactor?
   recoveryCodes     RecoveryCode[]
+  twoStepResets     TwoStepReset[]
   accountTokens     AccountToken[]
   auditActions      AdminAuditLog[] @relation("AuditActor")
   uploads           UploadedImage[]
@@ -1801,6 +1802,23 @@ model RecoveryCode {
   codeHash  String
   usedAt    DateTime?
   createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// A super admin's request to switch off someone else's two-step sign-in. It waits 24 hours, the person is emailed a link to cancel it, and it takes effect at their next sign-in. Only a fingerprint of the cancel link is kept.
+model TwoStepReset {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestedById    String
+  requestedByEmail String
+  executeAfter     DateTime
+  cancelTokenHash  String    @unique
+  cancelledAt      DateTime?
+  cancelledBy      String?
+  completedAt      DateTime?
+  createdAt        DateTime  @default(now())
 
   @@index([userId])
 }
