@@ -73,8 +73,9 @@ export function SettingsPanels({ hub }: { hub: AccountHub }) {
         </Row>
       </Panel>
 
-      <Panel id="security" title={tr("Sign-in and security")} summary={tr("Password and signing out")} icon="lock">
+      <Panel id="security" title={tr("Sign-in and security")} summary={tr("Password, two-step and signing out")} icon="lock">
         <Row first label={tr("Password")}><ChangePasswordForm summary={u.passwordChangedAt ? tr("Last changed on {date}", { date: formatLong(u.passwordChangedAt, l) }) : tr("You have not changed it since you created your account.")} name={u.name} email={u.email} /></Row>
+        <Row label={tr("Two-step sign-in")} action={<Link href={lp("/account/security/two-step")} className={LINK}>{tr("Set up or manage")}</Link>}>{tr("A second step when you sign in: a code from an app on your phone.")}</Row>
         <Row label={tr("This device")} action={<SignOutButton className={LINK} />}>{tr("You are signed in here.")}</Row>
         <Row label={tr("Every device")}><SignOutEverywhere summary={tr("Lost a phone or used a shared computer? Sign out everywhere at once.")} /></Row>
       </Panel>

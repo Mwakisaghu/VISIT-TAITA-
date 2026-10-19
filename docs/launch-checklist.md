@@ -5,6 +5,7 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 ## Safety and setup
 - [ ] The database password that was once committed to the repository has been **changed** in Neon, and the new one is only in your hosting settings.
 - [ ] `CRON_SECRET` is set, and the email job is scheduled every five minutes.
+- [ ] **Two-step sign-in** is switched on: the database change is applied, `TWO_FACTOR_KEY` is set (with a safe copy kept somewhere other than the hosting settings), every super admin has set it up and saved their recovery codes, and there are at least two super admins (`docs/two-step.md`).
 - [ ] The `main` branch on GitHub is protected (pull requests and the tests must pass before merging).
 - [ ] Your host runs a Node version the site supports (20.9 or newer), checked before upgrading the site's framework.
 - [ ] `NEXT_PUBLIC_APP_URL` is set to your real address, so shared links and calendar files use it.
