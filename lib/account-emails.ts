@@ -85,6 +85,11 @@ export function twoStepResetDoneText(name: string): string {
   return [`Hi ${firstName(name)},`, "", "The two-step sign-in on your Visit Taita account was just reset, as a super admin asked, and you have been signed out everywhere.", "", "If you did not expect this, change your password and contact us straight away. If your role requires two-step sign-in, you will be asked to set it up again.", "", "Visit Taita"].join("\n");
 }
 
+/** The 6-digit code for the email method of two-step sign-in. */
+export function twoStepEmailCodeText(name: string, code: string, minutes: number): string {
+  return [`Hi ${firstName(name)},`, "", `Your Visit Taita code is: ${code}`, "", `It works once and expires in ${minutes} minutes. Visit Taita staff will never ask you for it.`, "", "If you did not just try to sign in or set up two-step sign-in, someone may know your password: change it now.", "", "Visit Taita"].join("\n");
+}
+
 function firstName(name: string): string {
   return String(name ?? "").trim().split(/\s+/)[0] || "there";
 }

@@ -20,3 +20,14 @@ export const RESTRICTED_ROLE = "VISITOR";
 export const SETUP_PATH = "/account/security/two-step";
 /** For the admin gate: the token of someone who still has to set up two-step goes to the setup page, not the sign-in page. */
 export function gateDecision(token: unknown): "setup" | "pass" { return (token as { twoStepSetupRequired?: unknown } | null)?.twoStepSetupRequired === true ? "setup" : "pass"; }
+
+// ---- the weaker, member-only conveniences ----
+// An emailed code and "remember this browser" are weaker than an authenticator app (anyone who controls the person's inbox could use the first; anyone who holds the browser could use the second), so they are
+// offered only where the account cannot do much harm: NEVER to staff, and never to the roles that handle other people's money (even before their requirement date, so no one has to switch later).
+const isStaffOrMoney = (role: unknown): boolean => (STAFF as readonly string[]).includes(String(role)) || (MONEY_ROLES as readonly string[]).includes(String(role));
+/** May this person use an emailed code instead of an authenticator app? */
+export const canUseEmailMethod = (role: unknown): boolean => typeof role === "string" && role.length > 0 && !isStaffOrMoney(role); // an unknown or missing role is refused: a rule that grants something weaker must default to no
+/** May this person tell us to remember a browser for 30 days? */
+export const canTrustBrowser = (role: unknown): boolean => typeof role === "string" && role.length > 0 && !isStaffOrMoney(role);
+/** Does the way they have two-step set up meet what is required of them? Whoever must use it needs the authenticator app; an emailed code does not count for them. */
+export const methodMeetsRequirement = (method: unknown, role: unknown, rule: Rule): boolean => !requiresTwoStep(role, rule) || method === "TOTP";
