@@ -6,12 +6,13 @@ import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { LEGAL_VERSION } from "@/lib/site-info";
 import { hashPassword } from "@/lib/password";
+import { checkChosenPassword } from "@/lib/password-check";
 import { checkPassword } from "@/lib/password-policy";
 
 const registerSchema = z.object({
   name: z.string().min(2).max(80),
   email: z.string().email(),
-  password: z.string().max(200), // the real rule is checkPassword below (it counts bytes, not characters)
+  password: z.string().max(1000), // the real rule is checkPassword below (it counts characters in any script)
   // Must be explicitly true: the person has accepted the Terms and acknowledged the Privacy Policy.
   acceptTerms: z.literal(true),
 }).superRefine((d, ctx) => {
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
   // share one address on mobile networks. Counted in the database, so it holds across every server.)
   const ip = clientIpFrom(Object.fromEntries(request.headers.entries()));
   if (!await checkRateLimit(`register:${ip}`, 15, 60 * 60 * 1000)) {
-    return NextResponse.json({ error: "Too many sign-up attempts from this connection. Please try again in an hour." }, { status: 429 });
+    return NextResponse.json({ error: "Too many sign-up attempts from this connection. Please try again in an hour.", code: "rate_limited" }, { status: 429 });
   }
 
   const body = await request.json().catch(() => null);
@@ -32,21 +33,25 @@ export async function POST(request: Request) {
 
   if (!parsed.success) {
     if (!body || (body as { acceptTerms?: unknown }).acceptTerms !== true) {
-      return NextResponse.json({ error: "Please accept the Terms of Use and Privacy Policy to create an account." }, { status: 400 });
+      return NextResponse.json({ error: "Please accept the Terms of Use and Privacy Policy to create an account.", code: "terms" }, { status: 400 });
     }
+    // A refused password says WHY by code too (reason and detail), so the page can say it in the person's own language.
+    const why = (body as { password?: unknown; email?: unknown; name?: unknown } | null) ? checkPassword((body as { password?: unknown }).password, { email: String((body as { email?: unknown }).email ?? ""), name: String((body as { name?: unknown }).name ?? "") }) : null;
     return NextResponse.json(
-      { error: parsed.error.issues.find((i) => i.code === "custom" && i.path[0] === "password")?.message ?? "Please check your name, email and password." },
+      { error: parsed.error.issues.find((i) => i.code === "custom" && i.path[0] === "password")?.message ?? "Please check your name, email and password.", ...(why && !why.ok ? { code: "password", reason: why.reason, detail: why.detail } : {}) },
       { status: 400 }
     );
   }
 
   const { name, email, password } = parsed.data;
   const normalizedEmail = email.toLowerCase();
+  const full = await checkChosenPassword(password, { email, name }); // the rules passed; now: has it leaked in a known breach?
+  if (!full.ok) return NextResponse.json({ error: full.message, code: "password", reason: full.reason }, { status: 400 });
 
   const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
   if (existing) {
     return NextResponse.json(
-      { error: "An account with that email already exists. If it's yours, use 'Forgot your password?' on the sign-in page." },
+      { error: "An account with that email already exists. If it's yours, use 'Forgot your password?' on the sign-in page.", code: "exists" },
       { status: 409 }
     );
   }

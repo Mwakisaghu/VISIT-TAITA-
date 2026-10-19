@@ -1,6 +1,6 @@
 // Rules for the account's own security actions: what a name may be, and what is checked when someone changes their password.
 // Pure (no database, no framework), so the browser can give instant feedback with the SAME rules the server then enforces.
-import { checkPassword, PASSWORD_MAX_BYTES, PASSWORD_MIN, type PasswordCheck } from "@/lib/password-policy";
+import { checkPassword, PASSWORD_MAX, PASSWORD_MIN, type PasswordCheck } from "@/lib/password-policy";
 
 export const NAME_MIN = 2, NAME_MAX = 80; // the sign-up form's own limits
 export type NameCode = "name_short" | "name_long" | "name_invalid";
@@ -29,4 +29,4 @@ export function checkPasswordChange(current: unknown, next: unknown, ctx: { emai
   const strength = checkPassword(next, ctx);
   return strength.ok ? { ok: true } : { ok: false, code: "weak", policy: strength };
 }
-export { PASSWORD_MIN, PASSWORD_MAX_BYTES };
+export { PASSWORD_MIN, PASSWORD_MAX };

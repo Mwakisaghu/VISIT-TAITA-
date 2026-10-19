@@ -1,13 +1,13 @@
 "use server";
 
-import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { passwordChangedText } from "@/lib/account-emails";
 import { checkPasswordChange, cleanName, type NameCode } from "@/lib/account-security-rules";
 import { authOptions } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
-import { hashPassword } from "@/lib/password";
+import { checkChosenPassword } from "@/lib/password-check";
+import { hashPassword, verifyPassword } from "@/lib/password";
 import type { PasswordCheck } from "@/lib/password-policy";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
@@ -52,10 +52,13 @@ export async function changeMyPassword(current: string, next: string): Promise<P
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { id: true, name: true, email: true, passwordHash: true } });
   if (!user) return { ok: false, code: "gone" };
   if (typeof current !== "string" || current.length === 0) return { ok: false, code: "missing_current" };
-  if (!(await bcrypt.compare(current, user.passwordHash))) return { ok: false, code: "wrong_password" };
+  if (!(await verifyPassword(current, user.passwordHash))) return { ok: false, code: "wrong_password" };
 
   const check = checkPasswordChange(current, next, { email: user.email, name: user.name });
   if (!check.ok) return check.code === "weak" ? { ok: false, code: "weak", policy: check.policy } : { ok: false, code: check.code };
+
+  const full = await checkChosenPassword(next, { email: user.email, name: user.name }); // the same rules, then: has it leaked in a known breach?
+  if (!full.ok) return { ok: false, code: "weak", policy: full };
 
   const passwordHash = await hashPassword(next); // slow on purpose, so done before the transaction
   try {

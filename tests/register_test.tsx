@@ -14,7 +14,7 @@ async function main() {
 
   // ----- behaviour that must not change -----
   let r = await post("10.0.0.1"); let j = await r.json();
-  t("SIGN-UP still works: 200 with the new account's id and email; the account is MEMBER, has accepted-terms details and a hashed (not plain) password", r.status === 200 && j.id === "u1" && j.email === "jane1@mail.com" && users[0].role === "MEMBER" && users[0].termsAcceptedAt instanceof Date && users[0].passwordHash && users[0].passwordHash !== "a-good-password" && /^\$2[aby]\$/.test(users[0].passwordHash));
+  t("SIGN-UP still works: 200 with the new account's id and email; the account is MEMBER, has accepted-terms details and a hashed (not plain) password", r.status === 200 && j.id === "u1" && j.email === "jane1@mail.com" && users[0].role === "MEMBER" && users[0].termsAcceptedAt instanceof Date && users[0].passwordHash && users[0].passwordHash !== "a-good-password" && /^v2\$\$2[aby]\$12\$/.test(users[0].passwordHash));
   t("…and a verification email is requested for it", emails.length === 1 && emails[0] === "u1");
   r = await post("10.0.0.2", body({ email: "MixedCase@Mail.COM" })); t("the email is stored lower-case", users.at(-1).email === "mixedcase@mail.com");
   (globalThis as any).MAIL_FAILS = true; const q0 = console.error; console.error = () => {}; r = await post("10.0.0.3"); console.error = q0; (globalThis as any).MAIL_FAILS = false; t("if the verification email can't be sent, sign-up STILL succeeds", r.status === 200);

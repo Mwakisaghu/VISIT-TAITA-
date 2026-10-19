@@ -13,9 +13,10 @@ import { sendEmail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { hashPassword } from "@/lib/password";
-import { checkPassword } from "@/lib/password-policy";
+import { checkChosenPassword } from "@/lib/password-check";
 
-export type AccountEmailResult = { ok: true; already?: boolean } | { ok: false; error: string };
+// A refused new password also says WHY by code (reason, and detail), so the page can say it in the person's own language. The English text is unchanged.
+export type AccountEmailResult = { ok: true; already?: boolean } | { ok: false; error: string; reason?: "short" | "long" | "common" | "repetitive" | "personal" | "breached"; detail?: "variety" };
 
 const HOUR_MS = 60 * 60 * 1000;
 const INVALID_VERIFY = "This link isn't valid or has expired. You can send a new one from your account page.";
@@ -92,8 +93,8 @@ export async function requestPasswordReset(rawEmail: string): Promise<AccountEma
 export async function resetPassword(token: string, newPassword: string): Promise<AccountEmailResult> {
   if (!(await checkRateLimit(`reset-submit:${await clientIp()}`, 20, HOUR_MS))) return { ok: false, error: "Too many attempts — please try again later." };
 
-  const strength = checkPassword(newPassword);
-  if (!strength.ok) return { ok: false, error: strength.message };
+  const strength = await checkChosenPassword(newPassword);
+  if (!strength.ok) return { ok: false, error: strength.message, reason: strength.reason, detail: strength.detail };
   const found = await findUsableToken(prisma, token, "RESET_PASSWORD");
   if (!found) return { ok: false, error: INVALID_RESET };
 

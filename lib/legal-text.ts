@@ -81,6 +81,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
           "**Hosts and partners** receive the details of enquiries made about their own listings.",
           "**Sponsors** receive only totals (for example how many people viewed a mission). Never your personal details.",
           "**Service providers** who help us run the site: our website host (Netlify), our database (Neon), email delivery (Resend), payment processing (Safaricom M-Pesa and Pesapal) and, only if the optional \"Ask Taita\" AI guide is switched on, our AI provider (Anthropic). They may only use your data to provide their service to us.",
+          "**A password-safety check** (Pwned Passwords, part of Have I Been Pwned): when you choose a password we check it against a public list of passwords that have appeared in data breaches. The service receives only the first five characters of a scrambled fingerprint of the password, never the password itself, your name or your email address, and it cannot tell who you are. If it is unavailable, your password is simply accepted.",
           "**Authorities**, where the law requires it.",
         ] },
       ],

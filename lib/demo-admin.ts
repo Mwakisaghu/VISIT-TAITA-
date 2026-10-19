@@ -1,4 +1,4 @@
-import bcrypt from "bcryptjs";
+import { verifyPassword } from "@/lib/password";
 import { prisma } from "@/lib/prisma";
 
 // prisma/seed.ts creates this account with a password that is written in the public source code. If the seed was ever run on a
@@ -15,7 +15,7 @@ export async function demoAdminIsInsecure(db: Pick<typeof prisma, "user"> = pris
   let value = false;
   try {
     const u = await db.user.findUnique({ where: { email: DEMO_ADMIN_EMAIL }, select: { passwordHash: true, suspendedAt: true } });
-    value = !!u && !u.suspendedAt && (await bcrypt.compare(DEMO_ADMIN_PASSWORD, u.passwordHash));
+    value = !!u && !u.suspendedAt && (await verifyPassword(DEMO_ADMIN_PASSWORD, u.passwordHash));
   } catch {
     value = false;
   }
