@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { LOCALE_COOKIE, LOCALE_HEADER, type Locale } from "@/lib/i18n/config";
 import { decide } from "@/lib/i18n/routing";
 import { staffSessionExpired } from "@/lib/session-limits";
+import { gateDecision, SETUP_PATH } from "@/lib/two-step/policy";
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
 
@@ -10,6 +11,8 @@ const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
 const adminGate = withAuth(
   function middleware(req) {
     const token = (req as any).nextauth?.token;
+    // Staff who have not yet set up two-step have no privileges until they do: send them to set it up (rather than to a sign-in page that would only bring them back here).
+    if (gateDecision(token) === "setup") { const setup = new URL(SETUP_PATH, req.url); setup.searchParams.set("required", "1"); return NextResponse.redirect(setup); }
     if (!token || !ADMIN_ROLES.includes(token.role as string) || staffSessionExpired(token)) {
       const back = new URL("/login", req.url);
       if (token && ADMIN_ROLES.includes(token.role as string)) back.searchParams.set("next", req.nextUrl.pathname + req.nextUrl.search); // an expired staff sign-in returns to the same page afterwards
