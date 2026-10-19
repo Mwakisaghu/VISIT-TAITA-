@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import TwoStepResetPanel from "@/components/admin/TwoStepResetPanel";
 import { RoleForm, SuspendForm, UserActions } from "@/components/admin/UserForms";
+import { twoStepAvailable } from "@/lib/two-step/crypto";
+import { pendingFor } from "@/lib/two-step/reset";
+import { twoStepEnabled } from "@/lib/two-step/service";
 import { prisma } from "@/lib/prisma";
 import { requireManagerPage } from "@/lib/user-admin-server";
 import { AUDIT_LABELS, accountStatus, checkActOn, isPendingInvite, roleLabel, rolesAssignableBy, ROLES_MANAGED_ELSEWHERE } from "@/lib/user-admin";
@@ -19,6 +23,10 @@ export default async function UserPage(props: { params: Promise<{ id: string }> 
     prisma.product.count({ where: { sellerId: u.id } }), prisma.reward.count({ where: { ownerId: u.id } }),
     prisma.adminAuditLog.findMany({ where: { targetUserId: u.id }, orderBy: { createdAt: "desc" }, take: 30, select: { id: true, action: true, actorEmail: true, detail: true, createdAt: true } }),
   ]);
+
+  // Two-step: whether it is on for this person, and any reset waiting. Never breaks the page (the tables may not exist yet).
+  const tsAvailable = twoStepAvailable(); let tsOn = false; let tsPending: { id: string; requestedByEmail: string; executeAfter: string; due: boolean } | null = null;
+  if (tsAvailable) { try { tsOn = await twoStepEnabled(u.id); const p = await pendingFor(u.id); if (p) tsPending = { id: p.id, requestedByEmail: p.requestedByEmail, executeAfter: p.executeAfter.toISOString(), due: p.executeAfter.getTime() <= Date.now() }; } catch { /* shown as off */ } }
 
   const status = accountStatus(u);
   const blocked = checkActOn(actor, u); // why this person can't be changed by THIS admin, if so
@@ -62,6 +70,9 @@ export default async function UserPage(props: { params: Promise<{ id: string }> 
           {!u.suspendedAt && <div className="mt-6"><SuspendForm userId={u.id} /></div>}
         </>
       )}
+
+      <h2 className="mt-12 font-display text-xl text-stone">Two-step sign-in</h2>
+      <div className="mt-3"><TwoStepResetPanel userId={u.id} name={u.name} on={tsOn} available={tsAvailable} canAct={actor.role === "SUPER_ADMIN" && actor.id !== u.id} pending={tsPending} /></div>
 
       <h2 className="mt-12 font-display text-xl text-stone">History</h2>
       <table className="mt-3 w-full max-w-2xl text-left font-body text-sm">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import DemoAdminWarning from "@/components/admin/DemoAdminWarning";
+import SingleSuperAdminWarning from "@/components/admin/SingleSuperAdminWarning";
 import UserRowActions from "@/components/admin/UserRowActions";
 import { prisma } from "@/lib/prisma";
 import { requireManagerPage } from "@/lib/user-admin-server";
@@ -51,6 +52,7 @@ export default async function UsersPage(
       <p className="mt-2 max-w-2xl font-body text-sm text-stone/80">Everyone who has an account. Open an account to change its role or send it a link; suspend someone here or on their page.</p>
 
       <DemoAdminWarning />
+      <SingleSuperAdminWarning />
 
       <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {tiles.map((t) => {

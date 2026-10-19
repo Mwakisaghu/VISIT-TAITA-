@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import DemoAdminWarning from "@/components/admin/DemoAdminWarning";
+import SingleSuperAdminWarning from "@/components/admin/SingleSuperAdminWarning";
 import { loadAdminBadges } from "@/lib/admin-badges";
 import { ATTENTION } from "@/lib/admin-nav";
 import { authOptions } from "@/lib/auth";
@@ -51,6 +52,7 @@ export default async function AdminOverviewPage() {
     <div>
       <h1 className="font-display text-3xl text-stone">{firstName ? `Welcome back, ${firstName}` : "Overview"}</h1>
       <DemoAdminWarning />
+      <SingleSuperAdminWarning />
 
       <section aria-labelledby="attention" className="mt-8">
         <h2 id="attention" className="font-display text-xl text-stone">Needs attention</h2>
