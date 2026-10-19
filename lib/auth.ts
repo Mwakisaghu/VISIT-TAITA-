@@ -4,10 +4,12 @@ import { clearLoginFailures, clientIpFrom, isLoginBlocked, recordLoginFailure } 
 import { prisma } from "@/lib/prisma";
 import { hashPassword, needsRehash, verifyPassword } from "@/lib/password";
 import { twoStepAvailable } from "@/lib/two-step/crypto";
-import { parseMoneyFrom, requiresTwoStep, RESTRICTED_ROLE } from "@/lib/two-step/policy";
+import { canTrustBrowser, parseMoneyFrom, requiresTwoStep, RESTRICTED_ROLE } from "@/lib/two-step/policy";
 import { sendEmail } from "@/lib/email";
+import { sendEmailCode } from "@/lib/two-step/email-code";
 import { executeDueReset } from "@/lib/two-step/reset";
-import { twoStepEnabled, verifyLoginCode } from "@/lib/two-step/service";
+import { isTrustedBrowser } from "@/lib/two-step/trusted";
+import { twoStepEnabled, twoStepMethodOf, verifyLoginCode } from "@/lib/two-step/service";
 import { SESSION_MAX_AGE_SECONDS, staffSessionExpired } from "@/lib/session-limits";
 
 // How long a login token may keep a role before it is re-checked against the database.
@@ -67,13 +69,25 @@ export const authOptions: NextAuthOptions = {
         if (twoStepAvailable()) { try { await executeDueReset(user.id, { mail: sendEmail }); } catch { /* never blocks sign-in */ } }
         let enabled = false;
         try { enabled = await twoStepEnabled(user.id); } catch (e) { if (twoStepAvailable()) throw e; }
-        let mfa = false;
+        let mfa = false; let method: "TOTP" | "EMAIL" = "TOTP";
         if (enabled) {
+          method = (await twoStepMethodOf(user.id)) ?? "TOTP";
           const typed = typeof (credentials as { code?: unknown }).code === "string" ? ((credentials as { code?: string }).code as string).trim() : "";
-          if (!typed) throw new Error("TwoStepRequired"); // not a failure: the page now asks for the code
-          const check = await verifyLoginCode(user.id, typed, { ip });
-          if (!check.ok) throw new Error(check.reason === "rate_limited" ? "TooManyAttempts" : check.reason === "unavailable" ? "TwoStepUnavailable" : "InvalidCode");
-          mfa = true;
+          // A browser this person chose to remember skips the second step for 30 days (MEMBERS ONLY: staff and money-handling roles are never offered it, so their cookie, if any, is ignored). It stops working once the
+          // password is changed or they sign out everywhere. Any problem here just means the code is asked for.
+          if (!typed && canTrustBrowser(user.role)) {
+            try { const since = Math.max(+(user.passwordChangedAt ?? 0), +(user.sessionsRevokedAt ?? 0)); if (await isTrustedBrowser(user.id, (req?.headers as Record<string, unknown> | undefined)?.cookie, { notBefore: since ? new Date(since) : null })) mfa = true; } catch { /* the code is asked for instead */ }
+          }
+          if (!mfa) {
+            if (!typed) {
+              // The email method: a fresh code is emailed now (never throws; asking too often is limited, and an earlier code may still be valid), then the page asks for it.
+              if (method === "EMAIL") { try { await sendEmailCode(user, { mail: sendEmail, ip }); } catch { /* the person can ask again */ } throw new Error("TwoStepEmail"); }
+              throw new Error("TwoStepRequired"); // not a failure: the page now asks for the code
+            }
+            const check = await verifyLoginCode(user.id, typed, { ip });
+            if (!check.ok) throw new Error(check.reason === "rate_limited" ? "TooManyAttempts" : check.reason === "unavailable" ? "TwoStepUnavailable" : "InvalidCode");
+            mfa = true;
+          }
         }
         // Passwords stored with an older, cheaper setting are upgraded now, while we hold the correct password. A failure here changes nothing: they are signed in with the old hash.
         if (needsRehash(user.passwordHash)) {
@@ -86,6 +100,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           role: user.role,
           mfa,
+          twoStepMethod: method,
         };
       },
     }),
@@ -99,7 +114,9 @@ export const authOptions: NextAuthOptions = {
         // When THIS sign-in happened (the token's own iat is reset on every refresh, so it can't be used for this).
         (token as any).signedInAt = Date.now();
         (token as any).mfa = (user as any).mfa === true;
-        if (requiresTwoStep((user as any).role, twoStepRule()) && (user as any).mfa !== true) setAsideRole(token, (user as any).role); // must set up two-step first
+        (token as any).twoStepMethod = (user as any).twoStepMethod === "EMAIL" ? "EMAIL" : "TOTP";
+        // Whoever must have two-step needs the AUTHENTICATOR APP: an emailed code does not meet the requirement (for example someone who chose it as a member and was later made staff).
+        if (requiresTwoStep((user as any).role, twoStepRule()) && ((user as any).mfa !== true || (token as any).twoStepMethod !== "TOTP")) setAsideRole(token, (user as any).role); // must set up two-step first
         return token;
       }
 
@@ -121,7 +138,7 @@ export const authOptions: NextAuthOptions = {
           token.role = fresh ? fresh.role : "VISITOR"; // a deleted account loses its access
           // Two-step: someone who must have it but has not set it up stays without privileges; the moment they have, their role comes back. A database error keeps the safe side.
           if (fresh && requiresTwoStep(fresh.role, twoStepRule())) {
-            let enabled = false; try { enabled = await twoStepEnabled(token.id as string); } catch { enabled = (token as any).mfa === true; }
+            let enabled = false; try { enabled = (await twoStepMethodOf(token.id as string)) === "TOTP"; } catch { enabled = (token as any).mfa === true && (token as any).twoStepMethod === "TOTP"; }
             if (enabled) { (token as any).mfa = true; (token as any).twoStepSetupRequired = false; delete (token as any).heldRole; } else setAsideRole(token, fresh.role);
           } else { (token as any).twoStepSetupRequired = false; delete (token as any).heldRole; }
           (token as any).roleCheckedAt = Date.now();
@@ -146,6 +163,7 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
         (session.user as any).twoStepSetupRequired = (token as any).twoStepSetupRequired === true;
+        (session.user as any).mfa = (token as any).mfa === true; // did THIS sign-in pass a second step? (needed before a browser may be remembered)
       }
       return session;
     },

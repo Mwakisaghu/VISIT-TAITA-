@@ -21,6 +21,7 @@ const warn = console.warn; console.warn = () => {};
 async function main() {
   const A = await import("@/lib/actions/two-step"); const T = await import("@/lib/two-step/totp"); const C = await import("@/lib/two-step/crypto"); const R = await import("@/lib/rate-limit"); const { resetTwoStep } = await import("../scripts/two-step-reset.mjs" as any);
   const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
+  const sub = (o: any, want: Record<string, unknown>) => !!o && Object.entries(want).every(([k, v]) => o[k] === v); // the fields this check is about (the state also carries what the page needs for email codes and remembered browsers)
   const PWD = "wide-sky-red-earth-lion"; let seq = 0; const mk = (role = "MEMBER") => { const n = ++seq; const u = { id: "u" + n, name: "Neema Mwadime", email: `n${n}@example.org`, role, passwordHash: bcrypt.hashSync(PWD, 4) }; users.set(u.id, u); return u; };
   const as = (u: any, sessionRole = u.role) => { session = { user: { id: u.id, role: sessionRole } }; };
   const everyCode = async () => [await A.startTwoStepSetup(), await A.confirmTwoStepSetup("123456"), await A.makeNewRecoveryCodes(PWD, "123456"), await A.turnOffTwoStep(PWD, "123456")];
@@ -28,7 +29,7 @@ async function main() {
   t("SIGNED OUT, NOTHING WORKS: every action answers 'not_signed_in' and the state is empty", out.every((r: any) => r.ok === false && r.code === "not_signed_in") && st === null);
   t("THE ACTIONS ACT ONLY ON THE PERSON SIGNED IN: none takes a person's id (so there is no way to point one at someone else); and the file only exports async functions and types", A.startTwoStepSetup.length === 0 && A.getTwoStepState.length === 0 && A.confirmTwoStepSetup.length === 1 && A.makeNewRecoveryCodes.length === 2 && A.turnOffTwoStep.length === 2 && /^"use server";/.test(fs.readFileSync("lib/actions/two-step.ts", "utf8").replace(/\r\n/g, "\n")) && fs.readFileSync("lib/actions/two-step.ts", "utf8").replace(/\r\n/g, "\n").split("\n").filter((l) => /^export /.test(l)).every((l) => /^export (async function|type)/.test(l)));
   const m = mk(); as(m); const s0 = await A.getTwoStepState();
-  t("THE STATE FOR A MEMBER: available, not on, not required, may be turned off", JSON.stringify(s0) === JSON.stringify({ available: true, enabled: false, recoveryLeft: 0, required: false, canTurnOff: true }));
+  t("THE STATE FOR A MEMBER: available, not on, not required, may be turned off", sub(s0, { available: true, enabled: false, recoveryLeft: 0, required: false, canTurnOff: true, method: null }));
   const staff = mk("ADMIN"); as(staff, "VISITOR"); const sS = await A.getTwoStepState();
   t("THE REAL ROLE DECIDES, NOT THE RESTRICTED SESSION'S: a staff member held at 'VISITOR' until they set it up is still told it is REQUIRED of them and cannot be turned off", sS!.required === true && sS!.canTurnOff === false && sS!.available === true);
   const saved = process.env.TWO_FACTOR_KEY; delete process.env.TWO_FACTOR_KEY; const sOff = await A.getTwoStepState(); const startOff = await A.startTwoStepSetup(); process.env.TWO_FACTOR_KEY = saved;
@@ -39,7 +40,7 @@ async function main() {
   t("A WRONG CONFIRMATION CODE IS REFUSED (and nothing turns on)", (await A.confirmTwoStepSetup("000000") as any).code === "wrong_code" && !rows.get(m.id).enabledAt);
   const conf: any = await A.confirmTwoStepSetup(T.totpAt(secret, now));
   t("THE RIGHT CODE TURNS IT ON, returns ten recovery codes, tells the OWNER by email (so they would know if it was not them), and writes an audit entry", conf.ok && conf.codes.length === 10 && sent.some((x) => x.to === m.email && /turned on/.test(x.subject) && /ON for your Visit Taita account/.test(x.text)) && audits.some((a) => a.action === "user.twostep_on" && a.targetUserId === m.id && a.actorId === m.id));
-  t("ONCE ON, STARTING OR CONFIRMING AGAIN IS REFUSED, and the state shows it with ten codes left", (await A.startTwoStepSetup() as any).code === "already_on" && (await A.confirmTwoStepSetup(T.totpAt(secret, now + 30000)) as any).code === "already_on" && JSON.stringify(await A.getTwoStepState()) === JSON.stringify({ available: true, enabled: true, recoveryLeft: 10, required: false, canTurnOff: true }));
+  t("ONCE ON, STARTING OR CONFIRMING AGAIN IS REFUSED, and the state shows it with ten codes left", (await A.startTwoStepSetup() as any).code === "already_on" && (await A.confirmTwoStepSetup(T.totpAt(secret, now + 30000)) as any).code === "already_on" && sub(await A.getTwoStepState(), { available: true, enabled: true, recoveryLeft: 10, required: false, canTurnOff: true, method: "TOTP" }));
   const none = mk(); as(none); const nn = await A.makeNewRecoveryCodes(PWD, "123456");
   t("NEW RECOVERY CODES NEED TWO-STEP TO BE ON", (nn as any).code === "not_on");
   as(m); const w1: any = await A.makeNewRecoveryCodes("wrong password", T.totpAt(secret, now + 60000)); const w2: any = await A.makeNewRecoveryCodes(PWD, "000000");
