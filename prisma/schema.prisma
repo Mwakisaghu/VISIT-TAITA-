@@ -50,6 +50,8 @@ model User {
   twoFactor         TwoFactor?
   recoveryCodes     RecoveryCode[]
   twoStepResets     TwoStepReset[]
+  emailCodes        EmailCode[]
+  trustedDevices    TrustedDevice[]
   accountTokens     AccountToken[]
   auditActions      AdminAuditLog[] @relation("AuditActor")
   uploads           UploadedImage[]
@@ -1791,6 +1793,7 @@ model TwoFactor {
   secretEnc     String
   enabledAt     DateTime?
   lastStep      Int?
+  method        String    @default("TOTP") // "TOTP" (an authenticator app) or "EMAIL" (a code sent to the person's address; members only)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -1819,6 +1822,33 @@ model TwoStepReset {
   cancelledBy      String?
   completedAt      DateTime?
   createdAt        DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// A 6-digit code emailed for the email method of two-step sign-in (to set it up, and at each sign-in). Only a keyed fingerprint is kept; each code lives 10 minutes, allows 5 tries, and works once.
+model EmailCode {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int       @default(0)
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// "Remember this browser for 30 days" (members only): a browser the person chose to trust. Only a fingerprint of the cookie's random value is kept.
+model TrustedDevice {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  lastUsedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
 
   @@index([userId])
 }

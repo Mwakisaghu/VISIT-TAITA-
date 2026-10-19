@@ -4,7 +4,7 @@ const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></
 Object.assign(globalThis, { FormData: w.FormData, HTMLInputElement: w.HTMLInputElement, HTMLFormElement: w.HTMLFormElement, Element: w.Element, self: w, window: w, document: w.document, HTMLElement: w.HTMLElement, Node: w.Node, Event: w.Event, KeyboardEvent: w.KeyboardEvent, MouseEvent: w.MouseEvent, ClipboardEvent: w.ClipboardEvent ?? w.Event });
 Object.defineProperty(globalThis, "navigator", { value: w.navigator, configurable: true, writable: true }); (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 w.matchMedia = w.matchMedia ?? (() => ({ matches: true, addEventListener() {}, removeEventListener() {} })); Object.defineProperty(globalThis, "matchMedia", { value: w.matchMedia, configurable: true });
-const pushes: string[] = []; let refreshes = 0; let search = ""; let signInReply: any = {}; let session: any = {}; const signInCalls: any[] = []; const resetCalls: any[] = []; let resetReply: any = { ok: true }; let hold: Promise<void> | null = null;
+let rememberCalls = 0, forgetCalls = 0; let rememberReply: any = { ok: true }; const pushes: string[] = []; let refreshes = 0; let search = ""; let signInReply: any = {}; let session: any = {}; const signInCalls: any[] = []; const resetCalls: any[] = []; let resetReply: any = { ok: true }; let hold: Promise<void> | null = null;
 const Module = require("module"); const origLoad = Module._load;
 Module._load = function (r: string, ...x: any[]) {
   if (r === "next/navigation") return { useRouter: () => ({ push: (u: string) => pushes.push(u), refresh: () => { refreshes++; } }), useSearchParams: () => new URLSearchParams(search), usePathname: () => "/login" };
@@ -12,6 +12,7 @@ Module._load = function (r: string, ...x: any[]) {
   if (r === "next/link") return { __esModule: true, default: ({ href, children, ...rest }: any) => React.createElement("a", { href, ...rest }, children) };
   if (r === "@/lib/actions/account-email") return { resetPassword: async (...a: any[]) => { resetCalls.push(a); return resetReply; } };
   if (r === "@/lib/actions/account") return { deleteMyAccount: async () => ({}) };
+  if (r === "@/lib/actions/two-step-trust") return { rememberThisBrowser: async () => { rememberCalls++; return rememberReply; }, forgetMyBrowsers: async () => { forgetCalls++; return { ok: true }; } };
   return origLoad.call(this, r, ...x);
 };
 const fetchCalls: any[] = []; let fetchReply: any = { ok: true, json: {} };

@@ -30,9 +30,17 @@ Signing in asks for the password and then a 6-digit code from an authenticator a
    It asks you to type the address again and the word RESET, removes their second step and recovery codes, signs them out everywhere, and writes an audit entry. Then tell them **by another way** (a phone call) that it was done.
 3. Keep at least **two super admins**, each with their recovery codes saved in a different place. The admin area shows a warning whenever there is fewer than two active ones.
 
+## For members: a code by email, and remembering a browser
+Both are **weaker than an authenticator app**, so they are offered only to ordinary accounts, never to staff or to roles that handle other people's money (not even before their requirement date).
+- **A code by email** (instead of an app): on the setup page a member with a verified address can choose "Use a code sent to my email instead". It proves they can read that address, then makes ten recovery codes like the app does. At each sign-in a fresh 6-digit code is emailed. A code works **once**, lives **10 minutes**, allows **5 tries** (the try is taken before the comparison, so parallel guesses cannot beat it), and only a keyed fingerprint is stored. Asking for codes is limited (3 in 15 minutes per person). The product says plainly that it is easier but weaker: anyone who can open the person's email can read the code (and could also reset the password).
+  - If someone on the email method is later made staff, they are **held with no privileges until they switch to the app** (the setup page shows a "Switch to an authenticator app" button): an emailed code does not meet the requirement.
+- **Remember this browser for 30 days:** a checkbox on the second step. A cookie called `taita-trusted-browser` (random value, only a fingerprint stored, `httpOnly`, `sameSite=lax`, `secure` in production) lets that browser skip the code. It ends after 30 days, or when the person changes their password, signs out everywhere, turns two-step off, has it reset, or chooses "Forget my browsers". A code that is typed is always checked: the cookie is only used when no code is given. The privacy policy (version 2026-10.4) and its guard test describe this cookie; adding another cookie without updating both makes that test fail.
+
 ## What a half-finished sign-in cannot do
 Staff who must set up two-step but have not yet get a session with no privileges. Two helpers that read the person's real role from the database (the user-management helper and the bookings helper, whose "admin" flag guards refunds) honour that themselves, because server actions are public endpoints that cannot rely on the admin gate alone. Tests pin both.
 
 ## Not built yet
-- Email codes as an alternative for members (never for staff).
-- "Remember this browser for 30 days" for members (it needs a cookie, so the privacy page and its guard test must change with it).
+- **Changing the key** (`TWO_FACTOR_KEY`) safely: replacing it makes every stored secret and recovery code unreadable. A proper rotation step (re-encrypt everything under a new key) does not exist, so keep the key and a safe copy of it, and never change it.
+- Switching between the app and the emailed code without turning two-step off first (a member does that today: turn off with proof, then set up the other).
+- A list of remembered browsers (today the person sees a count and can forget them all).
+- A person-to-person "someone is signing in from a new place" notice.

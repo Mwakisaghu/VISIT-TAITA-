@@ -6,6 +6,7 @@ Module._load = function (r: string, ...x: any[]) {
   if (r === "next/link") return { __esModule: true, default: ({ href, children, ...rest }: any) => React.createElement("a", { href, ...rest }, children) };
   if (r === "@/lib/actions/account-email") return { resetPassword: async () => ({ ok: true }) };
   if (r === "@/lib/actions/account") return { deleteMyAccount: async () => ({}) };
+  if (r === "@/lib/actions/two-step-trust") return { rememberThisBrowser: async () => ({ ok: true }), forgetMyBrowsers: async () => ({ ok: true }) };
   return origLoad.call(this, r, ...x);
 };
 import { renderToStaticMarkup } from "react-dom/server";

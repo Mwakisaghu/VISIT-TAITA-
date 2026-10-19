@@ -7,12 +7,14 @@ import { signIn, getSession } from "next-auth/react";
 import AuthShell from "@/components/auth/AuthShell";
 import CodeInput from "@/components/auth/CodeInput";
 import PasswordField, { INPUT } from "@/components/auth/PasswordField";
+import { rememberThisBrowser } from "@/lib/actions/two-step-trust";
 import { useI18n } from "@/lib/i18n/client";
 import { safeNext } from "@/lib/safe-next";
 import { SETUP_PATH } from "@/lib/two-step/policy";
 
 const ADMIN_ROLES = ["SUPER_ADMIN", "ADMIN", "EDITOR", "CONTENT_MANAGER"];
-type Step = "password" | "code" | "recovery";
+type Step = "password" | "code" | "email" | "recovery";
+const maskEmail = (e: string): string => { const [l = "", d = ""] = e.split("@"); return d ? `${l.slice(0, 1)}${"\u2022".repeat(Math.max(2, Math.min(6, l.length - 1)))}@${d}` : e; };
 const ERR = "mb-4 rounded-lg border-[1.5px] border-[#8E2A12] bg-[#F6DDD3] p-3 font-body text-[0.94rem] font-bold text-[#8E2A12]";
 const OK = "mb-4 rounded-lg border-[1.5px] border-canopy bg-canopy/10 p-3 font-body text-[0.94rem] font-bold text-canopy-deep";
 const BTN = "flex min-h-[54px] w-full items-center justify-center rounded-full bg-rust font-body text-base font-extrabold text-white hover:bg-rust-deep disabled:opacity-60";
@@ -30,6 +32,8 @@ function LoginForm() {
   const [step, setStep] = useState<Step>("password");
   const [code, setCode] = useState("");
   const [recovery, setRecovery] = useState("");
+  const [remember, setRemember] = useState(false);
+  const [fresh, setFresh] = useState(false); // a new emailed code was just asked for
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -59,8 +63,8 @@ function LoginForm() {
     const res = await signIn("credentials", { email, password, ...(withCode ? { code: withCode } : {}), redirect: false });
     setLoading(false);
 
-    if (res?.error === "TwoStepRequired") { // the password was right; now the second step
-      setCode(""); setRecovery(""); setStep("code");
+    if (res?.error === "TwoStepRequired" || res?.error === "TwoStepEmail") { // the password was right; now the second step (an app's code, or the code we just emailed)
+      setCode(""); setRecovery(""); setFresh(step === "email" && !withCode); setStep(res.error === "TwoStepEmail" ? "email" : "code");
       return;
     }
     if (res?.error) {
@@ -80,6 +84,7 @@ function LoginForm() {
       else if (step === "recovery") recoveryRef.current?.focus();
       return;
     }
+    if (withCode && remember) { try { await rememberThisBrowser(); } catch { /* the code is simply asked for next time */ } } // only for a sign-in that passed a second step; the server refuses it for staff
     await landed();
   }
 
@@ -87,24 +92,26 @@ function LoginForm() {
     e.preventDefault();
     if (loading) return;
     if (step === "password") return void attempt();
-    if (step === "code") { if (code.length < 6) { setError(tr("Type all 6 digits from your app.")); return; } return void attempt(code); }
+    if (step === "code" || step === "email") { if (code.length < 6) { setError(tr("Type all 6 digits from your app.")); return; } return void attempt(code); }
     if (!recovery.trim()) { setError(tr("Type one of your recovery codes.")); return; }
     void attempt(recovery.trim());
   }
-  const backToPassword = () => { setStep("password"); setCode(""); setRecovery(""); setError(""); };
+  const backToPassword = () => { setStep("password"); setCode(""); setRecovery(""); setError(""); setFresh(false); };
 
   if (step !== "password") {
     return (
       <AuthShell headline={tr("A second key for the door.")} sub={tr("Your password and a code from your phone: both, every time.")}>
         <p className="mb-2 font-body text-[0.78rem] font-extrabold uppercase tracking-[0.14em] text-rust-deep">{tr("Step 2 of 2")}</p>
-        <h1 className="font-display text-[clamp(1.9rem,4vw,2.5rem)] font-semibold leading-tight text-stone">{step === "code" ? tr("Check it's you") : tr("Use a recovery code")}</h1>
-        <p className="mb-6 mt-2 font-body text-stone/80">{step === "code" ? tr("Open your authenticator app and type the 6-digit code it shows for Visit Taita.") : tr("Type one of the recovery codes you saved when you turned on two-step sign-in. Each code works once.")}</p>
+        <h1 className="font-display text-[clamp(1.9rem,4vw,2.5rem)] font-semibold leading-tight text-stone">{step === "code" ? tr("Check it's you") : step === "email" ? tr("Check your email") : tr("Use a recovery code")}</h1>
+        <p className="mb-6 mt-2 font-body text-stone/80">{step === "code" ? tr("Open your authenticator app and type the 6-digit code it shows for Visit Taita.") : step === "email" ? tr("We sent a 6-digit code to {email}. It works once and expires in 10 minutes.", { email: maskEmail(email) }) : tr("Type one of the recovery codes you saved when you turned on two-step sign-in. Each code works once.")}</p>
+        {fresh && !error && <p role="status" className={OK}>{tr("A new code is on its way.")}</p>}
         {error && <p id="login-error" role="alert" className={ERR}>{error}</p>}
         <form onSubmit={handleSubmit}>
-          {step === "code" ? (
+          {step === "code" || step === "email" ? (
             <>
               <CodeInput id="code" label={tr("6-digit code")} value={code} onChange={setCode} onComplete={(c) => { if (!loading) void attempt(c); }} invalid={!!error} describedBy={error ? "login-error" : undefined} autoFocus />
-              <p className="mb-5 mt-2 font-body text-[0.86rem] text-stone/80">{tr("The code changes every 30 seconds. You can paste it.")}</p>
+              <p className="mb-4 mt-2 font-body text-[0.86rem] text-stone/80">{step === "email" ? tr("Check your spam folder if it has not arrived.") : tr("The code changes every 30 seconds. You can paste it.")}</p>
+              <label className="mb-5 flex items-start gap-3 font-body text-[0.94rem]"><input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="mt-0.5 h-6 w-6 flex-none accent-rust" /><span>{tr("Remember this browser for 30 days")} <span className="block text-[0.82rem] text-stone/80">{tr("Not available for staff accounts.")}</span></span></label>
             </>
           ) : (
             <div className="mb-5">
@@ -115,7 +122,8 @@ function LoginForm() {
           <button type="submit" disabled={loading} className={BTN}>{loading ? tr("Signing in…") : tr("Continue")}</button>
         </form>
         <p className="mt-6 font-body text-stone/80">
-          {step === "code" ? <button type="button" className={LINKB} onClick={() => { setStep("recovery"); setError(""); }}>{tr("Lost your phone? Use a recovery code")}</button> : <button type="button" className={LINKB} onClick={() => { setStep("code"); setError(""); }}>{tr("Use my authenticator app instead")}</button>}
+          {step === "email" && <><button type="button" disabled={loading} className={LINKB} onClick={() => { void attempt(); }}>{tr("Send a new code")}</button><br /></>}
+          {step === "code" ? <button type="button" className={LINKB} onClick={() => { setStep("recovery"); setError(""); }}>{tr("Lost your phone? Use a recovery code")}</button> : step === "email" ? <button type="button" className={LINKB} onClick={() => { setStep("recovery"); setError(""); }}>{tr("Can't open your email? Use a recovery code")}</button> : <button type="button" className={LINKB} onClick={() => { setStep("code"); setError(""); }}>{tr("Use my authenticator app instead")}</button>}
           <br />
           <button type="button" className={LINKB} onClick={backToPassword}>{"\u2190"} {tr("Back to sign in")}</button>
         </p>

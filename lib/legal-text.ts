@@ -33,6 +33,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
         "We collect only what each part of the site needs. Here is what, by what you are doing:",
         { list: [
           "**Your account:** your name, email address and a password. The password is stored only as a one-way hash, so we cannot read it. We use these to create your account and sign you in. We email you a link to verify your address and, if you ask, to reset your password.",
+          "**Two-step sign-in (only if you turn it on):** if you use an authenticator app, a secret that we keep only in encrypted form; if you choose a code sent by email, the fact that you chose it and the short-lived codes we email you (kept only as fingerprints, for 10 minutes). In both cases we keep fingerprints of your recovery codes and, if you choose to remember a browser, a fingerprint of the random value in its cookie. We use these only to check that it is you when you sign in. When two-step sign-in is turned on, off or reset for an account, we record who did it and when, in the administrative records.",
           "**The Taita Passport:** the places you check in at, when, and how (QR code, location, or marked by you), the points you earn, rewards and vouchers you claim, and badges. We use this to run the Passport and its rewards.",
           "**Enquiries about stays and experiences:** your name, email, phone number, message and any dates or party size. We share these with the host of that listing and with our team so they can reply to you. If you reached the listing from a mission or a Field Note, we also record which one, so hosts and sponsors can see what a mission led to.",
           "**Reviews:** your rating and text. They are shown publicly with your first name and last initial. A review can show as \"verified\" if you made a confirmed enquiry with that host.",
@@ -67,6 +68,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
         { list: [
           "**Signing in:** cookies that keep you signed in and protect the sign-in form. They end when you sign out or the session ends.",
           "**Your language:** if you choose Kiswahili, French or German, a cookie called taita-lang remembers your choice for one year. It holds only the language code. To offer you a language, your browser's list of preferred languages is checked on your own device; it is not sent to us.",
+          "**Remembering this browser (only if you choose it):** if you use two-step sign-in and tick \u201cRemember this browser for 30 days\u201d, a cookie called taita-trusted-browser lets that browser skip the second step for 30 days. It holds a random value that we keep only as a fingerprint, and it is sent only to this site. It ends when you choose \u201cForget my browsers\u201d in your settings, change your password, sign out everywhere or turn two-step sign-in off. It is never offered to staff accounts.",
           "**Saved in your browser, not sent to us:** your \"no thanks\" to a language offer (kept for about six months); the contents of your shopping cart; a draft of a day you are planning; and, for the Taita Guide, a note of when it was last shown or used so that it does not interrupt you again and again. You can clear all of this in your browser settings at any time.",
         ] },
         "To understand which stories and missions people read, we count page views per page per day, from your browser, without recording who you are. We use your internet address only briefly, in memory, to limit abuse (for example repeated form submissions); we do not store it in our database.",
@@ -107,6 +109,7 @@ export function privacySections(info: SiteInfo): LegalSection[] {
       body: [
         { list: [
           "**Your account and Passport:** until you delete your account.",
+          "**Two-step sign-in:** until you turn it off or delete your account. A remembered browser for 30 days at most. A code we email you for 10 minutes.",
           "**Enquiries, reviews and creator content:** while your account exists, and enquiries for as long as needed to deal with them and keep our records. You can ask us to remove them.",
           "**Shop orders:** we keep a record of each order and its payment, with your phone number and address removed if you delete your account, because we may need payment records for accounting and legal reasons.",
           "**Email delivery records:** as described above — message text is not kept after delivery.",
