@@ -51,6 +51,40 @@ export function twoStepChangedText(name: string, on: boolean): string {
   ].join("\n");
 }
 
+/** To the person whose two-step sign-in a super admin has asked to reset: what is happening, when, and a link to stop it. */
+export function twoStepResetRequestedText(name: string, requestedBy: string, whenText: string, cancelUrl: string): string {
+  return [
+    `Hi ${firstName(name)},`,
+    "",
+    `${requestedBy}, a super admin of Visit Taita, asked to RESET the two-step sign-in on your account. This happens when someone has lost their phone and their recovery codes.`,
+    "",
+    `Nothing has changed yet. It will take effect after ${whenText}, the next time you sign in.`,
+    "",
+    "If you did NOT expect this, stop it now and change your password:",
+    cancelUrl,
+    "",
+    "Visit Taita",
+  ].join("\n");
+}
+/** To the OTHER super admins: they are told, so a reset cannot happen quietly. */
+export function twoStepResetNoticeText(requestedBy: string, targetName: string, targetEmail: string, whenText: string): string {
+  return [
+    `${requestedBy} asked to reset the two-step sign-in of ${targetName} (${targetEmail}).`,
+    "",
+    `It takes effect after ${whenText}. ${targetName} was emailed a link to cancel it, and any super admin can cancel it too, under Users, on their page.`,
+    "",
+    "If you did not expect this, cancel it and tell the others.",
+    "",
+    "Visit Taita",
+  ].join("\n");
+}
+export function twoStepResetCancelledText(name: string, cancelledBy: string): string {
+  return [`Hi ${firstName(name)},`, "", `The request to reset two-step sign-in on this account was cancelled (${cancelledBy}). Nothing has changed.`, "", "Visit Taita"].join("\n");
+}
+export function twoStepResetDoneText(name: string): string {
+  return [`Hi ${firstName(name)},`, "", "The two-step sign-in on your Visit Taita account was just reset, as a super admin asked, and you have been signed out everywhere.", "", "If you did not expect this, change your password and contact us straight away. If your role requires two-step sign-in, you will be asked to set it up again.", "", "Visit Taita"].join("\n");
+}
+
 function firstName(name: string): string {
   return String(name ?? "").trim().split(/\s+/)[0] || "there";
 }
