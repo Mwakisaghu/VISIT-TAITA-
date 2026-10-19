@@ -1,5 +1,6 @@
 "use client";
 
+import PasswordField from "@/components/auth/PasswordField";
 import { useI18n } from "@/lib/i18n/client";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
@@ -43,18 +44,7 @@ export default function DeleteAccountForm() {
 
   return (
     <form onSubmit={submit} className="flex max-w-md flex-col gap-4">
-      <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/80">{tr("Enter your password to confirm")}</span>
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-          required
-          className="input"
-        />
-      </label>
+      <PasswordField id="delete-password" label={tr("Enter your password to confirm")} value={password} onChange={setPassword} autoComplete="current-password" />
       <label className="flex items-start gap-3 font-body text-sm text-stone/80">
         <input type="checkbox" checked={understood} onChange={(e) => setUnderstood(e.target.checked)} className="mt-1" />
         <span>{tr("I understand this is permanent and can't be undone.")}</span>

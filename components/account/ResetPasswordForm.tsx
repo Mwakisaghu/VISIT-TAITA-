@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import PassphraseSuggest from "@/components/auth/PassphraseSuggest";
+import PasswordChecklist from "@/components/auth/PasswordChecklist";
+import PasswordField from "@/components/auth/PasswordField";
 import { resetPassword } from "@/lib/actions/account-email";
+import { useI18n } from "@/lib/i18n/client";
 import { checkPassword } from "@/lib/password-policy";
+import { passwordProblemText } from "@/lib/password-policy-text";
 
 export default function ResetPasswordForm({ token }: { token: string }) {
+  const { tr, lp } = useI18n();
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
@@ -16,15 +21,14 @@ export default function ResetPasswordForm({ token }: { token: string }) {
     e.preventDefault();
     setError("");
     const strength = checkPassword(password);
-    if (!strength.ok) return setError(strength.message);
-    if (password !== confirm) return setError("The two passwords don't match.");
+    if (!strength.ok) return setError(passwordProblemText(strength, tr));
     setBusy(true);
     try {
       const res = await resetPassword(token, password);
       if (res.ok) setDone(true);
-      else setError(res.error);
+      else setError(res.reason ? passwordProblemText({ ok: false, reason: res.reason, detail: res.detail, message: res.error }, tr) : res.error);
     } catch {
-      setError("Something went wrong — please try again.");
+      setError(tr("Something went wrong \u2014 please try again."));
     } finally {
       setBusy(false);
     }
@@ -32,31 +36,21 @@ export default function ResetPasswordForm({ token }: { token: string }) {
 
   if (done) {
     return (
-      <div role="status" className="flex flex-col gap-3">
-        <p className="font-body text-lg text-stone/80">Your password has been changed, and you&apos;ve been signed out everywhere else.</p>
-        <Link href="/login?reset=1" className="focus-ring w-fit rounded-full bg-rust px-6 py-2.5 font-body text-sm text-parchment hover:bg-rust-deep">
-          Sign in
-        </Link>
+      <div role="status" className="rounded-lg border-[1.5px] border-canopy bg-canopy/10 p-5 font-body">
+        <p className="font-bold text-canopy-deep">{tr("Your password has been changed, and you've been signed out everywhere else.")}</p>
+        <Link href={lp("/login?reset=1")} className="mt-3 inline-flex min-h-[44px] items-center font-bold text-rust-deep underline underline-offset-4">{tr("Sign in")}</Link>
       </div>
     );
   }
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4">
-      <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/80">New password</span>
-        <input type="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} maxLength={72} autoComplete="new-password" className="input" />
-      </label>
-      <label className="flex flex-col gap-1">
-        <span className="font-body text-sm text-stone/80">Type it again</span>
-        <input type="password" name="confirm" value={confirm} onChange={(e) => setConfirm(e.target.value)} required autoComplete="new-password" className="input" />
-      </label>
-      {error && (
-        <p role="alert" className="font-body text-sm text-rust">
-          {error}
-        </p>
-      )}
-      <button type="submit" disabled={busy} className="focus-ring w-fit rounded-full bg-rust px-8 py-3 font-body text-sm text-parchment hover:bg-rust-deep disabled:opacity-60">
-        {busy ? "Saving…" : "Set new password"}
+    <form onSubmit={submit} className="max-w-[440px]">
+      <PasswordField id="new-password" label={tr("New password")} value={password} onChange={setPassword} autoComplete="new-password" describedBy="new-password-checks">
+        <PasswordChecklist id="new-password-checks" password={password} />
+        <PassphraseSuggest id="reset-passphrase" onUse={setPassword} />
+      </PasswordField>
+      {error && <p role="alert" className="mb-4 rounded-lg border-[1.5px] border-[#8E2A12] bg-[#F6DDD3] p-3 font-body text-[0.94rem] font-bold text-[#8E2A12]">{error}</p>}
+      <button type="submit" disabled={busy} className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-rust font-body text-base font-extrabold text-white hover:bg-rust-deep disabled:opacity-60">
+        {busy ? tr("Saving\u2026") : tr("Set new password")}
       </button>
     </form>
   );

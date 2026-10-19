@@ -1,6 +1,6 @@
 "use server";
 
-import bcrypt from "bcryptjs";
+import { verifyPassword } from "@/lib/password";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { getDeletionBlockers } from "@/lib/account-data";
@@ -48,7 +48,7 @@ export async function deleteMyAccount(password: string): Promise<AccountResult> 
   });
   if (!user) return { error: "This account no longer exists." };
 
-  if (typeof password !== "string" || password.length === 0 || !(await bcrypt.compare(password, user.passwordHash))) {
+  if (typeof password !== "string" || password.length === 0 || !(await verifyPassword(password, user.passwordHash))) {
     return { error: "That password isn't right." };
   }
 

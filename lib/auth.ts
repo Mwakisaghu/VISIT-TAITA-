@@ -1,9 +1,8 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 import { clearLoginFailures, clientIpFrom, isLoginBlocked, recordLoginFailure } from "@/lib/login-throttle";
 import { prisma } from "@/lib/prisma";
-import { hashPassword, needsRehash } from "@/lib/password";
+import { hashPassword, needsRehash, verifyPassword } from "@/lib/password";
 import { SESSION_MAX_AGE_SECONDS, staffSessionExpired } from "@/lib/session-limits";
 
 // How long a login token may keep a role before it is re-checked against the database.
@@ -41,7 +40,7 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({ where: { email } });
 
         // Always compare against SOMETHING, so an unknown email takes as long to reject as a wrong password.
-        const valid = await bcrypt.compare(credentials.password, user ? user.passwordHash : await getDummyHash());
+        const valid = await verifyPassword(credentials.password, user ? user.passwordHash : await getDummyHash());
         if (!user || !valid) {
           await recordLoginFailure(email, ip);
           return null;

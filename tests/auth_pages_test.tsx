@@ -1,0 +1,50 @@
+import React from "react"; (globalThis as any).React = React; import fs from "fs"; import path from "path";
+const Module = require("module"); const origLoad = Module._load; let search = ""; 
+Module._load = function (r: string, ...x: any[]) {
+  if (r === "next/navigation") return { useRouter: () => ({ push() {}, refresh() {} }), useSearchParams: () => new URLSearchParams(search), usePathname: () => "/login" };
+  if (r === "next-auth/react") return { signIn: async () => ({}), getSession: async () => ({}), signOut: async () => ({}) };
+  if (r === "next/link") return { __esModule: true, default: ({ href, children, ...rest }: any) => React.createElement("a", { href, ...rest }, children) };
+  if (r === "@/lib/actions/account-email") return { resetPassword: async () => ({ ok: true }) };
+  if (r === "@/lib/actions/account") return { deleteMyAccount: async () => ({}) };
+  return origLoad.call(this, r, ...x);
+};
+import { renderToStaticMarkup } from "react-dom/server";
+async function main() {
+  const { LocaleProvider } = await import("@/lib/i18n/client"); const { trFor } = await import("@/lib/i18n/translate");
+  const Login = (await import("@/app/login/page")).default as any; const Register = (await import("@/app/register/page")).default as any; const Reset = (await import("@/components/account/ResetPasswordForm")).default as any; const Del = (await import("@/components/account/DeleteAccountForm")).default as any;
+  const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
+  const R = (el: any, loc = "en") => renderToStaticMarkup(<LocaleProvider locale={loc as any}>{el}</LocaleProvider>).replace(/<!-- -->/g, "");
+  const tag = (h: string, id: string) => (h.match(new RegExp(`<input[^>]*\\bid="${id}"[^>]*>`)) ?? [""])[0]; const text = (h: string) => h.replace(/<svg[\s\S]*?<\/svg>/g, " ").replace(/<[^>]*>/g, " ").replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/\s+/g, " ");
+  const L = R(<Login />), G = R(<Register />);
+  const si = { em: tag(L, "email"), pw: tag(L, "password") };
+  t("SIGN-IN FIELDS TELL BROWSERS WHAT THEY ARE: the email is 'username' (type email, email keyboard, no auto-capital), the password is 'current-password' (so a saved password is offered and no new-password prompt appears), neither has a length cap, and the password has no Safari 'password rules'", /type="email"/.test(si.em) && /autoComplete="username"|autocomplete="username"/i.test(si.em) && /inputMode="email"|inputmode="email"/i.test(si.em) && /autoCapitalize="none"|autocapitalize="none"/i.test(si.em) && /type="password"/.test(si.pw) && /autocomplete="current-password"/i.test(si.pw) && !/maxlength/i.test(si.pw + si.em) && !/passwordrules/i.test(si.pw));
+  const rg = { name: tag(G, "name"), em: tag(G, "email"), pw: tag(G, "password") };
+  t("SIGN-UP FIELDS ARE WHAT BROWSERS' STRONG-PASSWORD SUGGESTION NEEDS: name ('name'), email ('username'), password ('new-password') with Safari's rules (min 10, max 128), no length cap that would clip a generated or pasted password, and exactly ONE password box (no 'type it again')", /autocomplete="name"/i.test(rg.name) && /autocomplete="username"/i.test(rg.em) && /autocomplete="new-password"/i.test(rg.pw) && /passwordrules="minlength: 10; maxlength: 128;"/i.test(rg.pw) && !/maxlength=/i.test(rg.pw) && (G.match(/type="password"/g) ?? []).length === 1 && !/type it again|confirm (your )?password|retype/i.test(text(G)));
+  const eyeOf = (h: string) => (h.match(/<button[^>]*aria-controls="password"[^>]*>/) ?? [""])[0];
+  t("THE EYE IS A REAL BUTTON on both pages: closed by default (aria-pressed false), named 'Show password', pointing at its field, 48 px, not a link or a div", [eyeOf(L), eyeOf(G)].every((e) => /type="button"/.test(e) && /aria-pressed="false"/.test(e) && /aria-label="Show password"/.test(e) && /h-12 w-12/.test(e)));
+  const checks = (G.match(/<ul id="password-checks"[\s\S]*?<\/ul>/) ?? [""])[0];
+  t("THE LIVE CHECKLIST: four lines, none ticked for an empty box, named for screen readers, and tied to the field (aria-describedby) so they are read when it is focused", (checks.match(/<li /g) ?? []).length === 4 && !/data-ok="true"/.test(checks) && /aria-label="Password checks"/.test(checks) && /aria-describedby="password-checks password-tip"/.test(rg.pw) && /At least 10 characters/.test(checks));
+  t("THE CONSENT SENTENCE keeps both links (Terms of Use, Privacy Policy), each opening in a new tab, inside ONE sentence that is required to tick", /<a [^>]*href="\/terms"[^>]*target="_blank"[^>]*>Terms of Use<\/a>/.test(G) && /<a [^>]*href="\/privacy"[^>]*target="_blank"[^>]*>Privacy Policy<\/a>/.test(G) && /I'm 18 or over, I agree to the[\s\S]*Terms of Use[\s\S]*and I've read the[\s\S]*Privacy Policy/.test(G.replace(/&#x27;/g, "'")) && /type="checkbox"[^>]*required|required[^>]*type="checkbox"/.test(G));
+  const idsOk = (h: string) => { const ids = [...h.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]); const heads = [...h.matchAll(/<h([1-6])\b/g)].map((m) => Number(m[1])); const labels = [...h.matchAll(/<label[^>]*for="([^"]+)"|<label[^>]*htmlFor="([^"]+)"/g)].map((m) => m[1] || m[2]); return new Set(ids).size === ids.length && heads.length === 1 && heads[0] === 1 && labels.every((l) => ids.includes(l)); };
+  t("STRUCTURE: one h1, unique ids, every label points at a real field, on both pages (in four languages)", (["en", "sw", "fr", "de"] as const).every((l) => idsOk(R(<Login />, l)) && idsOk(R(<Register />, l))));
+  const must = ["Welcome back", "Password", "Forgot your password?", "Create one", "No Passport yet?", "Start your Passport", "Create my Passport", "Show password", "Suggest a passphrase", "Already have one?", "Not a common password", "Your stamps are waiting."].filter((p) => (["sw", "fr", "de"] as const).every((l) => trFor(l, p) !== p));
+  const leaks = (["sw", "fr", "de"] as const).flatMap((l) => { const both = text(R(<Login />, l)) + " " + text(R(<Register />, l)); return must.filter((p) => both.includes(p)).map((p) => `${l}:${p}`); });
+  t("NO ENGLISH LEFT on either page in Kiswahili, French or German (checked on " + must.length + " interface phrases)" + (leaks.length ? " — LEAKED: " + leaks.slice(0, 4).join(", ") : ""), must.length >= 10 && leaks.length === 0);
+  const hrefs = (h: string) => [...h.matchAll(/\bhref="(\/[^"]*)"/g)].map((m) => m[1]); const wrong = (["sw", "fr", "de"] as const).flatMap((l) => [...hrefs(R(<Login />, l)), ...hrefs(R(<Register />, l))].filter((u) => !u.startsWith("/" + l + "/")));
+  t("LINKS STAY IN THE PERSON'S LANGUAGE (forgot password, create one, sign in, terms, privacy)" + (wrong.length ? " — e.g. " + wrong[0] : ""), wrong.length === 0 && hrefs(R(<Login />, "sw")).includes("/sw/forgot-password") && hrefs(R(<Register />, "fr")).includes("/fr/terms"));
+  search = "next=%2Fevents%2Fbook"; const Ln = R(<Login />), Gn = R(<Register />); search = "";
+  t("THE 'NEXT' PAGE SURVIVES BETWEEN SIGN-IN AND SIGN-UP (the way back after signing in is not lost)", /href="\/register\?next=%2Fevents%2Fbook"/.test(Ln) && /href="\/login\?next=%2Fevents%2Fbook"/.test(Gn));
+  search = "reset=1"; const Lr = R(<Login />); search = "signedout=1"; const Ls = R(<Login />); search = "";
+  t("THE NOTICES ARE KEPT: after a password reset ('Your password has been changed…') and after signing out everywhere, each as a status message", /role="status"[^>]*>Your password has been changed\. Sign in with the new one\./.test(Lr) && /role="status"[^>]*>You have been signed out of every device\./.test(Ls) && !/role="status"[^>]*>Your password has been changed/.test(L));
+  const rs = R(<Reset token="abc" />), del = R(<Del />);
+  t("THE RESET FORM: one password box ('new-password', no 72-character cap that silently cut a long password, no 'type it again'), with the eye, checklist and passphrase suggestion; the old 'at least 8' hint is gone", (rs.match(/type="password"/g) ?? []).length === 1 && /autocomplete="new-password"/i.test(tag(rs, "new-password")) && !/\smaxlength=/i.test(tag(rs, "new-password")) && !/type it again|confirm (your |the )?password|retype/i.test(text(rs)) && /aria-controls="new-password"/.test(rs) && /id="new-password-checks"/.test(rs) && /Suggest a passphrase/.test(rs) && !/minLength=|minlength="8"/i.test(rs));
+  t("THE DELETE FORM'S PASSWORD BOX has the eye and 'current-password' too", /aria-controls="delete-password"/.test(del) && /autocomplete="current-password"/i.test(tag(del, "delete-password")) && !/\smaxlength=/i.test(tag(del, "delete-password")));
+  const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (["node_modules", ".next", ".git"].includes(e.name) ? [] : walk(path.join(d, e.name))) : /\.tsx$/.test(e.name) ? [path.join(d, e.name)] : []);
+  const raw = ["app/login/page.tsx", "app/register/page.tsx", "components/account/ResetPasswordForm.tsx", "components/account/DeleteAccountForm.tsx"].filter((f) => /type="password"/.test(fs.readFileSync(f, "utf8")));
+  t("EVERY SIGN-IN, SIGN-UP, RESET AND DELETE PASSWORD BOX GOES THROUGH THE ONE PASSWORD FIELD (no page makes its own, so none can lose the eye, the hints or the no-cap rule)" + (raw.length ? " — raw: " + raw.join(", ") : ""), raw.length === 0 && ["app/login/page.tsx", "app/register/page.tsx", "components/account/ResetPasswordForm.tsx", "components/account/DeleteAccountForm.tsx"].every((f) => /PasswordField/.test(fs.readFileSync(f, "utf8"))));
+  void walk;
+  t("NO RAW HTML ANYWHERE in the new components", !walk("components/auth").some((f) => /dangerouslySetInnerHTML/.test(fs.readFileSync(f, "utf8"))));
+  let nbad = 0; for (const [nm, ok2] of res) { console.log((ok2 ? "PASS " : "FAIL ") + nm); if (!ok2) nbad++; }
+  console.log(nbad ? `\n${nbad} FAILED` : `\nALL ${res.length} SIGN-IN PAGE CHECKS PASSED`); process.exit(nbad ? 1 : 0);
+}
+main().catch((e) => { console.error("ERROR:", e); process.exit(2); });
