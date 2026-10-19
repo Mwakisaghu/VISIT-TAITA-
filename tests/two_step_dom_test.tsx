@@ -4,7 +4,7 @@ const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></
 Object.assign(globalThis, { FormData: w.FormData, HTMLInputElement: w.HTMLInputElement, HTMLFormElement: w.HTMLFormElement, Element: w.Element, self: w, window: w, document: w.document, HTMLElement: w.HTMLElement, Node: w.Node, Event: w.Event, KeyboardEvent: w.KeyboardEvent, MouseEvent: w.MouseEvent, ClipboardEvent: w.ClipboardEvent ?? w.Event });
 Object.defineProperty(globalThis, "navigator", { value: w.navigator, configurable: true, writable: true }); (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 w.matchMedia = w.matchMedia ?? (() => ({ matches: true, addEventListener() {}, removeEventListener() {} })); Object.defineProperty(globalThis, "matchMedia", { value: w.matchMedia, configurable: true });
-let sessionCalls = 0; const ts: any = { start: [], confirm: [], renew: [], off: [], reply: {} }; const pushes: string[] = []; let refreshes = 0; let search = ""; let signInReply: any = {}; let session: any = {}; const signInCalls: any[] = []; const resetCalls: any[] = []; let resetReply: any = { ok: true }; let hold: Promise<void> | null = null;
+let sessionCalls = 0, rememberCalls = 0, forgetCalls = 0; let rememberReply: any = { ok: true }; const ts: any = { start: [], confirm: [], renew: [], off: [], emailStart: [], emailConfirm: [], emailMe: [], reply: {} }; const pushes: string[] = []; let refreshes = 0; let search = ""; let signInReply: any = {}; let session: any = {}; const signInCalls: any[] = []; const resetCalls: any[] = []; let resetReply: any = { ok: true }; let hold: Promise<void> | null = null;
 const Module = require("module"); const origLoad = Module._load;
 Module._load = function (r: string, ...x: any[]) {
   if (r === "next/navigation") return { useRouter: () => ({ push: (u: string) => pushes.push(u), refresh: () => { refreshes++; } }), useSearchParams: () => new URLSearchParams(search), usePathname: () => "/login" };
@@ -12,7 +12,8 @@ Module._load = function (r: string, ...x: any[]) {
   if (r === "next/link") return { __esModule: true, default: ({ href, children, ...rest }: any) => React.createElement("a", { href, ...rest }, children) };
   if (r === "@/lib/actions/account-email") return { resetPassword: async (...a: any[]) => { resetCalls.push(a); return resetReply; } };
   if (r === "@/lib/actions/account") return { deleteMyAccount: async () => ({}) };
-  if (r === "@/lib/actions/two-step") return { startTwoStepSetup: async (...a: any[]) => { ts.start.push(a); return ts.reply.start; }, confirmTwoStepSetup: async (...a: any[]) => { ts.confirm.push(a); if (hold) await hold; return ts.reply.confirm; }, makeNewRecoveryCodes: async (...a: any[]) => { ts.renew.push(a); return ts.reply.renew; }, turnOffTwoStep: async (...a: any[]) => { ts.off.push(a); return ts.reply.off; } };
+  if (r === "@/lib/actions/two-step-trust") return { rememberThisBrowser: async () => { rememberCalls++; return rememberReply; }, forgetMyBrowsers: async () => { forgetCalls++; return { ok: true }; } };
+  if (r === "@/lib/actions/two-step") return { startEmailSetup: async (...a: any[]) => { ts.emailStart.push(a); return ts.reply.emailStart; }, confirmEmailTwoStepSetup: async (...a: any[]) => { ts.emailConfirm.push(a); return ts.reply.emailConfirm; }, emailMeACode: async (...a: any[]) => { ts.emailMe.push(a); return ts.reply.emailMe; }, startTwoStepSetup: async (...a: any[]) => { ts.start.push(a); return ts.reply.start; }, confirmTwoStepSetup: async (...a: any[]) => { ts.confirm.push(a); if (hold) await hold; return ts.reply.confirm; }, makeNewRecoveryCodes: async (...a: any[]) => { ts.renew.push(a); return ts.reply.renew; }, turnOffTwoStep: async (...a: any[]) => { ts.off.push(a); return ts.reply.off; } };
   return origLoad.call(this, r, ...x);
 };
 const fetchCalls: any[] = []; let fetchReply: any = { ok: true, json: {} };
@@ -33,7 +34,7 @@ async function main() {
   const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
   const P = (el: any, loc = "en") => mount(<LocaleProvider locale={loc as any}>{el}</LocaleProvider>);
   const wait = async (cond: () => boolean, ms = 2500) => { const t0 = Date.now(); while (!cond() && Date.now() - t0 < ms) await new Promise((r) => realST(r, 15)); await flush(); };
-  const rs = () => { reset(); ts.start.length = ts.confirm.length = ts.renew.length = ts.off.length = 0; ts.reply = {}; };
+  const rs = () => { reset(); ts.start.length = ts.confirm.length = ts.renew.length = ts.off.length = ts.emailStart.length = ts.emailConfirm.length = ts.emailMe.length = 0; ts.reply = {}; rememberCalls = forgetCalls = 0; rememberReply = { ok: true }; };
   // ===== the code box =====
   let done: string[] = []; function Host() { const [v, setV] = React.useState(""); return <Code id="c" label="6-digit code" value={v} onChange={setV} onComplete={(c: string) => done.push(c)} />; }
   await P(<Host />); const inp = () => q("#c"); const slots = () => qa("[aria-hidden=true] span").map((s: any) => s.textContent).join("|");

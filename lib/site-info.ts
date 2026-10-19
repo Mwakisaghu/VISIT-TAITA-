@@ -2,7 +2,7 @@
 // ever guessed or hard-coded: a missing value shows up on the page as "[to be completed]" until you set it.
 
 /** Bump when the Privacy Policy or Terms change materially. Stored with each account's acceptance. */
-export const LEGAL_VERSION = "2026-10.3";
+export const LEGAL_VERSION = "2026-10.4";
 
 export const TO_COMPLETE = "[to be completed]";
 
