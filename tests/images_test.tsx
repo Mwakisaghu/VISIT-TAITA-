@@ -32,7 +32,7 @@ async function main() {
 
   // ===== source scans =====
   const walk = (d: string): string[] => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? (e.name === "node_modules" || e.name === ".next" ? [] : walk(path.join(d, e.name))) : /\.tsx?$/.test(e.name) ? [path.join(d, e.name)] : []));
-  const files = [...walk("app"), ...walk("components"), ...walk("lib")]; const src = (f: string) => fs.readFileSync(f, "utf8"); const isClient = (s: string) => /^\s*(\/\/.*\n|\/\*[\s\S]*?\*\/\s*)*["']use client["']/.test(s);
+  const files = [...walk("app"), ...walk("components"), ...walk("lib")].map((f) => f.replace(/\\/g, "/")); /* forward slashes on every system: Windows paths use backslashes */ const src = (f: string) => fs.readFileSync(f, "utf8"); const isClient = (s: string) => /^\s*(\/\/.*\r?\n|\/\*[\s\S]*?\*\/\s*)*["']use client["']/.test(s);
   const withImage = files.filter((f) => /<Image\b/.test(src(f))); const bare: string[] = []; const clientHeavy: string[] = [];
   for (const f of withImage) { const s = src(f); const els = s.match(/<Image\b[\s\S]*?\/>/g) ?? []; for (const el of els) if (/(?<![\w=])unoptimized(?![\w=])/.test(el)) { if (isClient(s)) clientHeavy.push(f); else bare.push(f); } }
   t(`NO SERVER-RENDERED PICTURE IS STILL FORCED UNOPTIMISED (${withImage.length} files use <Image>; bare 'unoptimized' left on a server component: ${bare.length ? bare.join(", ") : "none"})`, bare.length === 0);
