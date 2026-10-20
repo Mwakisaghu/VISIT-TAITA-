@@ -13,7 +13,8 @@ const root = process.cwd(); const dir = path.join(root, "tests");
 const args = process.argv.slice(2); const j = args.indexOf("--jobs");
 const jobs = Math.max(1, j >= 0 ? Number(args[j + 1]) || 1 : Math.min(4, os.cpus().length));
 const filters = args.filter((a, i) => !a.startsWith("--") && !(j >= 0 && i === j + 1));
-const TIMEOUT_MS = 180_000; const tsx = path.join(root, "node_modules", "tsx", "dist", "cli.mjs");
+// A test is stopped after 3 minutes. On a slow computer: TEST_TIMEOUT_MS=600000 node scripts/run-tests.mjs
+const TIMEOUT_MS = Number(process.env.TEST_TIMEOUT_MS) > 0 ? Number(process.env.TEST_TIMEOUT_MS) : 180_000; const tsx = path.join(root, "node_modules", "tsx", "dist", "cli.mjs");
 
 if (!fs.existsSync(dir)) { console.error("ERROR: there is no tests/ folder here. Run this from the repository root."); process.exit(1); }
 if (!fs.existsSync(tsx)) { console.error("ERROR: dependencies are not installed. Run: npm ci"); process.exit(1); }
