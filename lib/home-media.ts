@@ -11,9 +11,9 @@ const clean = (v: string | undefined): string | null => {
 
 export const DEFAULT_HERO_IMAGE = "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=2000";
 
-export type HomeMedia = { heroImage: string; heroVideo: string | null; storyUrl: string | null; closingImage: string };
+export type HomeMedia = { heroImage: string; heroVideo: string | null; storyUrl: string | null };
 
 export function homeMedia(env: Record<string, string | undefined> = process.env): HomeMedia {
   const heroImage = clean(env.HOME_HERO_IMAGE) ?? DEFAULT_HERO_IMAGE;
-  return { heroImage, heroVideo: clean(env.HOME_HERO_VIDEO), storyUrl: clean(env.HOME_STORY_URL), closingImage: clean(env.HOME_CLOSING_IMAGE) ?? heroImage };
+  return { heroImage, heroVideo: clean(env.HOME_HERO_VIDEO), storyUrl: clean(env.HOME_STORY_URL) };
 }
