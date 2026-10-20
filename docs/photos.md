@@ -25,4 +25,4 @@ Keep a list (a spreadsheet is enough) with one row per picture: where it is used
 - Landscape, at least 1,600 pixels wide, and compressed to well under 500 KB. The site makes smaller versions for phones, but a huge file still slows the first load.
 - Add what the picture shows in the description (alt text), and say where it is only if it really is there.
 - Host them on your own storage or domain (set the storage host in the site settings), not on another site.
-- The home page picture is set with `HOME_HERO_IMAGE`, and the closing picture with `HOME_CLOSING_IMAGE`. Until you set them, the home page uses a stock photograph and says only that it shows early light over a ridge.
+- The home page picture is set with `HOME_HERO_IMAGE` (and an optional film with `HOME_HERO_VIDEO`). Until you set it, the home page uses the licensed photograph it already had.

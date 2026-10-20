@@ -18,7 +18,7 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
         <Reveal innerClassName="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-6">
             <p className={`${eyebrow} text-rust-deep`}>{tr("Taita stories")}</p>
-            <h2 id="stories-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>{tr("Real people.")}<br />{tr("Extraordinary stories.")}</h2>
+            <h2 id="stories-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>{tr("Told by the people")}<br />{tr("who live here.")}</h2>
           </div>
           <div className="lg:col-span-6 lg:pl-10">
             <p className="font-display text-2xl italic leading-snug text-stone/80 md:text-3xl">{tr("“Before the tourists arrive, the hills already have a story.”")}</p>
@@ -65,7 +65,7 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
             </div>
           </Reveal>
         )}
-        {stories.some((s) => s.isDemo) && <DemoNotice>{tr("replace with verified stories before launch.")}</DemoNotice>}
+        {stories.some((s) => s.isDemo) && <div className="mt-8"><DemoNotice>{tr("these stories are placeholders while verified ones are written.")}</DemoNotice></div>}
       </div>
     </section>
   );
