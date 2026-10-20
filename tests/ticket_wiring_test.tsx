@@ -21,12 +21,26 @@ async function main() {
 
   // ===== the repo check notices a name used twice (the mistake that happened while building this) =====
   const chk = (dir: string) => spawnSync("node", ["scripts/check-repo.mjs", "--root", dir], { cwd: process.cwd(), encoding: "utf8" });
-  const copy = (): string => { const d = path.join(require("os").tmpdir(), `dup${process.pid}_${Math.random().toString(36).slice(2)}`); fs.rmSync(d, { recursive: true, force: true }); spawnSync("git", ["clone", "-q", ".", d], { cwd: process.cwd() }); for (const f of ["prisma/schema.prisma", "scripts/check-repo.mjs", ".github/workflows/ci.yml"]) fs.copyFileSync(f, path.join(d, f)); fs.cpSync("prisma/migrations", path.join(d, "prisma/migrations"), { recursive: true }); spawnSync("git", ["add", "-A"], { cwd: d }); return d; };
+  // ONE scratch clone, reused. Cloning the whole repository for every case was the slowest thing in the suite on Windows (hundreds of small files each time, four times over, and the copies were never deleted), so the
+  // clone is made once, reset to the committed state between cases, and removed when the test ends.
+  let scratch: string | null = null;
+  const copy = (): string => {
+    if (!scratch) {
+      const dir = path.join(require("os").tmpdir(), `dup${process.pid}_${Math.random().toString(36).slice(2)}`); fs.rmSync(dir, { recursive: true, force: true });
+      spawnSync("git", ["clone", "-q", ".", dir], { cwd: process.cwd() }); scratch = dir; process.on("exit", () => { try { fs.rmSync(dir, { recursive: true, force: true }); } catch { /* best effort */ } });
+    } else { spawnSync("git", ["reset", "-q", "--hard"], { cwd: scratch }); spawnSync("git", ["clean", "-fdq"], { cwd: scratch }); } // every case starts from the committed state, with nothing left over from the last
+    const d = scratch;
+    for (const f of ["prisma/schema.prisma", "scripts/check-repo.mjs", ".github/workflows/ci.yml"]) fs.copyFileSync(f, path.join(d, f));
+    fs.cpSync("prisma/migrations", path.join(d, "prisma/migrations"), { recursive: true }); spawnSync("git", ["add", "-A"], { cwd: d }); return d;
+  };
   let d = copy(); let r = chk(d); t("REPO CHECK: the current schema and migrations pass", /The Prisma schema and the migrations agree/.test(r.stdout) && !/FAIL  The Prisma schema/.test(r.stdout));
   d = copy(); fs.appendFileSync(path.join(d, "prisma/schema.prisma"), "\nenum TicketMode {\n  A\n}\n"); r = chk(d); t("REPO CHECK: an enum defined twice in the schema is flagged by NAME", /FAIL  The Prisma schema and the migrations agree/.test(r.stdout) && /TicketMode is defined more than once/.test(r.stdout));
   d = copy(); fs.appendFileSync(path.join(d, "prisma/schema.prisma"), "\nmodel Ticket {\n  id String @id\n}\n"); r = chk(d); t("REPO CHECK: a model defined twice is flagged too", /Ticket is defined more than once/.test(r.stdout));
   d = copy(); const dir2 = path.join(d, "prisma/migrations/20261230000000_dup_type"); fs.mkdirSync(dir2); fs.writeFileSync(path.join(dir2, "migration.sql"), `-- CreateEnum\nCREATE TYPE "PayMethod" AS ENUM ('PAYBILL', 'TILL', 'SEND_MONEY', 'BANK', 'OTHER');\n`); r = chk(d); t("REPO CHECK: a type created by two migrations is flagged", /enum PayMethod is created by more than one migration/.test(r.stdout));
   d = copy(); fs.writeFileSync(path.join(d, "prisma/migrations/20261230000001_dup_table/migration.sql") && path.join(d, "prisma/migrations/zz.sql"), ""); const dir3 = path.join(d, "prisma/migrations/20261230000002_dup_table"); fs.mkdirSync(dir3); fs.writeFileSync(path.join(dir3, "migration.sql"), `CREATE TABLE "Ticket" (\n    "id" TEXT NOT NULL,\n    CONSTRAINT "Ticket_pkey" PRIMARY KEY ("id")\n);\n`); r = chk(d); t("REPO CHECK: a table created by two migrations is flagged", /table Ticket is created by more than one migration/.test(r.stdout));
+
+  { const d1 = copy(); fs.appendFileSync(path.join(d1, "prisma/schema.prisma"), "\nenum LeftOver {\n  A\n}\n"); const junk = path.join(d1, "prisma/migrations/99999999999999_left_over"); fs.mkdirSync(junk); fs.writeFileSync(path.join(junk, "migration.sql"), "SELECT 1;"); const d2 = copy();
+    t("EACH REPO-CHECK CASE STARTS CLEAN: after a case that broke the schema and added a migration, the next copy has neither (a leftover would make one case pass or fail because of another), and the copy is removed when the test ends", fs.readFileSync(path.join(d2, "prisma/schema.prisma"), "utf8") === fs.readFileSync("prisma/schema.prisma", "utf8") && !fs.existsSync(path.join(d2, "prisma/migrations/99999999999999_left_over")) && !/LeftOver/.test(fs.readFileSync(path.join(d2, "prisma/schema.prisma"), "utf8")) && /process\.on\("exit"/.test(src("tests/ticket_wiring_test.tsx"))); }
 
   // ===== the wiring in the source =====
   t("ACCOUNT DELETION: tickets are anonymised (name, phone and the entered payment code) inside the same transaction as bookings", /tx\.ticket\.updateMany\(\{ where: \{ userId: user\.id \}, data: \{ holderName: "Former attendee", holderPhone: "", claimedReference: null \} \}\)/.test(src("lib/actions/account.ts")));
