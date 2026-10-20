@@ -10,5 +10,6 @@
   },
   "placeholders": ["placehold.co", "placeholder.com", "via.placeholder.com", "dummyimage.com", "picsum.photos", "lorempixel.com", "placekitten.com", "fakeimg.pl"],
   "stock": ["images.unsplash.com", "unsplash.com", "images.pexels.com", "pexels.com", "pixabay.com", "cdn.pixabay.com"],
+  "open": ["upload.wikimedia.org"],
   "ownPlaceholderPath": "/placeholders/"
 }

@@ -26,3 +26,19 @@ Keep a list (a spreadsheet is enough) with one row per picture: where it is used
 - Add what the picture shows in the description (alt text), and say where it is only if it really is there.
 - Host them on your own storage or domain (set the storage host in the site settings), not on another site.
 - The home page picture is set with `HOME_HERO_IMAGE` (and an optional film with `HOME_HERO_VIDEO`). Until you set it, the home page uses the licensed photograph it already had.
+
+## Photo credits
+
+Every picture that needs a credit should have one beside it. A picture that is yours (taken by you or your team) can carry your name; one from Wikimedia Commons, or a photographer who asks, **must** be credited. Credits are one line:
+
+    Name | Licence | https://link
+
+for example `Leonora Enking | CC BY-SA 2.0 | https://commons.wikimedia.org/wiki/File:Salt_Lick_Lodge_in_the_evening.jpg`. The licence and the link are optional. The name links to the source; a licence the site knows (Creative Commons, Unsplash, Pexels) links to its terms.
+
+- **Stories:** the story form has a "Photo credit" field. The credit shows in the corner of the picture on the story page, and as plain text on the covers and cards.
+- **The home page picture:** set `HOME_HERO_CREDIT` (same format) next to `HOME_HERO_IMAGE`. Unsplash photos need no credit, but it is kind to give one.
+- **What a story picture may be:** a picture you uploaded in the admin, or one from Unsplash, Pexels, Pixabay or Wikimedia Commons. A link to someone else's website (a hotel's own site, a Google image-search thumbnail) is refused when you save, and is never shown even if one is already in the database: the site's own "picture coming soon" image appears instead.
+- **Wikimedia Commons:** the site fetches these pictures itself (the same way as Unsplash), so a visitor's browser never contacts Wikimedia. On the file's Commons page, copy the author and the licence into the credit, and check the licence allows what you are doing.
+- **Real people:** a photograph of a recognisable person needs their consent, whatever the picture's licence says about copyright.
+- **Fixing existing stories:** `npx tsx scripts/fix-story-pictures.ts` (a rehearsal) and `--apply` give the Salt Lick, Shetani and Ngangao stories pictures with credits. It tests each picture address from your computer first, and never replaces a picture an editor chose.
+

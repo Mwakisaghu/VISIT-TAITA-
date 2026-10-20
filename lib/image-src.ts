@@ -8,7 +8,7 @@
 // would disagree with the server render (a hydration mismatch).
 
 /** Hosts that are always approved. Keep in step with next.config.js (a test checks they agree). */
-export const FIXED_IMAGE_HOSTS = ["images.unsplash.com"];
+export const FIXED_IMAGE_HOSTS = ["images.unsplash.com", "upload.wikimedia.org"];
 
 export function optimizableHosts(env: Record<string, string | undefined> = process.env): string[] {
   const hosts = [...FIXED_IMAGE_HOSTS];

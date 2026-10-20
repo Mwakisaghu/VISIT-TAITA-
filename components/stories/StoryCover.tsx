@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { Story } from "@prisma/client";
 import Photo from "@/components/home/Photo";
+import PhotoCredit from "@/components/PhotoCredit";
+import { storyPicture } from "@/lib/story-picture";
 import Tag from "@/components/field/Tag";
 import { categoryLabel } from "@/lib/format";
 import { storyShape, type Shape } from "@/lib/stories-view";
@@ -12,8 +14,9 @@ export default function StoryCover({ story: s, large = false }: { story: Story &
   const shape = storyShape(s.category);
   return (
     <Link href={`/stories/${s.slug}`} className={`focus-ring group relative flex flex-col justify-end overflow-hidden rounded-[2px] bg-canopy-deep text-parchment ${large ? "min-h-[30rem] sm:min-h-[34rem]" : HEIGHT[shape]}`}>
-      <Photo src={s.image} alt="" priority={large} sizes={large ? "(min-width: 1152px) 1152px, 100vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"} className="transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none" />
+      <Photo src={storyPicture(s.image)} alt="" priority={large} sizes={large ? "(min-width: 1152px) 1152px, 100vw" : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"} className="transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none" />
       <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-stone/95 via-stone/55 to-stone/5" />
+      <PhotoCredit credit={s.imageCredit} position="top-right" links={false} />
       <div className="relative p-6 sm:p-8">
         <div className="flex flex-wrap gap-1.5">
           <Tag tone="gold">{categoryLabel(s.category)}</Tag>

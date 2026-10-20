@@ -74,7 +74,7 @@ async function main() {
   const lp = await D.getStoryLoop("  ", new Date()); t("LOOP: a blank place region asks the database nothing", lp.stay === null && lp.experience === null);
 
   // ===== admin: choosing the place
-  const base = { title: "Hosea knows the ridge", category: "PEOPLE", excerpt: "A short standfirst for the story.", body: "b", readingTime: "5 min read", image: "https://example.org/a.jpg", status: "DRAFT" };
+  const base = { title: "Hosea knows the ridge", category: "PEOPLE", excerpt: "A short standfirst for the story.", body: "b", readingTime: "5 min read", image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?q=80&w=1200", status: "DRAFT" };
   const run = async (fn: () => Promise<any>) => { writes.length = 0; try { await fn(); return { threw: null as any }; } catch (e: any) { return e?.redirectTo ? { threw: null } : { threw: e }; } };
   session = { user: { id: "u-admin", role: "ADMIN" } }; KNOWN_PLACE = { id: "p1" };
   await run(() => AD.saveStory(null, fd({ ...base, destinationId: "p1" }))); let d = writes.find((w) => w.op === "story.create")?.args.data; t("ADMIN (new story): the chosen place is saved with the story", !!d && d.destinationId === "p1" && d.title === base.title);
