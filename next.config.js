@@ -46,6 +46,7 @@ const nextConfig = {
     minimumCacheTTL: 60 * 60 * 24 * 30,
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
+      { protocol: "https", hostname: "upload.wikimedia.org" }, // openly licensed pictures (Wikimedia Commons), fetched by OUR server so a visitor's browser never contacts Wikimedia
       ...(storageHost ? [{ protocol: "https", hostname: storageHost }] : []),
     ],
   },

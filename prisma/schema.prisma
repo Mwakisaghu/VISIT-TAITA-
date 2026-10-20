@@ -162,6 +162,7 @@ model Story {
   credits       String? // sources and credits, one per line: Title | Author | https://link
   readingTime String
   image       String
+  imageCredit String? // who took the cover picture: "Name | Licence | https://source" (shown with the picture; see lib/photo-credit.ts)
   status      ContentStatus @default(DRAFT)
   featured    Boolean       @default(false)
   isDemo      Boolean       @default(true)
