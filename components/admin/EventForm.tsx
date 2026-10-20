@@ -1,7 +1,17 @@
 import type { Event } from "@prisma/client";
 import { saveEvent } from "@/lib/actions/admin";
+import { DETAIL_MAX, type DetailField } from "@/lib/event-details";
 
 const programs = ["TAITA_CUP", "TAITA_WEEK", "TAITA_SOUND"];
+const MORE: Array<[DetailField, string, string, number]> = [
+  ["details", "About this event", "The longer description. Leave a blank line between paragraphs.", 5],
+  ["programme", "Programme", "One item per line. Start with a time and a bar, for example: 08:00 | Gates open", 5],
+  ["included", "What's included", "One item per line.", 3],
+  ["bring", "What to bring", "One item per line.", 3],
+  ["gettingThere", "Getting there", "Directions, parking and public transport.", 4],
+  ["accessibility", "Age and accessibility", "Age limits, and whether the ground is step-free.", 3],
+  ["contact", "Contact the organiser", "A phone number, WhatsApp or email, one per line.", 2],
+];
 
 export default function EventForm({ event }: { event?: Event }) {
   const action = saveEvent.bind(null, event?.id ?? null);
@@ -35,6 +45,16 @@ export default function EventForm({ event }: { event?: Event }) {
         <textarea name="blurb" defaultValue={event?.blurb} required rows={3} className="input" />
       </Field>
 
+      <fieldset className="mt-2 grid gap-5 border-t border-stone/20 pt-6">
+        <legend className="mb-1 font-display text-lg text-stone">More details (optional)</legend>
+        <p className="font-body text-sm text-stone/80">These appear under &ldquo;Show more details&rdquo; on the event page. Fill in only what you know: parts you leave empty are not shown, and the whole section is hidden if everything is empty.</p>
+        {MORE.map(([name, label, hint, rows]) => (
+          <Field key={name} label={label} hint={hint}>
+            <textarea name={name} defaultValue={event?.[name] ?? ""} rows={rows} maxLength={DETAIL_MAX[name]} className="input" />
+          </Field>
+        ))}
+      </fieldset>
+
       <Field label="Status">
         <select name="status" defaultValue={event?.status ?? "DRAFT"} className="input">
           <option value="DRAFT">Draft</option>
@@ -52,10 +72,11 @@ export default function EventForm({ event }: { event?: Event }) {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <label className="flex flex-col gap-1">
       <span className="font-body text-sm text-stone/80">{label}</span>
+      {hint && <span className="font-body text-xs text-stone/80">{hint}</span>}
       {children}
     </label>
   );

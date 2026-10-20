@@ -10,6 +10,7 @@ import { salesOpen } from "@/lib/ticket";
 import Tag from "@/components/field/Tag";
 import PersonChip from "@/components/field/PersonChip";
 import EventFacts from "@/components/events/EventFacts";
+import EventMoreDetails from "@/components/events/EventMoreDetails";
 import ShareLinks from "@/components/events/ShareLinks";
 import ShareBar from "@/components/share/ShareBar";
 import { shareMeta } from "@/lib/share-meta";
@@ -47,6 +48,7 @@ export default async function EventPage(props: { params: Promise<{ slug: string 
           <PersonChip name={e.organiser.name} verb="Organised by" />
         </div>
       )}
+      <EventMoreDetails event={e} />
       {e.isDemo && <div className="mt-6"><DemoNotice>sample event — details to be confirmed with the organisers.</DemoNotice></div>}
 
       {e.ticketing !== "OFF" && (
