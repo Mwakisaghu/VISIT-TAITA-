@@ -10,6 +10,7 @@ import { normalizeCredits } from "@/lib/story-credits";
 import { parseGuideFields } from "@/lib/field-guide";
 import { generateCheckinToken } from "@/lib/passport";
 import { imageUrl } from "@/lib/image-policy";
+import { cleanDetail, DETAIL_MAX } from "@/lib/event-details";
 
 async function requireAdmin() {
   const session = await getServerSession(authOptions);
@@ -165,6 +166,8 @@ export async function deleteStory(id: string) {
 // Events
 // ---------------------------------------------------------------------------
 
+// The optional "more details" of an event: tidied (Windows line breaks, trailing spaces, runs of blank lines), nothing stored as null, and each limited in length so a pasted web page cannot swell the table.
+const detail = (max: number) => z.preprocess(cleanDetail, z.string().max(max, `Keep this to ${max.toLocaleString("en-GB")} characters or fewer.`).nullable());
 const eventSchema = z.object({
   name: z.string().min(2),
   program: z.enum(["TAITA_CUP", "TAITA_WEEK", "TAITA_SOUND"]),
@@ -172,6 +175,8 @@ const eventSchema = z.object({
   location: z.string().min(2),
   blurb: z.string().min(5),
   status: z.enum(["DRAFT", "PUBLISHED"]),
+  details: detail(DETAIL_MAX.details), programme: detail(DETAIL_MAX.programme), included: detail(DETAIL_MAX.included), bring: detail(DETAIL_MAX.bring),
+  gettingThere: detail(DETAIL_MAX.gettingThere), accessibility: detail(DETAIL_MAX.accessibility), contact: detail(DETAIL_MAX.contact),
 });
 
 export async function saveEvent(id: string | null, formData: FormData) {
@@ -183,6 +188,8 @@ export async function saveEvent(id: string | null, formData: FormData) {
     location: formData.get("location"),
     blurb: formData.get("blurb"),
     status: formData.get("status"),
+    details: formData.get("details"), programme: formData.get("programme"), included: formData.get("included"), bring: formData.get("bring"),
+    gettingThere: formData.get("gettingThere"), accessibility: formData.get("accessibility"), contact: formData.get("contact"),
   });
 
   if (id) {
