@@ -221,6 +221,15 @@ model Event {
   ticketsTaken     Int        @default(0) // tickets that currently count against the capacity
   tickets          Ticket[]
   ticketPayments   TicketPayment[]
+
+  // ---- "More details" (all optional). The event page shows a "Show more details" section only when at least one of these is filled in. ----
+  details       String? // the longer description; blank lines start a new paragraph
+  programme     String? // one item per line; "08:00 | Gates open" puts the time in its own column
+  included      String? // what a ticket or entry covers, one per line
+  bring         String? // what to bring, one per line
+  gettingThere  String? // directions, parking, public transport
+  accessibility String? // age limits and step-free access
+  contact       String? // how to reach the organiser
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
