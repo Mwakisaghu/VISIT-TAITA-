@@ -2,14 +2,14 @@ import Link from "next/link";
 import type { Story } from "@prisma/client";
 import Photo from "@/components/home/Photo";
 import PhotoCredit from "@/components/PhotoCredit";
-import { storyPicture } from "@/lib/story-picture";
-import Tag from "@/components/field/Tag";
+import { blurb, headline, kicker, meta } from "@/components/stories/type";
 import { categoryLabel } from "@/lib/format";
 import { storyShape, type Shape } from "@/lib/stories-view";
+import { storyPicture } from "@/lib/story-picture";
 
 const HEIGHT: Record<Shape, string> = { tall: "min-h-[34rem]", wide: "min-h-[22rem]", standard: "min-h-[27rem]" };
 
-/** A story as a cover. People are told in tall portrait covers, places and adventures in wide ones. */
+/** A story as a cover: a label, the headline, a description, then the small facts, always in that order. People are told in tall portrait covers, places and adventures in wide ones. */
 export default function StoryCover({ story: s, large = false }: { story: Story & { destination?: { name: string } | null }; large?: boolean }) {
   const shape = storyShape(s.category);
   return (
@@ -18,13 +18,10 @@ export default function StoryCover({ story: s, large = false }: { story: Story &
       <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-stone/95 via-stone/55 to-stone/5" />
       <PhotoCredit credit={s.imageCredit} position="top-right" links={false} />
       <div className="relative p-6 sm:p-8">
-        <div className="flex flex-wrap gap-1.5">
-          <Tag tone="gold">{categoryLabel(s.category)}</Tag>
-          <Tag tone="light">{s.readingTime}</Tag>
-          {s.destination && <Tag tone="light">{s.destination.name}</Tag>}
-        </div>
-        <h2 className={`mt-4 font-display font-medium leading-[1.1] tracking-tight ${large ? "max-w-3xl text-[clamp(1.6rem,4vw,2.8rem)]" : "text-[1.75rem]"}`}>{s.title}</h2>
-        {(large || shape !== "tall") && <p className={`mt-3 font-body text-parchment/90 ${large ? "max-w-xl text-base" : "line-clamp-2 text-sm"}`}>{s.excerpt}</p>}
+        <p className={`${kicker} text-ochre-light`}>{categoryLabel(s.category)}</p>
+        <h2 className={`mt-3 ${large ? `max-w-3xl ${headline.feature}` : headline.card}`}>{s.title}</h2>
+        {(large || shape !== "tall") && <p className={`${blurb} mt-3 text-parchment/90 ${large ? "max-w-xl" : "line-clamp-2"}`}>{s.excerpt}</p>}
+        <p className={`${meta} mt-4 text-parchment/85`}>{s.readingTime}{s.destination ? ` · ${s.destination.name}` : ""}</p>
       </div>
     </Link>
   );

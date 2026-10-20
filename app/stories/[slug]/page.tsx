@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import DemoNotice from "@/components/DemoNotice";
 import StoryCard from "@/components/StoryCard";
-import Tag from "@/components/field/Tag";
 import GoThereRow from "@/components/stories/GoThereRow";
 import StoryBody from "@/components/stories/StoryBody";
+import { action, blurb, headline, kicker, measure, meta, prose, space, standfirst } from "@/components/stories/type";
 import WherePanel from "@/components/stories/WherePanel";
 import { categoryLabel } from "@/lib/format";
 import { canOptimize } from "@/lib/image-src";
@@ -61,32 +61,34 @@ export default async function StoryPage({ params }: Ctx) {
   const blocks = parseStoryBody(story.body);
 
   return (
-    <article className="px-6 py-14 sm:py-16">
+    <article className={`px-6 ${space.section}`}>
       <div className="mx-auto max-w-6xl">
-        <Link href="/stories" className="focus-ring font-body text-sm text-stone/80 hover:text-rust-deep">← All stories</Link>
-        <div className="mt-6 flex flex-wrap gap-2"><Tag tone="rust">{categoryLabel(story.category)}</Tag><Tag>{story.readingTime}</Tag></div>
-        <h1 className="mt-5 max-w-4xl font-display text-[clamp(1.776rem,4.44vw,3.145rem)] font-medium leading-[1.05] tracking-tight text-stone">{story.title}</h1>
-        <ShareBar className="mt-5" />
+        <Link href="/stories" className={`focus-ring ${meta} text-stone/80 hover:text-rust-deep`}>← All stories</Link>
+        <p className="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-1"><span className={`${kicker} text-rust-deep`}>{categoryLabel(story.category)}</span><span className={`${meta} text-stone/80`}>{story.readingTime}</span></p>
+        <h1 className={`mt-4 max-w-4xl text-stone ${headline.page}`}>{story.title}</h1>
+        <p className={`${standfirst} mt-6 max-w-2xl text-stone/85`}>{story.excerpt}</p>
+        <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
+          <ShareBar />
         {byline && (
-          <p className="mt-4 font-body text-sm text-stone/80">
+          <p className={`${meta} text-stone/80`}>
             By{" "}
             <Link href={`/creators/${byline.slug}`} className="underline hover:text-rust-deep">{byline.displayName}</Link>
           </p>
         )}
+        </div>
 
         <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[2px] bg-canopy-deep">
           <Image src={storyPicture(story.image)} alt="" fill unoptimized={!canOptimize(storyPicture(story.image))} priority sizes="(min-width: 1152px) 1152px, 100vw" className="object-cover" />
           <PhotoCredit credit={story.imageCredit} />
         </div>
 
-        <div className="mt-12 grid gap-14 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="max-w-prose">
-            <p className="font-display text-2xl leading-snug text-stone/85">{story.excerpt}</p>
-            <div className="mt-8">
+        <div className={`${space.block} grid gap-16 lg:grid-cols-[minmax(0,1fr)_20rem]`}>
+          <div className={measure}>
+            <div>
               {blocks.length > 0 ? (
                 <StoryBody blocks={blocks} />
               ) : (
-                <p className="font-body text-lg text-stone/80">
+                <p className={`${prose} text-stone/80`}>
                   Full story text will be added once the reporting for this piece is complete. This placeholder holds the layout — hero image, byline, reading time and related stories — so the editorial template can be reviewed ahead of real content.
                 </p>
               )}
@@ -98,9 +100,9 @@ export default async function StoryPage({ params }: Ctx) {
           <aside className="flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
             {story.destination && <WherePanel place={story.destination} />}
             <section aria-labelledby="notes-title" className="rounded-[2px] border border-stone/15 p-6">
-              <p id="notes-title" className="font-display text-xl leading-snug text-stone">Been here? Read and add field notes.</p>
-              <p className="mt-2 font-body text-sm text-stone/80">A line, a photo, a tip from people who have been.</p>
-              <Link href="/notes" className="focus-ring mt-4 inline-flex min-h-[44px] items-center font-body text-sm font-semibold text-stone underline underline-offset-4">Open field notes<span aria-hidden="true">&nbsp;→</span></Link>
+              <p id="notes-title" className={`text-stone ${headline.small}`}>Been here? Read and add field notes.</p>
+              <p className={`${blurb} mt-3 text-stone/80`}>A line, a photo, a tip from people who have been.</p>
+              <Link href="/notes" className={`${action} mt-3 text-stone hover:text-rust-deep`}>Open field notes<span aria-hidden="true">&nbsp;→</span></Link>
             </section>
           </aside>
         </div>
@@ -109,9 +111,9 @@ export default async function StoryPage({ params }: Ctx) {
         <GoThereRow place={null} stay={loop.stay} experience={loop.experience} now={now} />
 
         {related.length > 0 && (
-          <div className="mt-16 border-t border-stone/10 pt-10">
-            <p className="font-display text-2xl text-stone">More stories</p>
-            <div className="mt-6 grid gap-8 sm:grid-cols-2">
+          <div className="mt-20 border-t border-stone/15 pt-12">
+            <h2 className={`text-stone ${headline.small}`}>More stories</h2>
+            <div className="mt-8 grid gap-10 sm:grid-cols-2">
               {related.map((s) => <StoryCard key={s.slug} story={s} />)}
             </div>
           </div>

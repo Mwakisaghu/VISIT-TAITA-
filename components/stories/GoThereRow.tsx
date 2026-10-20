@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { headline, kicker, meta } from "@/components/stories/type";
 import Photo from "@/components/home/Photo";
 import { nextChips, type SessionLite } from "@/lib/field-guide";
 import { formatPrice } from "@/lib/format";
@@ -18,7 +19,7 @@ export default function GoThereRow({ place, stay, experience, now }: { place: Pl
   if (tiles.length === 0) return null;
   return (
     <section aria-labelledby="keepgoing-title" className="mt-16">
-      <p id="keepgoing-title" className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-rust-deep">Keep going</p>
+      <p id="keepgoing-title" className={`${kicker} text-rust-deep`}>Keep going</p>
       <ul className="mt-4 grid gap-4 sm:grid-cols-3">
         {tiles.map((t) => (
           <li key={t.key}>
@@ -26,9 +27,9 @@ export default function GoThereRow({ place, stay, experience, now }: { place: Pl
               <Photo src={t.image} alt="" sizes="(min-width: 640px) 33vw, 100vw" className="transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none" />
               <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-stone/95 via-stone/55 to-stone/5" />
               <span className="relative p-5">
-                <span className="block font-body text-[0.65rem] font-bold uppercase tracking-[0.22em] text-ochre-light">{t.label}</span>
-                <span className="mt-1 block font-display text-xl leading-snug">{t.name}</span>
-                {t.note && <span className="mt-1 block font-body text-xs text-parchment/90">{t.note}</span>}
+                <span className={`${kicker} block text-ochre-light`}>{t.label}</span>
+                <span className={`mt-1 block ${headline.small}`}>{t.name}</span>
+                {t.note && <span className={`${meta} mt-2 block text-parchment/90`}>{t.note}</span>}
               </span>
             </Link>
           </li>
