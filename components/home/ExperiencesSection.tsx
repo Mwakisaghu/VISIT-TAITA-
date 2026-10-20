@@ -26,7 +26,7 @@ export default function ExperiencesSection({ items }: { items: ExperienceItem[] 
       <div className="mx-auto max-w-7xl">
         <Reveal innerClassName="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className={`${eyebrow} text-rust-deep`}>{tr("Explore Taita")}</p>
+            <p className={`${eyebrow} text-rust-deep`}>{tr("Experiences")}</p>
             <h2 id="exp-title" className={`${display} mt-5 text-[clamp(1.76rem,3.68vw,3.04rem)] leading-[1.05]`}>{tr("Experiences for")}<br className="hidden sm:block" />{" "}{tr("every kind of explorer.")}</h2>
           </div>
           <Link href={lp("/experiences")} className={`${textLink} text-stone hover:text-rust`}>{tr("View all experiences")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>

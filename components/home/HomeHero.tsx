@@ -30,13 +30,13 @@ export default function HomeHero({ media }: { media: HomeMedia }) {
         <p className="mt-3 max-w-md font-body text-base leading-relaxed text-parchment/80">{tr("Discover the landscapes, people, stories and experiences that make Taita different.")}</p>
 
         <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-5">
-          <Link href={lp("/discover")} className={primaryCta}>{tr("Explore Taita")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
+          <Link href={lp("/plan")} className={primaryCta}>{tr("Plan your day")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" /></Link>
           {media.storyUrl ? (
             <a href={lp(media.storyUrl)} target="_blank" rel="noopener noreferrer" className="focus-ring group inline-flex items-center gap-3 font-body text-[0.75rem] font-semibold uppercase tracking-[0.2em] text-parchment">
               <span className="flex h-12 w-12 items-center justify-center rounded-full border border-parchment/50 transition-colors group-hover:border-ochre group-hover:text-ochre"><PlayIcon className="ml-0.5 h-4 w-4" /></span>{tr("Watch the story")}<span className="sr-only">{" "}{tr("(opens in a new tab)")}</span>
             </a>
           ) : (
-            <Link href={lp("/stories")} className="focus-ring group inline-flex items-center gap-3 font-body text-[0.75rem] font-semibold uppercase tracking-[0.2em] text-parchment">{tr("Read the stories")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            <Link href={lp("/stay")} className="focus-ring group inline-flex items-center gap-3 font-body text-[0.75rem] font-semibold uppercase tracking-[0.2em] text-parchment">{tr("Find a stay")}{" "}<ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
           )}
         </div>

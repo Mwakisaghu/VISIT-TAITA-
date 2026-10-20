@@ -1,13 +1,11 @@
-import ClosingSection from "@/components/home/ClosingSection";
 import EventsSection from "@/components/home/EventsSection";
 import ExperiencesSection from "@/components/home/ExperiencesSection";
 import FindYourTaita from "@/components/home/FindYourTaita";
+import HomeFacts from "@/components/home/HomeFacts";
 import HomeHero from "@/components/home/HomeHero";
 import PassportSection from "@/components/home/PassportSection";
 import PlanSection from "@/components/home/PlanSection";
-import StayLocalSection from "@/components/home/StayLocalSection";
 import StoriesSection from "@/components/home/StoriesSection";
-import ThisIsTaita from "@/components/home/ThisIsTaita";
 import Newsletter from "@/components/Newsletter";
 import SponsorStrip from "@/components/sponsors/SponsorStrip";
 import { loadHome } from "@/lib/home-data";
@@ -16,14 +14,14 @@ import type { Metadata } from "next";
 import { hreflangLinks, localizePath } from "@/lib/i18n/config";
 import { getLocale } from "@/lib/i18n/server";
 import { getSiteUrl } from "@/lib/site-url";
-import EssentialsStrip from "@/components/home/EssentialsStrip";
 
 // Public, non-personalized content — safe to cache and revalidate rather than hitting Postgres on every single request.
 export const revalidate = 60;
 
 /**
- * The homepage is a journey, in order: ARRIVE (hero) -> DISCOVER (find your Taita) -> UNDERSTAND (this is Taita) -> EXPLORE (experiences) ->
- * CONNECT (stories) -> PARTICIPATE (passport) -> JOIN (events) -> SUPPORT (stay local) -> RETURN (the closing call).
+ * The homepage, in order, each part earning its place and none repeating another:
+ * ARRIVE (hero: plan your day / find a stay) -> TRUST (four sourced facts) -> DISCOVER (the six doors) -> EXPLORE (experiences) -> JOIN IN (events, with the Taita Cup) ->
+ * CONNECT (stories) -> PLAN (build a day) -> TAKE PART (the passport) -> PARTNERS (only when there are real ones) -> STAY IN TOUCH (the newsletter).
  * Every database-driven part has a designed empty state, and a failure in one never blanks the page.
  */
 /** Which language this page is in, and the other languages it really exists in (so search engines list each one, and send people to the right one). */
@@ -43,17 +41,14 @@ export default async function HomePage() {
   return (
     <>
       <HomeHero media={media} />
+      <HomeFacts />
       <FindYourTaita tiles={data.tiles} />
-      <ThisIsTaita people={data.people} land={data.land} stories={data.storiesPic} />
       <ExperiencesSection items={data.experiences} />
-      <PlanSection />
-      <EssentialsStrip />
-      <StoriesSection stories={data.stories} />
       <EventsSection events={data.events} />
-      <StayLocalSection local={data.local} />
+      <StoriesSection stories={data.stories} />
+      <PlanSection />
       <PassportSection />
       {sponsors}
-      <ClosingSection image={media.closingImage} />
       <Newsletter />
     </>
   );
