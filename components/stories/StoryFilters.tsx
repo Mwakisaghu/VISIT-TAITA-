@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { meta } from "@/components/stories/type";
 import { STORY_TYPES, storyFilterHref, type StoryFilters as Filters } from "@/lib/stories-view";
 import { categoryLabel } from "@/lib/format";
 import ScrollFade from "@/components/ui/ScrollFade";
 
-const chip = "focus-ring inline-flex min-h-[44px] shrink-0 items-center rounded-[2px] border px-4 font-body text-[0.8rem] font-semibold transition-colors";
+const chip = `${meta} focus-ring inline-flex min-h-[44px] shrink-0 items-center rounded-[2px] border px-4 font-semibold transition-colors`;
 
 /** Filter stories by what they are about. Plain links: they work without scripts and every view has its own address. */
 export default function StoryFilters({ filters }: { filters: Filters }) {
