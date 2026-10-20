@@ -38,7 +38,7 @@
 .pp-face.pp-back { border-radius: 12px 2px 2px 12px; box-shadow: 0 18px 40px rgba(0,0,0,.28), 0 2px 6px rgba(0,0,0,.2); }
 .pp-face[inert] { pointer-events: none; }
 /* mobile: one page at a time, turned like the leaf of a notepad */
-.pp-book.pp-single { width: min(92vw, 440px); height: auto; display: grid; perspective: 2000px; transform: none !important; }
+.pp-book.pp-single { width: min(86vw, 440px); height: auto; display: grid; perspective: 2000px; transform: none !important; }
 .pp-book.pp-single::before { display: none; }
 .pp-book.pp-single .pp-sheet { position: relative; grid-area: 1 / 1; left: auto; width: 100%; height: auto; min-height: 520px; transform-origin: left center; transition: transform var(--pp-flip) cubic-bezier(.45, .05, .25, 1), opacity .55s ease .25s, visibility 0s linear var(--pp-flip), z-index 0s linear 0s; }
 .pp-book.pp-single .pp-sheet.pp-flipped { transform: rotateY(-96deg) translateX(-6%); opacity: 0; visibility: hidden; pointer-events: none; }
@@ -121,8 +121,18 @@
 .pp-wish b { display: block; font-size: .92rem; } .pp-wish span { font-size: 12px; color: var(--pp-paper-muted); font-weight: 600; }
 /* ===== the controls under the book ===== */
 .pp-nav { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: center; justify-content: center; margin-top: 20px; }
-.pp-nb { min-height: 48px; min-width: 120px; padding: 0 20px; border-radius: 999px; border: 2px solid var(--pp-desk-text); background: transparent; color: var(--pp-desk-text); font-weight: 800; cursor: pointer; }
-.pp-nb[aria-disabled="true"] { opacity: .35; cursor: default; }
+/* ===== the page arrows: ON the book, centred on its outer edges (half on the desk, half on the page), so they travel with it ===== */
+.pp-arrow { position: absolute; z-index: 60; top: 50%; width: 48px; height: 48px; margin-top: -24px; padding: 0; border-radius: 50%; border: 2px solid var(--pp-parchment); background: rgba(27, 24, 21, .92); color: var(--pp-parchment); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 0, 0, .45); transition: transform .18s ease, background-color .18s ease; }
+.pp-arrow-prev { left: -24px; }
+.pp-arrow-next { right: -24px; }
+.pp-arrow:hover { background: var(--pp-rust); }
+.pp-arrow-prev:hover { transform: translateX(-3px); }
+.pp-arrow-next:hover { transform: translateX(3px); }
+.pp-arrow[aria-disabled="true"] { visibility: hidden; pointer-events: none; }
+.pp-book.pp-single .pp-arrow { width: 44px; height: 44px; margin-top: 0; top: calc(min(50%, 280px) - 22px); }
+.pp-book.pp-single .pp-arrow-prev { left: -22px; }
+.pp-book.pp-single .pp-arrow-next { right: -22px; }
+@media (prefers-reduced-motion: reduce) { .pp-arrow { transition: none; } .pp-arrow:hover { transform: none; } }
 .pp-tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
 .pp-tab { min-height: 44px; padding: 0 14px; border-radius: 10px; border: 0; background: transparent; color: var(--pp-desk-text); font-weight: 700; font-size: .88rem; cursor: pointer; border-bottom: 3px solid transparent; }
 .pp-tab[aria-current="true"] { border-bottom-color: var(--pp-ochre-light); }
@@ -154,7 +164,7 @@ dialog.pp-dlg::backdrop { background: rgba(20,16,12,.62); }
 /* what the server sends before the booklet is ready: the closed cover, the same size and place the booklet's cover will have, so nothing jumps */
 .pp-static { display: flex; justify-content: center; padding: 26px 0 10px; }
 .pp-static .pp-cover { position: relative; width: var(--pp-pw); height: var(--pp-ph); border-radius: 3px 14px 14px 3px; box-shadow: 0 18px 40px rgba(0,0,0,.28), 0 2px 6px rgba(0,0,0,.2); }
-@media (max-width: 820px) { .pp-static .pp-cover { width: min(92vw, 440px); height: auto; min-height: 520px; } }
+@media (max-width: 820px) { .pp-static .pp-cover { width: min(86vw, 440px); height: auto; min-height: 520px; } }
 .pp-page-wrap { max-width: 1200px; margin: 0 auto; padding: 0 12px; }
 .pp-bar { padding-left: 8px; padding-right: 8px; }
 .pp-h3 { font-size: 1.1rem; margin: 2px 4px 8px; }

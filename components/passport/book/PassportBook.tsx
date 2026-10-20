@@ -13,6 +13,9 @@ import { contentPages, pageKey, sheetsOf, spreadsOf, zoneOf, type PageSpec, type
 
 const NARROW = "(max-width: 820px)";
 
+/** The arrow drawn inside a page-turn button (decorative: the button carries the name). */
+const Chevron = ({ dir }: { dir: "prev" | "next" }) => (<svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d={dir === "prev" ? "M15 5l-7 7 7 7" : "M9 5l7 7-7 7"} /></svg>);
+
 export default function PassportBook({ data }: { data: PassportData }) {
   const { tr, locale, lp } = useI18n(); const router = useRouter(); const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const content = useMemo(() => contentPages(data.places), [data.places]);
@@ -117,12 +120,14 @@ export default function PassportBook({ data }: { data: PassportData }) {
                   <div className="pp-face pp-front" inert={!visible.has(pageKey(front))} aria-hidden={!visible.has(pageKey(front))}>{render(front)}</div>
                   {back && <div className="pp-face pp-back" inert={!visible.has(pageKey(back))} aria-hidden={!visible.has(pageKey(back))}>{render(back)}</div>}
                 </div>))}
+            {/* The page arrows live ON the book, centred on its outer edges, so they travel with it (the closed cover sits in the middle of the desk) and are always where the page is.
+                At either end the arrow that has nowhere to go is hidden and leaves the tab order (the tabs and the arrow keys still reach everything). */}
+            <button type="button" className="pp-arrow pp-arrow-prev" aria-label={tr("Previous page")} aria-disabled={idx === 0} tabIndex={idx === 0 ? -1 : undefined} onClick={() => { if (idx > 0) go(idx - 1); }}><Chevron dir="prev" /></button>
+            <button type="button" className="pp-arrow pp-arrow-next" aria-label={tr("Next page")} aria-disabled={idx === maxIdx} tabIndex={idx === maxIdx ? -1 : undefined} onClick={() => { if (idx < maxIdx) go(idx + 1); }}><Chevron dir="next" /></button>
           </div>
         </div>
         <nav className="pp-nav" aria-label={tr("Passport pages")}>
-          <button type="button" className="pp-nb" aria-disabled={idx === 0} onClick={() => { if (idx > 0) go(idx - 1); }}>{tr("Previous page")}</button>
           <div className="pp-tabs">{tabs.map((t, i) => <button key={i} type="button" className="pp-tab" aria-current={i === idx} onClick={() => go(i)}>{t}</button>)}</div>
-          <button type="button" className="pp-nb" aria-disabled={idx === maxIdx} onClick={() => { if (idx < maxIdx) go(idx + 1); }}>{tr("Next page")}</button>
         </nav>
       </>
     );
