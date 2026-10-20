@@ -10,6 +10,8 @@ import StoryBody from "@/components/stories/StoryBody";
 import WherePanel from "@/components/stories/WherePanel";
 import { categoryLabel } from "@/lib/format";
 import { canOptimize } from "@/lib/image-src";
+import PhotoCredit from "@/components/PhotoCredit";
+import { isApprovedStoryPicture, storyPicture } from "@/lib/story-picture";
 import { prisma } from "@/lib/prisma";
 import { getStoryLoop } from "@/lib/story-data";
 import { parseStoryBody } from "@/lib/stories-view";
@@ -31,7 +33,7 @@ export async function generateMetadata({ params }: Ctx): Promise<Metadata> {
   return {
     title: story.title,
     description: story.excerpt,
-    openGraph: { images: [story.image] },
+    openGraph: isApprovedStoryPicture(story.image) && !story.image.startsWith("/") ? { images: [story.image] } : {}, // a borrowed or placeholder picture is never offered as the share preview
   };
 }
 
@@ -73,7 +75,8 @@ export default async function StoryPage({ params }: Ctx) {
         )}
 
         <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[2px] bg-canopy-deep">
-          <Image src={story.image} alt="" fill unoptimized={!canOptimize(story.image)} priority sizes="(min-width: 1152px) 1152px, 100vw" className="object-cover" />
+          <Image src={storyPicture(story.image)} alt="" fill unoptimized={!canOptimize(storyPicture(story.image))} priority sizes="(min-width: 1152px) 1152px, 100vw" className="object-cover" />
+          <PhotoCredit credit={story.imageCredit} />
         </div>
 
         <div className="mt-12 grid gap-14 lg:grid-cols-[minmax(0,1fr)_20rem]">

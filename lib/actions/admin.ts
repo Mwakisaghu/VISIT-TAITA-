@@ -10,6 +10,8 @@ import { normalizeCredits } from "@/lib/story-credits";
 import { parseGuideFields } from "@/lib/field-guide";
 import { generateCheckinToken } from "@/lib/passport";
 import { imageUrl } from "@/lib/image-policy";
+import { normalizePhotoCredit } from "@/lib/photo-credit";
+import { isApprovedStoryPicture } from "@/lib/story-picture";
 import { cleanDetail, DETAIL_MAX } from "@/lib/event-details";
 
 async function requireAdmin() {
@@ -110,7 +112,8 @@ const storySchema = z.object({
   excerpt: z.string().min(10),
   body: z.string().default(""),
   readingTime: z.string().min(2),
-  image: imageUrl,
+  // A story picture must be one the site may really use and credit: its own storage (upload it), a free stock library, or an openly licensed library such as Wikimedia Commons. A link to somebody else's website is not accepted.
+  image: imageUrl.refine((v) => isApprovedStoryPicture(v), { message: "A story picture must be one you uploaded here, or from Unsplash, Pexels, Pixabay or Wikimedia Commons (with the photographer in the photo credit). A picture on someone else's website is not ours to use." }),
   status: z.enum(["DRAFT", "PUBLISHED"]),
   featured: z.coerce.boolean(),
 });
@@ -129,6 +132,8 @@ export async function saveStory(id: string | null, formData: FormData) {
   });
   const credits = normalizeCredits(String(formData.get("credits") ?? ""));
   if (!credits.ok) throw new Error(credits.error);
+  const imageCredit = normalizePhotoCredit(formData.get("imageCredit"));
+  if (!imageCredit.ok) throw new Error(imageCredit.error);
 
   // The place the story is about is optional; an id that is not a real place is ignored.
   const placeId = String(formData.get("destinationId") ?? "").trim();
@@ -136,12 +141,13 @@ export async function saveStory(id: string | null, formData: FormData) {
   const destinationId = place?.id ?? null;
 
   if (id) {
-    await prisma.story.update({ where: { id }, data: { ...parsed, credits: credits.value, destinationId } });
+    await prisma.story.update({ where: { id }, data: { ...parsed, credits: credits.value, imageCredit: imageCredit.value, destinationId } });
   } else {
     await prisma.story.create({
       data: {
         ...parsed,
         credits: credits.value,
+        imageCredit: imageCredit.value,
         destinationId,
         slug: `${slugify(parsed.title)}-${Math.random().toString(36).slice(2, 6)}`,
         isDemo: false,

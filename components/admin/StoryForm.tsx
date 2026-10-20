@@ -58,6 +58,11 @@ export default function StoryForm({ story, destinations = [] }: { story?: Story;
 
       <ImageField name="image" label="Image" purpose="photo" defaultValue={story?.image} required />
 
+      <Field label="Photo credit">
+        <input name="imageCredit" defaultValue={story?.imageCredit ?? ""} maxLength={240} className="input" />
+        <span className="font-body text-xs text-stone/80">Who took the picture, the licence and where it came from, on one line: Name | Licence | https://link. For example: Jane Doe | CC BY 4.0 | https://commons.wikimedia.org/wiki/File:Example.jpg. A picture from Wikimedia Commons or a photographer who asks for credit needs this; a picture you took yourself can have your name.</span>
+      </Field>
+
       <Field label="Status">
         <select name="status" defaultValue={story?.status ?? "DRAFT"} className="input">
           <option value="DRAFT">Draft</option>

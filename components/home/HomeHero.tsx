@@ -2,6 +2,7 @@ import Link from "next/link";
 import Landscape from "@/components/home/Landscape";
 import HeroVideo from "@/components/home/HeroVideo";
 import Parallax from "@/components/home/Parallax";
+import PhotoCredit from "@/components/PhotoCredit";
 import Photo from "@/components/home/Photo";
 import { ArrowIcon, PlayIcon } from "@/components/home/icons";
 import { display, eyebrow, primaryCta } from "@/components/home/ui";
@@ -42,6 +43,7 @@ export default function HomeHero({ media }: { media: HomeMedia }) {
         </div>
       </div>
 
+      <PhotoCredit credit={media.heroCredit} />
       <a href={lp("#find-your-taita")} className="focus-ring absolute bottom-7 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 font-body text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-parchment/70 transition-colors hover:text-parchment md:flex">{tr("Scroll to explore")}<span aria-hidden className="block h-9 w-px animate-hint bg-parchment/70 motion-reduce:animate-none" />
       </a>
     </section>

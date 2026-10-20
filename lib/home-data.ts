@@ -1,11 +1,12 @@
 // What the homepage shows from the database. Every block is fetched on its own and falls back to "nothing" if it fails, so a slow or
 // unavailable database can never blank the homepage: each section has a designed empty state.
 import { prisma } from "@/lib/prisma";
+import { storyPicture } from "@/lib/story-picture";
 
 export type Pic = { src: string | null; label: string };
 export type TileKey = "wild" | "adventure" | "culture" | "stay" | "sport" | "gems";
 export type ExperienceItem = { slug: string; name: string; category: string; region: string; image: string };
-export type StoryItem = { slug: string; title: string; category: string; excerpt: string; image: string; isDemo: boolean };
+export type StoryItem = { slug: string; title: string; category: string; excerpt: string; image: string; imageCredit: string | null; isDemo: boolean };
 export type EventItem = { slug: string; name: string; program: string; eventDate: Date; location: string; ticketing: string; isDemo: boolean };
 export type HomeData = { tiles: Record<TileKey, Pic>; experiences: ExperienceItem[]; stories: StoryItem[]; events: EventItem[] };
 
@@ -26,7 +27,7 @@ export async function loadHome(now: Date = new Date()): Promise<HomeData> {
     safe("places", () => prisma.destination.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { createdAt: "desc" }], select: { name: true, category: true, image: true, featured: true }, take: 80 }), []),
     safe("stays", () => prisma.accommodation.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { createdAt: "desc" }], select: { name: true, image: true }, take: 6 }), []),
     safe("experiences", () => prisma.experience.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { createdAt: "desc" }], select: { slug: true, name: true, category: true, region: true, image: true }, take: 8 }), []),
-    safe("stories", () => prisma.story.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { createdAt: "desc" }], select: { slug: true, title: true, category: true, excerpt: true, image: true, isDemo: true }, take: 4 }), []),
+    safe("stories", () => prisma.story.findMany({ where: { status: "PUBLISHED" }, orderBy: [{ featured: "desc" }, { createdAt: "desc" }], select: { slug: true, title: true, category: true, excerpt: true, image: true, imageCredit: true, isDemo: true }, take: 4 }), []),
     safe("events", () => prisma.event.findMany({ where: { status: "PUBLISHED", eventDate: { gte: now } }, orderBy: { eventDate: "asc" }, select: { slug: true, name: true, program: true, eventDate: true, location: true, ticketing: true, isDemo: true }, take: 3 }), []),
   ]);
 
@@ -43,7 +44,7 @@ export async function loadHome(now: Date = new Date()): Promise<HomeData> {
   if (gem) used.add(gem.image);
   d.tiles.gems.src = gem?.image ?? null;
   d.experiences = experiences;
-  d.stories = stories;
+  d.stories = stories.map((s) => ({ ...s, image: storyPicture(s.image) })); // a story picture that is not from an approved source is replaced by the site's own placeholder, never shown
   d.events = events;
   return d;
 }

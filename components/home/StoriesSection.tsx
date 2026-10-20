@@ -1,6 +1,7 @@
 import Link from "next/link";
 import DemoNotice from "@/components/DemoNotice";
 import Photo from "@/components/home/Photo";
+import PhotoCredit from "@/components/PhotoCredit";
 import Reveal from "@/components/home/Reveal";
 import { ArrowIcon } from "@/components/home/icons";
 import { display, eyebrow, textLink } from "@/components/home/ui";
@@ -30,6 +31,7 @@ export default function StoriesSection({ stories }: { stories: StoryItem[] }) {
             <Reveal variant="mask" className="lg:col-span-7">
               <Link href={`/stories/${lead.slug}`} className="focus-ring group relative block aspect-[4/3] overflow-hidden rounded-[2px] bg-gradient-to-br from-canopy-deep to-stone sm:aspect-[16/11]">
                 <div className="absolute inset-0 transition-transform duration-[1200ms] ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"><Photo src={lead.image} alt="" sizes="(min-width:1024px) 58vw, 100vw" /></div>
+                <PhotoCredit credit={lead.imageCredit} position="top-right" links={false} />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone/95 via-stone/30 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-parchment md:p-10">
                   <p className="font-body text-[0.68rem] font-bold uppercase tracking-[0.26em] text-ochre">{categoryName(lead.category)}</p>
