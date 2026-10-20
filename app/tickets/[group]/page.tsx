@@ -36,6 +36,9 @@ export default async function TicketsPage(props: { params: Promise<{ group: stri
       <Link href="/account/tickets" className="font-body text-sm text-stone/80 hover:text-rust">← My tickets</Link>
       <h1 className="mt-3 font-display text-3xl text-stone">{ev.name}</h1>
       <p className="mt-1 font-body text-sm text-stone/80">{formatEat(ev.eventDate)} · {ev.location}</p>
+      {live.length > 0 && (
+        <p className="mt-4"><a href={`/tickets/${params.group}/pdf`} download className="focus-ring inline-flex min-h-[44px] items-center rounded-full border-2 border-stone px-5 font-body text-sm font-bold text-stone hover:bg-stone/5">Download PDF{live.length > 1 ? ` (${live.length} tickets)` : ""}</a></p>
+      )}
 
       {waiting.length > 0 && instructions && (
         <section aria-labelledby="pay" className="mt-8 rounded-sm border border-ochre/40 bg-ochre/5 p-5">

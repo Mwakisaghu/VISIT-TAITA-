@@ -1,0 +1,10 @@
+# The printable ticket (PDF)
+
+A signed-in person can download their **valid** tickets as a PDF: one A4 page per ticket, laid out like a real ticket (the logo, the event, when, where, the holder, the ticket number and price, a perforation, and a large QR code for the door). A page also lists "What to bring" and "Getting there" when the event has them (from the event's "More details").
+
+- **Where:** `GET /tickets/<group>/pdf` (a "Download PDF" button on the ticket page). `?lang=sw|fr|de` picks the language; anything else is English.
+- **Who:** only the ticket's owner, signed in. Someone else's tickets, tickets still waiting for payment, used and cancelled ones all answer "not found". Never cached; 30 downloads an hour per person.
+- **The QR** carries the same secret address as the on-screen ticket and is the only place it appears in the file. It is drawn at a size where every square is at least 1.2 mm (the minimum in `lib/qr-code.ts`'s print guide). If a public site address is not configured (`NEXT_PUBLIC_APP_URL`), the ticket is still produced, with the number and no QR.
+- **No PDF library.** The file is written by `lib/pdf-writer.ts` using the standard PDF fonts (the character widths are in `lib/pdf-fonts.ts`), so nothing was added to `package.json`. Because those fonts hold Windows-1252 only, a name in another script (Amharic, Arabic, emoji) prints as `?` in the PDF: the on-screen ticket page is always complete, so point such a person there. `buildTicketPdf` reports this as `lossy`.
+- **Changing the look:** the layout is in `lib/ticket-pdf.ts` (`GEO` holds the page geometry; the colours are at the top). The test `tests/ticket_pdf_test.tsx` re-reads the finished file (cross-reference table, stream lengths, the QR's exact squares) and checks that no text ever leaves the ticket or overlaps, on a batch of very awkward names. Look at a real one after any change: render it with `pdftoppm -png -r 80 ticket.pdf out` and open the image.
+- **Words:** the ticket's labels are in `lib/ticket-pdf-text.ts` (translated; a translation may only use characters the PDF fonts can print, which the test enforces).
