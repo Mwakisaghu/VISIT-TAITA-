@@ -3,6 +3,7 @@ import { PLACES, SAMPLE_GEO } from "./data/taita-places";
 import MAKERS from "./data/taita-makers.json";
 import CONTENT from "./data/taita-content.json";
 import bcrypt from "bcryptjs";
+import { SAMPLE_EVENT_DETAILS } from "./sample-event-details";
 
 const prisma = new PrismaClient();
 
@@ -581,7 +582,7 @@ async function main() {
     await prisma.event.upsert({
       where: { slug: e.slug },
       update: { ...e, status: "PUBLISHED" },
-      create: { ...e, status: "PUBLISHED", isDemo: true },
+      create: { ...e, ...(SAMPLE_EVENT_DETAILS[e.slug] ?? {}), status: "PUBLISHED", isDemo: true },
     });
   }
 
