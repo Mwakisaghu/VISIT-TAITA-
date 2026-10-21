@@ -5,6 +5,7 @@ import AltitudeRibbon from "@/components/field/AltitudeRibbon";
 import Tag from "@/components/field/Tag";
 import MakerMark from "@/components/shop/MakerMark";
 import MakerProductCard from "@/components/shop/MakerProductCard";
+import { productGrid } from "@/components/shop/grid";
 import { shopCategories } from "@/lib/data";
 import { altitudeLabel } from "@/lib/field-guide";
 import { PUBLIC_MAKER, isPublicMaker } from "@/lib/makers";
@@ -96,9 +97,12 @@ export default async function ShopPage() {
 
       <section aria-labelledby="all-title" className="px-6 pb-20 pt-10">
         <div className="mx-auto max-w-6xl">
-          <h2 id="all-title" className="font-display text-3xl text-stone">Everything in the shop</h2>
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            <h2 id="all-title" className="font-display text-3xl text-stone">Everything in the shop</h2>
+            {cards.length > 0 && <p className="font-body text-[0.8rem] text-stone/80">{cards.length} {cards.length === 1 ? "product" : "products"}</p>}
+          </div>
           {cards.length > 0 ? (
-            <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">
+            <div className={`mt-8 ${productGrid}`}>
               {cards.map(({ product, maker }) => <MakerProductCard key={product.slug} product={product} maker={maker} />)}
             </div>
           ) : <p className="mt-6 font-body text-stone/80">No products published yet.</p>}
