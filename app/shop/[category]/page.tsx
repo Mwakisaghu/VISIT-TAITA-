@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SectionHeading from "@/components/SectionHeading";
-import ProductCard from "@/components/marketplace/ProductCard";
+import MakerProductCard from "@/components/shop/MakerProductCard";
+import { productGrid } from "@/components/shop/grid";
 import { shopCategories } from "@/lib/data";
 import { slugToCategory } from "@/lib/format";
+import { isPublicMaker } from "@/lib/makers";
 import { prisma } from "@/lib/prisma";
 import { shareMeta } from "@/lib/share-meta";
 
@@ -20,6 +22,8 @@ export async function generateMetadata(props: { params: Promise<{ category: stri
 
 export const revalidate = 30;
 
+const MAKER = { id: true, slug: true, name: true, craft: true, village: true, altitudeM: true, status: true, consentGivenAt: true } as const;
+
 export default async function ShopCategoryPage(
   props: {
     params: Promise<{ category: string }>;
@@ -32,7 +36,10 @@ export default async function ShopCategoryPage(
   const products = await prisma.product.findMany({
     where: { category: slugToCategory(params.category) as any, status: "PUBLISHED" },
     orderBy: [{ featured: "desc" }, { name: "asc" }],
+    include: { maker: { select: MAKER } },
   });
+  // The same rule as the shop: a maker is shown only when they are public (consent recorded); otherwise the card says only "Made in Taita".
+  const cards = products.map((p) => ({ product: p, maker: p.maker && isPublicMaker(p.maker) ? p.maker : null }));
 
   return (
     <div className="px-6 py-20">
@@ -40,9 +47,9 @@ export default async function ShopCategoryPage(
         <SectionHeading title={cat.label} />
 
         {products.length > 0 ? (
-          <div className="mt-10 grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-            {products.map((p) => (
-              <ProductCard key={p.slug} product={p} />
+          <div className={`mt-10 ${productGrid}`}>
+            {cards.map(({ product, maker }) => (
+              <MakerProductCard key={product.slug} product={product} maker={maker} />
             ))}
           </div>
         ) : (

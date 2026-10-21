@@ -6,6 +6,7 @@ import AltitudeRibbon from "@/components/field/AltitudeRibbon";
 import Tag from "@/components/field/Tag";
 import MakerMark from "@/components/shop/MakerMark";
 import MakerProductCard from "@/components/shop/MakerProductCard";
+import { productGrid } from "@/components/shop/grid";
 import { altitudeLabel } from "@/lib/field-guide";
 import { PUBLIC_MAKER } from "@/lib/makers";
 import { prisma } from "@/lib/prisma";
@@ -61,7 +62,7 @@ export default async function MakerPage({ params }: Ctx) {
         <section aria-labelledby="work-title" className="mt-16 border-t border-stone/10 pt-10">
           <h2 id="work-title" className="font-display text-3xl text-stone">{m.isGroup ? "Their work" : `${m.name.split(" ")[0]}'s work`}</h2>
           {m.products.length > 0 ? (
-            <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">{m.products.map((p) => <MakerProductCard key={p.slug} product={p} maker={card} />)}</div>
+            <div className={`mt-8 ${productGrid}`}>{m.products.map((p) => <MakerProductCard key={p.slug} product={p} maker={card} />)}</div>
           ) : <p className="mt-4 font-body text-stone/80">Nothing in the shop just now.</p>}
         </section>
       </div>
