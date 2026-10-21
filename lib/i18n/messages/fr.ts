@@ -565,6 +565,16 @@ export const fr: Record<string, string> = {
   "What to bring": "À apporter",
   "When": "Quand",
   "Where": "Où",
+  // The ticket panel in My tickets (the ticket drawn beside the list). Drafted for Visit Taita: a native speaker must read these before launch.
+  "Download PDF": "Télécharger le PDF",
+  "Download all {count} tickets (PDF)": "Télécharger les {count} billets (PDF)",
+  "Open the full ticket page": "Ouvrir la page complète du billet",
+  "Show this QR code at the door.": "Présentez ce code QR à l'entrée.",
+  "The QR code cannot be shown right now. Give the staff your ticket number at the door.": "Le code QR ne peut pas être affiché pour le moment. Donnez votre numéro de billet au personnel à l'entrée.",
+  "This reservation expired. If you already paid, open the full ticket page.": "Cette réservation a expiré. Si vous avez déjà payé, ouvrez la page complète du billet.",
+  "This ticket has been used.": "Ce billet a été utilisé.",
+  "This ticket was cancelled.": "Ce billet a été annulé.",
+  "Your QR code appears here once your payment is confirmed. Open the full ticket page to pay.": "Votre code QR apparaît ici dès que votre paiement est confirmé. Ouvrez la page complète du billet pour payer.",
   // The account page and its lists (My account, orders, enquiries, reviews). Drafted for Visit Taita: a native speaker must read these before launch (see docs/i18n.md).
   "{amount} is waiting to be sent to you": "{amount} en attente de versement",
   "{amount} waiting to be sent": "{amount} en attente d'envoi",
