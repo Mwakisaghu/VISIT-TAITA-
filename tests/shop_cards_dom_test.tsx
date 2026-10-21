@@ -1,0 +1,51 @@
+import React from "react"; (globalThis as any).React = React;
+const { JSDOM } = require("jsdom");
+const dom = new JSDOM('<!doctype html><html><body><div id="root"></div></body></html>', { url: "http://localhost/shop", pretendToBeVisual: true }); const w = dom.window as any;
+Object.assign(globalThis, { self: w, window: w, document: w.document, HTMLElement: w.HTMLElement, Node: w.Node, Event: w.Event, MouseEvent: w.MouseEvent });
+Object.defineProperty(globalThis, "navigator", { value: w.navigator, configurable: true, writable: true });
+(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+const added: any[] = [];
+const Module = require("module"); const origLoad = Module._load;
+Module._load = function (r: string, ...x: any[]) {
+  if (r === "@/components/marketplace/CartProvider") return { useCart: () => CART };
+  if (r === "next/navigation") return { useRouter: () => ({ push() {} }), usePathname: () => "/shop" };
+  return origLoad.call(this, r, ...x);
+};
+const CART = { items: [], count: 0, addItem: (...a: any[]) => added.push(a) };
+const { createRoot } = require("react-dom/client"); const { act } = require("react");
+const flush = () => act(async () => { for (let i = 0; i < 3; i++) await new Promise((r) => setTimeout(r, 4)); });
+const q = (s: string) => w.document.querySelector(s) as any;
+let root: any; const unmount = async () => { if (root) { await act(async () => root.unmount()); root = null; } };
+const mount = async (el: any) => { await unmount(); w.document.body.innerHTML = '<div id="root"></div>'; root = createRoot(q("#root")); await act(async () => root.render(el)); await flush(); };
+const click = async (el: any) => { await act(async () => { el.dispatchEvent(new w.MouseEvent("click", { bubbles: true, cancelable: true })); }); await flush(); };
+async function main() {
+  const QuickAdd = (await import("@/components/shop/QuickAdd")).default as any;
+  const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
+  const base = { productId: "p1", slug: "black-tee", name: "Visit Taita Black Tee", price: 1600, image: "/p/a.jpg", options: [] as string[], optionLabel: "Size" };
+  const plus = "M12 5v14M5 12h14", tick = "M5 12.5l4.5 4.5L19 7.5"; const pathOf = () => q("button svg path")?.getAttribute("d");
+  await mount(React.createElement(QuickAdd, base)); const btn = () => q("button");
+  t("CLICKING ADDS THE PRODUCT ONCE, EXACTLY: one add to the cart, with the product's id, slug, FULL name, price and picture, no size (nothing to choose), a quantity of 1", pathOf() === plus && (await click(btn()), added.length === 1) && JSON.stringify(added[0]) === JSON.stringify([{ productId: "p1", slug: "black-tee", name: "Visit Taita Black Tee", price: 1600, image: "/p/a.jpg", option: null }, 1]));
+  t("IT SAYS SO: the plus becomes a tick, and the news is announced to screen readers ('... added to your cart') in a polite status region", pathOf() === tick && q('[role="status"]').textContent === "Visit Taita Black Tee added to your cart" && q('[role="status"]').className.includes("sr-only"));
+  await act(async () => { await new Promise((r) => setTimeout(r, 1650)); }); await flush();
+  t("AND IT GOES BACK after a moment (1.5 seconds): the plus returns and the announcement is cleared, ready to add another", pathOf() === plus && q('[role="status"]').textContent === "");
+  added.length = 0; await click(btn()); await click(btn());
+  t("CLICKING AGAIN ADDS ANOTHER (two clicks, two adds), and the tick stays until a moment after the LAST click, not the first", added.length === 2 && pathOf() === tick);
+  await act(async () => { await new Promise((r) => setTimeout(r, 1650)); }); await flush(); await click(btn()); await act(async () => { await new Promise((r) => setTimeout(r, 900)); }); await click(btn()); await act(async () => { await new Promise((r) => setTimeout(r, 900)); }); const stillTick = pathOf() === tick; await act(async () => { await new Promise((r) => setTimeout(r, 800)); }); await flush();
+  t("A SECOND CLICK RESTARTS THE MOMENT: click, wait 0.9 s, click again, wait 0.9 s (1.8 s after the first click, when the first timer alone would have expired): the tick is still showing; 0.8 s later it is gone", stillTick && pathOf() === plus);
+  const cleared: any[] = []; const realClear = (globalThis as any).clearTimeout; (globalThis as any).clearTimeout = (id: any) => { cleared.push(id); return realClear(id); };
+  await click(btn()); const before = cleared.length; await unmount(); (globalThis as any).clearTimeout = realClear;
+  t("LEAVING THE PAGE MID-TICK CLEANS UP: the pending timer is cancelled when the button goes away (nothing tries to update a button that no longer exists)", cleared.length > before);
+  added.length = 0; await mount(React.createElement(QuickAdd, { ...base, options: ["S", "M", "L"] }));
+  const link = q("a"); await click(link);
+  t("A PRODUCT WITH SIZES NEVER SKIPS THE CHOICE: it renders a link (no button) to the product page, named 'Choose a size for ...', and activating it adds nothing to the cart", !q("button") && link.getAttribute("href") === "/shop/product/black-tee" && link.getAttribute("aria-label") === "Choose a size for Visit Taita Black Tee" && added.length === 0 && !q('[role="status"]'));
+  await mount(React.createElement(QuickAdd, { ...base, options: ["Red"], optionLabel: "Colour" }));
+  t("…in the choice's own words ('Choose a colour for ...'), lower-cased, whatever the shop calls the choice", q("a").getAttribute("aria-label") === "Choose a colour for Visit Taita Black Tee");
+  await mount(React.createElement(QuickAdd, base));
+  t("BOTH KINDS ARE FINGER-SIZED AND SIT IN THE SAME PLACE (44 px circle at the picture's lower right, above the card's own link), and the icon is hidden from screen readers (the label says it all)", ["button"].every((s) => /h-11 w-11/.test(q(s).className) && /absolute bottom-2 right-2 z-20/.test(q(s).className)) && q("svg").getAttribute("aria-hidden") === "true");
+  await mount(React.createElement(QuickAdd, { ...base, options: ["S"] }));
+  t("…the same for the choose-a-size link", /h-11 w-11/.test(q("a").className) && /absolute bottom-2 right-2 z-20/.test(q("a").className) && q("svg").getAttribute("aria-hidden") === "true");
+  await unmount();
+  let nbad = 0; for (const [nm, ok2] of res) { console.log((ok2 ? "PASS " : "FAIL ") + nm); if (!ok2) nbad++; }
+  console.log(nbad ? `\n${nbad} FAILED` : `\nALL ${res.length} SHOP QUICK ADD CHECKS PASSED`); process.exit(nbad ? 1 : 0);
+}
+main().catch((e) => { console.error("ERROR:", e); process.exit(2); });

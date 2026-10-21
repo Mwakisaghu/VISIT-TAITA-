@@ -3,6 +3,8 @@ import React from "react"; (globalThis as any).React = React;
 import fs from "fs"; import path from "path";
 import { renderToStaticMarkup } from "react-dom/server";
 const STORE = "https://cdn.visittaita.co.ke/visit-taita-media";
+const Module = require("module"); const origLoad = Module._load; // the card has a quick-add button, which needs the cart (the real app always provides it): a stand-in is enough to draw the picture
+Module._load = function (r: string, ...x: any[]) { if (r === "@/components/marketplace/CartProvider") return { useCart: () => ({ items: [], addItem() {}, count: 0 }) }; return origLoad.call(this, r, ...x); };
 
 async function main() {
   const IS = await import("@/lib/image-src"); const { canOptimize, optimizedUrl, optimizableHosts, OPTIMIZER_WIDTHS } = IS;
@@ -42,10 +44,10 @@ async function main() {
   t("the map page hands the map's list a resized 384 px picture (the thumbnail is 80 px wide), and stays a server component so the size rule can run", /optimizedUrl\(i\.image, 384\)/.test(src("app/map/page.tsx")) && !isClient(src("app/map/page.tsx")));
 
   // ===== what a visitor is actually sent =====
-  const Card = (await import("@/components/marketplace/ProductCard")).default as any; const render = (image: string) => renderToStaticMarkup(<Card product={{ id: "1", slug: "polo", name: "Polo", category: "APPAREL", price: 2500, inventory: 5, image }} />);
+  const Card = (await import("@/components/shop/MakerProductCard")).default as any; const render = (image: string) => renderToStaticMarkup(<Card product={{ id: "1", slug: "polo", name: "Polo", category: "APPAREL", price: 2500, inventory: 5, options: [], optionLabel: "Size", image }} maker={null} />);
   process.env.S3_PUBLIC_URL = STORE;
   const up = render(`${STORE}/images/product/202610/abc.webp`), ext = render("https://example.com/pasted.jpg"), uns = render("https://images.unsplash.com/photo-1?q=80");
-  t("RENDER: an uploaded picture is served through the optimiser, with a srcset of resized widths (so a phone gets a small file, not the stored 2000 px one)", /src="\/_next\/image\?url=/.test(up) && /srcSet="[^"]*\/_next\/image\?url=[^"]*&amp;w=\d+&amp;q=75 \d+w/.test(up) && /sizes="\(min-width: 1024px\) 25vw/.test(up) && !/src="https:\/\/cdn\.visittaita\.co\.ke/.test(up));
+  t("RENDER: an uploaded picture is served through the optimiser, with a srcset of resized widths (so a phone gets a small file, not the stored 2000 px one)", /src="\/_next\/image\?url=/.test(up) && /srcSet="[^"]*\/_next\/image\?url=[^"]*&amp;w=\d+&amp;q=75 \d+w/.test(up) && /sizes="\(min-width: 1024px\) 20vw/.test(up) && !/src="https:\/\/cdn\.visittaita\.co\.ke/.test(up));
   t("RENDER: the srcset offers several widths up to the display size the markup declares", (up.match(/&amp;w=(\d+)&amp;q=75 \d+w/g) ?? []).length >= 6);
   t("RENDER: a pasted link to some other website is still shown exactly as before — the raw address, no optimiser, no srcset (it would fail to load through the optimiser)", /src="https:\/\/example\.com\/pasted\.jpg"/.test(ext) && !/_next\/image/.test(ext) && !/srcSet/.test(ext));
   t("RENDER: an Unsplash picture goes through the optimiser", /src="\/_next\/image\?url=https%3A%2F%2Fimages\.unsplash\.com/.test(uns));
