@@ -1,0 +1,10 @@
+# My tickets: the ticket panel
+
+In **Account, My tickets**, tapping a ticket (or a group of tickets reserved together) opens it **beside the list** on a large screen, and as a **sheet rising over the list** on a phone. The same ticket can be downloaded as a PDF (see `ticket-pdf.md`).
+
+- **How it works:** the address is `/account/tickets?open=<group>`. The server draws the panel, so it works without JavaScript, can be bookmarked, and the Back button closes it. Only one of the signed-in person's own groups can ever be opened: an unknown, malformed or someone else's id simply shows the plain list (nothing reveals whether it exists).
+- **What it shows:** each ticket drawn like the printed one (green header with the logo, the event as a serif headline, when with the year, where, the holder, the number and price, a perforation, and a stub with the QR code). Tickets that are not valid show their status and what to do instead of a QR. A "Download PDF" button (only when there is a valid ticket) and a link to the full ticket page, where you pay, enter an M-Pesa code or cancel.
+- **The QR** is drawn as plain SVG shapes from the QR library's module grid (`qrPath` in `lib/qr-code.ts`): no raw HTML is injected, and the secret address is not written anywhere in the page, only encoded in the squares.
+- **The small script** (`components/account-hub/SheetBehaviour.tsx`, the only client component here): focus moves to the title on opening; Escape closes; on a phone-sized screen the page behind stops scrolling, the sheet is announced as a dialog, and Tab stays inside it; closing returns focus to the ticket that opened it. On a laptop none of the trapping happens.
+- **To change the look:** the ticket is `TicketCard.tsx` (its colours match the PDF's and `lib/ticket-pdf.ts`), the panel is `TicketSheet.tsx`. Look at it on a real phone and a laptop after any change: the tests prove the structure, not the appearance.
+- **Tests:** `tests/ticket_sheet_test.tsx` (the page, the data, security, every status, four languages) and `tests/ticket_sheet_dom_test.tsx` (the browser behaviour).
