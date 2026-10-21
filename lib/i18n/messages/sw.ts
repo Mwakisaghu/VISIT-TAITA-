@@ -565,6 +565,16 @@ export const sw: Record<string, string> = {
   "What to bring": "Cha kuleta",
   "When": "Lini",
   "Where": "Wapi",
+  // The ticket panel in My tickets (the ticket drawn beside the list). Drafted for Visit Taita: a native speaker must read these before launch.
+  "Download PDF": "Pakua PDF",
+  "Download all {count} tickets (PDF)": "Pakua tiketi zote {count} (PDF)",
+  "Open the full ticket page": "Fungua ukurasa kamili wa tiketi",
+  "Show this QR code at the door.": "Onyesha msimbo huu wa QR mlangoni.",
+  "The QR code cannot be shown right now. Give the staff your ticket number at the door.": "Msimbo wa QR hauwezi kuonyeshwa sasa. Wape wafanyakazi namba ya tiketi yako mlangoni.",
+  "This reservation expired. If you already paid, open the full ticket page.": "Uhifadhi huu umeisha muda. Ikiwa ulishalipa, fungua ukurasa kamili wa tiketi.",
+  "This ticket has been used.": "Tiketi hii imetumika.",
+  "This ticket was cancelled.": "Tiketi hii ilighairiwa.",
+  "Your QR code appears here once your payment is confirmed. Open the full ticket page to pay.": "Msimbo wako wa QR utaonekana hapa malipo yako yakithibitishwa. Fungua ukurasa kamili wa tiketi ili ulipe.",
   // The account page and its lists (My account, orders, enquiries, reviews). Drafted for Visit Taita: a native speaker must read these before launch (see docs/i18n.md).
   "{amount} is waiting to be sent to you": "{amount} inasubiri kutumwa kwako",
   "{amount} waiting to be sent": "{amount} inasubiri kutumwa",

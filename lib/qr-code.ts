@@ -30,3 +30,18 @@ export function printGuide(modules: number) {
   const recommendedMm = Math.ceil(across * 1.8);
   return { modules, minimumMm, recommendedMm, squareMmAt: (widthMm: number) => Math.round((widthMm / across) * 100) / 100 };
 }
+
+/**
+ * The QR code as ONE SVG path of squares, so a page can draw it with ordinary SVG elements (no raw HTML is injected, and the address it carries never appears as text). `size` is the width in squares INCLUDING the
+ * white margin (the "quiet zone", 4 squares each side); `d` is the path, with each row's neighbouring squares joined into one bar.
+ */
+export function qrPath(url: string): { size: number; d: string } {
+  const m = QRCode.create(url, { errorCorrectionLevel: "Q" }).modules; const quiet = 4; let d = "";
+  for (let r = 0; r < m.size; r++) {
+    for (let c = 0; c < m.size; c++) {
+      if (!m.get(r, c)) continue; let len = 1; while (c + len < m.size && m.get(r, c + len)) len++;
+      d += `M${c + quiet} ${r + quiet}h${len}v1h-${len}z`; c += len - 1;
+    }
+  }
+  return { size: m.size + quiet * 2, d };
+}
