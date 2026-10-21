@@ -12,13 +12,15 @@ export type NavItem = {
   /** Extra words the "find a page" box matches, so "accounts" finds Users. */
   keywords?: string[];
 };
-export type NavGroup = { id: string; label: string; items: NavItem[] };
+/** The small pictures the admin uses (drawn in components/admin/AdminIcon.tsx). */
+export type IconName = "home" | "pin" | "bed" | "bag" | "trophy" | "cal" | "users" | "heart" | "mail" | "shield" | "search" | "bell" | "ext" | "chev" | "chevd" | "plus" | "user" | "menu" | "check" | "cash" | "star" | "note";
+export type NavGroup = { id: string; label: string; icon: IconName; items: NavItem[] };
 
 export const OVERVIEW: NavItem = { href: "/admin", label: "Overview", keywords: ["home", "dashboard"] };
 
 export const NAV_GROUPS: NavGroup[] = [
   {
-    id: "places", label: "Places & content",
+    id: "places", icon: "pin", label: "Places & content",
     items: [
       { href: "/admin/destinations", label: "Destinations", keywords: ["places", "map", "qr"] },
       { href: "/admin/stories", label: "Stories", keywords: ["articles", "blog"] },
@@ -26,7 +28,7 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "stays", label: "Stays & experiences",
+    id: "stays", icon: "bed", label: "Stays & experiences",
     items: [
       { href: "/admin/accommodations", label: "Accommodations", keywords: ["stays", "hotels", "lodging"] },
       { href: "/admin/accommodations/enquiries", label: "Stay enquiries", badge: "stayEnquiries", keywords: ["messages", "leads"] },
@@ -38,7 +40,7 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "shop", label: "Shop",
+    id: "shop", icon: "bag", label: "Shop",
     items: [
       { href: "/admin/shop/products", label: "Products", badge: "products", keywords: ["merch", "items", "listings"] },
       { href: "/admin/makers", label: "Makers", keywords: ["artisans", "crafts", "consent", "workshops", "weavers"] },
@@ -46,7 +48,7 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "cup", label: "Football cup",
+    id: "cup", icon: "trophy", label: "Football cup",
     items: [
       { href: "/admin/cup/teams", label: "Teams" },
       { href: "/admin/cup/players", label: "Players" },
@@ -55,14 +57,14 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "week", label: "Taita Week",
+    id: "week", icon: "cal", label: "Taita Week",
     items: [
       { href: "/admin/week/sessions", label: "Programme", keywords: ["schedule", "sessions", "festival"] },
       { href: "/admin/week/venues", label: "Venues" },
     ],
   },
   {
-    id: "community", label: "Community",
+    id: "community", icon: "users", label: "Community",
     items: [
       { href: "/admin/reviews", label: "Reviews", badge: "reviews", keywords: ["moderation", "ratings", "approve"] },
       { href: "/admin/field-notes", label: "Field notes", badge: "fieldNotes", keywords: ["moderation", "posts", "approve"] },
@@ -73,7 +75,7 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "sponsors", label: "Sponsors & impact",
+    id: "sponsors", icon: "heart", label: "Sponsors & impact",
     items: [
       { href: "/admin/sponsors", label: "Sponsors" },
       { href: "/admin/sponsors/packages", label: "Packages", keywords: ["tiers", "pricing"] },
@@ -82,7 +84,7 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "comms", label: "Messages & promotion",
+    id: "comms", icon: "mail", label: "Messages & promotion",
     items: [
       { href: "/admin/newsletter", label: "Newsletter", keywords: ["subscribers", "email list"] },
       { href: "/admin/emails", label: "Email log", badge: "emails", keywords: ["outbox", "failed", "sent"] },
@@ -90,7 +92,7 @@ export const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    id: "people", label: "People & access",
+    id: "people", icon: "shield", label: "People & access",
     items: [
       { href: "/admin/users", label: "Accounts", managers: true, keywords: ["users", "people", "members", "suspend", "staff", "roles"] },
       { href: "/admin/users/audit", label: "Activity log", managers: true, keywords: ["audit", "history", "who did what"] },
@@ -133,16 +135,19 @@ export const groupBadge = (g: NavGroup, badges: Badges): number => g.items.reduc
 export const badgeText = (n: number) => (n > 99 ? "99+" : String(n));
 
 /** What the overview's "Needs attention" list says for each kind of waiting item. */
-export const ATTENTION: Array<{ key: BadgeKey; text: (n: number) => string; href: string; managers?: boolean }> = [
-  { key: "refunds", text: (n) => `${n} refund${n === 1 ? "" : "s"} to send`, href: "/admin/bookings/refunds", managers: true },
-  { key: "payouts", text: (n) => `${n} host payout${n === 1 ? "" : "s"} to send`, href: "/admin/payouts", managers: true },
-  { key: "partners", text: (n) => `${n} partner application${n === 1 ? "" : "s"} to review`, href: "/admin/partners" },
-  { key: "products", text: (n) => `${n} seller product${n === 1 ? "" : "s"} to approve`, href: "/admin/shop/products" },
-  { key: "stayEnquiries", text: (n) => `${n} new stay enquir${n === 1 ? "y" : "ies"}`, href: "/admin/accommodations/enquiries" },
-  { key: "experienceEnquiries", text: (n) => `${n} new experience enquir${n === 1 ? "y" : "ies"}`, href: "/admin/experiences/enquiries" },
-  { key: "reviews", text: (n) => `${n} review${n === 1 ? "" : "s"} awaiting approval`, href: "/admin/reviews" },
-  { key: "fieldNotes", text: (n) => `${n} field note${n === 1 ? "" : "s"} to review`, href: "/admin/field-notes" },
-  { key: "creators", text: (n) => `${n} creator application${n === 1 ? "" : "s"} to review`, href: "/admin/creators" },
-  { key: "sponsorLeads", text: (n) => `${n} new sponsor lead${n === 1 ? "" : "s"}`, href: "/admin/sponsors/leads" },
-  { key: "emails", text: (n) => `${n} email${n === 1 ? "" : "s"} needing attention`, href: "/admin/emails" },
+export const ATTENTION: Array<{ key: BadgeKey; icon: IconName; text: (n: number) => string; href: string; managers?: boolean }> = [
+  { key: "refunds", icon: "cash", text: (n) => `${n} refund${n === 1 ? "" : "s"} to send`, href: "/admin/bookings/refunds", managers: true },
+  { key: "payouts", icon: "cash", text: (n) => `${n} host payout${n === 1 ? "" : "s"} to send`, href: "/admin/payouts", managers: true },
+  { key: "partners", icon: "users", text: (n) => `${n} partner application${n === 1 ? "" : "s"} to review`, href: "/admin/partners" },
+  { key: "products", icon: "bag", text: (n) => `${n} seller product${n === 1 ? "" : "s"} to approve`, href: "/admin/shop/products" },
+  { key: "stayEnquiries", icon: "mail", text: (n) => `${n} new stay enquir${n === 1 ? "y" : "ies"}`, href: "/admin/accommodations/enquiries" },
+  { key: "experienceEnquiries", icon: "mail", text: (n) => `${n} new experience enquir${n === 1 ? "y" : "ies"}`, href: "/admin/experiences/enquiries" },
+  { key: "reviews", icon: "star", text: (n) => `${n} review${n === 1 ? "" : "s"} awaiting approval`, href: "/admin/reviews" },
+  { key: "fieldNotes", icon: "note", text: (n) => `${n} field note${n === 1 ? "" : "s"} to review`, href: "/admin/field-notes" },
+  { key: "creators", icon: "users", text: (n) => `${n} creator application${n === 1 ? "" : "s"} to review`, href: "/admin/creators" },
+  { key: "sponsorLeads", icon: "heart", text: (n) => `${n} new sponsor lead${n === 1 ? "" : "s"}`, href: "/admin/sponsors/leads" },
+  { key: "emails", icon: "mail", text: (n) => `${n} email${n === 1 ? "" : "s"} needing attention`, href: "/admin/emails" },
 ];
+
+/** How many things are waiting for THIS person in all (the number on the bell): the same items, and the same permissions, as the overview's "Needs attention" list. */
+export const attentionTotal = (badges: Badges, manager: boolean): number => ATTENTION.filter((a) => manager || !a.managers).reduce((n, a) => n + Math.max(0, badges[a.key] ?? 0), 0);
