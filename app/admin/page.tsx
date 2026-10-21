@@ -1,8 +1,12 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import DemoAdminWarning from "@/components/admin/DemoAdminWarning";
+import AttentionCard from "@/components/admin/overview/AttentionCard";
+import GlancePanel from "@/components/admin/overview/GlancePanel";
+import LaunchCard from "@/components/admin/overview/LaunchCard";
+import QuickActions from "@/components/admin/overview/QuickActions";
 import SingleSuperAdminWarning from "@/components/admin/SingleSuperAdminWarning";
 import { loadAdminBadges } from "@/lib/admin-badges";
+import { launchItems, loadLaunchCounts } from "@/lib/admin-launch";
 import { ATTENTION } from "@/lib/admin-nav";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -31,6 +35,8 @@ export default async function AdminOverviewPage() {
   ]);
 
   const waiting = ATTENTION.filter((a) => (!a.managers || manager) && (badges[a.key] ?? 0) > 0);
+  const attentionRows = waiting.map((a) => ({ key: a.key, icon: a.icon, text: a.text(badges[a.key] ?? 0), href: a.href }));
+  const launch = launchItems(await loadLaunchCounts());
 
   const sections: Array<{ title: string; stats: Array<{ label: string; value: number; href: string }> }> = [
     { title: "Places & content", stats: [{ label: "Destinations", value: destinations, href: "/admin/destinations" }, { label: "Stories", value: stories, href: "/admin/stories" }, { label: "Events", value: events, href: "/admin/events" }] },
@@ -41,60 +47,36 @@ export default async function AdminOverviewPage() {
     ...(manager ? [{ title: "People & access", stats: [{ label: "Accounts", value: accounts, href: "/admin/users" }, { label: "Suspended", value: suspended, href: "/admin/users?status=suspended" }] }] : []),
   ];
 
-  const quick = [
+  const create = [
     { href: "/admin/destinations/new", label: "Add a destination" },
     { href: "/admin/stories/new", label: "Write a story" },
     { href: "/admin/experiences/new", label: "Add an experience" },
-    ...(manager ? [{ href: "/admin/users", label: "View all accounts" }, { href: "/admin/users/new", label: "Invite staff" }] : []),
   ];
+  const manage = manager ? [{ href: "/admin/users", label: "View all accounts" }, { href: "/admin/users/new", label: "Invite staff" }] : [];
+  const today = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "Africa/Nairobi" }).format(new Date());
 
   return (
-    <div>
-      <h1 className="font-display text-3xl text-stone">{firstName ? `Welcome back, ${firstName}` : "Overview"}</h1>
-      <DemoAdminWarning />
-      <SingleSuperAdminWarning />
+    <div className="flex max-w-[74rem] flex-col gap-7">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+        <h1 className="font-display text-[1.875rem] font-medium leading-[1.15] tracking-tight text-stone">Overview</h1>
+        <p className="font-body text-sm text-admin-muted">{firstName ? `Welcome back, ${firstName} · ` : ""}{today}</p>
+      </div>
+      <div>
+        <DemoAdminWarning />
+        <SingleSuperAdminWarning />
+      </div>
 
-      <section aria-labelledby="attention" className="mt-8">
-        <h2 id="attention" className="font-display text-xl text-stone">Needs attention</h2>
-        {waiting.length === 0 ? (
-          <p className="mt-3 rounded-sm border border-canopy/30 bg-canopy/5 p-4 font-body text-sm text-stone/80">You&apos;re all caught up — nothing is waiting for you.</p>
-        ) : (
-          <ul className="mt-3 divide-y divide-stone/10 rounded-sm border border-stone/10">
-            {waiting.map((a) => (
-              <li key={a.key}>
-                <Link href={a.href} className="focus-ring flex items-center justify-between gap-4 px-4 py-3 hover:bg-stone/5">
-                  <span className="font-body text-sm text-stone"><strong className="font-display text-lg text-rust">{badges[a.key]}</strong>{" "}{a.text(badges[a.key] ?? 0).replace(/^\d+\s*/, "")}</span>
-                  <span aria-hidden className="text-stone/80">›</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      <div className="flex flex-wrap items-start gap-6">
+        <AttentionCard rows={attentionRows} />
+        <LaunchCard items={launch} />
+      </div>
 
-      <section aria-labelledby="quick" className="mt-8">
-        <h2 id="quick" className="font-display text-xl text-stone">Quick actions</h2>
-        <div className="mt-3 flex flex-wrap gap-3">
-          {quick.map((q) => <Link key={q.href} href={q.href} className="focus-ring rounded-full border border-stone/20 px-5 py-2 font-body text-sm text-stone hover:border-rust hover:text-rust">{q.label}</Link>)}
-        </div>
-      </section>
+      <QuickActions create={create} manage={manage} />
 
-      <section aria-labelledby="glance" className="mt-10">
-        <h2 id="glance" className="font-display text-xl text-stone">At a glance</h2>
-        <div className="mt-4 grid gap-6 md:grid-cols-2">
-          {sections.map((s) => (
-            <div key={s.title}>
-              <h3 className="font-body text-xs font-semibold uppercase tracking-wide text-stone/80">{s.title}</h3>
-              <div className="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {s.stats.map((st) => (
-                  <Link key={st.label} href={st.href} className="focus-ring rounded-sm border border-stone/10 p-4 hover:border-stone/30">
-                    <p className="font-display text-2xl text-stone">{st.value}</p>
-                    <p className="mt-1 font-body text-xs text-stone/80">{st.label}</p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
+      <section aria-labelledby="glance" className="flex flex-col gap-3.5">
+        <h2 id="glance" className="font-body text-[1.0625rem] font-bold leading-tight">At a glance</h2>
+        <div className="grid items-stretch gap-5 [grid-template-columns:repeat(auto-fill,minmax(17.5rem,1fr))]">
+          {sections.map((sec) => <GlancePanel key={sec.title} title={sec.title} stats={sec.stats} />)}
         </div>
       </section>
     </div>

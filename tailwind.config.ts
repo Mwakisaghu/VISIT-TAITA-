@@ -24,6 +24,8 @@ const config: Config = {
           DEFAULT: "#2B4736",
           deep: "#1D3126",
         },
+        // The admin area: a quieter, slightly cooler ground with white cards and clearer borders than the public pages.
+        admin: { ground: "#F4F2EC", border: "#CFC9B8", line: "#E6E1D3", muted: "#5A554A", faint: "#6F6A5D", sel: "#E9E4D6", alert: "#FBEFE7" },
         ochre: {
           DEFAULT: "#C99A3E",
           light: "#E3BC6B", // small text on the green sections (the default gold is too dim there)
