@@ -1,4 +1,5 @@
 import React from "react"; (globalThis as any).React = React;
+import { resolveAsync } from "./resolve_async";
 import fs from "fs"; import path from "path";
 const Module = require("module"); const origLoad = Module._load;
 let mapProps: any = null;
@@ -21,7 +22,7 @@ async function main() {
   const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
   const P = (o: any) => ({ id: o.slug, blurb: "A place worth the trip, with a good long description for the card.", image: "/p/x.jpg", featured: false, isDemo: false, status: "PUBLISHED", latitude: -3.4, longitude: 38.36, altitudeM: null, ...o });
   DEST = [P({ slug: "ngangao-forest", name: "Ngangao Forest", category: "WILD", region: "Dawida Hills", altitudeM: 2149, featured: true }), P({ slug: "lake-chala", name: "Lake Chala", category: "WILD", region: "Taveta", altitudeM: 880 }), P({ slug: "wundanyi-town", name: "Wundanyi", category: "CULTURE", region: "Taita Hills", altitudeM: 1408, isDemo: true }), P({ slug: "lake-jipe", name: "Lake Jipe", category: "WILD", region: "Taveta", altitudeM: null }), P({ slug: "sagalla-hill", name: "Sagalla Hill", category: "ADVENTURE", region: "Voi", altitudeM: 1450 }), P({ slug: "w4", name: "Fourth", category: "WILD", region: "R" }), P({ slug: "no-pos", name: "No position", category: "CULTURE", region: "R", latitude: null, longitude: null })];
-  const render = async (C: any, props: any) => { calls.length = 0; const html = renderToStaticMarkup(await C(props)); return { html, text: txt(html), where: calls.find((c) => c.method === "destination.findMany")?.args }; };
+  const render = async (C: any, props: any) => { calls.length = 0; const html = renderToStaticMarkup(await resolveAsync(await C(props))); return { html, text: txt(html), where: calls.find((c) => c.method === "destination.findMany")?.args }; };
 
   // ===== Discover =====
   let { html, text, where } = await render(Disc, {});
