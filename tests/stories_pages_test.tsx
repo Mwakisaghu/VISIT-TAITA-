@@ -1,4 +1,5 @@
 import React from "react"; (globalThis as any).React = React;
+import { resolveAsync } from "./resolve_async";
 import fs from "fs"; import path from "path";
 const Module = require("module"); const origLoad = Module._load;
 let session: any = { user: { id: "u-admin", role: "ADMIN" } }; const writes: { op: string; args: any }[] = [];
@@ -31,7 +32,7 @@ async function main() {
   const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
   const mk = (o: any) => ({ id: o.slug, body: "", excerpt: "A short standfirst for the story.", readingTime: "5 min read", image: "/p/s.jpg", status: "PUBLISHED", featured: false, isDemo: false, createdAt: new Date(), destination: null, author: null, category: "PEOPLE", ...o });
   STORIES = [mk({ slug: "hosea", title: "Hosea knows the ridge", category: "PEOPLE", featured: true, destination: { name: "Wundanyi viewpoint" } }), mk({ slug: "hills", title: "The hills were here first", category: "PLACES" }), mk({ slug: "market", title: "Saturday in Wundanyi", category: "CULTURE", isDemo: true }), mk({ slug: "cup", title: "Cup fever", category: "SPORT" })];
-  const render = async (sp?: any, asPromise = false) => { calls.length = 0; const html = renderToStaticMarkup(await List({ searchParams: asPromise ? Promise.resolve(sp ?? {}) : sp })); return { html, text: txt(html), where: calls.find((c) => c.method === "story.findMany")?.args }; };
+  const render = async (sp?: any, asPromise = false) => { calls.length = 0; const html = renderToStaticMarkup(await resolveAsync(await List({ searchParams: asPromise ? Promise.resolve(sp ?? {}) : sp }))); return { html, text: txt(html), where: calls.find((c) => c.method === "story.findMany")?.args }; };
   let { html, text, where } = await render();
   t("LIST: one h1, the headline, the filter bar; the featured story is shown large (priority picture) and NOT repeated in the columns", (html.match(/<h1/g) ?? []).length === 1 && /Real people\. Extraordinary stories\./.test(text) && /aria-label="Filter stories"/.test(html) && (html.match(/href="\/stories\/hosea"/g) ?? []).length === 1 && (html.match(/data-priority="yes"/g) ?? []).length === 1 && (html.match(/<h2/g) ?? []).length === 4);
   t("LIST: every story links to its page; every address is a real route", ["hosea", "hills", "market", "cup"].every((s) => html.includes(`href="/stories/${s}"`)) && [...new Set([...html.replace(/<link\b[^>]*>/g, "").matchAll(/href="([^"]+)"/g)].map((m) => m[1]).filter((h) => h.startsWith("/")))].every(routeExists));

@@ -1,4 +1,5 @@
 import React from "react"; (globalThis as any).React = React;
+import { resolveAsync } from "./resolve_async";
 import fs from "fs"; import path from "path";
 const Module = require("module"); const origLoad = Module._load;
 Module._load = function (r: string, ...x: any[]) {
@@ -18,7 +19,7 @@ const routeExists = (href: string) => { const p = href.split("#")[0].split("?")[
 async function main() {
   const Page = (await import("@/app/experiences/page")).default as any; const F = await import("@/lib/field-guide");
   const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
-  const render = async (sp?: any, asPromise = false) => { calls.length = 0; const html = renderToStaticMarkup(await Page({ searchParams: asPromise ? Promise.resolve(sp ?? {}) : sp })); return { html, text: txt(html), where: calls.find((c) => c.method === "experience.findMany")?.args }; };
+  const render = async (sp?: any, asPromise = false) => { calls.length = 0; const html = renderToStaticMarkup(await resolveAsync(await Page({ searchParams: asPromise ? Promise.resolve(sp ?? {}) : sp }))); return { html, text: txt(html), where: calls.find((c) => c.method === "experience.findMany")?.args }; };
   EXPS = [
     { ...base, id: "e1", slug: "ridge-walk", name: "The ridge walk", difficulty: "MODERATE", elevationGainM: 350, altitudeM: 1420, hostName: "Hosea Mwamburi", hostRole: "Guide", sessions: [S(2, 10, 4), S(3, 10, 8), S(7, 10, 0)] },
     { ...base, id: "e2", slug: "market-lunch", name: "Lunch at the market", category: "FOOD", duration: "2 hours", priceFrom: 1200, sessions: [] },

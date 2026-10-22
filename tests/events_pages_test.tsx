@@ -1,4 +1,5 @@
 import React from "react"; (globalThis as any).React = React;
+import { resolveAsync } from "./resolve_async";
 import fs from "fs"; import path from "path";
 const Module = require("module"); const origLoad = Module._load;
 Module._load = function (r: string, ...x: any[]) { return origLoad.call(this, r, ...x); };
@@ -24,7 +25,7 @@ async function main() {
     { ...base, id: "t3", slug: "cup-sunday", name: "Third place match", program: "TAITA_CUP", eventDate: at(wk, 33), ticketing: "PAID", ticketPrice: 300, ticketCapacity: 40, ticketsTaken: 40 },
     { ...base, id: "t4", slug: "far-fair", name: "Harvest fair", eventDate: inDays(90), ticketing: "OFF" },
   ];
-  const render = async (sp?: any, asPromise = false) => { calls.length = 0; const html = renderToStaticMarkup(await Page({ searchParams: asPromise ? Promise.resolve(sp ?? {}) : sp })); return { html, text: txt(html), where: calls.find((c) => c.method === "event.findMany")?.args }; };
+  const render = async (sp?: any, asPromise = false) => { calls.length = 0; const html = renderToStaticMarkup(await resolveAsync(await Page({ searchParams: asPromise ? Promise.resolve(sp ?? {}) : sp }))); return { html, text: txt(html), where: calls.find((c) => c.method === "event.findMany")?.args }; };
   process.env.NEXT_PUBLIC_APP_URL = "https://visittaita.co.ke";
   let { html, text, where } = await render();
   t("STRUCTURE: one h1 ('What's on.'), the filter bar, a group heading per non-empty group in the fixed order, and one h2 per event", (html.match(/<h1/g) ?? []).length === 1 && /What's on\./.test(text) && /aria-label="Filter events"/.test(html) && (() => { const expect = E.groupEvents(EVENTS, new Date()).map((g) => g.label); const found = [...html.matchAll(/<h2 id="g-[a-z]+"[^>]*>([^<]+)</g)].map((m) => m[1]); return found.length > 0 && found.join("|") === expect.join("|"); })() && (html.match(/<h2 class=/g) ?? []).length === 4);

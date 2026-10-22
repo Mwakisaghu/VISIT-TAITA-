@@ -1,4 +1,5 @@
 import React from "react"; (globalThis as any).React = React;
+import { resolveAsync } from "./resolve_async";
 import fs from "fs"; import path from "path";
 const Module = require("module"); const origLoad = Module._load;
 Module._load = function (r: string, ...x: any[]) {
@@ -17,7 +18,7 @@ const routeExists = (href: string) => { const p = href.split("#")[0].split("?")[
 async function main() {
   const Page = (await import("@/app/stay/page")).default as any; const F = await import("@/lib/field-guide"); const D = await import("@/lib/stay-data");
   const res: [string, boolean][] = []; const t = (n: string, ok: boolean) => res.push([n, !!ok]);
-  const render = async (sp?: any, asPromise = false) => { calls.length = 0; const html = renderToStaticMarkup(await Page({ searchParams: asPromise ? Promise.resolve(sp ?? {}) : sp })); return { html, text: txt(html), where: calls.find((c) => c.method === "accommodation.findMany")?.args }; };
+  const render = async (sp?: any, asPromise = false) => { calls.length = 0; const html = renderToStaticMarkup(await resolveAsync(await Page({ searchParams: asPromise ? Promise.resolve(sp ?? {}) : sp }))); return { html, text: txt(html), where: calls.find((c) => c.method === "accommodation.findMany")?.args }; };
   STAYS = [
     { ...base, id: "a1", slug: "hill-house", name: "The hill house", type: "HOMESTAY", featured: true, altitudeM: 1500, hostName: "Mama Njeri", hostRole: "Host", hostQuote: "Karibu, make yourself at home.", moods: ["quiet", "view", "market"], priceFrom: 4500 },
     { ...base, id: "a2", slug: "ridge-lodge", name: "Ridge lodge", type: "LODGE", altitudeM: 1250, moods: ["family"], priceFrom: 8000, hostName: "Baba Joseph" },
