@@ -24,3 +24,9 @@ secrets.json
 .netlify
 *.log
 .idea
+# database and picture BACKUPS hold everyone's personal data: they must never be committed (docs/backup-and-restore.md)
+*.dump
+*.bak
+*.sql.gz
+backups/
+pictures-backup/

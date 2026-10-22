@@ -43,6 +43,19 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 - [ ] Native speakers have read `lib/i18n/messages/sw.ts`, `fr.ts` and `de.ts`.
 - [ ] You have decided which pages you will say are available in other languages (search engines are told only for pages that really are).
 
+## Email delivery
+- [ ] Your own domain is **verified in Resend** and `EMAIL_FROM` is an address on it (not `onboarding@resend.dev`), and `RESEND_API_KEY` is a production key (`docs/email-delivery.md`).
+- [ ] **DMARC** is added (start with `p=none` and a reports address) and you have a reminder to tighten it after a few clean weeks.
+- [ ] You sent a real test (`npm run email:test -- you@example.com`, with a real address instead of the example) to **Gmail and Outlook or Hotmail**, it reached the **inbox**, and "Show original" says SPF, DKIM and DMARC pass.
+- [ ] The admin **Emails** page shows the green "Email is configured and automatic retries are on" (so `CRON_SECRET` is set and the five-minute job runs).
+
+## Backups
+- [ ] You have written down your Neon **restore window** (`docs/backup-and-restore.md`) and a **separate weekly copy** of the database exists, encrypted, outside Neon.
+- [ ] A copy of the picture bucket exists somewhere else.
+- [ ] **`TWO_FACTOR_KEY` and every other secret** are saved in an encrypted list outside the hosting settings, and a second trusted person can open it.
+- [ ] At least **two people** can get into GitHub, Netlify, Neon, the bucket, the domain registrar, Resend, Safaricom and Pesapal.
+- [ ] You did **one restore practice** (into a new, empty database) and wrote the date in `docs/backup-and-restore.md`.
+
 ## Money
 - [ ] One real payment through each method you offer (M-Pesa and cards): paid, confirmed, receipt received, and one refunded.
 - [ ] One real booking and one real ticket, start to finish, including the email the visitor receives.
