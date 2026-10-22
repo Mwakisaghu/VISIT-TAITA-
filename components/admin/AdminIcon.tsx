@@ -23,6 +23,7 @@ const PATHS: Record<IconName, React.ReactNode> = {
   cash: <><rect x="3" y="7" width="18" height="10" rx="2" /><circle cx="12" cy="12" r="2.5" /></>,
   star: <path d="M12 4l2.4 5 5.4.7-4 3.7 1 5.4-4.8-2.7L7.2 18.8l1-5.4-4-3.7 5.4-.7L12 4z" />,
   note: <><path d="M6 3h9l4 4v14H6V3z" /><path d="M14 3v5h5M9 13h7M9 17h5" /></>,
+  alert: <><path d="M12 4l9 16H3L12 4z" /><path d="M12 10v4M12 17.2v.01" /></>,
 };
 
 /** A small line picture for the admin area. Always decorative (hidden from screen readers): the words next to it say what it is. */

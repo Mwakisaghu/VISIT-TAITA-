@@ -333,6 +333,61 @@ model ShortLinkDay {
 // Who changed which account, and when: creating, inviting, changing a role, suspending, sending reset links. The email addresses
 // are copied in (a snapshot) so the record still makes sense after an account is deleted — and the target's address is blanked
 // when THEIR account is deleted.
+// ===== The error log: what went wrong for real visitors and staff, grouped so the same failure is ONE line with a count. Reports hold no personal data (lib/error-scrub.ts removes it BEFORE saving). =====
+enum ErrorSource {
+  BROWSER
+  SERVER
+}
+
+enum ErrorStatus {
+  OPEN
+  RESOLVED
+  IGNORED
+}
+
+model ErrorIssue {
+  id           String      @id @default(cuid())
+  fingerprint  String      @unique // the same failure always gets the same fingerprint (lib/error-scrub.ts)
+  source       ErrorSource
+  kind         String // what sort of failure: "TypeError", "unhandledrejection", "render", "route", "action"...
+  message      String // the first line of the message, with personal details removed
+  route        String? // the page address (no query string) where it was last seen
+  status       ErrorStatus @default(OPEN)
+  count        Int         @default(1)
+  regressions  Int         @default(0) // how many times it came back after being marked resolved
+  firstSeen    DateTime    @default(now())
+  lastSeen     DateTime    @default(now())
+  lastDigest   String? // the "Reference" code a visitor was shown, so staff can find it
+  resolvedAt   DateTime?
+  resolvedBy   String? // the email of the admin who resolved or ignored it
+  note         String?
+  events       ErrorEvent[]
+
+  @@index([status, lastSeen])
+  @@index([lastSeen])
+  @@index([lastDigest])
+}
+
+model ErrorEvent {
+  id        String     @id @default(cuid())
+  issueId   String
+  issue     ErrorIssue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  path      String // the page address with no query string and any secret-looking part masked
+  method    String? // for the server: GET, POST...
+  stack     String? // a technical trace, with personal details removed
+  extra     String? // more context (for example which component), with personal details removed
+  digest    String?
+  browser   String? // a family and major version only, for example "Chrome 120 · Android"
+  signedIn  Boolean    @default(false) // whether anyone was signed in: never WHO
+  release   String? // the version of the site that was running
+  locale    String?
+
+  @@index([issueId, createdAt])
+  @@index([createdAt])
+  @@index([digest])
+}
+
 model AdminAuditLog {
   id           String   @id @default(cuid())
   createdAt    DateTime @default(now())

@@ -10,6 +10,12 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 - [ ] Your host runs a Node version the site supports (20.9 or newer), checked before upgrading the site's framework.
 - [ ] `NEXT_PUBLIC_APP_URL` is set to your real address, so shared links and calendar files use it.
 
+## The error log
+- [ ] The database change `20261026090000_add_error_log` is applied to Neon (`npx prisma migrate deploy`) **before** the update goes live.
+- [ ] After the update is live, you tested the log: open any page of the site, press F12, choose Console, type `setTimeout(() => { throw new Error("Test error: please ignore") })` and press Enter. Within a few seconds it should appear in the admin Error log under Browser. Mark it resolved.
+- [ ] Your lawyer has read the new "Technical error reports" lines in the privacy policy (version 2026-10.5) and the matching row in `docs/data-protection.md`.
+- [ ] Someone looks at the Error log every day for the first weeks (the bell and the overview show when something new has happened), and knows how to use a visitor's "Reference" code (`docs/error-log.md`).
+
 ## Content
 - [ ] No sample items are showing (the audit lists them under "for your information"). Replace each with something real, or unpublish it.
 - [ ] Every published stay, experience and event belongs to a **real host who agreed** (`docs/host-onboarding.md`).

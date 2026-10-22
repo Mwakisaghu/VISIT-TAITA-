@@ -20,6 +20,7 @@ Keep this table current. It is the first thing a regulator or a lawyer will ask 
 | Partner and sponsor applications | Decide on partnerships | Neon | Admins | While needed |
 | Contact messages | Reply | Neon; Resend | Admins | While needed |
 | Email delivery records | Retry failures | Neon | Admins | Text cleared at delivery; records deleted after 30 days |
+| Technical error reports: what went wrong and a technical trace, the page address without its query string, the browser family and version, whether anyone was signed in (not who), the time. **No IP address, cookie, name or email.** | Find and fix problems | Neon | Admins only (not editors) | Each occurrence 30 days; an error not seen for 90 days is then removed (`docs/error-log.md`) |
 | Taita Guide questions (only if the AI is on) | Answer the question | **Not stored by us.** Sent to Anthropic to write the answer | No one at Visit Taita | Not kept by us |
 | Page-view counts | See which pages are read | Neon | Admins | Totals per page per day; no person recorded |
 | Language, cart, plan draft, Guide note | Remember a choice | The visitor's own browser | The visitor | Until cleared (language cookie: one year) |

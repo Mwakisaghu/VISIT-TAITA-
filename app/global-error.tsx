@@ -1,7 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
+import { reportClientError } from "@/components/ErrorReporter";
+
 /** The last resort: shown only if the page's own frame (header, footer, language) fails to build. It replaces the whole page, so it carries its own styles and is in English. */
 export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => { if (!error.digest) reportClientError(error, "render"); }, [error]); // (a failure with a digest happened on the server, which has already recorded it)
   return (
     <html lang="en">
       <body style={{ margin: 0, background: "#EAE2CC", color: "#1E1A16", fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif" }}>
