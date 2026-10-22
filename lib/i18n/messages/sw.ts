@@ -79,6 +79,7 @@ export const sw: Record<string, string> = {
   "Privacy": "Faragha",
   "Read the field notes": "Soma maelezo ya uwandani",
   "Read the story": "Soma hadithi",
+  "Refunds": "Marejesho",
   "Scroll to explore": "Telezesha kuchunguza",
   "Search": "Tafuta",
   "See what's coming": "Tazama kinachokuja",

@@ -25,4 +25,5 @@ export const STATIC_PAGES: StaticPage[] = [
   { title: "Contact us", href: "/contact", description: "Get in touch with the Visit Taita team.", keywords: ["email", "phone", "help", "support", "message"] },
   { title: "Privacy Policy", href: "/privacy", description: "What personal data we collect, why, and the choices you have.", keywords: ["data", "gdpr", "cookies", "delete", "personal information"] },
   { title: "Terms of Use", href: "/terms", description: "The terms for using Visit Taita.", keywords: ["rules", "conditions", "legal"] },
+  { title: "Refunds and cancellations", href: "/refunds", description: "How refunds and cancellations work for bookings, event tickets and shop orders.", keywords: ["refund", "refunds", "cancel", "cancellation", "money back", "return", "returns"] },
 ];

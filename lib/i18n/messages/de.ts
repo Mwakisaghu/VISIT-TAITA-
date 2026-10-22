@@ -79,6 +79,7 @@ export const de: Record<string, string> = {
   "Privacy": "Datenschutz",
   "Read the field notes": "Feldnotizen lesen",
   "Read the story": "Geschichte lesen",
+  "Refunds": "Rückerstattungen",
   "Scroll to explore": "Scrollen zum Entdecken",
   "Search": "Suchen",
   "See what's coming": "Sieh, was kommt",

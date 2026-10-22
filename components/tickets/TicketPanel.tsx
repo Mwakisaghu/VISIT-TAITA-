@@ -42,6 +42,7 @@ export default function TicketPanel(p: { eventId: string; mode: "FREE" | "PAID";
       </div>
       {error && <p role="alert" className="font-body text-sm text-rust">{error}</p>}
       <button type="submit" disabled={busy} className="focus-ring w-fit rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment hover:bg-rust-deep disabled:opacity-50">{busy ? "One moment…" : p.mode === "FREE" ? "Get my ticket" : "Reserve tickets"}</button>
+      <p className="font-body text-xs text-stone/80">Tickets are paid to the organiser, not to Visit Taita, so the organiser handles any refund. <Link href="/refunds" className="text-rust underline">How refunds work</Link>.</p>
     </form>
   );
 }

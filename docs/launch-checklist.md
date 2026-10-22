@@ -33,6 +33,12 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 - [ ] If you add analytics, it is cookie-free and added to the policy first.
 - [ ] A lawyer or professional translator has handled the privacy, terms and consent wording in any language other than English you want to offer.
 
+## Refunds and cancellations
+- [ ] You have read the **Refunds and cancellations** page (/refunds) and it describes how you really work: the shop's problem window (`SHOP_PROBLEM_DAYS`, now 7 days), its "change of mind" line, and the 3-working-day refund time (`lib/refund-policy.ts`).
+- [ ] Every event organiser knows that, for tickets, **they** decide on and pay any refund (the page says so).
+- [ ] Someone who can pay M-Pesa refunds by hand is named, because the shop has no refund tool (`docs/refunds-page.md`).
+- [ ] A lawyer has read the page. A native speaker has checked the footer word "Refunds" in Kiswahili, French and German.
+
 ## Languages
 - [ ] Native speakers have read `lib/i18n/messages/sw.ts`, `fr.ts` and `de.ts`.
 - [ ] You have decided which pages you will say are available in other languages (search engines are told only for pages that really are).

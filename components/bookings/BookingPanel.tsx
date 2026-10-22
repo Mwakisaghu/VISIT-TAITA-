@@ -94,7 +94,7 @@ export default function BookingPanel(p: {
 
       <label className="flex items-start gap-2 font-body text-sm text-stone">
         <input type="checkbox" name="accept" required className="mt-1" />
-        <span>I accept the <Link href="/terms" className="text-rust underline">booking terms</Link> and the {policyLabel(p.policy).toLowerCase()} cancellation policy above.</span>
+        <span>I accept the <Link href="/terms" className="text-rust underline">booking terms</Link> and the {policyLabel(p.policy).toLowerCase()} cancellation policy above. <Link href="/refunds" className="text-rust underline">How refunds work</Link>.</span>
       </label>
 
       {error && <p role="alert" className="font-body text-sm text-rust">{error}</p>}
