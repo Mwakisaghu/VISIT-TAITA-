@@ -65,7 +65,7 @@ export default function Footer() {
           <div className="flex flex-col gap-3 font-body text-xs text-parchment/75 sm:mt-5 sm:flex-row sm:items-center sm:justify-between">
             <p>© {new Date().getFullYear()} {BRAND.name}™. {tr("Preview build — not yet live.")}</p>
             <nav aria-label={tr("Legal and about")} className="flex flex-wrap gap-x-6 gap-y-1">
-              {[["/about", T("About")], ["/privacy", T("Privacy")], ["/terms", T("Terms")], ["/contact", T("Contact")]].map(([href, label]) => <Link key={href} href={lp(href)} className={`${linkClass} min-h-[44px] py-3`}>{tr(label)}</Link>)}
+              {[["/about", T("About")], ["/privacy", T("Privacy")], ["/terms", T("Terms")], ["/refunds", T("Refunds")], ["/contact", T("Contact")]].map(([href, label]) => <Link key={href} href={lp(href)} className={`${linkClass} min-h-[44px] py-3`}>{tr(label)}</Link>)}
             </nav>
           </div>
         </div>

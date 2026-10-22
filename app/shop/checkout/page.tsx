@@ -123,6 +123,7 @@ export default function CheckoutPage() {
             <span>{formatPrice(subtotal)}</span>
           </div>
         </div>
+        <p className="mt-3 font-body text-xs text-stone/80">Delivery, returns and refunds: <Link href="/refunds" className="text-rust underline">read how they work</Link>.</p>
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-5">
           <fieldset className="flex flex-col gap-2">
