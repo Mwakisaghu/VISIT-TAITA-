@@ -6,6 +6,7 @@ import { purgeStaleSubscribers } from "@/lib/newsletter-maintenance";
 import { processBookingsDue } from "@/lib/booking-jobs";
 import { processTicketsDue } from "@/lib/ticket-jobs";
 import { purgeExpiredRateLimits } from "@/lib/rate-limit";
+import { purgeOldErrors } from "@/lib/error-log";
 import { prisma } from "@/lib/prisma";
 import { purgeOrphanUploads } from "@/lib/uploads/cleanup";
 import { getStorage } from "@/lib/uploads/storage";
@@ -69,7 +70,9 @@ export async function GET(req: Request) {
     const tickets = await processTicketsDue();
     // Shared rate-limit counters that ended more than a day ago. (Never throws.)
     const rateLimits = { purged: await purgeExpiredRateLimits() };
-    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads }, bookings, tickets, rateLimits });
+    // Old error reports (the admin Error log): each occurrence after 30 days, an error not seen for 90. (Never throws.)
+    const errorLog = await purgeOldErrors();
+    return NextResponse.json({ ok: true, retried, purged: { ...purged, staleSubscribers, expiredTokens, orphanUploads }, bookings, tickets, rateLimits, errorLog });
   } catch (err) {
     console.error("[cron/emails] failed", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });

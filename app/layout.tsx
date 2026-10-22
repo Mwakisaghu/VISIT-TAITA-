@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import ErrorReporter from "@/components/ErrorReporter";
 import HideOnAdmin from "@/components/HideOnAdmin";
 import Providers from "@/components/Providers";
 import { BRAND } from "@/lib/brand";
@@ -76,6 +77,7 @@ export default function RootLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(organization) }} />
         <Providers>
           <LocaleProvider locale={locale}>
+          <ErrorReporter />
           <HideOnAdmin><Nav /></HideOnAdmin>
           <main id="main">{children}</main>
           <HideOnAdmin><Footer /></HideOnAdmin>

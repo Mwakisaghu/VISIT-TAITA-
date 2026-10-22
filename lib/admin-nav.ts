@@ -1,7 +1,7 @@
 // The admin menu, as data. Pure functions only (no database, no React), so the grouping, the permissions and the "which page am I on"
 // logic can be tested on their own — including a test that fails if someone adds an admin page and forgets to put it in the menu.
 
-export type BadgeKey = "partners" | "products" | "stayEnquiries" | "experienceEnquiries" | "reviews" | "creators" | "fieldNotes" | "emails" | "sponsorLeads" | "refunds" | "payouts";
+export type BadgeKey = "partners" | "products" | "stayEnquiries" | "experienceEnquiries" | "reviews" | "creators" | "fieldNotes" | "emails" | "sponsorLeads" | "refunds" | "payouts" | "errors";
 export type NavItem = {
   href: string;
   label: string;
@@ -13,7 +13,7 @@ export type NavItem = {
   keywords?: string[];
 };
 /** The small pictures the admin uses (drawn in components/admin/AdminIcon.tsx). */
-export type IconName = "home" | "pin" | "bed" | "bag" | "trophy" | "cal" | "users" | "heart" | "mail" | "shield" | "search" | "bell" | "ext" | "chev" | "chevd" | "plus" | "user" | "menu" | "check" | "cash" | "star" | "note";
+export type IconName = "home" | "pin" | "bed" | "bag" | "trophy" | "cal" | "users" | "heart" | "mail" | "shield" | "search" | "bell" | "ext" | "chev" | "chevd" | "plus" | "user" | "menu" | "check" | "cash" | "star" | "note" | "alert";
 export type NavGroup = { id: string; label: string; icon: IconName; items: NavItem[] };
 
 export const OVERVIEW: NavItem = { href: "/admin", label: "Overview", keywords: ["home", "dashboard"] };
@@ -96,6 +96,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/admin/users", label: "Accounts", managers: true, keywords: ["users", "people", "members", "suspend", "staff", "roles"] },
       { href: "/admin/users/audit", label: "Activity log", managers: true, keywords: ["audit", "history", "who did what"] },
+      { href: "/admin/errors", label: "Error log", managers: true, badge: "errors", keywords: ["errors", "bugs", "problems", "crashes", "failures", "logs", "reference", "something went wrong"] },
     ],
   },
 ];
@@ -147,6 +148,7 @@ export const ATTENTION: Array<{ key: BadgeKey; icon: IconName; text: (n: number)
   { key: "creators", icon: "users", text: (n) => `${n} creator application${n === 1 ? "" : "s"} to review`, href: "/admin/creators" },
   { key: "sponsorLeads", icon: "heart", text: (n) => `${n} new sponsor lead${n === 1 ? "" : "s"}`, href: "/admin/sponsors/leads" },
   { key: "emails", icon: "mail", text: (n) => `${n} email${n === 1 ? "" : "s"} needing attention`, href: "/admin/emails" },
+  { key: "errors", icon: "alert", text: (n) => `${n} open error${n === 1 ? "" : "s"} seen in the last 24 hours`, href: "/admin/errors", managers: true },
 ];
 
 /** How many things are waiting for THIS person in all (the number on the bell): the same items, and the same permissions, as the overview's "Needs attention" list. */

@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import { reportClientError } from "@/components/ErrorReporter";
 import { useI18n } from "@/lib/i18n/client";
 
 /** Shown when something fails while a page is being built or used. Never shows the technical message (it can reveal internals); the short reference code lets someone find the failure in the logs. */
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const { tr, lp } = useI18n(); const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => { console.error(error); heading.current?.focus(); }, [error]);
+  useEffect(() => { console.error(error); if (!error.digest) reportClientError(error, "render"); /* a failure with a digest happened on the server, which has already recorded it */ heading.current?.focus(); }, [error]);
   return (
     <div role="alert" className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center">
       <h1 ref={heading} tabIndex={-1} className="font-display text-3xl text-stone outline-none">{tr("Something went wrong on our side.")}</h1>
