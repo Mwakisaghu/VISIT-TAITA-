@@ -111,6 +111,7 @@ export const AUDIT_LABELS: Record<string, string> = {
   "user.signout": "Signed out everywhere", "user.reset_link": "Sent a password link", "user.verify_link": "Sent a verification link",
   "user.twostep_on": "Turned two-step sign-in on", "user.twostep_off": "Turned two-step sign-in off", "user.twostep_codes": "Made new recovery codes",
   "user.twostep_reset_requested": "Asked to reset two-step sign-in", "user.twostep_reset_cancelled": "Cancelled a two-step reset", "user.twostep_reset_done": "Two-step sign-in was reset", "user.twostep_reset": "Reset two-step sign-in (command line)",
+  "order.cancel": "Cancelled a shop order", "order.status": "Changed a shop order's status", "order.refund.sent": "Recorded a shop refund as sent", "order.refund.failed": "Recorded a shop refund as failed",
 };
 
 // ---------- the list screen ----------
