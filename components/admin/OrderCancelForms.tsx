@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { adminCancelOrder, adminProcessOrderRefund, type OrderAdminResult } from "@/lib/actions/orders-admin";
+import { adminCancelOrder, adminProcessOrderRefund, adminRefundOrderPart, type OrderAdminResult } from "@/lib/actions/orders-admin";
 
 const quiet = "focus-ring rounded-full border border-stone/20 px-4 py-1.5 font-body text-sm text-stone hover:border-rust hover:text-rust disabled:opacity-50";
 
@@ -14,7 +14,7 @@ function useRun() {
 }
 
 /** Cancels an order for good. Asks for a reason, how much to refund (never more than was paid), whether the items go back on the shelf, and a tick that it cannot be undone. */
-export function CancelOrderForm({ orderId, paid, ceiling, holdsStock, fulfilled, inFlight }: { orderId: string; paid: number; ceiling: number; holdsStock: boolean; fulfilled: boolean; inFlight: boolean }) {
+export function CancelOrderForm({ orderId, paid, ceiling, holdsStock, fulfilled, inFlight, refunded = 0 }: { orderId: string; paid: number; ceiling: number; holdsStock: boolean; fulfilled: boolean; inFlight: boolean; refunded?: number }) {
   const { busy, run, note } = useRun();
   const [reason, setReason] = useState(""); const [amount, setAmount] = useState(String(paid)); const [restock, setRestock] = useState(holdsStock && !fulfilled); const [sure, setSure] = useState(false);
   return (
@@ -22,7 +22,7 @@ export function CancelOrderForm({ orderId, paid, ceiling, holdsStock, fulfilled,
       <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason" maxLength={200} required className="input" aria-label="Reason for cancelling" />
       {ceiling > 0 ? (
         <label className="flex flex-col gap-1 font-body text-xs text-stone/80">
-          {paid > 0 ? `Refund (KES): the most you can refund is what was paid, KES ${paid.toLocaleString("en-KE")}` : `Refund (KES): the site has NOT confirmed a payment on this order, but one may have arrived (see the reason on the order). Check the M-Pesa statement and refund only what you can see was received, up to KES ${ceiling.toLocaleString("en-KE")}`}
+          {paid > 0 ? `Refund (KES): the most you can refund is ${refunded > 0 ? "what is left of what was paid" : "what was paid"}, KES ${paid.toLocaleString("en-KE")}` : `Refund (KES): the site has NOT confirmed a payment on this order, but one may have arrived (see the reason on the order). Check the M-Pesa statement and refund only what you can see was received, up to KES ${ceiling.toLocaleString("en-KE")}`}
           <input type="number" min={0} max={ceiling} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} className="input" aria-label="Refund in shillings" />
         </label>
       ) : inFlight ? <p className="font-body text-xs text-stone/80">A payment is in progress. If it arrives after you cancel, it will be refunded automatically.</p> : <p className="font-body text-xs text-stone/80">Nothing has been paid, so there is nothing to refund.</p>}
@@ -32,6 +32,21 @@ export function CancelOrderForm({ orderId, paid, ceiling, holdsStock, fulfilled,
       <label className="flex items-center gap-2 font-body text-xs text-stone/80"><input type="checkbox" required checked={sure} onChange={(e) => setSure(e.target.checked)} /> I understand this cannot be undone</label>
       {note}
       <button type="submit" disabled={busy || !sure} className={`${quiet} w-fit`}>Cancel this order</button>
+    </form>
+  );
+}
+
+/** Refunds PART of an order's money and leaves the order exactly as it is (open, with its stock). Never more than is left to refund. */
+export function PartRefundForm({ orderId, left, unconfirmed }: { orderId: string; left: number; unconfirmed: boolean }) {
+  const { busy, run, note } = useRun();
+  const [amount, setAmount] = useState(""); const [reason, setReason] = useState("");
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); run(() => adminRefundOrderPart(orderId, amount, reason)); }} className="mt-2 flex max-w-lg flex-col gap-2">
+      <p className="font-body text-xs text-stone/80">{unconfirmed ? `The site has NOT confirmed a payment on this order, but one may have arrived (see the reason on the order). Check the M-Pesa statement and refund only what you can see was received, up to KES ${left.toLocaleString("en-KE")}.` : `Refunds part of the money and leaves the order as it is. Up to KES ${left.toLocaleString("en-KE")} is left to refund.`}</p>
+      <input type="number" min={1} max={left} step={1} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Amount (KES)" required className="input" aria-label="Part refund in shillings" />
+      <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason" maxLength={200} required className="input" aria-label="Reason for the part refund" />
+      {note}
+      <button type="submit" disabled={busy} className={`${quiet} w-fit`}>Refund this amount</button>
     </form>
   );
 }

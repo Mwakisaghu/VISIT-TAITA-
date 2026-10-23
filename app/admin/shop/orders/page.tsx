@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import OrderStatusSelect from "@/components/admin/OrderStatusSelect";
-import { CancelOrderForm } from "@/components/admin/OrderCancelForms";
+import { CancelOrderForm, PartRefundForm } from "@/components/admin/OrderCancelForms";
 import { formatPrice, fulfillmentLabel } from "@/lib/format";
-import { paidAmount, paymentUnconfirmed, refundCeiling } from "@/lib/order-refunds";
+import { paidLeft, paymentUnconfirmed, refundLeft } from "@/lib/order-refunds";
 import { requireManagerPage } from "@/lib/user-admin-server";
 
 export const dynamic = "force-dynamic";
@@ -77,10 +77,17 @@ export default async function AdminOrdersPage() {
 
             {order.status === "CANCELLED" && <p className="mt-2 font-body text-sm text-stone/80">Cancelled{order.cancelReason ? `: ${order.cancelReason}` : ""}</p>}
             {order.refunds.map((r) => <p key={r.id} className="mt-1 font-body text-xs text-stone/80">{refundLine(r)}</p>)}
+            {order.refundedAmount > 0 && <p className="mt-1 font-body text-xs text-stone/80">Refunded or owed back so far: {formatPrice(order.refundedAmount)} of {formatPrice(order.totalAmount)}</p>}
+            {refundLeft(order) > 0 && (
+              <details className="mt-2">
+                <summary className="cursor-pointer font-body text-sm text-rust">Refund part…</summary>
+                <PartRefundForm orderId={order.id} left={refundLeft(order)} unconfirmed={paidLeft(order) === 0} />
+              </details>
+            )}
             {order.status !== "CANCELLED" && (
               <details className="mt-2">
                 <summary className="cursor-pointer font-body text-sm text-rust">Cancel order…</summary>
-                <CancelOrderForm orderId={order.id} paid={paidAmount(order)} ceiling={refundCeiling(order)} holdsStock={!order.stockReleasedAt && order.paymentStatus !== "FAILED"} fulfilled={order.status === "FULFILLED"} inFlight={order.paymentStatus === "PENDING" && !paymentUnconfirmed(order)} />
+                <CancelOrderForm orderId={order.id} paid={paidLeft(order)} ceiling={refundLeft(order)} refunded={order.refundedAmount} holdsStock={!order.stockReleasedAt && order.paymentStatus !== "FAILED"} fulfilled={order.status === "FULFILLED"} inFlight={order.paymentStatus === "PENDING" && !paymentUnconfirmed(order)} />
               </details>
             )}
           </div>

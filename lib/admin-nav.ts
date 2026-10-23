@@ -1,7 +1,7 @@
 // The admin menu, as data. Pure functions only (no database, no React), so the grouping, the permissions and the "which page am I on"
 // logic can be tested on their own — including a test that fails if someone adds an admin page and forgets to put it in the menu.
 
-export type BadgeKey = "partners" | "products" | "stayEnquiries" | "experienceEnquiries" | "reviews" | "creators" | "fieldNotes" | "emails" | "sponsorLeads" | "refunds" | "payouts" | "errors";
+export type BadgeKey = "orderRefunds" | "partners" | "products" | "stayEnquiries" | "experienceEnquiries" | "reviews" | "creators" | "fieldNotes" | "emails" | "sponsorLeads" | "refunds" | "payouts" | "errors";
 export type NavItem = {
   href: string;
   label: string;
@@ -44,7 +44,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/admin/shop/products", label: "Products", badge: "products", keywords: ["merch", "items", "listings"] },
       { href: "/admin/makers", label: "Makers", keywords: ["artisans", "crafts", "consent", "workshops", "weavers"] },
-      { href: "/admin/shop/orders", label: "Orders", managers: true, keywords: ["purchases", "payments", "fulfilment"] },
+      { href: "/admin/shop/orders", label: "Orders", managers: true, badge: "orderRefunds", keywords: ["purchases", "payments", "fulfilment"] },
     ],
   },
   {
@@ -137,6 +137,7 @@ export const badgeText = (n: number) => (n > 99 ? "99+" : String(n));
 
 /** What the overview's "Needs attention" list says for each kind of waiting item. */
 export const ATTENTION: Array<{ key: BadgeKey; icon: IconName; text: (n: number) => string; href: string; managers?: boolean }> = [
+  { key: "orderRefunds", icon: "bag", text: (n) => `${n} shop refund${n === 1 ? "" : "s"} to send`, href: "/admin/shop/orders/refunds", managers: true },
   { key: "refunds", icon: "cash", text: (n) => `${n} refund${n === 1 ? "" : "s"} to send`, href: "/admin/bookings/refunds", managers: true },
   { key: "payouts", icon: "cash", text: (n) => `${n} host payout${n === 1 ? "" : "s"} to send`, href: "/admin/payouts", managers: true },
   { key: "partners", icon: "users", text: (n) => `${n} partner application${n === 1 ? "" : "s"} to review`, href: "/admin/partners" },
