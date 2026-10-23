@@ -1,7 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { authOptions, ADMIN_ROLES } from "@/lib/auth";
+import { authOptions } from "@/lib/auth";
+import { isManager } from "@/lib/user-admin";
 import { prisma } from "@/lib/prisma";
 import { confirmShopPesapal } from "@/lib/shop-payments";
 import PaymentStatusPoller from "@/components/marketplace/PaymentStatusPoller";
@@ -27,12 +28,12 @@ export default async function OrderConfirmationPage(
 
   const order = await prisma.order.findUnique({
     where: { id: params.id },
-    include: { items: { include: { product: true } } },
+    include: { items: { include: { product: true } }, refunds: { orderBy: { createdAt: "asc" } } },
   });
   if (!order) notFound();
 
   const isOwner = order.buyerId === session.user.id;
-  const isAdmin = ADMIN_ROLES.includes(session.user.role);
+  const isAdmin = isManager(session.user.role); // an order holds a name, a phone and an address: the buyer or an admin, never any other staff role
   if (!isOwner && !isAdmin) notFound();
 
   return (
@@ -40,20 +41,35 @@ export default async function OrderConfirmationPage(
       <div className="mx-auto max-w-lg">
         <p className="font-body text-sm text-rust">Order {order.orderNumber}</p>
         <h1 className="mt-1 font-display text-3xl text-stone">
-          {order.paymentStatus === "PAID" ? "Thank you." : "Almost there."}
+          {order.status === "CANCELLED" ? "This order was cancelled." : order.paymentStatus === "PAID" ? "Thank you." : "Almost there."}
         </h1>
         <p className="mt-2 font-body text-stone/80">
           Status: {orderStatusLabel(order.status)} · {fulfillmentLabel(order.fulfillment)}
         </p>
 
-        <div className="mt-4">
-          <PaymentStatusPoller
-            orderId={order.id}
-            status={order.paymentStatus}
-            paymentMethod={order.paymentMethod}
-            failureReason={order.paymentFailureReason}
-          />
-        </div>
+        {order.status === "CANCELLED" ? (
+          <div role="status" className="mt-4 rounded-sm border border-stone/10 p-4 font-body text-sm text-stone/80">
+            {order.cancelReason && <p>Reason: {order.cancelReason}</p>}
+            {order.refunds.map((r) => (
+              <p key={r.id} className="mt-2">
+                {r.status === "SENT"
+                  ? `Your refund of ${formatPrice(r.amount)} has been sent${r.reference ? ` (reference ${r.reference})` : ""}.`
+                  : r.status === "FAILED"
+                    ? `Your refund of ${formatPrice(r.amount)} hit a problem. We are putting it right and will email you.`
+                    : `Your refund of ${formatPrice(r.amount)} is on its way. We send it ${r.method === "CARD" ? "back to your card" : "to your M-Pesa number"} and email you when it has been sent.`}
+              </p>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-4">
+            <PaymentStatusPoller
+              orderId={order.id}
+              status={order.paymentStatus}
+              paymentMethod={order.paymentMethod}
+              failureReason={order.paymentFailureReason}
+            />
+          </div>
+        )}
 
         <div className="mt-8 divide-y divide-stone/10 rounded-sm border border-stone/10 p-4">
           {order.items.map((item) => (
