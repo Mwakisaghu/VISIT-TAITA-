@@ -8,23 +8,18 @@
 //  2. The amount the provider reports must equal the order total.
 //  3. Every state change is claimed atomically (`PENDING -> X` only if still PENDING), so a callback, a page poll and an IPN racing
 //     each other settle an order exactly once — and the stock is released exactly once.
-//  4. THE STOCK INVARIANT: an order that is UNPAID, PENDING or PAID holds its stock; a FAILED order has released it. Retrying a failed
-//     order therefore has to take the stock again (see retakeStock).
-import type { Prisma } from "@prisma/client";
+//  4. THE STOCK INVARIANT: an order holds its stock exactly when its `stockReleasedAt` marker is empty. A FAILED or CANCELLED order has given it back (once: lib/order-stock.ts claims the marker
+//     first, so it can never go back twice), and retrying a failed order has to take the stock again (see retakeStock).
+//  5. A payment that arrives for an order that was CANCELLED while it was in flight is owed back in full: settlePaid writes that refund (once) and tells the customer.
 import { extractCallbackMetadata, queryStkPushStatus, type MpesaCallbackBody } from "@/lib/mpesa";
+import { notifyOrder } from "@/lib/order-emails";
+import { refundIfCancelled } from "@/lib/order-refunds";
+import { markStockTaken, releaseStock } from "@/lib/order-stock";
 import { getTransactionStatus } from "@/lib/pesapal";
 import { prisma } from "@/lib/prisma";
 
-type Db = Prisma.TransactionClient;
-
 // Safaricom words an unresolved request several ways ("being processed", "processing", "pending"); none of them is a final answer.
 const STILL_PROCESSING = /being process|processing|pending|in progress/i;
-
-/** Puts an order's stock back. Only ever called by the one caller that just moved the order to FAILED. */
-async function releaseStock(db: Db, orderId: string) {
-  const items = await db.orderItem.findMany({ where: { orderId } });
-  for (const item of items) await db.product.update({ where: { id: item.productId }, data: { inventory: { increment: item.quantity } } });
-}
 
 /** Takes an order's stock again (for a retry after a failure). All or nothing: if any line is no longer in stock, nothing is taken. */
 export async function retakeStock(orderId: string): Promise<{ ok: true } | { ok: false; error: string }> {
@@ -35,6 +30,7 @@ export async function retakeStock(orderId: string): Promise<{ ok: true } | { ok:
         const taken = await tx.product.updateMany({ where: { id: item.productId, inventory: { gte: item.quantity } }, data: { inventory: { decrement: item.quantity } } });
         if (taken.count !== 1) throw new Error(`SOLD_OUT:${item.product?.name ?? "an item"}`);
       }
+      await markStockTaken(tx, orderId); // it holds its stock again, so a later release works
     });
     return { ok: true };
   } catch (e) {
@@ -52,6 +48,9 @@ async function settlePaid(orderId: string, now: Date, proof: { receipt?: string 
   });
   if (claimed.count !== 1) return false;
   await prisma.order.updateMany({ where: { id: orderId, status: "PENDING" }, data: { status: "CONFIRMED" } });
+  // Money arrived for an order that was cancelled while the payment was in flight: it stays cancelled, the money is owed back in full (a record, made once), and the customer is told.
+  const late = await refundIfCancelled(prisma, orderId);
+  if (late) await notifyOrder(orderId, { kind: "lateRefund", amount: late.amount });
   return true;
 }
 
