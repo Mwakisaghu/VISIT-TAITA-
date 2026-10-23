@@ -62,8 +62,8 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 
 ## Staff runbook
 - [ ] Everyone who looks after the site has read `docs/staff-runbook.md`, and the "Who to call" table in it is filled in.
-- [ ] You practised the three money jobs once with test data: **cancel a booking and record its refund**, **prepare and record a host payout**, and **handle a shop order by hand** (including the sheet of manual money actions).
-- [ ] Someone who can send M-Pesa refunds is named, and you decided whether editors and content managers should still be able to change an order's status (today they can: see part 3 of the runbook).
+- [ ] You practised the three money jobs once with test data: **cancel a booking and record its refund**, **prepare and record a host payout**, and **cancel a shop order and record its refund**.
+- [ ] Someone who can send M-Pesa refunds is named, (Orders are for admins only: editors and content managers cannot see or change them.)
 
 ## On real phones
 - [ ] A cheap Android phone on a mobile connection in Voi and in Wundanyi: the home page loads, a story reads, an enquiry sends, the planner works, the language offer behaves.

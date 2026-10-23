@@ -14,7 +14,7 @@ Keep this table current. It is the first thing a regulator or a lawyer will ask 
 | Passport: check-ins, points, rewards | The Passport | Neon | The visitor; admins | Until the account is deleted |
 | Enquiries: name, email, phone, message | Put visitors in touch with hosts | Neon; emailed to the host | The host; admins | While needed, then anonymised |
 | Bookings and payments | Take and refund bookings | Neon; Safaricom, Pesapal | The visitor; the host; admins | Payment records kept for accounting |
-| Shop orders: name, phone, address | Deliver orders | Neon; Safaricom, Pesapal | The visitor; the maker or seller; admins | Records kept for accounting |
+| Shop orders and any refund of them: name, phone, address | Deliver orders | Neon; Safaricom, Pesapal | The visitor; the maker or seller; admins | Records kept for accounting |
 | Event tickets: name, phone | Tickets | Neon | The organiser; admins | Per the policy |
 | Newsletter: email | Send the newsletter after confirmation | Neon; Resend | Admins | Until unsubscribed (do-not-email list kept) |
 | Partner and sponsor applications | Decide on partnerships | Neon | Admins | While needed |
