@@ -62,7 +62,7 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 
 ## Staff runbook
 - [ ] Everyone who looks after the site has read `docs/staff-runbook.md`, and the "Who to call" table in it is filled in.
-- [ ] You practised the three money jobs once with test data: **cancel a booking and record its refund**, **prepare and record a host payout**, and **cancel a shop order and record its refund**.
+- [ ] You practised the three money jobs once with test data: **cancel a booking and record its refund**, **prepare and record a host payout**, and **cancel a shop order and record its refund**, and **give a part refund on another**.
 - [ ] Someone who can send M-Pesa refunds is named, (Orders are for admins only: editors and content managers cannot see or change them.)
 
 ## On real phones

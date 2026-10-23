@@ -5,7 +5,7 @@
 // -> CANCELLED, `refund PENDING -> SENT`, `stockReleasedAt empty -> now`), so two admins clicking at once, or a double-click, can never cancel twice, refund twice or put the stock back twice.
 import type { PrismaClient } from "@prisma/client";
 import { releaseStock } from "@/lib/order-stock";
-import { createRefund, paidAmount, paymentUnconfirmed, refundCeiling } from "@/lib/order-refunds";
+import { RefundLimitError, createRefund, paidLeft, paymentUnconfirmed, refundCeiling, refundLeft } from "@/lib/order-refunds";
 import { notifyOrder } from "@/lib/order-emails";
 
 export type Actor = { id: string; email: string };
@@ -33,13 +33,13 @@ export async function cancelOrder(db: PrismaClient, input: { orderId: unknown; r
       const order = await tx.order.findUnique({ where: { id: orderId }, include: { buyer: { select: { id: true, email: true } } } });
       if (!order) return no("That order was not found.");
       if (order.status === "CANCELLED") return no("This order is already cancelled.");
-      const ceiling = refundCeiling(order);
-      let refund = paidAmount(order); // by default exactly what was CONFIRMED as paid: money the site could not confirm is only ever refunded when an admin asks for it
+      const limit = refundCeiling(order); const ceiling = refundLeft(order);
+      let refund = paidLeft(order); // by default exactly what was CONFIRMED as paid and not yet refunded: money the site could not confirm is only ever refunded when an admin asks for it
       const asked = input.refundAmount;
       if (asked !== undefined && asked !== null && asked !== "") {
         const n = typeof asked === "number" ? asked : Number(asked);
         if (!Number.isInteger(n) || n < 0) return no("The refund must be a whole number of shillings, 0 or more.");
-        if (n > ceiling) return no(ceiling === 0 ? "Nothing has been paid on this order, so there is nothing to refund." : `The refund cannot be more than the order total (${kes(ceiling)}).`);
+        if (n > ceiling) return no(limit === 0 ? "Nothing has been paid on this order, so there is nothing to refund." : ceiling === 0 ? "Everything has already been refunded." : `The refund cannot be more than what is left to refund (${kes(ceiling)}).`);
         refund = n;
       }
       const claimed = await tx.order.updateMany({ where: { id: order.id, status: { not: "CANCELLED" } }, data: { status: "CANCELLED", cancelledAt: now, cancelReason: why, cancelledById: input.actor.id } });
@@ -47,11 +47,11 @@ export async function cancelOrder(db: PrismaClient, input: { orderId: unknown; r
       let restocked = false; let stockNote = "The stock was left as it is.";
       if (restock) { restocked = await releaseStock(tx, order.id, now); stockNote = restocked ? "The items are back in stock." : "The stock had already been put back, so nothing was added."; }
       let refundId: string | null = null;
-      if (refund > 0) refundId = (await createRefund(tx, { orderId: order.id, amount: refund, reason: `Order cancelled: ${why}`, createdById: input.actor.id })).id;
+      if (refund > 0) refundId = (await createRefund(tx, { orderId: order.id, amount: refund, reason: `Order cancelled: ${why}`, createdById: input.actor.id, limit })).id;
       await tx.adminAuditLog.create({ data: { actorId: input.actor.id, actorEmail: input.actor.email, action: "order.cancel", targetUserId: order.buyer?.id ?? null, targetEmail: order.buyer?.email ?? null, detail: `order ${order.orderNumber}: ${why}; refund ${kes(refund)}; ${restocked ? "stock put back" : "stock not put back"}`.slice(0, 300) } });
       return { ok: true, refund, refundId, restocked, stockNote, inFlight: order.paymentStatus === "PENDING" && !paymentUnconfirmed(order) };
     });
-  } catch (e) { console.error("[orders] cancel failed:", (e as Error).message); return no(FAILED_OP); }
+  } catch (e) { if (e instanceof RefundLimitError) return no(CHANGED); console.error("[orders] cancel failed:", (e as Error).message); return no(FAILED_OP); }
   if (done.ok) await notifyOrder(orderId, { kind: "cancelled", refund: done.refund, inFlight: done.inFlight });
   return done;
 }
@@ -97,4 +97,33 @@ export async function processOrderRefund(db: PrismaClient, input: { refundId: un
   } catch (e) { console.error("[orders] refund record failed:", (e as Error).message); return no(FAILED_OP); }
   if (sent) { const s = sent as { orderId: string; amount: number; reference: string | null }; await notifyOrder(s.orderId, { kind: "refundSent", amount: s.amount, reference: s.reference }); }
   return { ok: true, outcome };
+}
+
+export type PartRefundOk = { ok: true; amount: number; left: number };
+
+/**
+ * Refunds PART of an order's money and leaves the order exactly as it is (open, with its stock): one damaged item out of several, a goodwill refund. It is allowed on a cancelled order too, for refunds still owed.
+ * What is left is claimed atomically (see createRefund), so two admins at once can never refund more than was paid.
+ */
+export async function refundOrderPart(db: PrismaClient, input: { orderId: unknown; amount: unknown; reason: unknown; actor: Actor }): Promise<PartRefundOk | Failure> {
+  const why = clean(input.reason, 200);
+  if (why.length < 3) return no("Give a short reason (3 to 200 characters).");
+  const raw = input.amount; const n = typeof raw === "number" ? raw : typeof raw === "string" && raw.trim() !== "" ? Number(raw) : NaN;
+  if (!Number.isInteger(n) || n < 1) return no("The refund must be a whole number of shillings, 1 or more.");
+  const orderId = String(input.orderId);
+  let done: PartRefundOk | Failure;
+  try {
+    done = await db.$transaction(async (tx): Promise<PartRefundOk | Failure> => {
+      const order = await tx.order.findUnique({ where: { id: orderId }, include: { buyer: { select: { id: true, email: true } } } });
+      if (!order) return no("That order was not found.");
+      const limit = refundCeiling(order); const left = refundLeft(order);
+      if (limit === 0) return no("Nothing has been paid on this order, so there is nothing to refund.");
+      if (n > left) return no(left === 0 ? "Everything has already been refunded." : `The refund cannot be more than what is left to refund (${kes(left)}).`);
+      await createRefund(tx, { orderId, amount: n, reason: `Part refund: ${why}`, createdById: input.actor.id, limit });
+      await tx.adminAuditLog.create({ data: { actorId: input.actor.id, actorEmail: input.actor.email, action: "order.refund.part", targetUserId: order.buyer?.id ?? null, targetEmail: order.buyer?.email ?? null, detail: `order ${order.orderNumber}: part refund ${kes(n)}: ${why}; ${kes(left - n)} left`.slice(0, 300) } });
+      return { ok: true, amount: n, left: left - n };
+    });
+  } catch (e) { if (e instanceof RefundLimitError) return no(CHANGED); console.error("[orders] part refund failed:", (e as Error).message); return no(FAILED_OP); }
+  if (done.ok) await notifyOrder(orderId, { kind: "partRefund", amount: done.amount, reason: why });
+  return done;
 }

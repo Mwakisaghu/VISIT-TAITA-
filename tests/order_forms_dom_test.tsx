@@ -5,7 +5,7 @@ const Module = require("module"); const origLoad = Module._load; const calls: an
 const act0 = async (name: string, args: any[]) => { calls.push([name, ...args]); if (gate) await gate; return next(); };
 Module._load = function (r: string, ...x: any[]) {
   if (r === "next/navigation") return { useRouter: () => ({ refresh: () => { refreshes++; }, push() {} }) };
-  if (r === "@/lib/actions/orders-admin") return { adminCancelOrder: (...a: any[]) => act0("cancel", a), adminProcessOrderRefund: (...a: any[]) => act0("refund", a), adminSetOrderStatus: (...a: any[]) => act0("status", a) };
+  if (r === "@/lib/actions/orders-admin") return { adminCancelOrder: (...a: any[]) => act0("cancel", a), adminProcessOrderRefund: (...a: any[]) => act0("refund", a), adminSetOrderStatus: (...a: any[]) => act0("status", a), adminRefundOrderPart: (...a: any[]) => act0("part", a) };
   return origLoad.call(this, r, ...x);
 };
 const { createRoot } = require("react-dom/client"); const { act } = require("react");
@@ -48,6 +48,14 @@ async function main() {
   await change("FULFILLED"); const okCall = JSON.stringify(calls[0]) === JSON.stringify(["status", "o9", "FULFILLED"]) && select().value === "FULFILLED" && !$('[role="alert"]');
   reset(); next = async () => ({ ok: false, error: "A cancelled order cannot be reopened." }); await mount(React.createElement(Sel, { orderId: "o9", status: "CONFIRMED" })); await change("PENDING");
   t("THE STATUS DROPDOWN SAVES ITS CHOICE, AND PUTS THE OLD STATUS BACK WITH THE REASON IF THE SERVER REFUSES (so the screen never shows a status the order does not have)", okCall && select().value === "CONFIRMED" && /cannot be reopened/.test($('[role="alert"]')?.textContent ?? "") && JSON.stringify(calls[0]) === JSON.stringify(["status", "o9", "PENDING"]));
+  // ===== the part refund form =====
+  reset(); await mount(React.createElement(F.PartRefundForm, { orderId: "o7", left: 1500, unconfirmed: false })); const amt = () => $('input[aria-label="Part refund in shillings"]'); const rsn = () => $('input[aria-label="Reason for the part refund"]');
+  const shape = amt().getAttribute("max") === "1500" && amt().getAttribute("min") === "1" && amt().required && rsn().required && /Up to KES 1,500 is left to refund/.test(w.document.body.textContent);
+  await typeInto(amt(), "1000"); await typeInto(rsn(), "Mug arrived chipped"); await submit(); await flush();
+  t("THE PART REFUND FORM sends exactly what was typed (the order, the amount as typed, the reason), limits the amount to what is left (1 to KES 1,500, both boxes required), shows the server's message and refreshes", shape && JSON.stringify(calls[0]) === JSON.stringify(["part", "o7", "1000", "Mug arrived chipped"]) && refreshes === 1 && /Done\./.test($('[role="status"]')?.textContent ?? ""));
+  reset(); let release2!: () => void; gate = new Promise<void>((r) => (release2 = r)); await mount(React.createElement(F.PartRefundForm, { orderId: "o7", left: 1500, unconfirmed: false })); await typeInto(amt(), "500"); await typeInto(rsn(), "Goodwill"); await submit(); await submit(); await submit(); const once = calls.length === 1 && $('button[type="submit"]').disabled; release2(); await flush();
+  reset(); next = async () => ({ ok: false, error: "The refund cannot be more than what is left to refund (KES 500)." }); await mount(React.createElement(F.PartRefundForm, { orderId: "o7", left: 1500, unconfirmed: true })); await typeInto(amt(), "900"); await typeInto(rsn(), "Too much"); await submit(); await flush();
+  t("A DOUBLE-CLICK ON THE PART REFUND SENDS IT ONCE, and a refusal from the server is shown as an alert without refreshing the page; an unconfirmed payment's form carries the warning to check the M-Pesa statement", once && /left to refund \(KES 500\)/.test($('[role="alert"]')?.textContent ?? "") && refreshes === 0 && /NOT confirmed a payment/.test(w.document.body.textContent) && /Check the M-Pesa statement/.test(w.document.body.textContent));
   await unmount(); let nbad = 0; for (const [nm, ok2] of res) { console.log((ok2 ? "PASS " : "FAIL ") + nm); if (!ok2) nbad++; }
   console.log(nbad ? `\n${nbad} FAILED` : `\nALL ${res.length} ORDER FORMS BROWSER CHECKS PASSED`); process.exit(nbad ? 1 : 0);
 }

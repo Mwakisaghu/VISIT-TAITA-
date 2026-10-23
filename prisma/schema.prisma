@@ -828,6 +828,10 @@ model Order {
   // when this is empty. Every way of giving stock back goes through lib/order-stock.ts, which claims this first, so stock can never be given back twice.
   stockReleasedAt DateTime?
 
+  // The running total of what has been refunded or is owed back on this order (every refund record, whatever its status). It is claimed ATOMICALLY when a refund is written
+  // (`refundedAmount <= limit - amount`), so two admins refunding at the same instant can never refund more than was paid.
+  refundedAmount Int @default(0)
+
   items   OrderItem[]
   refunds OrderRefund[]
 

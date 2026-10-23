@@ -7,7 +7,8 @@ const safe = (p: Promise<number>) => p.catch(() => 0);
 
 /** How many things are waiting for a person, per kind. Refunds are money, so only admins and super admins get that number. */
 export async function loadAdminBadges(manager: boolean): Promise<Badges> {
-  const [partners, products, stayEnquiries, experienceEnquiries, reviews, creators, fieldNotes, emails, sponsorLeads, refunds, payouts, errors] = await Promise.all([
+  const [orderRefunds, partners, products, stayEnquiries, experienceEnquiries, reviews, creators, fieldNotes, emails, sponsorLeads, refunds, payouts, errors] = await Promise.all([
+    manager ? safe((async () => prisma.orderRefund.count({ where: { status: { in: ["PENDING", "FAILED"] } } }))()) : Promise.resolve(0),
     safe(prisma.partnerApplication.count({ where: { status: "PENDING" } })),
     safe(prisma.product.count({ where: { status: "DRAFT", seller: { role: "SELLER" } } })),
     safe(prisma.accommodationEnquiry.count({ where: { status: "NEW" } })),
@@ -21,5 +22,5 @@ export async function loadAdminBadges(manager: boolean): Promise<Badges> {
     manager ? safe(prisma.hostPayout.count({ where: { status: "PENDING" } })) : Promise.resolve(0),
     manager ? safe(Promise.resolve().then(() => recentErrorCount())) : Promise.resolve(0), // open errors seen in the last 24 hours (the work of the Error log)
   ]);
-  return { partners, products, stayEnquiries, experienceEnquiries, reviews, creators, fieldNotes, emails, sponsorLeads, refunds, payouts, errors };
+  return { orderRefunds, partners, products, stayEnquiries, experienceEnquiries, reviews, creators, fieldNotes, emails, sponsorLeads, refunds, payouts, errors };
 }

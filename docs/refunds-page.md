@@ -16,4 +16,4 @@ A customer-facing page that says what you get back, and how to ask, for everythi
 The page shows the same "draft, pending legal review" notice as your other legal pages until a lawyer has approved it. Have them read it, especially the last line ("nothing on this page limits any rights you have under Kenyan consumer law"), the ticket section (you are telling customers the organiser, not Visit Taita, handles refunds) and the shop's change-of-mind line.
 
 ## Not built
-A way to refund part of an order **without** cancelling the rest of it. Today a partial refund means cancelling the whole order, or sending the refund by hand and writing it in your own sheet.
+(Nothing is pending for shop refunds: a part refund, a full refund by cancelling, and late payments are all recorded.)

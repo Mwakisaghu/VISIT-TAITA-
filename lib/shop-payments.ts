@@ -51,6 +51,7 @@ async function settlePaid(orderId: string, now: Date, proof: { receipt?: string 
   // Money arrived for an order that was cancelled while the payment was in flight: it stays cancelled, the money is owed back in full (a record, made once), and the customer is told.
   const late = await refundIfCancelled(prisma, orderId);
   if (late) await notifyOrder(orderId, { kind: "lateRefund", amount: late.amount });
+  else await notifyOrder(orderId, { kind: "confirmed" }); // the customer is told their payment arrived, once: this branch is only reached by the ONE caller that made PENDING -> PAID
   return true;
 }
 

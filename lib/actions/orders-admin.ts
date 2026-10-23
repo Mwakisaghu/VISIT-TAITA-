@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cancelOrder, processOrderRefund, setOrderStatus } from "@/lib/order-admin-ops";
+import { cancelOrder, processOrderRefund, refundOrderPart, setOrderStatus } from "@/lib/order-admin-ops";
 import { prisma } from "@/lib/prisma";
 import { currentManager } from "@/lib/user-admin-server";
 
@@ -37,4 +37,13 @@ export async function adminProcessOrderRefund(refundId: string, outcome: "SENT" 
   if (!r.ok) return r;
   refresh();
   return { ok: true, message: r.outcome === "SENT" ? "Marked as sent. The customer has been emailed." : "Marked as failed." };
+}
+
+/** Refunds part of an order's money and leaves the order as it is. */
+export async function adminRefundOrderPart(orderId: string, amount: number | string, reason: string): Promise<OrderAdminResult> {
+  const actor = await currentManager(); if (!actor) return DENIED;
+  const r = await refundOrderPart(prisma, { orderId, amount, reason, actor });
+  if (!r.ok) return r;
+  refresh();
+  return { ok: true, message: `KES ${r.amount.toLocaleString("en-KE")} to refund (see Refunds to send). ${r.left > 0 ? `KES ${r.left.toLocaleString("en-KE")} is still left to refund on this order.` : "Everything paid has now been refunded."} The customer has been emailed.` };
 }

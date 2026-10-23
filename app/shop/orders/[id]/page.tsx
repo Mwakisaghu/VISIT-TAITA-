@@ -8,6 +8,13 @@ import { confirmShopPesapal } from "@/lib/shop-payments";
 import PaymentStatusPoller from "@/components/marketplace/PaymentStatusPoller";
 import { formatPrice, fulfillmentLabel, orderStatusLabel } from "@/lib/format";
 
+const refundText = (r: { amount: number; status: string; method: string; reference: string | null }) =>
+  r.status === "SENT"
+    ? `Your refund of ${formatPrice(r.amount)} has been sent${r.reference ? ` (reference ${r.reference})` : ""}.`
+    : r.status === "FAILED"
+      ? `Your refund of ${formatPrice(r.amount)} hit a problem. We are putting it right and will email you.`
+      : `Your refund of ${formatPrice(r.amount)} is on its way. We send it ${r.method === "CARD" ? "back to your card" : "to your M-Pesa number"} and email you when it has been sent.`;
+
 export default async function OrderConfirmationPage(
   props: {
     params: Promise<{ id: string }>;
@@ -50,18 +57,16 @@ export default async function OrderConfirmationPage(
         {order.status === "CANCELLED" ? (
           <div role="status" className="mt-4 rounded-sm border border-stone/10 p-4 font-body text-sm text-stone/80">
             {order.cancelReason && <p>Reason: {order.cancelReason}</p>}
-            {order.refunds.map((r) => (
-              <p key={r.id} className="mt-2">
-                {r.status === "SENT"
-                  ? `Your refund of ${formatPrice(r.amount)} has been sent${r.reference ? ` (reference ${r.reference})` : ""}.`
-                  : r.status === "FAILED"
-                    ? `Your refund of ${formatPrice(r.amount)} hit a problem. We are putting it right and will email you.`
-                    : `Your refund of ${formatPrice(r.amount)} is on its way. We send it ${r.method === "CARD" ? "back to your card" : "to your M-Pesa number"} and email you when it has been sent.`}
-              </p>
-            ))}
+            {order.refunds.map((r) => <p key={r.id} className="mt-2">{refundText(r)}</p>)}
           </div>
         ) : (
           <div className="mt-4">
+            {order.refunds.length > 0 && (
+              <div role="status" className="mb-4 rounded-sm border border-stone/10 p-4 font-body text-sm text-stone/80">
+                {order.refunds.map((r) => <p key={r.id} className="mt-1 first:mt-0">{refundText(r)}</p>)}
+                <p className="mt-2">The rest of your order stays as it is.</p>
+              </div>
+            )}
             <PaymentStatusPoller
               orderId={order.id}
               status={order.paymentStatus}
