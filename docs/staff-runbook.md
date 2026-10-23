@@ -4,14 +4,13 @@ For the people who look after Visit Taita day to day. Each part says **what you 
 
 Three rules that apply to money:
 1. **A payment only counts once Safaricom or Pesapal has confirmed it to the site itself.** The site never takes anyone's word for it (not the guest's, not a screenshot, not ours), so there is no button to mark something paid by hand. This protects you from fake receipts.
-2. **Every refund and payout you send by hand is recorded with its M-Pesa receipt.** For bookings and payouts the site keeps that record; for shop orders it does not (see part 3), so keep your own.
+2. **Every refund and payout you send by hand is recorded with its M-Pesa receipt.** The site keeps that record for booking refunds, shop refunds and host payouts.
 3. **Nothing is sent to a customer until you have the receipt in your hand.** Check the M-Pesa statement, not the customer's message.
 
 ## Who can do what
 | Job | Super admin, Admin | Editor, Content manager |
 | --- | --- | --- |
-| Bookings, refunds, host payouts, accounts, the activity log | Yes | **No** (these pages send them back to the admin home) |
-| Shop orders: see them and change an order's status | Yes | **Yes** (nothing stops them: see the warning in part 3) |
+| Bookings, shop orders (see them, change them, cancel them), every refund, host payouts, accounts, the activity log | Yes | **No** (these pages send them back to the admin home) |
 | Stories, places, events, products and the rest of the content | Yes | Yes |
 
 ## 1. A guest says they paid for an experience or stay, but the booking isn't confirmed
@@ -32,17 +31,23 @@ Three rules that apply to money:
 3. Open **Refunds to send** (a button on the Bookings page, with the number waiting). For each refund: **send the M-Pesa refund by hand**, then record it as **Sent** with the M-Pesa receipt (4 to 40 letters and numbers). The guest is emailed that it was sent.
 4. If you cannot send it, record it as **Failed** and write what went wrong (at least three characters). It stays in the list so it is not forgotten. A refund recorded as sent cannot be changed.
 
-## 3. A shop order: paid but waiting, a late payment, or a customer wants money back
+## 3. A shop order: paid but waiting, a late payment, or a customer wants money back (admins only)
 **Paid but still "Waiting for M-Pesa confirmation".** The shop re-checks with Safaricom only while the customer's own order page is open (and when a message arrives). Ask the customer to open their order again and stay on the page for a minute. There is **no scheduled job for shop orders**.
 
-**The Orders list shows a payment as failed with "A payment arrived after this order was marked failed" or "Amount mismatch".** Money may have been taken. Look at the M-Pesa receipt in the reason, then:
+**The Orders list shows a payment as failed with "A payment arrived after this order was marked failed" or "Amount mismatch".** The site could not confirm it, but money may have been taken. Look at the M-Pesa receipt in the reason, check it on your M-Pesa statement, then:
 - **To fulfil it:** the product's stock was given back when the order failed, so first open **Products**, edit the product and check its **Inventory** (the list shows "n in stock"); take the item off by hand. Set the order to **Confirmed**, and later **Fulfilled**. The payment line will still say failed: that is expected.
-- **To refund it:** send the M-Pesa refund by hand and set the order to **Cancelled**.
+- **To refund it:** open **Cancel order…** on that order. The refund box starts at 0 (the site has not confirmed the payment, so it never refunds it by default); type what you saw arrive, up to the order total. The stock is already back on the shelf, and the form says so.
 
-**A customer wants their money back** (damaged, not as described, never arrived: see the Refunds and cancellations page of the site for what we promised). There is **no refund tool for shop orders**, so do all of this by hand and write it down:
-1. Agree it with the customer (and the seller). 2. Send the M-Pesa refund (or refund the card payment in your Pesapal account). 3. Set the order to **Cancelled**. 4. If the item goes back on sale, raise its **Inventory** by hand. 5. Email the customer that it is done. 6. Add a line to your record of manual money actions (the table at the end).
+**To cancel an order, or give a customer their money back** (a change of mind, damaged, not as described, never arrived: see the Refunds and cancellations page of the site for what we promised), open **Cancel order…** on the order:
+1. Give a short reason (3 to 200 characters). The customer is emailed it.
+2. **Refund (KES)** starts at what was paid. Lower it for a partial refund, or type 0 for none. It can never be more than was paid.
+3. **Put the items back in stock:** tick it when they can be sold again; leave it unticked when they are broken or lost (for an order already fulfilled it starts unticked). Stock is only ever put back once.
+4. Tick **I understand this cannot be undone**, and cancel. The site cancels the order, records the refund, puts the stock back if you asked, emails the customer, and writes it all to the activity log.
+5. Open **Refunds to send** (a button on the Orders page, with the number waiting). **Send the M-Pesa refund by hand** (or refund the card payment in your Pesapal account), then record it as **Sent** with the M-Pesa receipt (4 to 40 letters and numbers): the customer is emailed. If you cannot send it, record it as **Failed** with a note: it stays in the list.
 
-> **Warning: "Cancelled" is only a label.** Choosing Cancelled in the Orders list does **not** refund anything, does **not** put the stock back, does **not** email the customer, and is **not** written to the activity log. Whoever changes a status must do those things themselves. Editors and content managers can change it too.
+If a payment was still in progress when you cancelled and then arrives, the order stays cancelled and the site writes the refund for you and emails the customer: you will find it in **Refunds to send**.
+
+> **Cancelled is final.** A cancelled order cannot be reopened, and its status cannot be changed afterwards. To refund only part of an order **and keep the rest of it**, there is no button yet: send that refund by hand and write it in your sheet (the table at the end). Orders cancelled before this update were only labelled: their stock was never put back and no refund was recorded for them.
 
 ## 4. Host payouts (admins only)
 Guests pay Visit Taita; hosts are paid afterwards. Open **Host payouts**:
@@ -83,7 +88,7 @@ Open the item (a story, place, event, product...), set its **Status** to Draft a
 | Your lawyer | ______ | ______ | ______ |
 
 ## Your record of manual money actions
-The site records booking refunds and host payouts itself. It does **not** record shop refunds, and a payment you sent outside it should never be only in someone's memory. Keep one simple sheet:
+The site records booking refunds, shop refunds and host payouts itself. It does **not** record money you send outside it, for example refunding part of an order while keeping the rest, or refunding a payment the site never saw, and those should never be only in someone's memory. Keep one simple sheet:
 
 | Date | Order, booking or payout | Amount (KES) | M-Pesa receipt | Why | Done by |
 | --- | --- | --- | --- | --- | --- |

@@ -2,12 +2,13 @@
 //  - every operation yields to the event loop first, so concurrent callers genuinely interleave;
 //  - the match-and-change of updateMany/update is synchronous after that yield (like a row-level atomic update);
 //  - $transaction rolls every write back if the callback throws, but concurrent transactions OVERLAP (no serialising), like READ COMMITTED.
-export const T: Record<string, any[]> = { user: [], product: [], order: [], orderItem: [] };
+export const T: Record<string, any[]> = { user: [], product: [], order: [], orderItem: [], orderRefund: [], adminAuditLog: [] };
 export const hooks: { throwOn?: (table: string, op: string, args: any) => void } = {};
 let counter = 0; export const nid = (p: string) => `${p}${++counter}`;
 export const resetDb = () => { for (const k of Object.keys(T)) T[k] = []; };
 const REL: any = {
-  order: { items: { t: "orderItem", by: "orderId", many: true }, buyer: { t: "user", fk: "buyerId" } },
+  order: { items: { t: "orderItem", by: "orderId", many: true }, refunds: { t: "orderRefund", by: "orderId", many: true }, buyer: { t: "user", fk: "buyerId" } },
+  orderRefund: { order: { t: "order", fk: "orderId" } },
   orderItem: { product: { t: "product", fk: "productId" } },
 };
 const tick = () => new Promise((r) => setImmediate(r));
@@ -20,8 +21,10 @@ function match(row: any, where: any = {}): boolean {
       if ("in" in c) { if (!c.in.includes(row[k])) return false; continue; }
       if ("gte" in c) { if (!(row[k] >= c.gte)) return false; continue; }
       if ("gt" in c) { if (!(row[k] > c.gt)) return false; continue; }
+      if ("not" in c) { if (row[k] === c.not) return false; continue; }
       return false; // an operator we don't model (e.g. an injected { $ne: "" }) matches nothing
     }
+    if (v === null) { if (row[k] != null) return false; continue; } // null matches an empty OR a missing field, as in the database
     if (row[k] !== v) return false;
   }
   return true;
@@ -39,7 +42,7 @@ function applyData(table: string, row: any, data: any) {
   }
   if ("updatedAt" in row) row.updatedAt = new Date();
 }
-const defaults: any = { order: () => ({ status: "PENDING", paymentStatus: "UNPAID", paymentMethod: "NONE", paymentFailureReason: null, paidAt: null, mpesaCheckoutRequestId: null, mpesaMerchantRequestId: null, mpesaReceiptNumber: null, pesapalOrderTrackingId: null, pesapalMerchantReference: null, pesapalConfirmationCode: null, createdAt: new Date(), updatedAt: new Date(), phone: "254712345678" }) };
+const defaults: any = { order: () => ({ status: "PENDING", paymentStatus: "UNPAID", paymentMethod: "NONE", paymentFailureReason: null, paidAt: null, mpesaCheckoutRequestId: null, mpesaMerchantRequestId: null, mpesaReceiptNumber: null, pesapalOrderTrackingId: null, pesapalMerchantReference: null, pesapalConfirmationCode: null, createdAt: new Date(), updatedAt: new Date(), phone: "254712345678", stockReleasedAt: null, cancelledAt: null, cancelReason: null, cancelledById: null }), orderRefund: () => ({ status: "PENDING", reference: null, note: null, destination: null, paymentReference: null, createdAt: new Date(), createdById: null, processedAt: null, processedById: null }), adminAuditLog: () => ({ createdAt: new Date(), targetUserId: null, targetEmail: null, detail: null }) };
 type Undo = Array<() => void>;
 function delegates(undo?: Undo) {
   const out: any = {};

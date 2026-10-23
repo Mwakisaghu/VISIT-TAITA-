@@ -112,19 +112,7 @@ export async function publishProduct(id: string) {
   revalidatePath("/shop");
 }
 
-// ---------------------------------------------------------------------------
-// Admin: orders
-// ---------------------------------------------------------------------------
-
-const orderStatusSchema = z.enum(["PENDING", "CONFIRMED", "FULFILLED", "CANCELLED"]);
-
-export async function updateOrderStatus(id: string, status: string) {
-  await requireAdmin();
-  const parsed = orderStatusSchema.parse(status);
-  await prisma.order.update({ where: { id }, data: { status: parsed } });
-  revalidatePath("/admin/shop/orders");
-  revalidatePath("/shop/orders");
-}
+// Admin: orders are handled in lib/actions/orders-admin.ts (admins only, every change logged). There is deliberately NO order function here: this file's requireAdmin() lets every staff role in.
 
 // ---------------------------------------------------------------------------
 // Checkout

@@ -44,7 +44,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/admin/shop/products", label: "Products", badge: "products", keywords: ["merch", "items", "listings"] },
       { href: "/admin/makers", label: "Makers", keywords: ["artisans", "crafts", "consent", "workshops", "weavers"] },
-      { href: "/admin/shop/orders", label: "Orders", keywords: ["purchases", "payments", "fulfilment"] },
+      { href: "/admin/shop/orders", label: "Orders", managers: true, keywords: ["purchases", "payments", "fulfilment"] },
     ],
   },
   {

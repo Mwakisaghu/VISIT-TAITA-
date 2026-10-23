@@ -819,11 +819,43 @@ model Order {
   buyerId String?
   buyer   User?  @relation("OrdersPlaced", fields: [buyerId], references: [id], onDelete: SetNull)
 
-  items OrderItem[]
+  // Cancellation: only through the admin's cancel form (lib/order-admin-ops.ts). A cancelled order is final and can never be reopened.
+  cancelledAt   DateTime?
+  cancelReason  String?
+  cancelledById String?
+
+  // THE STOCK MARKER. Set, once, when this order's stock has been given back to the products; cleared if the stock is taken again (a retried payment). The order holds its stock exactly
+  // when this is empty. Every way of giving stock back goes through lib/order-stock.ts, which claims this first, so stock can never be given back twice.
+  stockReleasedAt DateTime?
+
+  items   OrderItem[]
+  refunds OrderRefund[]
 
   @@index([buyerId])
   @@index([status])
   @@index([paymentStatus])
+}
+
+// Money owed back to a shop customer. Refunds are sent by hand (M-Pesa or a card refund in Pesapal) and then recorded here with the receipt: the same process as booking refunds.
+model OrderRefund {
+  id               String        @id @default(cuid())
+  orderId          String
+  order            Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  amount           Int
+  reason           String
+  status           RefundStatus  @default(PENDING)
+  method           PaymentMethod
+  destination      String? // the phone number to send an M-Pesa refund to
+  paymentReference String? // the receipt of the ORIGINAL payment, so it can be found on the statement
+  reference        String? // the receipt of the REFUND once it has been sent
+  note             String?
+  createdAt        DateTime      @default(now())
+  createdById      String? // the admin who cancelled the order (empty when it was created automatically for a late payment)
+  processedAt      DateTime?
+  processedById    String?
+
+  @@index([status, createdAt])
+  @@index([orderId])
 }
 
 model OrderItem {
