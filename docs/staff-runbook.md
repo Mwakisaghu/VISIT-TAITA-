@@ -32,6 +32,8 @@ Three rules that apply to money:
 4. If you cannot send it, record it as **Failed** and write what went wrong (at least three characters). It stays in the list so it is not forgotten. A refund recorded as sent cannot be changed.
 
 ## 3. A shop order: paid but waiting, a late payment, or a customer wants money back (admins only)
+**The customer is emailed a confirmation the moment their payment is confirmed** (what they bought, the total, pickup or delivery); if they say they never got one, look in **Email log**. The Orders menu item and the overview show how many shop refunds are waiting to be sent.
+
 **Paid but still "Waiting for M-Pesa confirmation".** The shop re-checks with Safaricom only while the customer's own order page is open (and when a message arrives). Ask the customer to open their order again and stay on the page for a minute. There is **no scheduled job for shop orders**.
 
 **The Orders list shows a payment as failed with "A payment arrived after this order was marked failed" or "Amount mismatch".** The site could not confirm it, but money may have been taken. Look at the M-Pesa receipt in the reason, check it on your M-Pesa statement, then:
@@ -47,7 +49,9 @@ Three rules that apply to money:
 
 If a payment was still in progress when you cancelled and then arrives, the order stays cancelled and the site writes the refund for you and emails the customer: you will find it in **Refunds to send**.
 
-> **Cancelled is final.** A cancelled order cannot be reopened, and its status cannot be changed afterwards. To refund only part of an order **and keep the rest of it**, there is no button yet: send that refund by hand and write it in your sheet (the table at the end). Orders cancelled before this update were only labelled: their stock was never put back and no refund was recorded for them.
+**To refund only part of the money and keep the order** (one item damaged, a goodwill refund), open **Refund part…** on the order, type the amount and a reason. It can never be more than is left to refund (the page shows what has been refunded so far). The order stays open and keeps its stock, the customer is emailed, and the refund appears in **Refunds to send**.
+
+> **Cancelled is final.** A cancelled order cannot be reopened, and its status cannot be changed afterwards. Orders cancelled before the order tools existed were only labelled: their stock was never put back and no refund was recorded for them. If such a customer is owed money, open **Refund part…** on the order (it works on cancelled orders too), and put any stock back by hand in **Products**.
 
 ## 4. Host payouts (admins only)
 Guests pay Visit Taita; hosts are paid afterwards. Open **Host payouts**:
@@ -88,7 +92,7 @@ Open the item (a story, place, event, product...), set its **Status** to Draft a
 | Your lawyer | ______ | ______ | ______ |
 
 ## Your record of manual money actions
-The site records booking refunds, shop refunds and host payouts itself. It does **not** record money you send outside it, for example refunding part of an order while keeping the rest, or refunding a payment the site never saw, and those should never be only in someone's memory. Keep one simple sheet:
+The site records booking refunds, shop refunds and host payouts itself. It does **not** record money you send outside it, for example refunding a payment the site never saw, and that should never be only in someone's memory. Keep one simple sheet:
 
 | Date | Order, booking or payout | Amount (KES) | M-Pesa receipt | Why | Done by |
 | --- | --- | --- | --- | --- | --- |

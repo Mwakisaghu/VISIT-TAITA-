@@ -18,5 +18,14 @@ If a payment is still in flight when an order is cancelled and then arrives, `se
 ## Refunds
 `OrderRefund` is only a **record that money is owed back**. Refunds are sent by hand (M-Pesa, or a card refund in Pesapal) and then recorded with their receipt (`processOrderRefund`): once, atomically; recording one as sent emails the customer. There is no automatic refund through Safaricom or Pesapal.
 
+## Part refunds (`refundOrderPart`)
+Refunds part of an order's money and leaves the order as it is. `Order.refundedAmount` is the running total of every refund record on the order (whatever its status); what is left to refund is the ceiling less that (`refundLeft`). A refund claims its room **atomically** (`refundedAmount <= limit - amount`, one conditional update), so two admins refunding at once can never refund more than was paid. Cancelling uses the same left-over: after a part refund its default is what remains. A part refund is also allowed on a cancelled order (orders cancelled before the order tools existed have no refund record).
+
+## Emails
+Payment confirmed: `settlePaid` (the one caller that wins the PENDING to PAID claim) sends the confirmation once (what was bought, the total and receipt, pickup or delivery). A cancelled order is never "confirmed": a payment arriving for one gets the late-refund email instead. Also sent: cancelled, part refund, refund sent.
+
+## The menu badge
+The Orders menu item and the overview's "Needs your attention" show the number of shop refunds waiting (pending or failed), for admins only (`loadAdminBadges`, key `orderRefunds`).
+
 ## Not built
-Refunding part of an order without cancelling the rest; an order confirmation email (the shop sends the customer no order emails apart from these); a badge or overview alert for refunds waiting.
+Choosing which items a part refund is for (it is an amount and a reason); an email to the shop owner when an order is paid.

@@ -21,6 +21,7 @@ function match(row: any, where: any = {}): boolean {
       if ("in" in c) { if (!c.in.includes(row[k])) return false; continue; }
       if ("gte" in c) { if (!(row[k] >= c.gte)) return false; continue; }
       if ("gt" in c) { if (!(row[k] > c.gt)) return false; continue; }
+      if ("lte" in c) { if (!(row[k] <= c.lte)) return false; continue; }
       if ("not" in c) { if (row[k] === c.not) return false; continue; }
       return false; // an operator we don't model (e.g. an injected { $ne: "" }) matches nothing
     }
@@ -42,7 +43,7 @@ function applyData(table: string, row: any, data: any) {
   }
   if ("updatedAt" in row) row.updatedAt = new Date();
 }
-const defaults: any = { order: () => ({ status: "PENDING", paymentStatus: "UNPAID", paymentMethod: "NONE", paymentFailureReason: null, paidAt: null, mpesaCheckoutRequestId: null, mpesaMerchantRequestId: null, mpesaReceiptNumber: null, pesapalOrderTrackingId: null, pesapalMerchantReference: null, pesapalConfirmationCode: null, createdAt: new Date(), updatedAt: new Date(), phone: "254712345678", stockReleasedAt: null, cancelledAt: null, cancelReason: null, cancelledById: null }), orderRefund: () => ({ status: "PENDING", reference: null, note: null, destination: null, paymentReference: null, createdAt: new Date(), createdById: null, processedAt: null, processedById: null }), adminAuditLog: () => ({ createdAt: new Date(), targetUserId: null, targetEmail: null, detail: null }) };
+const defaults: any = { order: () => ({ status: "PENDING", paymentStatus: "UNPAID", paymentMethod: "NONE", paymentFailureReason: null, paidAt: null, mpesaCheckoutRequestId: null, mpesaMerchantRequestId: null, mpesaReceiptNumber: null, pesapalOrderTrackingId: null, pesapalMerchantReference: null, pesapalConfirmationCode: null, createdAt: new Date(), updatedAt: new Date(), phone: "254712345678", stockReleasedAt: null, refundedAmount: 0, cancelledAt: null, cancelReason: null, cancelledById: null }), orderRefund: () => ({ status: "PENDING", reference: null, note: null, destination: null, paymentReference: null, createdAt: new Date(), createdById: null, processedAt: null, processedById: null }), adminAuditLog: () => ({ createdAt: new Date(), targetUserId: null, targetEmail: null, detail: null }) };
 type Undo = Array<() => void>;
 function delegates(undo?: Undo) {
   const out: any = {};
