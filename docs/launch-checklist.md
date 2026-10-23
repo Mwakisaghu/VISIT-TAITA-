@@ -60,6 +60,11 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 - [ ] One real payment through each method you offer (M-Pesa and cards): paid, confirmed, receipt received, and one refunded.
 - [ ] One real booking and one real ticket, start to finish, including the email the visitor receives.
 
+## Staff runbook
+- [ ] Everyone who looks after the site has read `docs/staff-runbook.md`, and the "Who to call" table in it is filled in.
+- [ ] You practised the three money jobs once with test data: **cancel a booking and record its refund**, **prepare and record a host payout**, and **handle a shop order by hand** (including the sheet of manual money actions).
+- [ ] Someone who can send M-Pesa refunds is named, and you decided whether editors and content managers should still be able to change an order's status (today they can: see part 3 of the runbook).
+
 ## On real phones
 - [ ] A cheap Android phone on a mobile connection in Voi and in Wundanyi: the home page loads, a story reads, an enquiry sends, the planner works, the language offer behaves.
 - [ ] Two or three people who have never seen the site try to find somewhere to stay and plan a day, while you watch and say nothing.
