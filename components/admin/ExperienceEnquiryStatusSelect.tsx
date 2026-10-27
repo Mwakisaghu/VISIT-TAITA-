@@ -17,6 +17,7 @@ export default function ExperienceEnquiryStatusSelect({
 
   return (
     <select
+      aria-label="Enquiry status"
       value={value}
       disabled={isPending}
       onChange={(e) => {

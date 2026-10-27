@@ -17,6 +17,7 @@ export default function AccommodationEnquiryStatusSelect({
 
   return (
     <select
+      aria-label="Enquiry status"
       value={value}
       disabled={isPending}
       onChange={(e) => {

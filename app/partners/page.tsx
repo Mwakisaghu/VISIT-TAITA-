@@ -35,6 +35,7 @@ export default async function PartnersPage() {
     <div className="px-6 py-20">
       <div className="mx-auto max-w-3xl">
         <SectionHeading
+          as="h1"
           title="Partner with Visit Taita"
           description="We work with the people already building Taita's tourism, food, sport and culture scene."
         />

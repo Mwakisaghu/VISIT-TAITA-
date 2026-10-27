@@ -30,7 +30,7 @@ export default function EventMoreDetails({ event }: { event: EventDetails }) {
               <div className="md:col-span-2">
                 <h3 className={h3}>Programme</h3>
                 <ol className="mt-3 border-t border-stone/20">
-                  {programme.map((p, i) => <li key={i} className="grid grid-cols-[4.75rem_1fr] gap-4 border-b border-stone/15 py-3 font-body text-[0.98rem] leading-relaxed text-stone/85"><span className="font-display text-lg leading-snug text-rust">{p.time ?? ""}</span><span className="break-words">{p.text}</span></li>)}
+                  {programme.map((p, i) => <li key={i} className="grid grid-cols-[4.75rem_1fr] gap-4 border-b border-stone/15 py-3 font-body text-[0.98rem] leading-relaxed text-stone/85"><span className="font-display text-lg leading-snug text-rust-deep">{p.time ?? ""}</span><span className="break-words">{p.text}</span></li>)}
                 </ol>
               </div>
             )}

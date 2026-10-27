@@ -42,7 +42,7 @@ export default async function ExperienceCategoryPage(
   return (
     <div className="px-6 py-20">
       <div className="mx-auto max-w-6xl">
-        <SectionHeading title={c.label} description={c.description} />
+        <SectionHeading as="h1" title={c.label} description={c.description} />
 
         {experiences.length > 0 ? (
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">

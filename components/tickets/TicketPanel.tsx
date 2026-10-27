@@ -38,7 +38,7 @@ export default function TicketPanel(p: { eventId: string; mode: "FREE" | "PAID";
       <label className="flex flex-col gap-1"><span className={label}>Your phone number</span><input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" required placeholder="0712 345 678" autoComplete="tel" className="input" /></label>
       <div className="rounded-sm border border-stone/10 bg-stone/5 p-3 font-body text-sm text-stone/80">
         {p.mode === "FREE" ? <p><strong>Free.</strong> Your {q === 1 ? "ticket is" : "tickets are"} issued straight away.</p> : <><p>{kes(p.price)} × {q} = <strong>{kes(p.price * q)}</strong></p><p className="mt-1 text-stone/80">You&apos;ll be shown how to pay next. Your {q === 1 ? "ticket is" : "tickets are"} held for you, and become valid once the organiser confirms your payment.</p></>}
-        {p.left !== null && p.left <= 20 && <p className="mt-1 text-rust">Only {p.left} left.</p>}
+        {p.left !== null && p.left <= 20 && <p className="mt-1 text-rust-deep">Only {p.left} left.</p>}
       </div>
       {error && <p role="alert" className="font-body text-sm text-rust">{error}</p>}
       <button type="submit" disabled={busy} className="focus-ring w-fit rounded-full bg-rust px-6 py-3 font-body text-sm text-parchment hover:bg-rust-deep disabled:opacity-50">{busy ? "One moment…" : p.mode === "FREE" ? "Get my ticket" : "Reserve tickets"}</button>

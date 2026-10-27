@@ -44,7 +44,7 @@ export default async function ShopCategoryPage(
   return (
     <div className="px-6 py-20">
       <div className="mx-auto max-w-6xl">
-        <SectionHeading title={cat.label} />
+        <SectionHeading as="h1" title={cat.label} />
 
         {products.length > 0 ? (
           <div className={`mt-10 ${productGrid}`}>
