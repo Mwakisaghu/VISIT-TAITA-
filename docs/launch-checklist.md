@@ -22,7 +22,8 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 - [ ] Every picture is one you own or have permission to use (`docs/photos.md`). The audit's "should fix" list is empty or understood.
 - [ ] The test sponsors are gone (`node scripts/audit-content.mjs --hide-bad-sponsors --apply` moves unusable ones back to draft; delete any others in the admin area). Only real partners who agreed are shown.
 - [ ] A local editor has read every story (especially Mwangeka and the Taita culture story) and the visitor essentials page.
-- [ ] The visitor essentials facts have been checked again, and `LAST_CHECKED` in `app/essentials/page.tsx` is updated, together with its three translations.
+- [ ] The visitor essentials facts have been checked again, and `LAST_CHECKED` in `app/essentials/content.ts` is updated, together with its three translations.
+- [ ] On a real phone, outdoors, the visitor essentials page: the month strip marks the right month and tapping a month explains it, the jump bar highlights as you scroll, the Call buttons dial 999, 112 and the Kenya Wildlife Service, and the two links out (the Kenya Wildlife Service for fees, Kenya Railways for trains) still open the right official sites.
 
 ## Legal
 - [ ] The privacy page mentions the Taita Guide's AI (suggested wording in `docs/taita-guide.md`), if the AI is switched on, and is checked against your own legal advice and Kenya's Data Protection Act.
