@@ -41,3 +41,16 @@ export const SECTIONS = [
     T("In an emergency, call 999 or 112. The Kenya Wildlife Service lists a toll-free line, 0800 597 000."),
   ] },
 ] as const;
+
+// ---- The redesigned page's own data. Every prose sentence on the page still comes from SECTIONS above (so every claim keeps its source and its translation);
+// this is only the addresses, the phone numbers and the calendar the layout needs. No fee, fare or timetable lives here: they change, and the page sends people to the people who set them.
+/** The official sites, checked October 2026: the Kenya Wildlife Service (which sets park fees) and Kenya Railways (which runs the SGR). Front pages, not deep links, because deep links go stale. */
+export const KWS_URL = "https://www.kws.go.ke";
+export const KRC_URL = "https://www.krc.co.ke";
+/** The Kenya Wildlife Service's toll-free line (the same number the safety text gives) and the national emergency numbers, for one-tap calling. */
+export const KWS_TEL = "tel:0800597000";
+export const EMERGENCY = ["999", "112"] as const;
+
+/** What each calendar month is like, from the page's own sentences: the dry seasons are roughly June to October and January to February, the long rains March to May, the short rains October or November to December. October is both: the end of the dry season and the start of the short rains. */
+export type Season = "dry" | "long" | "short" | "dry-short";
+export const SEASON_BY_MONTH: readonly Season[] = ["dry", "dry", "long", "long", "long", "dry", "dry", "dry", "dry", "dry-short", "short", "short"];
