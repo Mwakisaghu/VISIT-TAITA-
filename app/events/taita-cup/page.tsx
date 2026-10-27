@@ -42,7 +42,7 @@ export default async function TaitaCupPage() {
       {/* HEADER */}
       <section className="bg-canopy px-6 py-20 text-parchment">
         <div className="mx-auto max-w-6xl">
-          <p className="font-body text-sm text-ochre">Taita Sport</p>
+          <p className="font-body text-sm text-ochre-light">Taita Sport</p>
           <h1 className="mt-2 font-display text-3xl sm:text-4xl">
             Come for the football.
             <br />

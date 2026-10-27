@@ -81,7 +81,7 @@ export default function BookingPanel(p: {
       <div className="rounded-sm border border-stone/10 bg-stone/5 p-3 font-body text-sm text-stone/80">
         <p>{kes(p.unitPrice)} × {g} guest{g === 1 ? "" : "s"} = <strong>{kes(total)}</strong></p>
         <p className="mt-1 text-stone/80">{paymentModeSummary(p.paymentMode, p.depositPercent, p.balanceDueDays)}</p>
-        {plan?.collapsedToFull && <p className="mt-1 text-rust">This date is close, so the full price is due now.</p>}
+        {plan?.collapsedToFull && <p className="mt-1 text-rust-deep">This date is close, so the full price is due now.</p>}
         {plan && !request && <p className="mt-1">Due now: <strong>{kes(plan.dueNow)}</strong>{plan.balanceDueAt && <> · balance {kes(total - plan.dueNow)} due {formatEat(plan.balanceDueAt)}</>}</p>}
       </div>
 

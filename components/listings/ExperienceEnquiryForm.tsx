@@ -57,11 +57,12 @@ export default function ExperienceEnquiryForm({ experienceId }: { experienceId: 
           <input name="partySize" type="number" min={1} className="input" />
         </label>
       </div>
-      <input name="name" required placeholder="Your name" className="input" />
-      <input name="email" type="email" required placeholder="Email" className="input" />
-      <input name="phone" type="tel" required placeholder="Phone" className="input" />
+      <input name="name" required placeholder="Your name" aria-label="Your name" autoComplete="name" className="input" />
+      <input name="email" type="email" required placeholder="Email" aria-label="Your email address" autoComplete="email" className="input" />
+      <input name="phone" type="tel" required placeholder="Phone" aria-label="Your phone number" autoComplete="tel" className="input" />
       <textarea
         name="message"
+        aria-label="Your message"
         required
         minLength={10}
         rows={3}

@@ -44,13 +44,13 @@ export default async function TaitaWeekPage() {
       {/* HEADER */}
       <section className="bg-rust px-6 py-20 text-parchment">
         <div className="mx-auto max-w-6xl">
-          <p className="font-body text-sm text-parchment/70">Taita Week</p>
+          <p className="font-body text-sm text-parchment">Taita Week</p>
           <h1 className="mt-2 font-display text-3xl sm:text-4xl">
             A week-long festival
             <br />
             of everything Taita.
           </h1>
-          <p className="mt-4 max-w-md font-body text-parchment/85">
+          <p className="mt-4 max-w-md font-body text-parchment">
             Music, food, culture and sport — three days across Voi and
             Wundanyi, most of it free to attend.
           </p>

@@ -41,7 +41,7 @@ export default async function CheckinPage(props: { params: Promise<{ token: stri
     return (
       <Shell>
         <div className="p-8 text-center">
-          <p className="font-display text-2xl text-stone">This check-in code isn&apos;t valid.</p>
+          <h1 className="font-display text-2xl text-stone">This check-in code isn&apos;t valid.</h1>
           <p className="mt-3 font-body text-sm text-stone/80">
             The plaque may have been replaced. Try the &quot;Check in here&quot; button on your Passport instead.
           </p>
@@ -80,7 +80,7 @@ export default async function CheckinPage(props: { params: Promise<{ token: stri
         <div className="absolute inset-0 bg-gradient-to-t from-stone/80 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-5">
           <p className="font-body text-xs text-ochre">{destination.region}</p>
-          <p className="font-display text-2xl text-parchment">{destination.name}</p>
+          <h1 className="font-display text-2xl text-parchment">{destination.name}</h1>
         </div>
       </div>
 

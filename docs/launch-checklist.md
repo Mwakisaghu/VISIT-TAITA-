@@ -65,6 +65,13 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 - [ ] You practised the three money jobs once with test data: **cancel a booking and record its refund**, **prepare and record a host payout**, and **cancel a shop order and record its refund**, and **give a part refund on another**.
 - [ ] Someone who can send M-Pesa refunds is named, (Orders are for admins only: editors and content managers cannot see or change them.)
 
+## Accessibility
+- [ ] You went through **keyboard only** (no mouse): home, a listing, an enquiry form, checkout, sign-in. You could always see where you were and never got stuck (`docs/accessibility.md`).
+- [ ] You went through the home page, an enquiry form and a booking with **a screen reader** (TalkBack on Android is the one most visitors use) and every field and button was announced with its name.
+- [ ] At **200 percent zoom** and with the phone's text size raised, nothing is cut off.
+- [ ] You looked at the **text over photographs** (heroes and cards) in bright light at full brightness: the automatic check cannot judge those.
+- [ ] Every real photo that carries meaning has a description (`alt`), and `node scripts/a11y-scan.mjs` reports no problems.
+
 ## On real phones
 - [ ] A cheap Android phone on a mobile connection in Voi and in Wundanyi: the home page loads, a story reads, an enquiry sends, the planner works, the language offer behaves.
 - [ ] Two or three people who have never seen the site try to find somewhere to stay and plan a day, while you watch and say nothing.

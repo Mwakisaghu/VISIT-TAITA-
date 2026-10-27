@@ -46,7 +46,7 @@ export default function PassportSection() {
               </li>
             ))}
           </ul>
-          <p className="mt-8 font-body text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-parchment/55">{tr("Your first stamp is waiting.")}</p>
+          <p className="mt-8 font-body text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-parchment/70">{tr("Your first stamp is waiting.")}</p>
           <div className="mt-8"><PassportCta /></div>
         </Reveal>
       </div>

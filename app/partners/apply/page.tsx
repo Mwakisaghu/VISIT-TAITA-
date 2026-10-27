@@ -127,6 +127,8 @@ export default function ApplyPage() {
             <input
               type="email"
               required
+              aria-label="The email address you applied with"
+              autoComplete="email"
               value={statusEmail}
               onChange={(e) => setStatusEmail(e.target.value)}
               placeholder="you@business.com"
