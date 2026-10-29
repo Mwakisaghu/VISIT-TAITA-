@@ -927,4 +927,13 @@ export const de: Record<string, string> = {
   "Walking in the hills": "Wandern in den Hügeln",
   "Wundanyi, the hill town": "Wundanyi, die Stadt in den Hügeln",
   "Wundanyi, the hill town, is about 400 km from Nairobi and 150 km from Mombasa.": "Wundanyi, die Stadt in den Hügeln, liegt etwa 400 km von Nairobi und 150 km von Mombasa entfernt.",
+  // saving pages for offline use
+  "A copy is kept on this device only, and nothing is sent anywhere.": "Eine Kopie bleibt nur auf diesem Gerät, und es wird nichts irgendwohin gesendet.",
+  "Could not save this page. Check your connection and try again.": "Diese Seite konnte nicht gespeichert werden. Prüfe deine Verbindung und versuche es erneut.",
+  "Remove from this device": "Von diesem Gerät entfernen",
+  "Save for offline": "Offline speichern",
+  "Saved for offline": "Offline gespeichert",
+  "Saved on {date}": "Gespeichert am {date}",
+  "Update the saved copy": "Gespeicherte Kopie aktualisieren",
+  "You are offline. This is a copy saved earlier, so times, fares and fees may have changed.": "Du bist offline. Das ist eine früher gespeicherte Kopie, Zeiten, Preise und Gebühren können sich geändert haben.",
 };
