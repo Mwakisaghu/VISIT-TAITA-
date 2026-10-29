@@ -1,7 +1,7 @@
 const cfg = require(process.cwd() + "/next.config.js"); const res = []; const t = (n, ok) => res.push([n, !!ok]);
 (async () => {
   const rules = await cfg.headers(); const all = rules.find((r) => r.source === "/:path*"); const h = Object.fromEntries((all?.headers ?? []).map((x) => [x.key, x.value]));
-  t("headers apply to every page (/:path*)", rules.length === 1 && all);
+  t("headers apply to every page (/:path*), and the only other rules are the two for the offline worker and its offline page (checked in offline_wiring_test)", !!all && rules.filter((r) => r.source !== "/:path*").map((r) => r.source).sort().join() === "/offline.html,/sw.js");
   t("X-Content-Type-Options: nosniff", h["X-Content-Type-Options"] === "nosniff");
   t("X-Frame-Options: SAMEORIGIN (other sites can't frame the site; its own pages still can)", h["X-Frame-Options"] === "SAMEORIGIN");
   t("Referrer-Policy: strict-origin-when-cross-origin", h["Referrer-Policy"] === "strict-origin-when-cross-origin");

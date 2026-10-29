@@ -8,6 +8,8 @@ import { resolveStops } from "@/lib/plan-data";
 import { deletePlan } from "@/lib/actions/plan";
 import { formatPrice } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import OfflineNotice from "@/components/offline/OfflineNotice";
+import OfflineSaveButton from "@/components/offline/OfflineSaveButton";
 
 type Ctx = { params: Promise<{ token: string }> };
 export const dynamic = "force-dynamic";
@@ -35,8 +37,10 @@ export default async function SharedPlanPage({ params }: Ctx) {
   return (
     <div className="px-6 py-14 sm:py-16">
       <div className="mx-auto max-w-3xl">
+        <OfflineNotice />
         <p className="font-body text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-rust-deep">A Taita day · {dayLabel(plan.day)} · {plan.partySize} {plan.partySize === 1 ? "person" : "people"}</p>
         <h1 className="mt-3 font-display text-[clamp(1.76rem,4vw,2.8rem)] font-medium leading-[1.05] tracking-tight text-stone">{plan.title}</h1>
+        <OfflineSaveButton className="mt-5" />
         {past && <p role="status" className="mt-4 rounded-[2px] border border-stone/20 bg-[#F4EDDC] p-4 font-body text-sm text-stone">This day has passed.</p>}
 
         <ol className="mt-10 border-l-2 border-stone/20">

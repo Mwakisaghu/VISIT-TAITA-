@@ -3,6 +3,8 @@ import Link from "next/link";
 import StoryCredits from "@/components/stories/StoryCredits";
 import ShareBar from "@/components/share/ShareBar";
 import EssentialsNav from "@/components/essentials/EssentialsNav";
+import OfflineNotice from "@/components/offline/OfflineNotice";
+import OfflineSaveButton from "@/components/offline/OfflineSaveButton";
 import { EssentialsIcon, type IconName } from "@/components/essentials/Icons";
 import MonthStrip from "@/components/essentials/MonthStrip";
 import { LOCALE_INFO, hreflangLinks, localizePath } from "@/lib/i18n/config";
@@ -60,6 +62,7 @@ export default function EssentialsPage() {
   ];
   return (
     <div className="pb-24 md:pb-0">
+      <OfflineNotice />
       <section className="bg-stone px-6 pb-24 pt-10 text-parchment sm:pb-28 sm:pt-14">
         <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1fr_460px] lg:items-start lg:gap-16">
           <div>
@@ -68,6 +71,7 @@ export default function EssentialsPage() {
             <h1 className="mt-4 font-display text-4xl font-medium leading-[1.08] sm:text-5xl">{tr("Everything you need")}<br />{tr("before you come.")}</h1>
             <p className="mt-5 max-w-xl font-body text-lg leading-relaxed text-parchment/90">{tr("The practical things people ask most: how to get here, when to go, how to pay and how to stay safe.")}</p>
             <p className="mt-6 flex items-start gap-2 font-body text-sm text-ochre-light"><EssentialsIcon name="check" size={20} className="mt-0.5 shrink-0" /><span>{tr("Last checked in {when}. Details change, so confirm before you travel.", { when: tr(LAST_CHECKED) })}</span></p>
+            <OfflineSaveButton tone="dark" className="mt-5" />
           </div>
           <aside aria-labelledby="journey-title" className="rounded-[4px] border border-parchment/20 bg-stone-soft p-6">
             <div className="flex items-baseline justify-between gap-3"><h2 id="journey-title" className="font-display text-2xl font-semibold">{tr("The journey from Nairobi")}</h2><span className="shrink-0 font-body text-[0.8rem] text-parchment/85">{tr("about 400 km")}</span></div>

@@ -927,4 +927,13 @@ export const sw: Record<string, string> = {
   "Walking in the hills": "Kutembea vilimani",
   "Wundanyi, the hill town": "Wundanyi, mji wa vilimani",
   "Wundanyi, the hill town, is about 400 km from Nairobi and 150 km from Mombasa.": "Wundanyi, mji wa vilimani, uko umbali wa takriban kilomita 400 kutoka Nairobi na kilomita 150 kutoka Mombasa.",
+  // saving pages for offline use
+  "A copy is kept on this device only, and nothing is sent anywhere.": "Nakala hubaki kwenye kifaa hiki tu, na hakuna kinachotumwa popote.",
+  "Could not save this page. Check your connection and try again.": "Imeshindwa kuhifadhi ukurasa huu. Angalia mtandao wako kisha ujaribu tena.",
+  "Remove from this device": "Ondoa kwenye kifaa hiki",
+  "Save for offline": "Hifadhi ili kutumia bila mtandao",
+  "Saved for offline": "Imehifadhiwa kwa matumizi bila mtandao",
+  "Saved on {date}": "Imehifadhiwa {date}",
+  "Update the saved copy": "Sasisha nakala iliyohifadhiwa",
+  "You are offline. This is a copy saved earlier, so times, fares and fees may have changed.": "Huna mtandao. Hii ni nakala iliyohifadhiwa awali, kwa hivyo nyakati, nauli na ada vinaweza kuwa vimebadilika.",
 };
