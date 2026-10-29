@@ -73,6 +73,14 @@ Tick each line. Run `node scripts/audit-content.mjs --strict` at the end: it sho
 - [ ] You looked at the **text over photographs** (heroes and cards) in bright light at full brightness: the automatic check cannot judge those.
 - [ ] Every real photo that carries meaning has a description (`alt`), and `node scripts/a11y-scan.mjs` reports no problems.
 
+## Offline use
+- [ ] On a real phone: open the visitor essentials, press **Save for offline**, turn on airplane mode and reload: it opens from the copy and says it is a copy saved earlier (`docs/offline.md`).
+- [ ] In airplane mode, `/account` and the Plan builder show the **offline page**, never a copy of anything personal; and the offline page lists what you saved and **removes it all**.
+- [ ] A day you planned: its shared page can be saved the same way, and opens offline.
+- [ ] Adding the site to the home screen works and opens it like an app (the name, icon and colours are right).
+- [ ] You asked your lawyer whether the privacy page should mention that a visitor who presses "Save for offline" keeps a copy of the page on their own device (nothing is stored unless they press it, and nothing is sent anywhere).
+- [ ] If you switch the Content-Security-Policy to enforcing (`CSP_ENFORCE=1`), you tested all of the above again.
+
 ## On real phones
 - [ ] A cheap Android phone on a mobile connection in Voi and in Wundanyi: the home page loads, a story reads, an enquiry sends, the planner works, the language offer behaves.
 - [ ] Two or three people who have never seen the site try to find somewhere to stay and plan a day, while you watch and say nothing.
