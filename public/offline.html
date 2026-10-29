@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Visit Taita: offline</title>
+<style>
+:root{color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:#ECE3CD;color:#1B1815;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.55}
+main{max-width:34rem;margin:0 auto;padding:3rem 1.5rem 4rem}
+h1{font-family:Georgia,"Times New Roman",serif;font-weight:500;font-size:2rem;line-height:1.15;margin:0 0 .75rem}
+h2{font-size:1.05rem;margin:2rem 0 .5rem}
+p{margin:.5rem 0}
+.brand{font-family:Georgia,serif;font-size:1.1rem;font-weight:600;margin:0 0 2.5rem}
+ul{list-style:none;margin:.5rem 0 0;padding:0;border-top:1px solid rgba(27,24,21,.2)}
+li{border-bottom:1px solid rgba(27,24,21,.2);padding:.85rem 0}
+li a{color:#7E3117;font-weight:700;font-size:1.05rem}
+li small{display:block;color:#4A433B}
+button{font:inherit;font-weight:700;min-height:48px;padding:0 1.25rem;border-radius:2px;cursor:pointer;margin:.5rem .5rem 0 0}
+#retry{background:#A6431E;color:#fff;border:0}
+#remove{background:transparent;color:#1B1815;border:1.5px solid #1B1815}
+a:focus-visible,button:focus-visible{outline:3px solid #1B1815;outline-offset:2px}
+.note{color:#4A433B;font-size:.9rem;margin-top:2rem}
+</style>
+</head>
+<body>
+<main>
+<p class="brand">Visit Taita</p>
+<h1 id="title">You are offline</h1>
+<p id="intro"></p>
+<button id="retry" type="button"></button>
+<h2 id="savedTitle"></h2>
+<ul id="list"></ul>
+<p id="none" hidden></p>
+<button id="remove" type="button" hidden></button>
+<p id="status" role="status"></p>
+<p class="note" id="note"></p>
+</main>
+<script>
+(function () {
+  // The words, in the four languages of the site. A person can only read this page with no signal, so everything it needs is in this one file.
+  var T = {"en": {"title": "You are offline", "intro": "This page needs a connection. Pages you saved on this device are listed below.", "saved": "Saved on this device", "none": "Nothing is saved yet. While you have signal, open the visitor essentials or a day you planned and press “Save for offline”.", "retry": "Try again", "remove": "Remove all saved copies", "removed": "All saved copies were removed from this device.", "note": "Saved copies stay on this device only.", "on": "Saved on"}, "sw": {"title": "Huna mtandao", "intro": "Ukurasa huu unahitaji mtandao. Kurasa ulizohifadhi kwenye kifaa hiki zimeorodheshwa hapa chini.", "saved": "Zilizohifadhiwa kwenye kifaa hiki", "none": "Hakuna kilichohifadhiwa bado. Ukiwa na mtandao, fungua mambo muhimu kwa wageni au siku uliyopanga kisha bonyeza “Hifadhi ili kutumia bila mtandao”.", "retry": "Jaribu tena", "remove": "Futa nakala zote zilizohifadhiwa", "removed": "Nakala zote zilizohifadhiwa zimefutwa kwenye kifaa hiki.", "note": "Nakala zilizohifadhiwa hubaki kwenye kifaa hiki tu.", "on": "Imehifadhiwa"}, "fr": {"title": "Vous êtes hors ligne", "intro": "Cette page nécessite une connexion. Les pages que vous avez enregistrées sur cet appareil sont listées ci-dessous.", "saved": "Enregistré sur cet appareil", "none": "Rien n'est encore enregistré. Quand vous avez du réseau, ouvrez l'essentiel pour les visiteurs ou une journée que vous avez planifiée, puis appuyez sur « Enregistrer pour l'utiliser hors ligne ».", "retry": "Réessayer", "remove": "Supprimer toutes les copies enregistrées", "removed": "Toutes les copies enregistrées ont été supprimées de cet appareil.", "note": "Les copies enregistrées restent sur cet appareil uniquement.", "on": "Enregistré le"}, "de": {"title": "Du bist offline", "intro": "Diese Seite braucht eine Verbindung. Seiten, die du auf diesem Gerät gespeichert hast, stehen unten.", "saved": "Auf diesem Gerät gespeichert", "none": "Noch nichts gespeichert. Öffne mit Empfang die Seite „Wichtiges für Besucher“ oder einen geplanten Tag und tippe auf „Offline speichern“.", "retry": "Erneut versuchen", "remove": "Alle gespeicherten Kopien entfernen", "removed": "Alle gespeicherten Kopien wurden von diesem Gerät entfernt.", "note": "Gespeicherte Kopien bleiben nur auf diesem Gerät.", "on": "Gespeichert am"}};
+  var PAGES = "taita-pages-v1", ASSETS = "taita-assets-v1";
+  var lang = "en";
+  try { lang = String(navigator.language || "en").slice(0, 2).toLowerCase(); } catch (e) {}
+  if (!T[lang]) lang = "en";
+  var $ = function (id) { return document.getElementById(id); };
+  function words(l) {
+    lang = T[l] ? l : "en"; var t = T[lang]; document.documentElement.lang = lang;
+    $("title").textContent = t.title; $("intro").textContent = t.intro; $("retry").textContent = t.retry; $("savedTitle").textContent = t.saved; $("none").textContent = t.none; $("remove").textContent = t.remove; $("note").textContent = t.note;
+    document.title = "Visit Taita: " + t.title;
+  }
+  words(lang);
+  $("retry").addEventListener("click", function () { location.reload(); });
+  // only a path on this site may become a link (never a full address, never a script), and every piece of text goes in with textContent
+  function safePath(p) { return typeof p === "string" && p.charAt(0) === "/" && p.charAt(1) !== "/" && p.indexOf("\\") === -1; }
+  // What is saved IS the list: each saved page carries the time it was saved, and its own title and language. Nothing else is kept on this device to remember it.
+  function saved() {
+    if (!window.caches) return Promise.resolve([]);
+    return caches.open(PAGES).then(function (cache) {
+      return cache.keys().then(function (reqs) {
+        return Promise.all(reqs.map(function (rq) {
+          return cache.match(rq).then(function (res) {
+            if (!res) return null;
+            var path = new URL(rq.url).pathname, at = Number(res.headers.get("x-taita-saved-at")) || 0;
+            return res.text().then(function (html) {
+              var doc = new DOMParser().parseFromString(html, "text/html"); // parsed, never run: scripts in it do not execute
+              return { url: path, title: doc.title || path, lang: (doc.documentElement.lang || "").slice(0, 2).toLowerCase(), at: at };
+            }, function () { return { url: path, title: path, lang: "", at: at }; });
+          });
+        }));
+      });
+    }).catch(function () { return []; });
+  }
+  function render() {
+    var list = $("list"); list.textContent = "";
+    saved().then(function (items) {
+      items = items.filter(function (e) { return e && safePath(e.url); });
+      if (items.length && items[0].lang && T[items[0].lang]) words(items[0].lang); // the language the visitor saved it in
+      var t = T[lang];
+      items.forEach(function (e) {
+        var li = document.createElement("li"), a = document.createElement("a"), s = document.createElement("small");
+        a.href = e.url; a.textContent = String(e.title).slice(0, 120);
+        s.textContent = e.at ? t.on + " " + new Date(e.at).toLocaleDateString(lang, { day: "numeric", month: "short", year: "numeric" }) : "";
+        li.appendChild(a); li.appendChild(s); list.appendChild(li);
+      });
+      $("none").hidden = items.length > 0; $("remove").hidden = items.length === 0;
+    });
+  }
+  $("remove").addEventListener("click", function () {
+    Promise.all([window.caches ? caches.delete(PAGES) : 0, window.caches ? caches.delete(ASSETS) : 0]).then(function () {
+      $("status").textContent = T[lang].removed; render();
+    });
+  });
+  render();
+  window.addEventListener("online", function () { location.reload(); });
+})();
+</script>
+</body>
+</html>

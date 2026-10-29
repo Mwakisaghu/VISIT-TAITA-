@@ -19,6 +19,8 @@ const csp = [
   "font-src 'self' data:",
   "connect-src 'self'",
   "frame-src 'none'",
+  "worker-src 'self'", // the offline worker (public/sw.js)
+  "manifest-src 'self'",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -38,7 +40,12 @@ const securityHeaders = [
 
 const nextConfig = {
   async headers() {
-    return [{ source: "/:path*", headers: [...securityHeaders, cspHeader] }];
+    return [
+      { source: "/:path*", headers: [...securityHeaders, cspHeader] },
+      // The offline worker must never be served from an old copy (or a visitor could be stuck on a broken one), and it may control the whole site.
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache, no-store, must-revalidate" }, { key: "Service-Worker-Allowed", value: "/" }] },
+      { source: "/offline.html", headers: [{ key: "Cache-Control", value: "no-cache" }] },
+    ];
   },
   images: {
     // Uploaded pictures never change (every upload gets a new random name), so the resized copies can be kept for a month rather than the
